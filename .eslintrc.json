@@ -1,8 +1,6 @@
 {
   "extends": ["next/core-web-vitals", "@rocketseat/eslint-config/react"],
   "rules": {
-    "camelcase": "off",
-    "no-unused-vars": "off",
-    "no-undef": "off"
+    "camelcase": "off"
   }
 }
