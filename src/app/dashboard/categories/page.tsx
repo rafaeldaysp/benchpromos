@@ -1,24 +1,42 @@
-import { Separator } from '@/components/ui/separator'
+import { gql } from '@apollo/client'
 
-export default function CategoriesDashboardPage() {
+import { Separator } from '@/components/ui/separator'
+import { getClient } from '@/lib/apollo'
+import { Category } from '@/types'
+import { CategoriesMain } from './main'
+
+const GET_CATEGORIES = gql`
+  query Categories {
+    categories {
+      id
+      name
+      subcategories {
+        id
+        name
+      }
+    }
+  }
+`
+
+export default async function CategoriesDashboardPage() {
+  const response = await getClient().query<{
+    categories: Category[]
+  }>({
+    query: GET_CATEGORIES,
+  })
+
+  const categories = response.data.categories
+
   return (
     <div className="space-y-6">
       <div>
         <h3 className="text-lg font-medium">Categorias</h3>
         <p className="text-sm text-muted-foreground">
-          Realize a criação, atualização ou remoção das categorias ou
-          subcategorias. Para atualizar uma categoria ou subcategoria, basta
-          selecioná-la e iniciar as modificações.
+          Realize a criação, edição ou remoção de uma categoria ou subcategoria.
         </p>
       </div>
       <Separator />
-      <div className="flex flex-col-reverse gap-8 lg:flex-row">
-        <div className="flex-1">
-          {/* <CategoryForm /> */}
-          CategoryForm
-        </div>
-        <div className="h-96 lg:h-[768px] lg:w-2/5">SomethingHere</div>
-      </div>
+      <CategoriesMain categories={categories} />
     </div>
   )
 }

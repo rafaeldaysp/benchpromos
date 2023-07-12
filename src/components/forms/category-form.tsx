@@ -18,43 +18,45 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { env } from '@/env.mjs'
-import { retailerSchema } from '@/lib/validations/retailer'
+import { categorySchema } from '@/lib/validations/category'
+import { useRouter } from 'next/navigation'
 
-const CREATE_RETAILER = gql`
-  mutation CreateRetailer($input: CreateRetailerInput!) {
-    createRetailer(createRetailerInput: $input) {
+const CREATE_CATEGORY = gql`
+  mutation CreateCategory($input: CreateCategoryInput!) {
+    createCategory(createCategoryInput: $input) {
       id
     }
   }
 `
 
-const UPDATE_RETAILER = gql`
-  mutation UpdateRetailer($input: UpdateRetailerInput!) {
-    updateRetailer(updateRetailerInput: $input) {
+const UPDATE_CATEGORY = gql`
+  mutation UpdateCategory($input: UpdateCategoryInput!) {
+    updateCategory(updateCategoryInput: $input) {
       id
     }
   }
 `
 
-type Inputs = z.infer<typeof retailerSchema>
+type Inputs = z.infer<typeof categorySchema>
 
 const defaultValues: Partial<Inputs> = {
   name: '',
 }
 
-interface RetailerFormProps {
+interface CategoryFormProps {
   mode?: 'create' | 'update'
-  retailer?: { id?: string } & Partial<Inputs>
+  category?: { id?: string } & Partial<Inputs>
 }
 
-export function RetailerForm({ mode = 'create', retailer }: RetailerFormProps) {
+export function CategoryForm({ mode = 'create', category }: CategoryFormProps) {
   const form = useForm<Inputs>({
-    resolver: zodResolver(retailerSchema),
-    defaultValues: retailer ?? defaultValues,
+    resolver: zodResolver(categorySchema),
+    defaultValues: category ?? defaultValues,
   })
+  const router = useRouter()
 
-  const [mutateRetailer, { loading: isLoading }] = useMutation(
-    mode === 'create' ? CREATE_RETAILER : UPDATE_RETAILER,
+  const [mutateCategory, { loading: isLoading }] = useMutation(
+    mode === 'create' ? CREATE_CATEGORY : UPDATE_CATEGORY,
     {
       context: {
         headers: {
@@ -69,19 +71,20 @@ export function RetailerForm({ mode = 'create', retailer }: RetailerFormProps) {
 
         const message =
           mode === 'create'
-            ? 'Anunciante cadastrado com sucesso.'
-            : 'Anunciante atualizado com sucesso.'
+            ? 'Categoria cadastrada com sucesso.'
+            : 'Categoria atualizada com sucesso.'
 
         toast.success(message)
+        router.refresh()
       },
     },
   )
 
   async function onSubmit(data: Inputs) {
-    await mutateRetailer({
+    await mutateCategory({
       variables: {
         input: {
-          id: retailer?.id,
+          id: category?.id,
           ...data,
         },
       },

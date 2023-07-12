@@ -1,4 +1,15 @@
-import { Loader2, Lock, LogOut, Minus, Plus, User2 } from 'lucide-react'
+import {
+  Edit2,
+  Image,
+  Loader2,
+  Lock,
+  LogOut,
+  Minus,
+  Plus,
+  Trash2,
+  User2,
+  X,
+} from 'lucide-react'
 
 export const Icons = {
   Spinner: Loader2,
@@ -7,4 +18,8 @@ export const Icons = {
   LogOut,
   Plus,
   Minus,
+  Edit: Edit2,
+  Trash: Trash2,
+  X,
+  Image,
 }

@@ -9,6 +9,7 @@ import { type z } from 'zod'
 
 import { Icons } from '@/components/icons'
 import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
 import {
   Form,
   FormControl,
@@ -25,21 +26,22 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { Textarea } from '@/components/ui/textarea'
 import { env } from '@/env.mjs'
-import { cashbackSchema } from '@/lib/validations/cashback'
+import { couponSchema } from '@/lib/validations/coupon'
 import { Retailer } from '@/types'
 
-const CREATE_CASHBACK = gql`
-  mutation CreateCashback($input: CreateCashbackInput!) {
-    createCashback(createCashbackInput: $input) {
+const CREATE_COUPON = gql`
+  mutation CreateCoupon($input: CreateCouponInput!) {
+    createCoupon(createCouponInput: $input) {
       id
     }
   }
 `
 
-const UPDATE_CASHBACK = gql`
-  mutation UpdateCashback($input: UpdateCashbackInput!) {
-    updateCashback(updateCashbackInput: $input) {
+const UPDATE_COUPON = gql`
+  mutation UpdateCoupon($input: UpdateCouponInput!) {
+    updateCoupon(updateCouponInput: $input) {
       id
     }
   }
@@ -54,25 +56,23 @@ const GET_RETAILERS = gql`
   }
 `
 
-type Inputs = z.infer<typeof cashbackSchema>
+type Inputs = z.infer<typeof couponSchema>
 
 const defaultValues: Partial<Inputs> = {
-  affiliatedUrl: '',
-  percentValue: 0,
-  provider: '',
-  retailerId: '',
-  url: '',
+  code: '',
+  discount: '',
+  availability: true,
 }
 
-interface CashbackFormProps {
+interface CouponFormProps {
   mode?: 'create' | 'update'
-  cashback?: { id?: string } & Partial<Inputs>
+  coupon?: { id?: string } & Partial<Inputs>
 }
 
-export function CashbackForm({ mode = 'create', cashback }: CashbackFormProps) {
+export function CouponForm({ mode = 'create', coupon }: CouponFormProps) {
   const form = useForm<Inputs>({
-    resolver: zodResolver(cashbackSchema),
-    defaultValues: cashback ?? defaultValues,
+    resolver: zodResolver(couponSchema),
+    defaultValues: coupon ?? defaultValues,
   })
 
   const { data } = useQuery<{ retailers: Retailer[] }>(GET_RETAILERS, {
@@ -92,8 +92,8 @@ export function CashbackForm({ mode = 'create', cashback }: CashbackFormProps) {
     return retailerItems
   }, [data])
 
-  const [mutateCashback, { loading: isLoading }] = useMutation(
-    mode === 'create' ? CREATE_CASHBACK : UPDATE_CASHBACK,
+  const [mutateCoupon, { loading: isLoading }] = useMutation(
+    mode === 'create' ? CREATE_COUPON : UPDATE_COUPON,
     {
       context: {
         headers: {
@@ -108,8 +108,8 @@ export function CashbackForm({ mode = 'create', cashback }: CashbackFormProps) {
 
         const message =
           mode === 'create'
-            ? 'Cashback cadastrado com sucesso.'
-            : 'Cashback atualizado com sucesso.'
+            ? 'Cupom cadastrado com sucesso.'
+            : 'Cupom atualizado com sucesso.'
 
         toast.success(message)
       },
@@ -117,10 +117,10 @@ export function CashbackForm({ mode = 'create', cashback }: CashbackFormProps) {
   )
 
   async function onSubmit(data: Inputs) {
-    await mutateCashback({
+    await mutateCoupon({
       variables: {
         input: {
-          id: cashback?.id,
+          id: coupon?.id,
           ...data,
         },
       },
@@ -135,11 +135,11 @@ export function CashbackForm({ mode = 'create', cashback }: CashbackFormProps) {
           name="retailerId"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Retailer</FormLabel>
+              <FormLabel>Aunciante</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="" />
+                    <SelectValue placeholder="Selecione um anunciante" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -160,13 +160,29 @@ export function CashbackForm({ mode = 'create', cashback }: CashbackFormProps) {
 
         <FormField
           control={form.control}
-          name="provider"
+          name="code"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Provider</FormLabel>
+              <FormLabel>Código</FormLabel>
+              <FormControl>
+                <Input aria-invalid={!!form.formState.errors.code} {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="discount"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>
+                Desconto (&quot;5&quot; para R$ 5,00 ou &quot;5%&quot; para 5%)
+              </FormLabel>
               <FormControl>
                 <Input
-                  aria-invalid={!!form.formState.errors.provider}
+                  aria-invalid={!!form.formState.errors.discount}
                   {...field}
                 />
               </FormControl>
@@ -177,13 +193,13 @@ export function CashbackForm({ mode = 'create', cashback }: CashbackFormProps) {
 
         <FormField
           control={form.control}
-          name="percentValue"
+          name="minimumSpend"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Percent Value</FormLabel>
+              <FormLabel>Valor Mínimo (opcional)</FormLabel>
               <FormControl>
                 <Input
-                  aria-invalid={!!form.formState.errors.percentValue}
+                  aria-invalid={!!form.formState.errors.minimumSpend}
                   {...field}
                 />
               </FormControl>
@@ -194,12 +210,12 @@ export function CashbackForm({ mode = 'create', cashback }: CashbackFormProps) {
 
         <FormField
           control={form.control}
-          name="url"
+          name="description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Url</FormLabel>
+              <FormLabel>Descrição (opcional)</FormLabel>
               <FormControl>
-                <Input aria-invalid={!!form.formState.errors.url} {...field} />
+                <Textarea rows={4} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -208,17 +224,17 @@ export function CashbackForm({ mode = 'create', cashback }: CashbackFormProps) {
 
         <FormField
           control={form.control}
-          name="affiliatedUrl"
+          name="availability"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel>Affiliated Url</FormLabel>
+            <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+              <FormLabel>Disponibilidade</FormLabel>
               <FormControl>
-                <Input
-                  aria-invalid={!!form.formState.errors.affiliatedUrl}
-                  {...field}
+                <Checkbox
+                  checked={field.value}
+                  // @ts-ignore
+                  onCheckedChange={field.onChange}
                 />
               </FormControl>
-              <FormMessage />
             </FormItem>
           )}
         />
