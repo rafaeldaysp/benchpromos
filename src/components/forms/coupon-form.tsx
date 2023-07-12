@@ -6,6 +6,7 @@ import * as React from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { type z } from 'zod'
+import { useRouter } from 'next/navigation'
 
 import { Icons } from '@/components/icons'
 import { Button } from '@/components/ui/button'
@@ -48,7 +49,7 @@ const UPDATE_COUPON = gql`
 `
 
 const GET_RETAILERS = gql`
-  query Retailers {
+  query GetRetailers {
     retailers {
       id
       name
@@ -74,6 +75,7 @@ export function CouponForm({ mode = 'create', coupon }: CouponFormProps) {
     resolver: zodResolver(couponSchema),
     defaultValues: coupon ?? defaultValues,
   })
+  const router = useRouter()
 
   const { data } = useQuery<{ retailers: Retailer[] }>(GET_RETAILERS, {
     context: {
@@ -112,6 +114,7 @@ export function CouponForm({ mode = 'create', coupon }: CouponFormProps) {
             : 'Cupom atualizado com sucesso.'
 
         toast.success(message)
+        router.refresh()
       },
     },
   )

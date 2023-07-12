@@ -2,6 +2,7 @@
 
 import { gql, useMutation, useQuery } from '@apollo/client'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useRouter } from 'next/navigation'
 import * as React from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -50,7 +51,7 @@ const UPDATE_SALE = gql`
 `
 
 const GET_CATEGORIES = gql`
-  query Categories {
+  query GetCategories {
     categories {
       id
       name
@@ -78,6 +79,7 @@ export function SaleForm({ mode = 'create', sale }: SaleFormProps) {
     resolver: zodResolver(saleSchema),
     defaultValues: sale ?? defaultValues,
   })
+  const router = useRouter()
 
   const { data } = useQuery<{ categories: Omit<Category, 'subcategories'>[] }>(
     GET_CATEGORIES,
@@ -119,6 +121,7 @@ export function SaleForm({ mode = 'create', sale }: SaleFormProps) {
             : 'Promoção atualizada com sucesso.'
 
         toast.success(message)
+        router.refresh()
       },
     },
   )

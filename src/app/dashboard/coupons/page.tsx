@@ -1,6 +1,39 @@
-import { Separator } from '@/components/ui/separator'
+import { gql } from '@apollo/client'
 
-export default function CouponsDashboardPage() {
+import { Separator } from '@/components/ui/separator'
+import { getClient } from '@/lib/apollo'
+import { Coupon, Retailer } from '@/types'
+import { removeNullValues } from '@/utils'
+import { CouponsMain } from './main'
+
+const GET_COUPONS = gql`
+  query GetCoupons {
+    coupons {
+      id
+      availability
+      code
+      discount
+      retailerId
+      minimumSpend
+      description
+      retailer {
+        name
+      }
+    }
+  }
+`
+
+export default async function CouponsDashboardPage() {
+  const response = await getClient().query<{
+    coupons: (Coupon & { retailer: Pick<Retailer, 'name'> })[]
+  }>({
+    query: GET_COUPONS,
+  })
+
+  const coupons = response.data.coupons.map((coupon) =>
+    removeNullValues(coupon),
+  )
+
   return (
     <div className="space-y-6">
       <div>
@@ -10,6 +43,7 @@ export default function CouponsDashboardPage() {
         </p>
       </div>
       <Separator />
+      <CouponsMain coupons={coupons} />
     </div>
   )
 }

@@ -17,11 +17,54 @@ export type Product = {
     title: string
     value: string
   }[]
-  reviewUrl: string
-  description: string
-  referencePrice: number
+  reviewUrl?: string
+  description?: string
+  referencePrice?: number
   categoryId: string
   slug: string
-  subcategoryId: string
+  subcategoryId?: string
   recommended: boolean
+}
+
+export type Coupon = {
+  id: string
+  availability: boolean
+  code: string
+  discount: string
+  retailerId: string
+  minimumSpend: number
+  description?: string
+}
+
+export type Cashback = {
+  id: string
+  provider: string
+  percentValue: number
+  url: string
+  affiliatedUrl: string
+}
+
+export type Filter = {
+  id: string
+  name: string
+  options: {
+    id: string
+    value: string
+  }[]
+}
+
+export type Deal = {
+  id: string
+  price: number
+  availability: boolean
+  url: string
+  installments?: number
+  totalInstallmentPrice?: number
+  sku?: string
+  productId: string
+  retailerId: string
+  couponId?: string
+  cashbackId?: string
+  createdAt: string
+  updatedAt: string
 }

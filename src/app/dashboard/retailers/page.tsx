@@ -1,6 +1,28 @@
+import { gql } from '@apollo/client'
+
 import { Separator } from '@/components/ui/separator'
+import { getClient } from '@/lib/apollo'
+import { Retailer } from '@/types'
+import { RetailersMain } from './main'
+
+const GET_RETAILERS = gql`
+  query GetRetailers {
+    retailers {
+      id
+      name
+    }
+  }
+`
 
 export default async function RetailersDashboardPage() {
+  const response = await getClient().query<{
+    retailers: Retailer[]
+  }>({
+    query: GET_RETAILERS,
+  })
+
+  const retailers = response.data.retailers
+
   return (
     <div className="space-y-6">
       <div>
@@ -10,6 +32,7 @@ export default async function RetailersDashboardPage() {
         </p>
       </div>
       <Separator />
+      <RetailersMain retailers={retailers} />
     </div>
   )
 }

@@ -2,6 +2,7 @@
 
 import { gql, useMutation, useQuery } from '@apollo/client'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useRouter } from 'next/navigation'
 import * as React from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -46,7 +47,7 @@ const UPDATE_CASHBACK = gql`
 `
 
 const GET_RETAILERS = gql`
-  query Retailers {
+  query GetRetailers {
     retailers {
       id
       name
@@ -74,6 +75,7 @@ export function CashbackForm({ mode = 'create', cashback }: CashbackFormProps) {
     resolver: zodResolver(cashbackSchema),
     defaultValues: cashback ?? defaultValues,
   })
+  const router = useRouter()
 
   const { data } = useQuery<{ retailers: Retailer[] }>(GET_RETAILERS, {
     context: {
@@ -112,6 +114,7 @@ export function CashbackForm({ mode = 'create', cashback }: CashbackFormProps) {
             : 'Cashback atualizado com sucesso.'
 
         toast.success(message)
+        router.refresh()
       },
     },
   )

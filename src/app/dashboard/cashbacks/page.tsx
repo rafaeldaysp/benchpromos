@@ -1,6 +1,34 @@
-import { Separator } from '@/components/ui/separator'
+import { gql } from '@apollo/client'
 
-export default function CashbacksDashboardPage() {
+import { Separator } from '@/components/ui/separator'
+import { getClient } from '@/lib/apollo'
+import { Cashback, Retailer } from '@/types'
+import { CashbacksMain } from './main'
+
+const GET_CASHBACKS = gql`
+  query GetCashbacks {
+    cashbacks {
+      id
+      provider
+      percentValue
+      url
+      affiliatedUrl
+      retailer {
+        name
+      }
+    }
+  }
+`
+
+export default async function CashbacksDashboardPage() {
+  const response = await getClient().query<{
+    cashbacks: (Cashback & { retailer: Pick<Retailer, 'name'> })[]
+  }>({
+    query: GET_CASHBACKS,
+  })
+
+  const cashbacks = response.data.cashbacks
+
   return (
     <div className="space-y-6">
       <div>
@@ -10,6 +38,7 @@ export default function CashbacksDashboardPage() {
         </p>
       </div>
       <Separator />
+      <CashbacksMain cashbacks={cashbacks} />
     </div>
   )
 }

@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation'
 import * as React from 'react'
 import { toast } from 'sonner'
 
-import { CategoryForm } from '@/components/forms/category-form'
 import { Icons } from '@/components/icons'
 import {
   AlertDialog,
@@ -27,30 +26,28 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { env } from '@/env.mjs'
-import { Category, Filter } from '@/types'
-import { FiltersMain } from './filters.main'
-import { SubcategoriesMain } from './subcategories-main'
+import { Cashback, Retailer } from '@/types'
+import { CashbackForm } from '@/components/forms/cashback-form'
 
-const DELETE_CATEGORY = gql`
-  mutation DeleteCategory($categoryId: String!) {
-    removeCategory(id: $categoryId) {
+const DELETE_CASHBACK = gql`
+  mutation DeleteCashback($cashbackId: String!) {
+    removeCashback(id: $cashbackId) {
       id
     }
   }
 `
 
-interface CategoriesMainProps {
-  categories: (Category & { filters: Filter })[]
+interface CashbacksMainProps {
+  cashbacks: (Cashback & { retailer: Pick<Retailer, 'name'> })[]
 }
 
-export function CategoriesMain({ categories }: CategoriesMainProps) {
-  const [selectedCategory, setSelectedCategory] =
-    React.useState<(typeof categories)[0]>()
+export function CashbacksMain({ cashbacks }: CashbacksMainProps) {
+  const [selectedCashback, setSelectedCashback] =
+    React.useState<(typeof cashbacks)[0]>()
   const router = useRouter()
 
-  const [deleteCategory] = useMutation(DELETE_CATEGORY, {
+  const [deleteCashback] = useMutation(DELETE_CASHBACK, {
     context: {
       headers: {
         'api-key': env.NEXT_PUBLIC_API_KEY,
@@ -60,14 +57,14 @@ export function CategoriesMain({ categories }: CategoriesMainProps) {
       toast.error(error.message)
     },
     onCompleted(data, clientOptions) {
-      toast.success('Categoria deletada com sucesso.')
+      toast.success('Cashback deletado com sucesso.')
       router.refresh()
     },
   })
 
   return (
     <div className="space-y-8">
-      {/* Categories Actions */}
+      {/* Cashbacks Actions */}
       <div className="flex justify-end gap-x-2">
         <Sheet>
           <SheetTrigger asChild>
@@ -78,65 +75,53 @@ export function CategoriesMain({ categories }: CategoriesMainProps) {
             side="left"
           >
             <SheetHeader>
-              <SheetTitle>ADICIONAR CATEGORIA</SheetTitle>
+              <SheetTitle>ADICIONAR CASHBACK</SheetTitle>
             </SheetHeader>
-            <CategoryForm />
+            <CashbackForm />
           </SheetContent>
         </Sheet>
       </div>
 
-      {selectedCategory && (
-        <div className="space-y-2">
-          <div className="flex items-start gap-6 rounded-md bg-muted px-8 py-4">
-            {/* Content */}
-            <div className="flex flex-1 flex-col gap-y-2">
-              <p className="text-sm leading-7">{selectedCategory.name}</p>
-            </div>
-            {/* Unselect */}
-            <div className="self-center">
-              <Button
-                variant="destructive"
-                size="icon"
-                onClick={() => setSelectedCategory(undefined)}
-              >
-                <Icons.X className="h-4 w-4" />
-              </Button>
-            </div>
+      {selectedCashback && (
+        <div className="flex items-start gap-6 rounded-md bg-muted px-8 py-4">
+          {/* Content */}
+          <div className="flex flex-1 flex-col gap-y-2">
+            <p className="text-sm leading-7">{selectedCashback.percentValue}</p>
+            <span className="text-xs text-muted-foreground">
+              {selectedCashback.retailer.name}
+            </span>
           </div>
-
-          <Tabs defaultValue="subcategories">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="subcategories">Subcategorias</TabsTrigger>
-              <TabsTrigger value="filters">Filtros</TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="subcategories" className="ml-4">
-              <SubcategoriesMain category={selectedCategory} />
-            </TabsContent>
-
-            <TabsContent value="filters">
-              <FiltersMain category={selectedCategory} />
-            </TabsContent>
-          </Tabs>
+          <div className="self-center">
+            <Button
+              variant="destructive"
+              size="icon"
+              onClick={() => setSelectedCashback(undefined)}
+            >
+              <Icons.X className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
       )}
 
-      {/* Categories */}
+      {/* Coupons */}
       <ScrollArea className="rounded-md border bg-primary-foreground">
-        {categories.map((category) => (
+        {cashbacks.map((cashback) => (
           <div
-            key={category.id}
+            key={cashback.id}
             className="flex items-start gap-6 rounded-md px-8 py-4 hover:bg-muted"
           >
             {/* Content */}
             <div
               className="flex flex-1 cursor-pointer flex-col gap-y-2"
-              onClick={() => setSelectedCategory(category)}
+              onClick={() => setSelectedCashback(cashback)}
             >
-              <p className="text-sm leading-7">{category.name}</p>
+              <p className="text-sm leading-7">{cashback.percentValue}</p>
+              <span className="text-xs text-muted-foreground">
+                {cashback.retailer.name}
+              </span>
             </div>
 
-            {/* Category Actions */}
+            {/* Cashback Actions */}
             <div className="flex gap-2 self-center">
               <Sheet>
                 <SheetTrigger asChild>
@@ -149,9 +134,9 @@ export function CategoriesMain({ categories }: CategoriesMainProps) {
                   side="left"
                 >
                   <SheetHeader>
-                    <SheetTitle>EDITAR CATEGORIA</SheetTitle>
+                    <SheetTitle>EDITAR CASHBACK</SheetTitle>
                   </SheetHeader>
-                  <CategoryForm mode="update" category={category} />
+                  <CashbackForm mode="update" cashback={cashback} />
                 </SheetContent>
               </Sheet>
 
@@ -175,8 +160,8 @@ export function CategoriesMain({ categories }: CategoriesMainProps) {
                     <AlertDialogCancel>Cancelar</AlertDialogCancel>
                     <AlertDialogAction
                       onClick={() =>
-                        deleteCategory({
-                          variables: { categoryId: category.id },
+                        deleteCashback({
+                          variables: { cashbackId: cashback.id },
                         })
                       }
                     >

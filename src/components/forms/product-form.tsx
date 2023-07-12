@@ -49,7 +49,7 @@ const UPDATE_PRODUCT = gql`
 `
 
 const GET_CATEGORIES = gql`
-  query Categories {
+  query GetCategories {
     categories {
       id
       name

@@ -2,11 +2,11 @@ import { gql } from '@apollo/client'
 
 import { Separator } from '@/components/ui/separator'
 import { getClient } from '@/lib/apollo'
-import { Category } from '@/types'
+import { Category, Filter } from '@/types'
 import { CategoriesMain } from './main'
 
 const GET_CATEGORIES = gql`
-  query Categories {
+  query GetCategories {
     categories {
       id
       name
@@ -14,13 +14,21 @@ const GET_CATEGORIES = gql`
         id
         name
       }
+      filters {
+        id
+        name
+        options {
+          id
+          value
+        }
+      }
     }
   }
 `
 
 export default async function CategoriesDashboardPage() {
   const response = await getClient().query<{
-    categories: Category[]
+    categories: (Category & { filters: Filter })[]
   }>({
     query: GET_CATEGORIES,
   })

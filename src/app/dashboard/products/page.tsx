@@ -3,10 +3,11 @@ import { gql } from '@apollo/client'
 import { Separator } from '@/components/ui/separator'
 import { getClient } from '@/lib/apollo'
 import { Category, Product } from '@/types'
+import { removeNullValues } from '@/utils'
 import { ProductsMain } from './main'
 
 const GET_PRODUCTS = gql`
-  query Products {
+  query GetProducts {
     products {
       id
       name
@@ -33,7 +34,9 @@ export default async function ProductsDashboardPage() {
     query: GET_PRODUCTS,
   })
 
-  const products = response.data.products
+  const products = response.data.products.map((product) =>
+    removeNullValues(product),
+  )
 
   return (
     <div className="space-y-6">

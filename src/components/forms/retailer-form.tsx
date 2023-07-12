@@ -2,6 +2,7 @@
 
 import { gql, useMutation } from '@apollo/client'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { type z } from 'zod'
@@ -52,6 +53,7 @@ export function RetailerForm({ mode = 'create', retailer }: RetailerFormProps) {
     resolver: zodResolver(retailerSchema),
     defaultValues: retailer ?? defaultValues,
   })
+  const router = useRouter()
 
   const [mutateRetailer, { loading: isLoading }] = useMutation(
     mode === 'create' ? CREATE_RETAILER : UPDATE_RETAILER,
@@ -73,6 +75,7 @@ export function RetailerForm({ mode = 'create', retailer }: RetailerFormProps) {
             : 'Anunciante atualizado com sucesso.'
 
         toast.success(message)
+        router.refresh()
       },
     },
   )

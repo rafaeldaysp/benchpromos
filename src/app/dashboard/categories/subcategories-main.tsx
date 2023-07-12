@@ -1,11 +1,10 @@
-'use client'
+'client'
 
 import { gql, useMutation } from '@apollo/client'
 import { useRouter } from 'next/navigation'
-import * as React from 'react'
 import { toast } from 'sonner'
 
-import { ProductForm } from '@/components/forms/product-form'
+import { SubcategoryForm } from '@/components/forms/subcategory-form'
 import { Icons } from '@/components/icons'
 import {
   AlertDialog,
@@ -19,7 +18,6 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import {
   Sheet,
@@ -29,26 +27,24 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet'
 import { env } from '@/env.mjs'
-import { Category, Product } from '@/types'
+import { Category } from '@/types'
 
-const DELETE_PRODUCT = gql`
-  mutation DeleteProduct($productId: String!) {
-    removeProduct(id: $productId) {
+const DELETE_SUBCATEGORY = gql`
+  mutation DeleteSubcategory($subcategoryId: String!) {
+    removeSubcategory(id: $subcategoryId) {
       id
     }
   }
 `
 
-interface ProductsMainProps {
-  products: (Product & { category: Pick<Category, 'name'> })[]
+interface SubcategoriesMainProps {
+  category: Category
 }
 
-export function ProductsMain({ products }: ProductsMainProps) {
-  const [selectedProduct, setSelectedProduct] =
-    React.useState<(typeof products)[0]>()
+export function SubcategoriesMain({ category }: SubcategoriesMainProps) {
   const router = useRouter()
 
-  const [deleteProduct] = useMutation(DELETE_PRODUCT, {
+  const [deleteSubcategory] = useMutation(DELETE_SUBCATEGORY, {
     context: {
       headers: {
         'api-key': env.NEXT_PUBLIC_API_KEY,
@@ -58,15 +54,15 @@ export function ProductsMain({ products }: ProductsMainProps) {
       toast.error(error.message)
     },
     onCompleted(data, clientOptions) {
-      toast.success('Produto deletado com sucesso.')
+      toast.success('Subcategoria deletada com sucesso.')
       router.refresh()
     },
   })
 
   return (
-    <div className="space-y-8">
-      {/* Products Actions */}
-      <div className="flex justify-end gap-x-2">
+    <div className="flex flex-col space-y-4">
+      {/* Subcategories Actions */}
+      <div className="self-end">
         <Sheet>
           <SheetTrigger asChild>
             <Button variant="outline">Adicionar</Button>
@@ -76,65 +72,27 @@ export function ProductsMain({ products }: ProductsMainProps) {
             side="left"
           >
             <SheetHeader>
-              <SheetTitle>ADICIONAR PRODUTO</SheetTitle>
+              <SheetTitle>ADICIONAR SUBCATEGORIA</SheetTitle>
             </SheetHeader>
-            <ProductForm
-              mode="create"
-              product={{ ...selectedProduct, id: undefined, name: '' }}
-            />
+            <SubcategoryForm categoryId={category.id} />
           </SheetContent>
         </Sheet>
       </div>
 
-      {selectedProduct && (
-        <div className="flex items-start gap-6 rounded-md bg-muted px-8 py-4">
-          <div className="relative flex h-16 w-16 items-center justify-center rounded-md border">
-            <Icons.Image />
-          </div>
-          {/* Content */}
-          <div className="flex flex-1 flex-col gap-y-2">
-            <p className="text-sm leading-7">{selectedProduct.name}</p>
-            <span className="text-xs text-muted-foreground">
-              {selectedProduct.category.name}
-            </span>
-          </div>
-          <div className="self-center">
-            <Button
-              variant="destructive"
-              size="icon"
-              onClick={() => setSelectedProduct(undefined)}
-            >
-              <Icons.X className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
-      )}
-
-      {/* Products */}
-      <div className="space-y-4">
-        <Input />
-        <ScrollArea className="rounded-md border bg-primary-foreground">
-          {products.map((product) => (
+      {/* Subcategories */}
+      {category.subcategories.length > 0 && (
+        <ScrollArea className="rounded-md border">
+          {category.subcategories.map((subcategory) => (
             <div
-              key={product.id}
-              className="flex items-start gap-6 rounded-md px-8 py-4 hover:bg-muted"
+              key={subcategory.id}
+              className="flex items-start gap-6 rounded-md px-8 py-4 hover:bg-muted/20"
             >
-              <div className="relative flex h-16 w-16 items-center justify-center rounded-md border">
-                <Icons.Image />
-              </div>
-
               {/* Content */}
-              <div
-                className="flex flex-1 cursor-pointer flex-col gap-y-2"
-                onClick={() => setSelectedProduct(product)}
-              >
-                <p className="text-sm leading-7">{product.name}</p>
-                <span className="text-xs text-muted-foreground">
-                  {product.category.name}
-                </span>
+              <div className="flex flex-1 flex-col gap-y-2">
+                <p className="text-sm leading-7">{subcategory.name}</p>
               </div>
 
-              {/* Product Actions */}
+              {/* Subcategory Actions */}
               <div className="flex gap-2 self-center">
                 <Sheet>
                   <SheetTrigger asChild>
@@ -147,9 +105,13 @@ export function ProductsMain({ products }: ProductsMainProps) {
                     side="left"
                   >
                     <SheetHeader>
-                      <SheetTitle>EDITAR PRODUTO</SheetTitle>
+                      <SheetTitle>EDITAR SUBCATEGORIA</SheetTitle>
                     </SheetHeader>
-                    <ProductForm mode="update" product={product} />
+                    <SubcategoryForm
+                      mode="update"
+                      categoryId={category.id}
+                      subcategory={subcategory}
+                    />
                   </SheetContent>
                 </Sheet>
 
@@ -174,8 +136,8 @@ export function ProductsMain({ products }: ProductsMainProps) {
                       <AlertDialogCancel>Cancelar</AlertDialogCancel>
                       <AlertDialogAction
                         onClick={() =>
-                          deleteProduct({
-                            variables: { productId: product.id },
+                          deleteSubcategory({
+                            variables: { subcategoryId: subcategory.id },
                           })
                         }
                       >
@@ -188,7 +150,7 @@ export function ProductsMain({ products }: ProductsMainProps) {
             </div>
           ))}
         </ScrollArea>
-      </div>
+      )}
     </div>
   )
 }
