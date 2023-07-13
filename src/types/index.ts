@@ -68,3 +68,21 @@ export type Deal = {
   createdAt: string
   updatedAt: string
 }
+
+export type Sale = {
+  id: string
+  title: string
+  imageUrl: string
+  url: string
+  price: number
+  categoryId: string
+  installments?: number
+  totalInstallmentPrice?: number
+  caption?: string
+  review?: string
+  label?: string
+  coupon?: string
+  cashback?: string
+  createdAt: string
+  productId?: string
+}

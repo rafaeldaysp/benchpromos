@@ -112,7 +112,7 @@ export function ProductsMain({ products }: ProductsMainProps) {
 
       {/* Products */}
       <div className="space-y-4">
-        <Input />
+        <Input placeholder="Pesquisar por um produto..." />
         <ScrollArea className="rounded-md border bg-primary-foreground">
           {products.map((product) => (
             <div
