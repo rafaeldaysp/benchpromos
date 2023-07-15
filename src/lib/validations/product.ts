@@ -15,3 +15,12 @@ export const productSchema = z.object({
   referencePrice: z.coerce.number().int().optional(),
   subcategoryId: z.string().optional(),
 })
+
+export const linkFiltersSchema = z.object({
+  filters: z.array(
+    z.object({
+      id: z.string(),
+      optionId: z.string(),
+    }),
+  ),
+})

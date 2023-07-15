@@ -100,73 +100,80 @@ export function RetailersMain({ retailers }: RetailersMainProps) {
       )}
 
       {/* Retailers */}
-      <ScrollArea className="rounded-md border bg-primary-foreground">
-        {retailers.map((retailer) => (
-          <div
-            key={retailer.id}
-            className="flex items-start gap-6 rounded-md px-8 py-4 hover:bg-muted"
-          >
-            {/* Content */}
+      {retailers.length > 0 ? (
+        <ScrollArea className="rounded-md border bg-primary-foreground">
+          {retailers.map((retailer) => (
             <div
-              className="flex flex-1 cursor-pointer flex-col gap-y-2"
-              onClick={() => setSelectedRetailer(retailer)}
+              key={retailer.id}
+              className="flex items-start gap-6 rounded-md px-8 py-4 hover:bg-muted"
             >
-              <p className="text-sm leading-7">{retailer.name}</p>
-            </div>
+              {/* Content */}
+              <div
+                className="flex flex-1 cursor-pointer flex-col gap-y-2"
+                onClick={() => setSelectedRetailer(retailer)}
+              >
+                <p className="text-sm leading-7">{retailer.name}</p>
+              </div>
 
-            {/* Retailer Actions */}
-            <div className="flex gap-2 self-center">
-              <Sheet>
-                <SheetTrigger asChild>
-                  <Button variant="outline" size="icon">
-                    <Icons.Edit className="h-4 w-4" />
-                  </Button>
-                </SheetTrigger>
-                <SheetContent
-                  className="w-full space-y-4 overflow-auto sm:max-w-xl"
-                  side="left"
-                >
-                  <SheetHeader>
-                    <SheetTitle>EDITAR ANUNCIANTE</SheetTitle>
-                  </SheetHeader>
-                  <RetailerForm mode="update" retailer={retailer} />
-                </SheetContent>
-              </Sheet>
+              {/* Retailer Actions */}
+              <div className="flex gap-2 self-center">
+                <Sheet>
+                  <SheetTrigger asChild>
+                    <Button variant="outline" size="icon">
+                      <Icons.Edit className="h-4 w-4" />
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent
+                    className="w-full space-y-4 overflow-auto sm:max-w-xl"
+                    side="left"
+                  >
+                    <SheetHeader>
+                      <SheetTitle>EDITAR ANUNCIANTE</SheetTitle>
+                    </SheetHeader>
+                    <RetailerForm mode="update" retailer={retailer} />
+                  </SheetContent>
+                </Sheet>
 
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button variant="destructive" size="icon">
-                    <Icons.Trash className="h-4 w-4" />
-                  </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>
-                      Are you absolutely sure?
-                    </AlertDialogTitle>
-                    <AlertDialogDescription>
-                      This action cannot be undone. This will permanently delete
-                      your account and remove your data from our servers.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                    <AlertDialogAction
-                      onClick={() =>
-                        deleteRetailer({
-                          variables: { retailerId: retailer.id },
-                        })
-                      }
-                    >
-                      Continuar
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="destructive" size="icon">
+                      <Icons.Trash className="h-4 w-4" />
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>
+                        Are you absolutely sure?
+                      </AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This action cannot be undone. This will permanently
+                        delete your account and remove your data from our
+                        servers.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={() =>
+                          deleteRetailer({
+                            variables: { retailerId: retailer.id },
+                          })
+                        }
+                      >
+                        Continuar
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </div>
             </div>
-          </div>
-        ))}
-      </ScrollArea>
+          ))}
+        </ScrollArea>
+      ) : (
+        <div className="flex justify-center">
+          <p className="text-muted-foreground">Nenhum anunciante encontrado.</p>
+        </div>
+      )}
     </div>
   )
 }

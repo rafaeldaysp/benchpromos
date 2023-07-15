@@ -103,77 +103,84 @@ export function CashbacksMain({ cashbacks }: CashbacksMainProps) {
         </div>
       )}
 
-      {/* Coupons */}
-      <ScrollArea className="rounded-md border bg-primary-foreground">
-        {cashbacks.map((cashback) => (
-          <div
-            key={cashback.id}
-            className="flex items-start gap-6 rounded-md px-8 py-4 hover:bg-muted"
-          >
-            {/* Content */}
+      {/* Cashbacks */}
+      {cashbacks.length > 0 ? (
+        <ScrollArea className="rounded-md border bg-primary-foreground">
+          {cashbacks.map((cashback) => (
             <div
-              className="flex flex-1 cursor-pointer flex-col gap-y-2"
-              onClick={() => setSelectedCashback(cashback)}
+              key={cashback.id}
+              className="flex items-start gap-6 rounded-md px-8 py-4 hover:bg-muted"
             >
-              <p className="text-sm leading-7">{cashback.percentValue}</p>
-              <span className="text-xs text-muted-foreground">
-                {cashback.retailer.name}
-              </span>
-            </div>
+              {/* Content */}
+              <div
+                className="flex flex-1 cursor-pointer flex-col gap-y-2"
+                onClick={() => setSelectedCashback(cashback)}
+              >
+                <p className="text-sm leading-7">{cashback.percentValue}</p>
+                <span className="text-xs text-muted-foreground">
+                  {cashback.retailer.name}
+                </span>
+              </div>
 
-            {/* Cashback Actions */}
-            <div className="flex gap-2 self-center">
-              <Sheet>
-                <SheetTrigger asChild>
-                  <Button variant="outline" size="icon">
-                    <Icons.Edit className="h-4 w-4" />
-                  </Button>
-                </SheetTrigger>
-                <SheetContent
-                  className="w-full space-y-4 overflow-auto sm:max-w-xl"
-                  side="left"
-                >
-                  <SheetHeader>
-                    <SheetTitle>EDITAR CASHBACK</SheetTitle>
-                  </SheetHeader>
-                  <CashbackForm mode="update" cashback={cashback} />
-                </SheetContent>
-              </Sheet>
+              {/* Cashback Actions */}
+              <div className="flex gap-2 self-center">
+                <Sheet>
+                  <SheetTrigger asChild>
+                    <Button variant="outline" size="icon">
+                      <Icons.Edit className="h-4 w-4" />
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent
+                    className="w-full space-y-4 overflow-auto sm:max-w-xl"
+                    side="left"
+                  >
+                    <SheetHeader>
+                      <SheetTitle>EDITAR CASHBACK</SheetTitle>
+                    </SheetHeader>
+                    <CashbackForm mode="update" cashback={cashback} />
+                  </SheetContent>
+                </Sheet>
 
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button variant="destructive" size="icon">
-                    <Icons.Trash className="h-4 w-4" />
-                  </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>
-                      Are you absolutely sure?
-                    </AlertDialogTitle>
-                    <AlertDialogDescription>
-                      This action cannot be undone. This will permanently delete
-                      your account and remove your data from our servers.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                    <AlertDialogAction
-                      onClick={() =>
-                        deleteCashback({
-                          variables: { cashbackId: cashback.id },
-                        })
-                      }
-                    >
-                      Continuar
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="destructive" size="icon">
+                      <Icons.Trash className="h-4 w-4" />
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>
+                        Are you absolutely sure?
+                      </AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This action cannot be undone. This will permanently
+                        delete your account and remove your data from our
+                        servers.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={() =>
+                          deleteCashback({
+                            variables: { cashbackId: cashback.id },
+                          })
+                        }
+                      >
+                        Continuar
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </div>
             </div>
-          </div>
-        ))}
-      </ScrollArea>
+          ))}
+        </ScrollArea>
+      ) : (
+        <div className="flex justify-center">
+          <p className="text-muted-foreground">Nenhum cashback encontrado.</p>
+        </div>
+      )}
     </div>
   )
 }

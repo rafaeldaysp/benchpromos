@@ -1,9 +1,11 @@
 import {
+  Check,
   Edit2,
   Image,
   Loader2,
   Lock,
   LogOut,
+  MenuSquare,
   Minus,
   Plus,
   Trash2,
@@ -22,4 +24,6 @@ export const Icons = {
   Trash: Trash2,
   X,
   Image,
+  Check,
+  Menu: MenuSquare,
 }

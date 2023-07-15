@@ -69,6 +69,8 @@ export function SalesMain({ sales, products }: SalesMainProps) {
     },
   })
 
+  console.log(selectedProduct)
+
   return (
     <div className="space-y-8">
       {/* Sales Actions */}
@@ -84,13 +86,18 @@ export function SalesMain({ sales, products }: SalesMainProps) {
             <SheetHeader>
               <SheetTitle>ADICIONAR PROMOÇÃO</SheetTitle>
             </SheetHeader>
-            <SaleForm />
+            <SaleForm
+              sale={{ ...selectedSale, ...selectedProduct, id: undefined }}
+            />
           </SheetContent>
         </Sheet>
       </div>
 
       {selectedSale && (
         <div className="flex items-start gap-6 rounded-md bg-muted px-8 py-4">
+          <div className="relative flex h-16 w-16 items-center justify-center rounded-md border">
+            <Icons.Image />
+          </div>
           {/* Content */}
           <div className="flex flex-1 flex-col gap-y-2">
             <div className="flex flex-1 flex-col gap-y-2">
@@ -143,111 +150,132 @@ export function SalesMain({ sales, products }: SalesMainProps) {
           <TabsTrigger value="products">Produtos</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="sales" className="space-y-4">
-          <Input placeholder="Pesquise por uma promoção..." />
-          <ScrollArea className="rounded-md border bg-primary-foreground">
-            {sales.map((sale) => (
-              <div
-                key={sale.id}
-                className="flex cursor-pointer items-start gap-6 rounded-md px-8 py-4 hover:bg-muted"
-              >
-                <div className="relative flex h-16 w-16 items-center justify-center rounded-md border">
-                  <Icons.Image />
-                </div>
+        <TabsContent value="sales">
+          {sales.length > 0 ? (
+            <div className="space-y-4">
+              <Input placeholder="Pesquise por uma promoção..." />
+              <ScrollArea className="rounded-md border bg-primary-foreground">
+                {sales.map((sale) => (
+                  <div
+                    key={sale.id}
+                    className="flex cursor-pointer items-start gap-6 rounded-md px-8 py-4 hover:bg-muted"
+                  >
+                    <div className="relative flex h-16 w-16 items-center justify-center rounded-md border">
+                      <Icons.Image />
+                    </div>
 
-                {/* Content */}
-                <div
-                  className="flex flex-1 flex-col gap-y-2"
-                  onClick={() => {
-                    setSelectedProduct(undefined)
-                    setSelectedSale(sale)
-                  }}
-                >
-                  <p className="text-sm leading-7">{sale.title}</p>
-                  <span className="text-xs text-muted-foreground">
-                    {sale.createdAt} • {priceFormatter.format(sale.price / 100)}
-                  </span>
-                </div>
-
-                {/* Sale Actions */}
-                <div className="flex gap-2 self-center">
-                  <Sheet>
-                    <SheetTrigger asChild>
-                      <Button variant="outline" size="icon">
-                        <Icons.Edit className="h-4 w-4" />
-                      </Button>
-                    </SheetTrigger>
-                    <SheetContent
-                      className="w-full space-y-4 overflow-auto sm:max-w-xl"
-                      side="left"
+                    {/* Content */}
+                    <div
+                      className="flex flex-1 flex-col gap-y-2"
+                      onClick={() => {
+                        setSelectedProduct(undefined)
+                        setSelectedSale(sale)
+                      }}
                     >
-                      <SheetHeader>
-                        <SheetTitle>EDITAR PROMOÇÃO</SheetTitle>
-                      </SheetHeader>
-                      <SaleForm mode="update" sale={sale} />
-                    </SheetContent>
-                  </Sheet>
+                      <p className="text-sm leading-7">{sale.title}</p>
+                      <span className="text-xs text-muted-foreground">
+                        {sale.createdAt} •{' '}
+                        {priceFormatter.format(sale.price / 100)}
+                      </span>
+                    </div>
 
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button variant="destructive" size="icon">
-                        <Icons.Trash className="h-4 w-4" />
-                      </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>
-                          Are you absolutely sure?
-                        </AlertDialogTitle>
-                        <AlertDialogDescription>
-                          This action cannot be undone. This will permanently
-                          delete your account and remove your data from our
-                          servers.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                        <AlertDialogAction
-                          onClick={() =>
-                            deleteSale({
-                              variables: { saleId: sale.id },
-                            })
-                          }
+                    {/* Sale Actions */}
+                    <div className="flex gap-2 self-center">
+                      <Sheet>
+                        <SheetTrigger asChild>
+                          <Button variant="outline" size="icon">
+                            <Icons.Edit className="h-4 w-4" />
+                          </Button>
+                        </SheetTrigger>
+                        <SheetContent
+                          className="w-full space-y-4 overflow-auto sm:max-w-xl"
+                          side="left"
                         >
-                          Continuar
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
-                </div>
-              </div>
-            ))}
-          </ScrollArea>
+                          <SheetHeader>
+                            <SheetTitle>EDITAR PROMOÇÃO</SheetTitle>
+                          </SheetHeader>
+                          <SaleForm mode="update" sale={sale} />
+                        </SheetContent>
+                      </Sheet>
+
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button variant="destructive" size="icon">
+                            <Icons.Trash className="h-4 w-4" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>
+                              Are you absolutely sure?
+                            </AlertDialogTitle>
+                            <AlertDialogDescription>
+                              This action cannot be undone. This will
+                              permanently delete your account and remove your
+                              data from our servers.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={() =>
+                                deleteSale({
+                                  variables: { saleId: sale.id },
+                                })
+                              }
+                            >
+                              Continuar
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
+                  </div>
+                ))}
+              </ScrollArea>
+            </div>
+          ) : (
+            <div className="flex justify-center">
+              <p className="text-muted-foreground">
+                Nenhuma promoção encontrada.
+              </p>
+            </div>
+          )}
         </TabsContent>
 
-        <TabsContent value="products" className="space-y-4">
-          <Input placeholder="Pesquise por um produto..." />
-          <ScrollArea className="rounded-md border bg-primary-foreground">
-            {products.map((product) => (
-              <div
-                key={product.id}
-                className="flex cursor-pointer items-start gap-6 rounded-md px-8 py-4 hover:bg-muted"
-                onClick={() => {
-                  setSelectedSale(undefined)
-                  setSelectedProduct(product)
-                }}
-              >
-                <div className="relative flex h-16 w-16 items-center justify-center rounded-md border">
-                  <Icons.Image />
-                </div>
+        <TabsContent value="products">
+          {products.length > 0 ? (
+            <div className="space-y-4">
+              <Input placeholder="Pesquise por um produto..." />
+              <ScrollArea className="rounded-md border bg-primary-foreground">
+                {products.map((product) => (
+                  <div
+                    key={product.id}
+                    className="flex cursor-pointer items-start gap-6 rounded-md px-8 py-4 hover:bg-muted"
+                    onClick={() => {
+                      setSelectedSale(undefined)
+                      setSelectedProduct(product)
+                    }}
+                  >
+                    <div className="relative flex h-16 w-16 items-center justify-center rounded-md border">
+                      <Icons.Image />
+                    </div>
 
-                {/* Content */}
-                <div className="flex flex-1 flex-col gap-y-2">
-                  <p className="text-sm leading-7">{product.name}</p>
-                </div>
-              </div>
-            ))}
-          </ScrollArea>
+                    {/* Content */}
+                    <div className="flex flex-1 flex-col gap-y-2">
+                      <p className="text-sm leading-7">{product.name}</p>
+                    </div>
+                  </div>
+                ))}
+              </ScrollArea>
+            </div>
+          ) : (
+            <div className="flex justify-center">
+              <p className="text-muted-foreground">
+                Nenhum produto encontrado.
+              </p>
+            </div>
+          )}
         </TabsContent>
       </Tabs>
     </div>

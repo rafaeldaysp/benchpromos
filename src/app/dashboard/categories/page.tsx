@@ -28,7 +28,7 @@ const GET_CATEGORIES = gql`
 
 export default async function CategoriesDashboardPage() {
   const response = await getClient().query<{
-    categories: (Category & { filters: Filter })[]
+    categories: (Category & { filters: Omit<Filter, 'categoryId'>[] })[]
   }>({
     query: GET_CATEGORIES,
   })

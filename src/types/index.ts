@@ -47,6 +47,7 @@ export type Cashback = {
 export type Filter = {
   id: string
   name: string
+  categoryId: string
   options: {
     id: string
     value: string

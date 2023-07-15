@@ -80,7 +80,7 @@ export function SubcategoriesMain({ category }: SubcategoriesMainProps) {
       </div>
 
       {/* Subcategories */}
-      {category.subcategories.length > 0 && (
+      {category.subcategories.length > 0 ? (
         <ScrollArea className="rounded-md border">
           {category.subcategories.map((subcategory) => (
             <div
@@ -150,6 +150,12 @@ export function SubcategoriesMain({ category }: SubcategoriesMainProps) {
             </div>
           ))}
         </ScrollArea>
+      ) : (
+        <div className="flex justify-center">
+          <p className="text-muted-foreground">
+            Nenhuma subcategoria encontrada.
+          </p>
+        </div>
       )}
     </div>
   )

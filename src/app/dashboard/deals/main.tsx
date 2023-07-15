@@ -164,7 +164,7 @@ export function DealsMain({ deals, products, retailers }: DealsMainProps) {
         )}
       </div>
 
-      {filteredDeals.length > 0 && (
+      {filteredDeals.length > 0 ? (
         <div className="space-y-4">
           <h4 className="font-medium tracking-tight">
             Anúncios • {filteredDeals.length}
@@ -248,6 +248,10 @@ export function DealsMain({ deals, products, retailers }: DealsMainProps) {
             ))}
           </ScrollArea>
         </div>
+      ) : (
+        <div className="flex justify-center">
+          <p className="text-muted-foreground">Nenhum anúncio encontrado.</p>
+        </div>
       )}
 
       <Tabs defaultValue="products">
@@ -256,44 +260,64 @@ export function DealsMain({ deals, products, retailers }: DealsMainProps) {
           <TabsTrigger value="retailers">Anunciantes</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="products" className="space-y-4">
-          <Input placeholder="Pesquise por um produto..." />
-          <ScrollArea className="rounded-md border bg-primary-foreground">
-            {products.map((product) => (
-              <div
-                key={product.id}
-                className="flex cursor-pointer items-start gap-6 rounded-md px-8 py-4 hover:bg-muted"
-                onClick={() => setSelectedProduct(product)}
-              >
-                <div className="relative flex h-16 w-16 items-center justify-center rounded-md border">
-                  <Icons.Image />
-                </div>
+        <TabsContent value="products">
+          {products.length > 0 ? (
+            <div className="space-y-4">
+              <Input placeholder="Pesquise por um produto..." />
+              <ScrollArea className="rounded-md border bg-primary-foreground">
+                {products.map((product) => (
+                  <div
+                    key={product.id}
+                    className="flex cursor-pointer items-start gap-6 rounded-md px-8 py-4 hover:bg-muted"
+                    onClick={() => setSelectedProduct(product)}
+                  >
+                    <div className="relative flex h-16 w-16 items-center justify-center rounded-md border">
+                      <Icons.Image />
+                    </div>
 
-                {/* Content */}
-                <div className="flex flex-1 flex-col gap-y-2">
-                  <p className="text-sm leading-7">{product.name}</p>
-                </div>
-              </div>
-            ))}
-          </ScrollArea>
+                    {/* Content */}
+                    <div className="flex flex-1 flex-col gap-y-2">
+                      <p className="text-sm leading-7">{product.name}</p>
+                    </div>
+                  </div>
+                ))}
+              </ScrollArea>
+            </div>
+          ) : (
+            <div className="flex justify-center">
+              <p className="text-muted-foreground">
+                Nenhum produto encontrado.
+              </p>
+            </div>
+          )}
         </TabsContent>
 
-        <TabsContent value="retailers" className="space-y-4">
-          <Input placeholder="Pesquise por um anunciante..." />
-          <ScrollArea className="rounded-md border bg-primary-foreground">
-            {retailers.map((retailer) => (
-              <div
-                key={retailer.id}
-                className="flex cursor-pointer items-start gap-6 rounded-md px-8 py-4 hover:bg-muted"
-                onClick={() => setSelectedRetailer(retailer)}
-              >
-                {/* Content */}
-                <div className="flex flex-1  flex-col gap-y-2">
-                  <p className="text-sm leading-7">{retailer.name}</p>
-                </div>
-              </div>
-            ))}
-          </ScrollArea>
+        <TabsContent value="retailers">
+          {retailers.length > 0 ? (
+            <div className="space-y-4">
+              <Input placeholder="Pesquise por um anunciante..." />
+              <ScrollArea className="rounded-md border bg-primary-foreground">
+                {retailers.map((retailer) => (
+                  <div
+                    key={retailer.id}
+                    className="flex cursor-pointer items-start gap-6 rounded-md px-8 py-4 hover:bg-muted"
+                    onClick={() => setSelectedRetailer(retailer)}
+                  >
+                    {/* Content */}
+                    <div className="flex flex-1  flex-col gap-y-2">
+                      <p className="text-sm leading-7">{retailer.name}</p>
+                    </div>
+                  </div>
+                ))}
+              </ScrollArea>
+            </div>
+          ) : (
+            <div className="flex justify-center">
+              <p className="text-muted-foreground">
+                Nenhum anunciante encontrado.
+              </p>
+            </div>
+          )}
         </TabsContent>
       </Tabs>
     </div>

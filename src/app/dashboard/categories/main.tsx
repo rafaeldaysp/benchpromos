@@ -42,7 +42,7 @@ const DELETE_CATEGORY = gql`
 `
 
 interface CategoriesMainProps {
-  categories: (Category & { filters: Filter })[]
+  categories: (Category & { filters: Omit<Filter, 'categoryId'>[] })[]
 }
 
 export function CategoriesMain({ categories }: CategoriesMainProps) {
@@ -64,6 +64,12 @@ export function CategoriesMain({ categories }: CategoriesMainProps) {
       router.refresh()
     },
   })
+
+  React.useEffect(() => {
+    setSelectedCategory((prev) =>
+      categories.find((category) => category.id === prev?.id),
+    )
+  }, [categories])
 
   return (
     <div className="space-y-8">
@@ -114,7 +120,7 @@ export function CategoriesMain({ categories }: CategoriesMainProps) {
               <SubcategoriesMain category={selectedCategory} />
             </TabsContent>
 
-            <TabsContent value="filters">
+            <TabsContent value="filters" className="ml-4">
               <FiltersMain category={selectedCategory} />
             </TabsContent>
           </Tabs>
@@ -122,73 +128,80 @@ export function CategoriesMain({ categories }: CategoriesMainProps) {
       )}
 
       {/* Categories */}
-      <ScrollArea className="rounded-md border bg-primary-foreground">
-        {categories.map((category) => (
-          <div
-            key={category.id}
-            className="flex items-start gap-6 rounded-md px-8 py-4 hover:bg-muted"
-          >
-            {/* Content */}
+      {categories.length > 0 ? (
+        <ScrollArea className="rounded-md border bg-primary-foreground">
+          {categories.map((category) => (
             <div
-              className="flex flex-1 cursor-pointer flex-col gap-y-2"
-              onClick={() => setSelectedCategory(category)}
+              key={category.id}
+              className="flex items-start gap-6 rounded-md px-8 py-4 hover:bg-muted"
             >
-              <p className="text-sm leading-7">{category.name}</p>
-            </div>
+              {/* Content */}
+              <div
+                className="flex flex-1 cursor-pointer flex-col gap-y-2"
+                onClick={() => setSelectedCategory(category)}
+              >
+                <p className="text-sm leading-7">{category.name}</p>
+              </div>
 
-            {/* Category Actions */}
-            <div className="flex gap-2 self-center">
-              <Sheet>
-                <SheetTrigger asChild>
-                  <Button variant="outline" size="icon">
-                    <Icons.Edit className="h-4 w-4" />
-                  </Button>
-                </SheetTrigger>
-                <SheetContent
-                  className="w-full space-y-4 overflow-auto sm:max-w-xl"
-                  side="left"
-                >
-                  <SheetHeader>
-                    <SheetTitle>EDITAR CATEGORIA</SheetTitle>
-                  </SheetHeader>
-                  <CategoryForm mode="update" category={category} />
-                </SheetContent>
-              </Sheet>
+              {/* Category Actions */}
+              <div className="flex gap-2 self-center">
+                <Sheet>
+                  <SheetTrigger asChild>
+                    <Button variant="outline" size="icon">
+                      <Icons.Edit className="h-4 w-4" />
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent
+                    className="w-full space-y-4 overflow-auto sm:max-w-xl"
+                    side="left"
+                  >
+                    <SheetHeader>
+                      <SheetTitle>EDITAR CATEGORIA</SheetTitle>
+                    </SheetHeader>
+                    <CategoryForm mode="update" category={category} />
+                  </SheetContent>
+                </Sheet>
 
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button variant="destructive" size="icon">
-                    <Icons.Trash className="h-4 w-4" />
-                  </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>
-                      Are you absolutely sure?
-                    </AlertDialogTitle>
-                    <AlertDialogDescription>
-                      This action cannot be undone. This will permanently delete
-                      your account and remove your data from our servers.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                    <AlertDialogAction
-                      onClick={() =>
-                        deleteCategory({
-                          variables: { categoryId: category.id },
-                        })
-                      }
-                    >
-                      Continuar
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="destructive" size="icon">
+                      <Icons.Trash className="h-4 w-4" />
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>
+                        Are you absolutely sure?
+                      </AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This action cannot be undone. This will permanently
+                        delete your account and remove your data from our
+                        servers.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={() =>
+                          deleteCategory({
+                            variables: { categoryId: category.id },
+                          })
+                        }
+                      >
+                        Continuar
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </div>
             </div>
-          </div>
-        ))}
-      </ScrollArea>
+          ))}
+        </ScrollArea>
+      ) : (
+        <div className="flex justify-center">
+          <p className="text-muted-foreground">Nenhuma categoria encontrada.</p>
+        </div>
+      )}
     </div>
   )
 }
