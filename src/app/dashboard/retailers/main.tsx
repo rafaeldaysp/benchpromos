@@ -31,9 +31,15 @@ import { env } from '@/env.mjs'
 import { Retailer } from '@/types'
 
 const DELETE_RETAILER = gql`
-  mutation DeleteRetailer($retailerId: String!) {
+  mutation ($retailerId: ID!) {
     removeRetailer(id: $retailerId) {
-      id
+      __typename
+      ... on Retailer {
+        id
+      }
+      ... on Error {
+        message
+      }
     }
   }
 `

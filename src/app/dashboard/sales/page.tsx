@@ -7,30 +7,49 @@ import { removeNullValues } from '@/utils'
 import { SalesMain } from './main'
 
 const GET_SALES_AND_PRODUCTS = gql`
-  query Sales {
-    sales {
-      id
-      title
-      imageUrl
-      url
-      price
-      installments
-      totalInstallmentPrice
-      caption
-      review
-      label
-      coupon
-      cashback
-      createdAt
-      categoryId
-      productId
+  {
+    getSales {
+      __typename
+      ... on SaleList {
+        sales {
+          id
+          title
+          imageUrl
+          url
+          price
+          installments
+          totalInstallmentPrice
+          caption
+          review
+          label
+          coupon
+          cashback
+          createdAt
+          categoryId
+          productId
+          category {
+            name
+          }
+        }
+      }
+      ... on Error {
+        message
+      }
     }
-    products {
-      id
-      name
-      imageUrl
-      category {
-        name
+    getProducts {
+      __typename
+      ... on ProductList {
+        products {
+          id
+          name
+          imageUrl
+          category {
+            name
+          }
+        }
+      }
+      ... on Error {
+        message
       }
     }
   }
@@ -38,16 +57,24 @@ const GET_SALES_AND_PRODUCTS = gql`
 
 export default async function SalesDashboardPage() {
   const response = await getClient().query<{
-    sales: Sale[]
-    products: (Pick<Product, 'id' | 'name' | 'imageUrl'> & {
-      category: Pick<Category, 'name'>
-    })[]
+    getSales: {
+      __typename: string
+      sales: Sale[]
+    }
+    getProducts: {
+      __typename: string
+      products: (Pick<Product, 'id' | 'name' | 'imageUrl'> & {
+        category: Pick<Category, 'name'>
+      })[]
+    }
   }>({
     query: GET_SALES_AND_PRODUCTS,
   })
 
-  const sales = response.data.sales.map((sale) => removeNullValues(sale))
-  const products = response.data.products
+  const sales = response.data.getSales.sales.map((sale) =>
+    removeNullValues(sale),
+  )
+  const products = response.data.getProducts.products
 
   return (
     <div className="space-y-6">
