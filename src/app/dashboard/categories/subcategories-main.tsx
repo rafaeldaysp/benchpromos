@@ -30,7 +30,7 @@ import { env } from '@/env.mjs'
 import { Category } from '@/types'
 
 const DELETE_SUBCATEGORY = gql`
-  mutation DeleteSubcategory($subcategoryId: String!) {
+  mutation DeleteSubcategory($subcategoryId: ID!) {
     removeSubcategory(id: $subcategoryId) {
       id
     }

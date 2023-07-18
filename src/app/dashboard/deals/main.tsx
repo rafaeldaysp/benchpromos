@@ -34,7 +34,7 @@ import { Deal, Product, Retailer } from '@/types'
 import { priceFormatter } from '@/utils/formatter'
 
 const DELETE_DEAL = gql`
-  mutation DeleteDeal($dealId: String!) {
+  mutation DeleteDeal($dealId: ID!) {
     removeDeal(id: $dealId) {
       id
     }

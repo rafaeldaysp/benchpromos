@@ -31,7 +31,7 @@ import { Cashback, Retailer } from '@/types'
 import { CashbackForm } from '@/components/forms/cashback-form'
 
 const DELETE_CASHBACK = gql`
-  mutation DeleteCashback($cashbackId: String!) {
+  mutation DeleteCashback($cashbackId: ID!) {
     removeCashback(id: $cashbackId) {
       id
     }

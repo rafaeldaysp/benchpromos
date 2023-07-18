@@ -55,7 +55,7 @@ const UPDATE_FILTER = gql`
 `
 
 const DELETE_FILTER = gql`
-  mutation DeleteFilter($filterId: String!) {
+  mutation DeleteFilter($filterId: ID!) {
     removeFilter(id: $filterId) {
       id
     }
@@ -71,7 +71,7 @@ const CREATE_FILTER_OPTION = gql`
 `
 
 const DELETE_FILTER_OPTION = gql`
-  mutation DeleteFilterOption($filterOptionId: String!) {
+  mutation DeleteFilterOption($filterOptionId: ID!) {
     removeFilterOption(id: $filterOptionId) {
       id
     }

@@ -40,7 +40,7 @@ import { env } from '@/env.mjs'
 import { Category, Filter, Product } from '@/types'
 
 const DELETE_PRODUCT = gql`
-  mutation DeleteProduct($productId: String!) {
+  mutation DeleteProduct($productId: ID!) {
     removeProduct(id: $productId) {
       id
     }

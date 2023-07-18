@@ -34,7 +34,7 @@ import { FiltersMain } from './filters.main'
 import { SubcategoriesMain } from './subcategories-main'
 
 const DELETE_CATEGORY = gql`
-  mutation DeleteCategory($categoryId: String!) {
+  mutation DeleteCategory($categoryId: ID!) {
     removeCategory(id: $categoryId) {
       id
     }

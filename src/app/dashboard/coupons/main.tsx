@@ -31,7 +31,7 @@ import { env } from '@/env.mjs'
 import { Coupon, Retailer } from '@/types'
 
 const DELETE_COUPON = gql`
-  mutation DeleteCoupon($couponId: String!) {
+  mutation DeleteCoupon($couponId: ID!) {
     removeCoupon(id: $couponId) {
       id
     }
