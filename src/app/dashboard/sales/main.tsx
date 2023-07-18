@@ -34,7 +34,7 @@ import { priceFormatter } from '@/utils/formatter'
 import { SaleForm } from '@/components/forms/sale-form'
 
 const DELETE_SALE = gql`
-  mutation DeleteSale($saleId: String!) {
+  mutation ($saleId: String!) {
     removeSale(id: $saleId) {
       id
     }

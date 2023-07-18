@@ -9,47 +9,28 @@ import { SalesMain } from './main'
 const GET_SALES_AND_PRODUCTS = gql`
   {
     getSales {
-      __typename
-      ... on SaleList {
-        sales {
-          id
-          title
-          imageUrl
-          url
-          price
-          installments
-          totalInstallmentPrice
-          caption
-          review
-          label
-          coupon
-          cashback
-          createdAt
-          categoryId
-          productId
-          category {
-            name
-          }
-        }
-      }
-      ... on Error {
-        message
-      }
+      id
+      title
+      imageUrl
+      url
+      price
+      installments
+      totalInstallmentPrice
+      caption
+      review
+      label
+      coupon
+      cashback
+      createdAt
+      categoryId
+      productId
     }
     getProducts {
-      __typename
-      ... on ProductList {
-        products {
-          id
-          name
-          imageUrl
-          category {
-            name
-          }
-        }
-      }
-      ... on Error {
-        message
+      id
+      name
+      imageUrl
+      category {
+        name
       }
     }
   }
@@ -57,24 +38,16 @@ const GET_SALES_AND_PRODUCTS = gql`
 
 export default async function SalesDashboardPage() {
   const response = await getClient().query<{
-    getSales: {
-      __typename: string
-      sales: Sale[]
-    }
-    getProducts: {
-      __typename: string
-      products: (Pick<Product, 'id' | 'name' | 'imageUrl'> & {
-        category: Pick<Category, 'name'>
-      })[]
-    }
+    getSales: Sale[]
+    getProducts: (Pick<Product, 'id' | 'name' | 'imageUrl'> & {
+      category: Pick<Category, 'name'>
+    })[]
   }>({
     query: GET_SALES_AND_PRODUCTS,
   })
 
-  const sales = response.data.getSales.sales.map((sale) =>
-    removeNullValues(sale),
-  )
-  const products = response.data.getProducts.products
+  const sales = response.data.getSales.map((sale) => removeNullValues(sale))
+  const products = response.data.getProducts
 
   return (
     <div className="space-y-6">

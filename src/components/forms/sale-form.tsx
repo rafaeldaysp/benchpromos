@@ -35,7 +35,7 @@ import { Category } from '@/types'
 const saleLabels = ['LANÇAMENTO', 'BAIXOU', 'PREÇÃO', 'PARCELADO']
 
 const CREATE_SALE = gql`
-  mutation CreateSale($input: CreateSaleInput!) {
+  mutation ($input: CreateSaleInput!) {
     createSale(createSaleInput: $input) {
       id
     }
@@ -43,7 +43,7 @@ const CREATE_SALE = gql`
 `
 
 const UPDATE_SALE = gql`
-  mutation UpdateSale($input: UpdateSaleInput!) {
+  mutation ($input: UpdateSaleInput!) {
     updateSale(updateSaleInput: $input) {
       id
     }
@@ -51,8 +51,8 @@ const UPDATE_SALE = gql`
 `
 
 const GET_CATEGORIES = gql`
-  query GetCategories {
-    categories {
+  {
+    getCategories {
       id
       name
     }
@@ -81,19 +81,19 @@ export function SaleForm({ mode = 'create', sale }: SaleFormProps) {
   })
   const router = useRouter()
 
-  const { data } = useQuery<{ categories: Omit<Category, 'subcategories'>[] }>(
-    GET_CATEGORIES,
-    {
-      context: {
-        headers: {
-          'api-key': env.NEXT_PUBLIC_API_KEY,
-        },
+  const { data } = useQuery<{
+    getCategories: Omit<Category, 'subcategories'>[]
+  }>(GET_CATEGORIES, {
+    context: {
+      headers: {
+        'api-key': env.NEXT_PUBLIC_API_KEY,
       },
     },
-  )
+  })
+  console.log(data)
 
   const categoryItems = React.useMemo(() => {
-    const categoryItems = data?.categories.map((category) => ({
+    const categoryItems = data?.getCategories.map((category) => ({
       label: category.name,
       value: category.id,
     }))
