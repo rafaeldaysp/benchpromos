@@ -22,28 +22,28 @@ import { env } from '@/env.mjs'
 import { linkFiltersSchema } from '@/lib/validations/product'
 import { Filter } from '@/types'
 
-const LINK_FILTER = gql`
-  mutation LinkFilter($input: AssignProductFilterInput!) {
-    assignProductFilterOption(assignProductFilterInput: $input) {
+const LINK_FILTERS = gql`
+  mutation LinkFiltersToProduct($input: LinkProductFiltersInput!) {
+    updateProductFilters(linkProductFiltersInput: $input) {
       id
     }
   }
 `
 
-const UNLINK_FILTER = gql`
-  mutation UnlinkFilter($input: AssignProductFilterInput!) {
-    removeProductFilterOption(assignProductFilterInput: $input) {
-      id
-    }
-  }
-`
+// const UNLINK_FILTER = gql`
+//   mutation UnlinkFiltersToProduct($productId: ID!) {
+//     unlinkFiltersToProduct(productId: $productId) {
+//       id
+//     }
+//   }
+// `
 
 type Inputs = z.infer<typeof linkFiltersSchema>
 
 interface ProductFiltersFormProps {
   categoryFilters: Filter[]
   productId: string
-  productFilters: { filterOptionId: string }[]
+  productFilters: { optionId: string }[]
 }
 
 // por algum motivo esse componente ta sendo renderizado 5 vezes quando da submit ╰（‵□′）╯
@@ -55,16 +55,18 @@ export function ProductFiltersForm({
 }: ProductFiltersFormProps) {
   console.log('renderizou')
 
+  console.log(productFilters)
+
   // melhorar essa lógica
   const productFilterOptionIds = React.useMemo(() => {
-    const productFilterOptionIds = productFilters.map(
-      (productFilter) => productFilter.filterOptionId,
+    const productFilterOptionIds = productFilters?.map(
+      (productFilter) => productFilter.optionId,
     )
 
-    return categoryFilters.map(
+    return categoryFilters?.map(
       (filter) =>
         filter.options.find((option) =>
-          productFilterOptionIds.includes(option.id),
+          productFilterOptionIds?.includes(option.id),
         )?.id ?? 'none',
     )
   }, [categoryFilters, productFilters])
@@ -85,18 +87,7 @@ export function ProductFiltersForm({
     name: 'filters',
   })
 
-  const [linkFilter] = useMutation(LINK_FILTER, {
-    context: {
-      headers: {
-        'api-key': env.NEXT_PUBLIC_API_KEY,
-      },
-    },
-    onError(error, clientOptions) {
-      toast.error(error.message)
-    },
-  })
-
-  const [unlinkFilter] = useMutation(UNLINK_FILTER, {
+  const [linkFilters] = useMutation(LINK_FILTERS, {
     context: {
       headers: {
         'api-key': env.NEXT_PUBLIC_API_KEY,
@@ -108,30 +99,17 @@ export function ProductFiltersForm({
   })
 
   async function onSubmit(data: Inputs) {
-    // melhorar essa lógica
-    data.filters.forEach(async (filter, index) => {
-      if (productFilterOptionIds[index] !== filter.optionId) {
-        if (productFilterOptionIds[index] !== 'none') {
-          await unlinkFilter({
-            variables: {
-              input: {
-                productId,
-                filterOptionId: productFilterOptionIds[index],
-              },
-            },
-          })
-        }
-        if (filter.optionId !== 'none') {
-          await linkFilter({
-            variables: {
-              input: {
-                productId,
-                filterOptionId: filter.optionId,
-              },
-            },
-          })
-        }
-      }
+    const optionsId = data.filters
+      .filter((filter) => filter.optionId !== 'none')
+      .map((filter) => filter.optionId)
+
+    linkFilters({
+      variables: {
+        input: {
+          productId,
+          optionsId,
+        },
+      },
     })
     router.refresh()
   }

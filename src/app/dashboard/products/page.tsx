@@ -25,8 +25,8 @@ const GET_PRODUCTS_AND_FILTERS = gql`
       category {
         name
       }
-      productFilterOptions {
-        filterOptionId
+      filters {
+        optionId
       }
     }
     filters {
@@ -45,7 +45,7 @@ export default async function ProductsDashboardPage() {
   const response = await getClient().query<{
     products: (Product & {
       category: Pick<Category, 'name'>
-      productFilterOptions: { filterOptionId: string }[]
+      filters: { optionId: string }[]
     })[]
     filters: Filter[]
   }>({
@@ -56,6 +56,8 @@ export default async function ProductsDashboardPage() {
     removeNullValues(product),
   )
   const filters = response.data.filters
+
+  console.log(products[0].filters)
 
   return (
     <div className="space-y-6">

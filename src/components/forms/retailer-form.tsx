@@ -24,13 +24,7 @@ import { retailerSchema } from '@/lib/validations/retailer'
 const CREATE_RETAILER = gql`
   mutation CreateRetailer($input: CreateRetailerInput!) {
     createRetailer(createRetailerInput: $input) {
-      __typename
-      ... on Retailer {
-        id
-      }
-      ... on Error {
-        message
-      }
+      id
     }
   }
 `
@@ -38,13 +32,7 @@ const CREATE_RETAILER = gql`
 const UPDATE_RETAILER = gql`
   mutation UpdateRetailer($input: UpdateRetailerInput!) {
     updateRetailer(updateRetailerInput: $input) {
-      __typename
-      ... on Retailer {
-        id
-      }
-      ... on Error {
-        message
-      }
+      id
     }
   }
 `
@@ -80,9 +68,6 @@ export function RetailerForm({ mode = 'create', retailer }: RetailerFormProps) {
       },
       onCompleted(data, clientOptions) {
         form.reset()
-
-        if (data.createRetailer.__typename !== 'Retailer')
-          return toast.error(data.createRetailer.message)
 
         const message =
           mode === 'create'

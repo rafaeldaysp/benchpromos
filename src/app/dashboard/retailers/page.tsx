@@ -6,33 +6,22 @@ import { Retailer } from '@/types'
 import { RetailersMain } from './main'
 
 const GET_RETAILERS = gql`
-  {
-    getRetailers {
-      __typename
-      ... on RetailerList {
-        retailers {
-          id
-          name
-        }
-      }
-      ... on Error {
-        message
-      }
+  query GetRetailers {
+    retailers {
+      id
+      name
     }
   }
 `
 
 export default async function RetailersDashboardPage() {
   const response = await getClient().query<{
-    getRetailers: {
-      __typename: string
-      retailers: Retailer[]
-    }
+    retailers: Retailer[]
   }>({
     query: GET_RETAILERS,
   })
 
-  const retailers = response.data.getRetailers.retailers
+  const retailers = response.data.retailers
 
   return (
     <div className="space-y-6">

@@ -50,7 +50,7 @@ const DELETE_PRODUCT = gql`
 interface ProductsMainProps {
   products: (Product & {
     category: Pick<Category, 'name'>
-    productFilterOptions: { filterOptionId: string }[]
+    filters: { optionId: string }[]
   })[]
   filters: Filter[]
 }
@@ -101,7 +101,7 @@ export function ProductsMain({ products, filters }: ProductsMainProps) {
               <ProductFiltersForm
                 categoryFilters={categoryFilters}
                 productId={selectedProduct.id}
-                productFilters={selectedProduct.productFilterOptions}
+                productFilters={selectedProduct.filters}
               />
             </DialogContent>
           </Dialog>
