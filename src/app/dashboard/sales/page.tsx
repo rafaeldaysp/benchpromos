@@ -8,7 +8,7 @@ import { SalesMain } from './main'
 
 const GET_SALES_AND_PRODUCTS = gql`
   {
-    getSales {
+    sales {
       id
       title
       imageUrl
@@ -25,7 +25,7 @@ const GET_SALES_AND_PRODUCTS = gql`
       categoryId
       productId
     }
-    getProducts {
+    products {
       id
       name
       imageUrl
@@ -38,16 +38,16 @@ const GET_SALES_AND_PRODUCTS = gql`
 
 export default async function SalesDashboardPage() {
   const response = await getClient().query<{
-    getSales: Sale[]
-    getProducts: (Pick<Product, 'id' | 'name' | 'imageUrl'> & {
+    sales: Sale[]
+    products: (Pick<Product, 'id' | 'name' | 'imageUrl'> & {
       category: Pick<Category, 'name'>
     })[]
   }>({
     query: GET_SALES_AND_PRODUCTS,
   })
 
-  const sales = response.data.getSales.map((sale) => removeNullValues(sale))
-  const products = response.data.getProducts
+  const sales = response.data.sales.map((sale) => removeNullValues(sale))
+  const products = response.data.products
 
   return (
     <div className="space-y-6">
