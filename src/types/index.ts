@@ -7,7 +7,8 @@ export type Category = {
   id: string
   name: string
   slug: string
-  subcategories: Omit<Category, 'subcategories'>[]
+  priority: number
+  subcategories: Omit<Category, 'subcategories' | 'slug'>[]
 }
 
 export type Product = {
@@ -49,10 +50,13 @@ export type Filter = {
   id: string
   name: string
   categoryId: string
+  priority: number
   options: {
     id: string
     value: string
+    priority: number
   }[]
+  
 }
 
 export type Deal = {
@@ -60,6 +64,7 @@ export type Deal = {
   price: number
   availability: boolean
   url: string
+  priority: number
   installments?: number
   totalInstallmentPrice?: number
   sku?: string
