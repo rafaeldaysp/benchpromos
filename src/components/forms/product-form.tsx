@@ -30,7 +30,7 @@ import {
 import { Textarea } from '@/components/ui/textarea'
 import { env } from '@/env.mjs'
 import { productSchema } from '@/lib/validations/product'
-import { Category } from '@/types'
+import { type Category } from '@/types'
 
 const CREATE_PRODUCT = gql`
   mutation CreateProduct($input: CreateProductInput!) {
@@ -127,10 +127,10 @@ export function ProductForm({ mode = 'create', product }: ProductFormProps) {
           'api-key': env.NEXT_PUBLIC_API_KEY,
         },
       },
-      onError(error, clientOptions) {
+      onError(error, _clientOptions) {
         toast.error(error.message)
       },
-      onCompleted(data, clientOptions) {
+      onCompleted(_data, _clientOptions) {
         form.reset()
 
         const message =

@@ -1,13 +1,14 @@
 'use client'
 
-import * as React from 'react'
 import { ApolloLink, HttpLink, SuspenseCache } from '@apollo/client'
 import {
   ApolloNextAppProvider,
-  NextSSRInMemoryCache,
   NextSSRApolloClient,
+  NextSSRInMemoryCache,
   SSRMultipartLink,
 } from '@apollo/experimental-nextjs-app-support/ssr'
+import * as React from 'react'
+
 import { env } from '@/env.mjs'
 
 function makeClient() {

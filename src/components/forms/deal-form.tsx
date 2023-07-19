@@ -20,16 +20,16 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { env } from '@/env.mjs'
-import { dealSchema } from '@/lib/validations/deal'
-import { Cashback, Coupon } from '@/types'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../ui/select'
+} from '@/components/ui/select'
+import { env } from '@/env.mjs'
+import { dealSchema } from '@/lib/validations/deal'
+import { type Cashback, type Coupon } from '@/types'
 
 const CREATE_DEAL = gql`
   mutation CreateDeal($input: CreateDealInput!) {
@@ -128,10 +128,10 @@ export function DealForm({
           'api-key': env.NEXT_PUBLIC_API_KEY,
         },
       },
-      onError(error, clientOptions) {
+      onError(error, _clientOptions) {
         toast.error(error.message)
       },
-      onCompleted(data, clientOptions) {
+      onCompleted(_data, _clientOptions) {
         form.reset()
 
         const message =
@@ -288,7 +288,7 @@ export function DealForm({
               <FormControl>
                 <Checkbox
                   checked={field.value}
-                  // @ts-ignore
+                  // @ts-expect-error ...
                   onCheckedChange={field.onChange}
                 />
               </FormControl>

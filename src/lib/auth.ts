@@ -1,4 +1,4 @@
-import { NextAuthOptions } from 'next-auth'
+import { type NextAuthOptions } from 'next-auth'
 import GoogleProvider from 'next-auth/providers/google'
 
 import { env } from '../env.mjs'

@@ -37,7 +37,7 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet'
 import { env } from '@/env.mjs'
-import { Category, Filter, Product } from '@/types'
+import { type Category, type Filter, type Product } from '@/types'
 
 const DELETE_PRODUCT = gql`
   mutation DeleteProduct($productId: ID!) {
@@ -70,10 +70,10 @@ export function ProductsMain({ products, filters }: ProductsMainProps) {
         'api-key': env.NEXT_PUBLIC_API_KEY,
       },
     },
-    onError(error, clientOptions) {
+    onError(error, _clientOptions) {
       toast.error(error.message)
     },
-    onCompleted(data, clientOptions) {
+    onCompleted(_data, _clientOptions) {
       toast.success('Produto deletado com sucesso.')
       router.refresh()
     },

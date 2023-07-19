@@ -2,7 +2,7 @@ import { gql } from '@apollo/client'
 
 import { Separator } from '@/components/ui/separator'
 import { getClient } from '@/lib/apollo'
-import { Cashback, Retailer } from '@/types'
+import { type Cashback, type Retailer } from '@/types'
 import { CashbacksMain } from './main'
 
 const GET_CASHBACKS = gql`
@@ -10,9 +10,10 @@ const GET_CASHBACKS = gql`
     cashbacks {
       id
       provider
-      percentValue
+      value
       url
       affiliatedUrl
+      retailerId
       retailer {
         name
       }

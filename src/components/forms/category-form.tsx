@@ -2,6 +2,7 @@
 
 import { gql, useMutation } from '@apollo/client'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { type z } from 'zod'
@@ -19,7 +20,6 @@ import {
 import { Input } from '@/components/ui/input'
 import { env } from '@/env.mjs'
 import { categorySchema } from '@/lib/validations/category'
-import { useRouter } from 'next/navigation'
 
 const CREATE_CATEGORY = gql`
   mutation CreateCategory($input: CreateCategoryInput!) {
@@ -63,10 +63,10 @@ export function CategoryForm({ mode = 'create', category }: CategoryFormProps) {
           'api-key': env.NEXT_PUBLIC_API_KEY,
         },
       },
-      onError(error, clientOptions) {
+      onError(error, _clientOptions) {
         toast.error(error.message)
       },
-      onCompleted(data, clientOptions) {
+      onCompleted(_data, _clientOptions) {
         form.reset()
 
         const message =

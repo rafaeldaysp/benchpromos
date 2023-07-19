@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import * as React from 'react'
 import { toast } from 'sonner'
 
+import { SaleForm } from '@/components/forms/sale-form'
 import { Icons } from '@/components/icons'
 import {
   AlertDialog,
@@ -29,9 +30,8 @@ import {
 } from '@/components/ui/sheet'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { env } from '@/env.mjs'
-import { Category, Product, Sale } from '@/types'
+import { type Category, type Product, type Sale } from '@/types'
 import { priceFormatter } from '@/utils/formatter'
-import { SaleForm } from '@/components/forms/sale-form'
 
 const DELETE_SALE = gql`
   mutation ($saleId: ID!) {
@@ -60,10 +60,10 @@ export function SalesMain({ sales, products }: SalesMainProps) {
         'api-key': env.NEXT_PUBLIC_API_KEY,
       },
     },
-    onError(error, clientOptions) {
+    onError(error, _clientOptions) {
       toast.error(error.message)
     },
-    onCompleted(data, clientOptions) {
+    onCompleted(_data, _clientOptions) {
       toast.success('Promoção deletada com sucesso.')
       router.refresh()
     },

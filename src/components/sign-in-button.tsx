@@ -6,7 +6,7 @@ import * as React from 'react'
 import { Icons } from '@/components/icons'
 import { Button } from '@/components/ui/button'
 
-interface SignInButtonProps extends React.HTMLAttributes<HTMLButtonElement> {}
+type SignInButtonProps = React.HTMLAttributes<HTMLButtonElement>
 
 export function SignInButton({ ...props }: SignInButtonProps) {
   const [isLoading, setIsLoading] = React.useState(false)
