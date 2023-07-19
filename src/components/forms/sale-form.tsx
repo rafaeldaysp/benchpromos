@@ -51,8 +51,8 @@ const UPDATE_SALE = gql`
 `
 
 const GET_CATEGORIES = gql`
-  {
-    getCategories {
+  query GetCategories {
+    categories {
       id
       name
     }
@@ -82,7 +82,7 @@ export function SaleForm({ mode = 'create', sale }: SaleFormProps) {
   const router = useRouter()
 
   const { data } = useQuery<{
-    getCategories: Omit<Category, 'subcategories'>[]
+    categories: Omit<Category, 'subcategories'>[]
   }>(GET_CATEGORIES, {
     context: {
       headers: {
@@ -93,7 +93,7 @@ export function SaleForm({ mode = 'create', sale }: SaleFormProps) {
   console.log(data)
 
   const categoryItems = React.useMemo(() => {
-    const categoryItems = data?.getCategories.map((category) => ({
+    const categoryItems = data?.categories.map((category) => ({
       label: category.name,
       value: category.id,
     }))
