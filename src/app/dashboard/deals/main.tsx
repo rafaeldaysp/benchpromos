@@ -30,8 +30,9 @@ import {
 } from '@/components/ui/sheet'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { env } from '@/env.mjs'
-import { Deal, Product, Retailer } from '@/types'
+import { Cashback, Coupon, Deal, Product, Retailer } from '@/types'
 import { priceFormatter } from '@/utils/formatter'
+import { priceCalculator } from '@/utils/priceCalculator'
 
 const DELETE_DEAL = gql`
   mutation DeleteDeal($dealId: ID!) {
@@ -42,7 +43,9 @@ const DELETE_DEAL = gql`
 `
 
 interface DealsMainProps {
-  deals: Deal[]
+  deals: (Deal & { cashback?: Pick<Cashback, 'value'> } & {
+    coupon?: Pick<Coupon, 'discount'>
+  })[]
   products: Pick<Product, 'id' | 'name' | 'imageUrl'>[]
   retailers: Retailer[]
 }
@@ -184,7 +187,13 @@ export function DealsMain({ deals, products, retailers }: DealsMainProps) {
                   <p className="text-sm leading-7">{deal.product.name}</p>
                   <span className="text-xs text-muted-foreground">
                     {deal.retailer.name} •{' '}
-                    {priceFormatter.format(deal.price / 100)}
+                    {priceFormatter.format(
+                      priceCalculator(
+                        deal.price,
+                        deal.coupon?.discount,
+                        deal.cashback?.value,
+                      ) / 100,
+                    )}
                   </span>
                 </div>
 

@@ -2,7 +2,7 @@ import { gql } from '@apollo/client'
 
 import { Separator } from '@/components/ui/separator'
 import { getClient } from '@/lib/apollo'
-import { Deal, Product, Retailer } from '@/types'
+import { Cashback, Coupon, Deal, Product, Retailer } from '@/types'
 import { removeNullValues } from '@/utils'
 import { DealsMain } from './main'
 
@@ -22,6 +22,12 @@ const GET_DEALS_AND_PRODUCTS_AND_RETAILERS = gql`
       cashbackId
       createdAt
       updatedAt
+      cashback {
+        value
+      }
+      coupon {
+        discount
+      }
     }
     products {
       id
@@ -37,7 +43,9 @@ const GET_DEALS_AND_PRODUCTS_AND_RETAILERS = gql`
 
 export default async function DealsDashboardPage() {
   const response = await getClient().query<{
-    deals: Deal[]
+    deals: (Deal & { cashback?: Pick<Cashback, 'value'> } & {
+      coupon?: Pick<Coupon, 'discount'>
+    })[]
     products: Pick<Product, 'id' | 'name' | 'imageUrl'>[]
     retailers: Retailer[]
   }>({

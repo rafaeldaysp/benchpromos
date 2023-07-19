@@ -64,7 +64,7 @@ const DELETE_FILTER = gql`
 
 const CREATE_FILTER_OPTION = gql`
   mutation CreateFilterOption($input: CreateFilterOptionInput!) {
-    createFilterOptions(createFilterOptionsInput: $input) {
+    createFilterOption(createFilterOptionInput: $input) {
       id
     }
   }
@@ -321,7 +321,7 @@ export function FilterOptionModal({ filter }: FilterOptionModalProps) {
                   variables: {
                     input: {
                       filterId: filter.id,
-                      values: [filterOptionInput],
+                      value: filterOptionInput,
                     },
                   },
                 })

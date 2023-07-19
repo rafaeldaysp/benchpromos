@@ -6,6 +6,7 @@ export type Retailer = {
 export type Category = {
   id: string
   name: string
+  slug: string
   subcategories: Omit<Category, 'subcategories'>[]
 }
 
@@ -39,7 +40,7 @@ export type Coupon = {
 export type Cashback = {
   id: string
   provider: string
-  percentValue: number
+  value: number
   url: string
   affiliatedUrl: string
 }
