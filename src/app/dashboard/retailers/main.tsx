@@ -28,7 +28,7 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet'
 import { env } from '@/env.mjs'
-import { Retailer } from '@/types'
+import { type Retailer } from '@/types'
 
 const DELETE_RETAILER = gql`
   mutation DeleteRetailer($retailerId: ID!) {
@@ -52,10 +52,10 @@ export function RetailersMain({ retailers }: RetailersMainProps) {
         'api-key': env.NEXT_PUBLIC_API_KEY,
       },
     },
-    onError(error, clientOptions) {
+    onError(error, _clientOptions) {
       toast.error(error.message)
     },
-    onCompleted(data, clientOptions) {
+    onCompleted(_data, _clientOptions) {
       toast.success('Anunciante deletado com sucesso.')
       router.refresh()
     },

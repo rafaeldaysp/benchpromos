@@ -30,7 +30,7 @@ import {
 } from '@/components/ui/sheet'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { env } from '@/env.mjs'
-import { Deal, Product, Retailer } from '@/types'
+import { type Deal, type Product, type Retailer } from '@/types'
 import { priceFormatter } from '@/utils/formatter'
 
 const DELETE_DEAL = gql`
@@ -71,11 +71,11 @@ export function DealsMain({ deals, products, retailers }: DealsMainProps) {
     .map((deal) => {
       const product = products.find(
         (product) => product.id === deal.productId,
-      ) as Pick<Product, 'id' | 'name' | 'imageUrl'>
+      ) as (typeof products)[0]
 
       const retailer = retailers.find(
         (retailer) => retailer.id === deal.retailerId,
-      ) as Retailer
+      ) as (typeof retailers)[0]
 
       return {
         ...deal,
@@ -90,10 +90,10 @@ export function DealsMain({ deals, products, retailers }: DealsMainProps) {
         'api-key': env.NEXT_PUBLIC_API_KEY,
       },
     },
-    onError(error, clientOptions) {
+    onError(error, _clientOptions) {
       toast.error(error.message)
     },
-    onCompleted(data, clientOptions) {
+    onCompleted(_data, _clientOptions) {
       toast.success('Anúncio deletado com sucesso.')
       router.refresh()
     },

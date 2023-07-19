@@ -29,7 +29,7 @@ import {
 } from '@/components/ui/sheet'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { env } from '@/env.mjs'
-import { Category, Filter } from '@/types'
+import { type Category, type Filter } from '@/types'
 import { FiltersMain } from './filters.main'
 import { SubcategoriesMain } from './subcategories-main'
 
@@ -56,10 +56,10 @@ export function CategoriesMain({ categories }: CategoriesMainProps) {
         'api-key': env.NEXT_PUBLIC_API_KEY,
       },
     },
-    onError(error, clientOptions) {
+    onError(error, _clientOptions) {
       toast.error(error.message)
     },
-    onCompleted(data, clientOptions) {
+    onCompleted(_data, _clientOptions) {
       toast.success('Categoria deletada com sucesso.')
       router.refresh()
     },

@@ -27,7 +27,7 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet'
 import { env } from '@/env.mjs'
-import { Cashback, Retailer } from '@/types'
+import { type Cashback, type Retailer } from '@/types'
 import { CashbackForm } from '@/components/forms/cashback-form'
 
 const DELETE_CASHBACK = gql`
@@ -53,10 +53,10 @@ export function CashbacksMain({ cashbacks }: CashbacksMainProps) {
         'api-key': env.NEXT_PUBLIC_API_KEY,
       },
     },
-    onError(error, clientOptions) {
+    onError(error, _clientOptions) {
       toast.error(error.message)
     },
-    onCompleted(data, clientOptions) {
+    onCompleted(_data, _clientOptions) {
       toast.success('Cashback deletado com sucesso.')
       router.refresh()
     },
@@ -86,7 +86,7 @@ export function CashbacksMain({ cashbacks }: CashbacksMainProps) {
         <div className="flex items-start gap-6 rounded-md bg-muted px-8 py-4">
           {/* Content */}
           <div className="flex flex-1 flex-col gap-y-2">
-            <p className="text-sm leading-7">{selectedCashback.percentValue}</p>
+            <p className="text-sm leading-7">{selectedCashback.value}</p>
             <span className="text-xs text-muted-foreground">
               {selectedCashback.retailer.name}
             </span>
@@ -116,7 +116,7 @@ export function CashbacksMain({ cashbacks }: CashbacksMainProps) {
                 className="flex flex-1 cursor-pointer flex-col gap-y-2"
                 onClick={() => setSelectedCashback(cashback)}
               >
-                <p className="text-sm leading-7">{cashback.percentValue}</p>
+                <p className="text-sm leading-7">{cashback.value}</p>
                 <span className="text-xs text-muted-foreground">
                   {cashback.retailer.name}
                 </span>

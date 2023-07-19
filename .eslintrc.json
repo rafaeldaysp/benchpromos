@@ -1,9 +1,47 @@
 {
+  "$schema": "https://json.schemastore.org/eslintrc",
+  "root": true,
   "extends": [
-    "@rocketseat/eslint-config/react",
-    "next/core-web-vitals"
+    "next/core-web-vitals",
+    "plugin:@typescript-eslint/recommended",
+    "prettier",
+    "plugin:tailwindcss/recommended"
   ],
+  "plugins": ["eslint-plugin-prettier"],
   "rules": {
+    "prettier/prettier": ["error", {
+      "printWidth": 80,
+      "tabWidth": 2,
+      "singleQuote": true,
+      "trailingComma": "all",
+      "arrowParens": "always",
+      "semi": false,
+      "endOfLine": "auto"
+    }],
+    "@typescript-eslint/consistent-type-imports": [
+      "warn",
+      {
+        "prefer": "type-imports",
+        "fixStyle": "inline-type-imports"
+      }
+    ],
+    "@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }],
+    "react/jsx-key": "off",
     "camelcase": "off"
-  }
+  },
+  "settings": {
+    "tailwindcss": {
+      "callees": ["cn"],
+      "config": "tailwind.config.js"
+    },
+    "next": {
+      "rootDir": ["./"]
+    }
+  },
+  "overrides": [
+    {
+      "files": ["*.ts", "*.tsx"],
+      "parser": "@typescript-eslint/parser"
+    }
+  ]
 }

@@ -2,11 +2,11 @@
 
 import { gql, useMutation, useQuery } from '@apollo/client'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useRouter } from 'next/navigation'
 import * as React from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { type z } from 'zod'
-import { useRouter } from 'next/navigation'
 
 import { Icons } from '@/components/icons'
 import { Button } from '@/components/ui/button'
@@ -30,7 +30,7 @@ import {
 import { Textarea } from '@/components/ui/textarea'
 import { env } from '@/env.mjs'
 import { couponSchema } from '@/lib/validations/coupon'
-import { Retailer } from '@/types'
+import { type Retailer } from '@/types'
 
 const CREATE_COUPON = gql`
   mutation CreateCoupon($input: CreateCouponInput!) {
@@ -102,10 +102,10 @@ export function CouponForm({ mode = 'create', coupon }: CouponFormProps) {
           'api-key': env.NEXT_PUBLIC_API_KEY,
         },
       },
-      onError(error, clientOptions) {
+      onError(error, _clientOptions) {
         toast.error(error.message)
       },
-      onCompleted(data, clientOptions) {
+      onCompleted(_data, _clientOptions) {
         form.reset()
 
         const message =
@@ -234,7 +234,7 @@ export function CouponForm({ mode = 'create', coupon }: CouponFormProps) {
               <FormControl>
                 <Checkbox
                   checked={field.value}
-                  // @ts-ignore
+                  // @ts-expect-error ...
                   onCheckedChange={field.onChange}
                 />
               </FormControl>

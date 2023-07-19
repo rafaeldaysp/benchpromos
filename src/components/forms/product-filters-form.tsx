@@ -20,7 +20,7 @@ import {
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { env } from '@/env.mjs'
 import { linkFiltersSchema } from '@/lib/validations/product'
-import { Filter } from '@/types'
+import { type Filter } from '@/types'
 
 const LINK_FILTERS = gql`
   mutation LinkFiltersToProduct($input: LinkProductFiltersInput!) {
@@ -65,8 +65,8 @@ export function ProductFiltersForm({
 
     return categoryFilters?.map(
       (filter) =>
-        filter.options.find((option) =>
-          productFilterOptionIds?.includes(option.id),
+        filter.options.find(
+          (option) => productFilterOptionIds?.includes(option.id),
         )?.id ?? 'none',
     )
   }, [categoryFilters, productFilters])
@@ -93,7 +93,7 @@ export function ProductFiltersForm({
         'api-key': env.NEXT_PUBLIC_API_KEY,
       },
     },
-    onError(error, clientOptions) {
+    onError(error, _clientOptions) {
       toast.error(error.message)
     },
   })
@@ -162,7 +162,7 @@ export function ProductFiltersForm({
           />
         ))}
 
-        <div>
+        <div className="col-span-2">
           <Button type="submit">Salvar</Button>
         </div>
       </form>

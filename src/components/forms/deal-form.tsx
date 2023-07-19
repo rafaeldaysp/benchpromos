@@ -20,16 +20,16 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { env } from '@/env.mjs'
-import { dealSchema } from '@/lib/validations/deal'
-import { Cashback, Coupon } from '@/types'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../ui/select'
+} from '@/components/ui/select'
+import { env } from '@/env.mjs'
+import { dealSchema } from '@/lib/validations/deal'
+import { type Cashback, type Coupon } from '@/types'
 
 const CREATE_DEAL = gql`
   mutation CreateDeal($input: CreateDealInput!) {
@@ -48,7 +48,7 @@ const UPDATE_DEAL = gql`
 `
 
 const GET_COUPONS_AND_CASHBACKS_BY_RETAILER = gql`
-  query GetCouponsByRetailer($retailerId: String) {
+  query GetCouponsByRetailer($retailerId: ID) {
     coupons(retailerId: $retailerId) {
       id
       code
@@ -56,7 +56,7 @@ const GET_COUPONS_AND_CASHBACKS_BY_RETAILER = gql`
     cashbacks(retailerId: $retailerId) {
       id
       provider
-      percentValue
+      value
     }
   }
 `
@@ -90,7 +90,7 @@ export function DealForm({
 
   const { data } = useQuery<{
     coupons: Pick<Coupon, 'id' | 'code'>[]
-    cashbacks: Pick<Cashback, 'id' | 'provider' | 'percentValue'>[]
+    cashbacks: Pick<Cashback, 'id' | 'provider' | 'value'>[]
   }>(GET_COUPONS_AND_CASHBACKS_BY_RETAILER, {
     context: {
       headers: {
@@ -113,7 +113,7 @@ export function DealForm({
 
   const cashbackItems = React.useMemo(() => {
     const cashbackItems = data?.cashbacks.map((cashback) => ({
-      label: `${cashback.provider} - ${cashback.percentValue}%`,
+      label: `${cashback.provider} - ${cashback.value}%`,
       value: cashback.id,
     }))
 
@@ -128,10 +128,10 @@ export function DealForm({
           'api-key': env.NEXT_PUBLIC_API_KEY,
         },
       },
-      onError(error, clientOptions) {
+      onError(error, _clientOptions) {
         toast.error(error.message)
       },
-      onCompleted(data, clientOptions) {
+      onCompleted(_data, _clientOptions) {
         form.reset()
 
         const message =
@@ -288,7 +288,7 @@ export function DealForm({
               <FormControl>
                 <Checkbox
                   checked={field.value}
-                  // @ts-ignore
+                  // @ts-expect-error ...
                   onCheckedChange={field.onChange}
                 />
               </FormControl>

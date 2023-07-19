@@ -30,7 +30,7 @@ import {
 import { Textarea } from '@/components/ui/textarea'
 import { env } from '@/env.mjs'
 import { saleSchema } from '@/lib/validations/sale'
-import { Category } from '@/types'
+import { type Category } from '@/types'
 
 const saleLabels = ['LANÇAMENTO', 'BAIXOU', 'PREÇÃO', 'PARCELADO']
 
@@ -109,10 +109,10 @@ export function SaleForm({ mode = 'create', sale }: SaleFormProps) {
           'api-key': env.NEXT_PUBLIC_API_KEY,
         },
       },
-      onError(error, clientOptions) {
+      onError(error, _clientOptions) {
         toast.error(error.message)
       },
-      onCompleted(data, clientOptions) {
+      onCompleted(_data, _clientOptions) {
         form.reset()
 
         const message =

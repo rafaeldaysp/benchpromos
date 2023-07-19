@@ -2,7 +2,7 @@ import { gql } from '@apollo/client'
 
 import { Separator } from '@/components/ui/separator'
 import { getClient } from '@/lib/apollo'
-import { Coupon, Retailer } from '@/types'
+import { type Coupon, type Retailer } from '@/types'
 import { removeNullValues } from '@/utils'
 import { CouponsMain } from './main'
 

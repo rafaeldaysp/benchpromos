@@ -28,7 +28,7 @@ import {
 } from '@/components/ui/select'
 import { env } from '@/env.mjs'
 import { cashbackSchema } from '@/lib/validations/cashback'
-import { Retailer } from '@/types'
+import { type Retailer } from '@/types'
 
 const CREATE_CASHBACK = gql`
   mutation CreateCashback($input: CreateCashbackInput!) {
@@ -59,7 +59,7 @@ type Inputs = z.infer<typeof cashbackSchema>
 
 const defaultValues: Partial<Inputs> = {
   affiliatedUrl: '',
-  percentValue: 0,
+  value: 0,
   provider: '',
   retailerId: '',
   url: '',
@@ -102,10 +102,10 @@ export function CashbackForm({ mode = 'create', cashback }: CashbackFormProps) {
           'api-key': env.NEXT_PUBLIC_API_KEY,
         },
       },
-      onError(error, clientOptions) {
+      onError(error, _clientOptions) {
         toast.error(error.message)
       },
-      onCompleted(data, clientOptions) {
+      onCompleted(_data, _clientOptions) {
         form.reset()
 
         const message =
@@ -180,13 +180,13 @@ export function CashbackForm({ mode = 'create', cashback }: CashbackFormProps) {
 
         <FormField
           control={form.control}
-          name="percentValue"
+          name="value"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Percent Value</FormLabel>
               <FormControl>
                 <Input
-                  aria-invalid={!!form.formState.errors.percentValue}
+                  aria-invalid={!!form.formState.errors.value}
                   {...field}
                 />
               </FormControl>

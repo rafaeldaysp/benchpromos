@@ -28,7 +28,7 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet'
 import { env } from '@/env.mjs'
-import { Coupon, Retailer } from '@/types'
+import { type Coupon, type Retailer } from '@/types'
 
 const DELETE_COUPON = gql`
   mutation DeleteCoupon($couponId: ID!) {
@@ -53,10 +53,10 @@ export function CouponsMain({ coupons }: CouponsMainProps) {
         'api-key': env.NEXT_PUBLIC_API_KEY,
       },
     },
-    onError(error, clientOptions) {
+    onError(error, _clientOptions) {
       toast.error(error.message)
     },
-    onCompleted(data, clientOptions) {
+    onCompleted(_data, _clientOptions) {
       toast.success('Cupom deletado com sucesso.')
       router.refresh()
     },

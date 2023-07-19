@@ -2,12 +2,10 @@ import { gql } from '@apollo/client'
 
 import { Separator } from '@/components/ui/separator'
 import { getClient } from '@/lib/apollo'
-import { Category, Filter, Product } from '@/types'
+import { type Category, type Filter, type Product } from '@/types'
 import { removeNullValues } from '@/utils'
 import { ProductsMain } from './main'
 
-// gostaria de renomear productFilterOptions para filters e
-// filterOptionId para optionId
 const GET_PRODUCTS_AND_FILTERS = gql`
   query GetProductsAndFilters {
     products {
@@ -56,8 +54,6 @@ export default async function ProductsDashboardPage() {
     removeNullValues(product),
   )
   const filters = response.data.filters
-
-  console.log(products[0].filters)
 
   return (
     <div className="space-y-6">

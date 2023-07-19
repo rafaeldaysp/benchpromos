@@ -27,7 +27,7 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet'
 import { env } from '@/env.mjs'
-import { Category } from '@/types'
+import { type Category } from '@/types'
 
 const DELETE_SUBCATEGORY = gql`
   mutation DeleteSubcategory($subcategoryId: ID!) {
@@ -50,10 +50,10 @@ export function SubcategoriesMain({ category }: SubcategoriesMainProps) {
         'api-key': env.NEXT_PUBLIC_API_KEY,
       },
     },
-    onError(error, clientOptions) {
+    onError(error, _clientOptions) {
       toast.error(error.message)
     },
-    onCompleted(data, clientOptions) {
+    onCompleted(_data, _clientOptions) {
       toast.success('Subcategoria deletada com sucesso.')
       router.refresh()
     },

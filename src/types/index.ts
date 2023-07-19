@@ -39,7 +39,7 @@ export type Coupon = {
 export type Cashback = {
   id: string
   provider: string
-  percentValue: number
+  value: number
   url: string
   affiliatedUrl: string
 }

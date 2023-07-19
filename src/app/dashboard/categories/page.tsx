@@ -2,7 +2,7 @@ import { gql } from '@apollo/client'
 
 import { Separator } from '@/components/ui/separator'
 import { getClient } from '@/lib/apollo'
-import { Category, Filter } from '@/types'
+import { type Category, type Filter } from '@/types'
 import { CategoriesMain } from './main'
 
 const GET_CATEGORIES = gql`

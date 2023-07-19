@@ -2,7 +2,7 @@ import { env } from '@/env.mjs'
 
 import './globals.css'
 
-import { Metadata } from 'next'
+import { type Metadata } from 'next'
 import * as React from 'react'
 
 import { ThemeProvider } from '@/components/theme-provider'

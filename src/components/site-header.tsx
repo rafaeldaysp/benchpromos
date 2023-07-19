@@ -1,8 +1,8 @@
 import Link from 'next/link'
 
-import { UserAccountNav } from '@/components/user-account-nav'
-import { SignInButton } from './sign-in-button'
 import { getCurrentUser } from '@/app/_actions/get-current-user'
+import { SignInButton } from '@/components/sign-in-button'
+import { UserAccountNav } from '@/components/user-account-nav'
 
 export async function SiteHeader() {
   const user = await getCurrentUser()

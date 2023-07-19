@@ -36,7 +36,7 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet'
 import { env } from '@/env.mjs'
-import { Category, Filter } from '@/types'
+import { type Category, type Filter } from '@/types'
 
 const CREATE_FILTER = gql`
   mutation CreateFilter($input: CreateFilterInput!) {
@@ -84,6 +84,8 @@ interface FiltersMainProps {
   }
 }
 
+// mudar totalmente a lógica desse arquivo, backend mudou X_X
+
 // arquivo ficou grande, posteriormente da pra melhorar ¯\_(ツ)_/¯
 
 export function FiltersMain({ category }: FiltersMainProps) {
@@ -95,10 +97,10 @@ export function FiltersMain({ category }: FiltersMainProps) {
         'api-key': env.NEXT_PUBLIC_API_KEY,
       },
     },
-    onError(error, clientOptions) {
+    onError(error, _clientOptions) {
       toast.error(error.message)
     },
-    onCompleted(data, clientOptions) {
+    onCompleted(_data, _clientOptions) {
       toast.success('Filtro deletado com sucesso.')
       router.refresh()
     },
@@ -190,10 +192,10 @@ export function FilterModal({ categoryId, filter }: FilterModalProps) {
           'api-key': env.NEXT_PUBLIC_API_KEY,
         },
       },
-      onError(error, clientOptions) {
+      onError(error, _clientOptions) {
         toast.error(error.message)
       },
-      onCompleted(data, clientOptions) {
+      onCompleted(_data, _clientOptions) {
         const message = !filter?.id
           ? 'Filtro cadastrado com sucesso.'
           : 'Filtro atualizado com sucesso.'
@@ -266,10 +268,10 @@ export function FilterOptionModal({ filter }: FilterOptionModalProps) {
         'api-key': env.NEXT_PUBLIC_API_KEY,
       },
     },
-    onError(error, clientOptions) {
+    onError(error, _clientOptions) {
       toast.error(error.message)
     },
-    onCompleted(data, clientOptions) {
+    onCompleted(_data, _clientOptions) {
       setFilterOptionInput('')
 
       toast.success('Opção criada com sucesso.')
@@ -284,10 +286,10 @@ export function FilterOptionModal({ filter }: FilterOptionModalProps) {
         'api-key': env.NEXT_PUBLIC_API_KEY,
       },
     },
-    onError(error, clientOptions) {
+    onError(error, _clientOptions) {
       toast.error(error.message)
     },
-    onCompleted(data, clientOptions) {
+    onCompleted(_data, _clientOptions) {
       toast.success('Opção deletada com successo.')
       router.refresh()
     },
