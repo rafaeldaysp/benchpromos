@@ -30,9 +30,15 @@ import {
 } from '@/components/ui/sheet'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { env } from '@/env.mjs'
-import { Cashback, Coupon, Deal, Product, Retailer } from '@/types'
+import {
+  type Cashback,
+  type Coupon,
+  type Deal,
+  type Product,
+  type Retailer,
+} from '@/types'
 import { priceFormatter } from '@/utils/formatter'
-import { priceCalculator } from '@/utils/priceCalculator'
+import { priceCalculator } from '@/utils/price-calculator'
 
 const DELETE_DEAL = gql`
   mutation DeleteDeal($dealId: ID!) {
