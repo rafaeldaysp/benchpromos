@@ -96,9 +96,14 @@ export function ProductFiltersForm({
     onError(error, _clientOptions) {
       toast.error(error.message)
     },
+    onCompleted() {
+      toast.success('Filtros atualizados com sucesso.')
+      router.refresh()
+    }
   })
 
   async function onSubmit(data: Inputs) {
+    console.log(data)
     const optionsId = data.filters
       .filter((filter) => filter.optionId !== 'none')
       .map((filter) => filter.optionId)
@@ -111,7 +116,6 @@ export function ProductFiltersForm({
         },
       },
     })
-    router.refresh()
   }
 
   return (
