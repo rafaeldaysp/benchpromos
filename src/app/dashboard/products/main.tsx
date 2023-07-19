@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import * as React from 'react'
 import { toast } from 'sonner'
 
+import { DashboardItemCard } from '@/components/dashboard-item-card'
 import { ProductFiltersForm } from '@/components/forms/product-filters-form'
 import { ProductForm } from '@/components/forms/product-form'
 import { Icons } from '@/components/icons'
@@ -38,7 +39,6 @@ import {
 } from '@/components/ui/sheet'
 import { env } from '@/env.mjs'
 import { type Category, type Filter, type Product } from '@/types'
-import { DashboardItemCard } from '@/components/dashboard-item-card'
 
 const DELETE_PRODUCT = gql`
   mutation DeleteProduct($productId: ID!) {
@@ -191,13 +191,9 @@ export function ProductsMain({ products, filters }: ProductsMainProps) {
                     </AlertDialogTrigger>
                     <AlertDialogContent>
                       <AlertDialogHeader>
-                        <AlertDialogTitle>
-                          Are you absolutely sure?
-                        </AlertDialogTitle>
+                        <AlertDialogTitle>Você tem certeza?</AlertDialogTitle>
                         <AlertDialogDescription>
-                          This action cannot be undone. This will permanently
-                          delete your account and remove your data from our
-                          servers.
+                          Essa ação não pode ser desfeita.
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>

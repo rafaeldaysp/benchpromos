@@ -4,6 +4,7 @@ import { gql, useMutation } from '@apollo/client'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 
+import { DashboardItemCard } from '@/components/dashboard-item-card'
 import { SubcategoryForm } from '@/components/forms/subcategory-form'
 import { Icons } from '@/components/icons'
 import {
@@ -83,22 +84,15 @@ export function SubcategoriesMain({ category }: SubcategoriesMainProps) {
       {category.subcategories.length > 0 ? (
         <ScrollArea className="rounded-md border">
           {category.subcategories.map((subcategory) => (
-            <div
-              key={subcategory.id}
-              className="flex items-start gap-6 rounded-md px-8 py-4 hover:bg-muted/20"
-            >
-              {/* Content */}
-              <div className="flex flex-1 flex-col gap-y-2">
+            <DashboardItemCard.Root key={subcategory.id}>
+              <DashboardItemCard.Content>
                 <p className="text-sm leading-7">{subcategory.name}</p>
-              </div>
+              </DashboardItemCard.Content>
 
-              {/* Subcategory Actions */}
-              <div className="flex gap-2 self-center">
+              <DashboardItemCard.Actions>
                 <Sheet>
                   <SheetTrigger asChild>
-                    <Button variant="outline" size="icon">
-                      <Icons.Edit className="h-4 w-4" />
-                    </Button>
+                    <DashboardItemCard.Action icon={Icons.Edit} />
                   </SheetTrigger>
                   <SheetContent
                     className="w-full space-y-4 overflow-auto sm:max-w-xl"
@@ -117,19 +111,16 @@ export function SubcategoriesMain({ category }: SubcategoriesMainProps) {
 
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
-                    <Button variant="destructive" size="icon">
-                      <Icons.Trash className="h-4 w-4" />
-                    </Button>
+                    <DashboardItemCard.Action
+                      variant="destructive"
+                      icon={Icons.Edit}
+                    />
                   </AlertDialogTrigger>
                   <AlertDialogContent>
                     <AlertDialogHeader>
-                      <AlertDialogTitle>
-                        Are you absolutely sure?
-                      </AlertDialogTitle>
+                      <AlertDialogTitle>Você tem certeza?</AlertDialogTitle>
                       <AlertDialogDescription>
-                        This action cannot be undone. This will permanently
-                        delete your account and remove your data from our
-                        servers.
+                        Essa ação não pode ser desfeita.
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
@@ -146,8 +137,8 @@ export function SubcategoriesMain({ category }: SubcategoriesMainProps) {
                     </AlertDialogFooter>
                   </AlertDialogContent>
                 </AlertDialog>
-              </div>
-            </div>
+              </DashboardItemCard.Actions>
+            </DashboardItemCard.Root>
           ))}
         </ScrollArea>
       ) : (

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import * as React from 'react'
 import { toast } from 'sonner'
 
+import { DashboardItemCard } from '@/components/dashboard-item-card'
 import { SaleForm } from '@/components/forms/sale-form'
 import { Icons } from '@/components/icons'
 import {
@@ -69,8 +70,6 @@ export function SalesMain({ sales, products }: SalesMainProps) {
     },
   })
 
-  console.log(selectedProduct)
-
   return (
     <div className="space-y-8">
       {/* Sales Actions */}
@@ -94,54 +93,46 @@ export function SalesMain({ sales, products }: SalesMainProps) {
       </div>
 
       {selectedSale && (
-        <div className="flex items-start gap-6 rounded-md bg-muted px-8 py-4">
-          <div className="relative flex h-16 w-16 items-center justify-center rounded-md border">
-            <Icons.Image />
-          </div>
-          {/* Content */}
-          <div className="flex flex-1 flex-col gap-y-2">
-            <div className="flex flex-1 flex-col gap-y-2">
-              <p className="text-sm leading-7">{selectedSale.title}</p>
-              <span className="text-xs text-muted-foreground">
-                {selectedSale.createdAt} •{' '}
-                {priceFormatter.format(selectedSale.price / 100)}
-              </span>
-            </div>
-          </div>
-          <div className="self-center">
-            <Button
+        <DashboardItemCard.Root className="border">
+          <DashboardItemCard.Image src={selectedSale.imageUrl} alt="" />
+
+          <DashboardItemCard.Content>
+            <p className="text-sm leading-7">{selectedSale.title}</p>
+            <span className="text-xs text-muted-foreground">
+              {selectedSale.createdAt} •{' '}
+              {priceFormatter.format(selectedSale.price / 100)}
+            </span>
+          </DashboardItemCard.Content>
+
+          <DashboardItemCard.Actions>
+            <DashboardItemCard.Action
               variant="destructive"
-              size="icon"
+              icon={Icons.X}
               onClick={() => setSelectedSale(undefined)}
-            >
-              <Icons.X className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
+            />
+          </DashboardItemCard.Actions>
+        </DashboardItemCard.Root>
       )}
 
       {selectedProduct && (
-        <div className="flex items-start gap-6 rounded-md bg-muted px-8 py-4">
-          <div className="relative flex h-16 w-16 items-center justify-center rounded-md border">
-            <Icons.Image />
-          </div>
-          {/* Content */}
-          <div className="flex flex-1 flex-col gap-y-2">
+        <DashboardItemCard.Root className="border">
+          <DashboardItemCard.Image src={selectedProduct.imageUrl} alt="" />
+
+          <DashboardItemCard.Content>
             <p className="text-sm leading-7">{selectedProduct.name}</p>
             <span className="text-xs text-muted-foreground">
               {selectedProduct.category.name}
             </span>
-          </div>
-          <div className="self-center">
-            <Button
+          </DashboardItemCard.Content>
+
+          <DashboardItemCard.Actions>
+            <DashboardItemCard.Action
               variant="destructive"
-              size="icon"
+              icon={Icons.X}
               onClick={() => setSelectedProduct(undefined)}
-            >
-              <Icons.X className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
+            />
+          </DashboardItemCard.Actions>
+        </DashboardItemCard.Root>
       )}
 
       <Tabs defaultValue="sales">
@@ -156,17 +147,11 @@ export function SalesMain({ sales, products }: SalesMainProps) {
               <Input placeholder="Pesquise por uma promoção..." />
               <ScrollArea className="rounded-md border bg-primary-foreground">
                 {sales.map((sale) => (
-                  <div
-                    key={sale.id}
-                    className="flex cursor-pointer items-start gap-6 rounded-md px-8 py-4 hover:bg-muted"
-                  >
-                    <div className="relative flex h-16 w-16 items-center justify-center rounded-md border">
-                      <Icons.Image />
-                    </div>
+                  <DashboardItemCard.Root key={sale.id}>
+                    <DashboardItemCard.Image src={sale.imageUrl} alt="" />
 
-                    {/* Content */}
-                    <div
-                      className="flex flex-1 flex-col gap-y-2"
+                    <DashboardItemCard.Content
+                      className="cursor-pointer"
                       onClick={() => {
                         setSelectedProduct(undefined)
                         setSelectedSale(sale)
@@ -177,15 +162,12 @@ export function SalesMain({ sales, products }: SalesMainProps) {
                         {sale.createdAt} •{' '}
                         {priceFormatter.format(sale.price / 100)}
                       </span>
-                    </div>
+                    </DashboardItemCard.Content>
 
-                    {/* Sale Actions */}
-                    <div className="flex gap-2 self-center">
+                    <DashboardItemCard.Actions>
                       <Sheet>
                         <SheetTrigger asChild>
-                          <Button variant="outline" size="icon">
-                            <Icons.Edit className="h-4 w-4" />
-                          </Button>
+                          <DashboardItemCard.Action icon={Icons.Edit} />
                         </SheetTrigger>
                         <SheetContent
                           className="w-full space-y-4 overflow-auto sm:max-w-xl"
@@ -200,19 +182,18 @@ export function SalesMain({ sales, products }: SalesMainProps) {
 
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
-                          <Button variant="destructive" size="icon">
-                            <Icons.Trash className="h-4 w-4" />
-                          </Button>
+                          <DashboardItemCard.Action
+                            variant="destructive"
+                            icon={Icons.Trash}
+                          />
                         </AlertDialogTrigger>
                         <AlertDialogContent>
                           <AlertDialogHeader>
                             <AlertDialogTitle>
-                              Are you absolutely sure?
+                              Você tem certeza?
                             </AlertDialogTitle>
                             <AlertDialogDescription>
-                              This action cannot be undone. This will
-                              permanently delete your account and remove your
-                              data from our servers.
+                              Essa ação não pode ser desfeita.
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
@@ -229,8 +210,8 @@ export function SalesMain({ sales, products }: SalesMainProps) {
                           </AlertDialogFooter>
                         </AlertDialogContent>
                       </AlertDialog>
-                    </div>
-                  </div>
+                    </DashboardItemCard.Actions>
+                  </DashboardItemCard.Root>
                 ))}
               </ScrollArea>
             </div>
@@ -249,23 +230,19 @@ export function SalesMain({ sales, products }: SalesMainProps) {
               <Input placeholder="Pesquise por um produto..." />
               <ScrollArea className="rounded-md border bg-primary-foreground">
                 {products.map((product) => (
-                  <div
+                  <DashboardItemCard.Root
                     key={product.id}
-                    className="flex cursor-pointer items-start gap-6 rounded-md px-8 py-4 hover:bg-muted"
+                    className="cursor-pointer"
                     onClick={() => {
                       setSelectedSale(undefined)
                       setSelectedProduct(product)
                     }}
                   >
-                    <div className="relative flex h-16 w-16 items-center justify-center rounded-md border">
-                      <Icons.Image />
-                    </div>
-
-                    {/* Content */}
-                    <div className="flex flex-1 flex-col gap-y-2">
+                    <DashboardItemCard.Image src={product.imageUrl} alt="" />
+                    <DashboardItemCard.Content>
                       <p className="text-sm leading-7">{product.name}</p>
-                    </div>
-                  </div>
+                    </DashboardItemCard.Content>
+                  </DashboardItemCard.Root>
                 ))}
               </ScrollArea>
             </div>

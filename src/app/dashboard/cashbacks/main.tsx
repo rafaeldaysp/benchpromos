@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation'
 import * as React from 'react'
 import { toast } from 'sonner'
 
+import { DashboardItemCard } from '@/components/dashboard-item-card'
+import { CashbackForm } from '@/components/forms/cashback-form'
 import { Icons } from '@/components/icons'
 import {
   AlertDialog,
@@ -28,7 +30,6 @@ import {
 } from '@/components/ui/sheet'
 import { env } from '@/env.mjs'
 import { type Cashback, type Retailer } from '@/types'
-import { CashbackForm } from '@/components/forms/cashback-form'
 
 const DELETE_CASHBACK = gql`
   mutation DeleteCashback($cashbackId: ID!) {
@@ -83,52 +84,43 @@ export function CashbacksMain({ cashbacks }: CashbacksMainProps) {
       </div>
 
       {selectedCashback && (
-        <div className="flex items-start gap-6 rounded-md bg-muted px-8 py-4">
-          {/* Content */}
-          <div className="flex flex-1 flex-col gap-y-2">
+        <DashboardItemCard.Root className="border">
+          <DashboardItemCard.Content>
             <p className="text-sm leading-7">{selectedCashback.value}</p>
             <span className="text-xs text-muted-foreground">
               {selectedCashback.retailer.name}
             </span>
-          </div>
-          <div className="self-center">
-            <Button
+          </DashboardItemCard.Content>
+
+          <DashboardItemCard.Actions>
+            <DashboardItemCard.Action
               variant="destructive"
-              size="icon"
+              icon={Icons.X}
               onClick={() => setSelectedCashback(undefined)}
-            >
-              <Icons.X className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
+            />
+          </DashboardItemCard.Actions>
+        </DashboardItemCard.Root>
       )}
 
       {/* Cashbacks */}
       {cashbacks.length > 0 ? (
         <ScrollArea className="rounded-md border bg-primary-foreground">
           {cashbacks.map((cashback) => (
-            <div
-              key={cashback.id}
-              className="flex items-start gap-6 rounded-md px-8 py-4 hover:bg-muted"
-            >
-              {/* Content */}
-              <div
-                className="flex flex-1 cursor-pointer flex-col gap-y-2"
+            <DashboardItemCard.Root key={cashback.id}>
+              <DashboardItemCard.Content
+                className="cursor-pointer"
                 onClick={() => setSelectedCashback(cashback)}
               >
                 <p className="text-sm leading-7">{cashback.value}</p>
                 <span className="text-xs text-muted-foreground">
                   {cashback.retailer.name}
                 </span>
-              </div>
+              </DashboardItemCard.Content>
 
-              {/* Cashback Actions */}
-              <div className="flex gap-2 self-center">
+              <DashboardItemCard.Actions>
                 <Sheet>
                   <SheetTrigger asChild>
-                    <Button variant="outline" size="icon">
-                      <Icons.Edit className="h-4 w-4" />
-                    </Button>
+                    <DashboardItemCard.Action icon={Icons.Edit} />
                   </SheetTrigger>
                   <SheetContent
                     className="w-full space-y-4 overflow-auto sm:max-w-xl"
@@ -143,19 +135,16 @@ export function CashbacksMain({ cashbacks }: CashbacksMainProps) {
 
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
-                    <Button variant="destructive" size="icon">
-                      <Icons.Trash className="h-4 w-4" />
-                    </Button>
+                    <DashboardItemCard.Action
+                      variant="destructive"
+                      icon={Icons.Trash}
+                    />
                   </AlertDialogTrigger>
                   <AlertDialogContent>
                     <AlertDialogHeader>
-                      <AlertDialogTitle>
-                        Are you absolutely sure?
-                      </AlertDialogTitle>
+                      <AlertDialogTitle>Você tem certeza?</AlertDialogTitle>
                       <AlertDialogDescription>
-                        This action cannot be undone. This will permanently
-                        delete your account and remove your data from our
-                        servers.
+                        Essa ação não pode ser desfeita.
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
@@ -172,8 +161,8 @@ export function CashbacksMain({ cashbacks }: CashbacksMainProps) {
                     </AlertDialogFooter>
                   </AlertDialogContent>
                 </AlertDialog>
-              </div>
-            </div>
+              </DashboardItemCard.Actions>
+            </DashboardItemCard.Root>
           ))}
         </ScrollArea>
       ) : (

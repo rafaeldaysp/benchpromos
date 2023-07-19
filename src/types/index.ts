@@ -56,7 +56,6 @@ export type Filter = {
     value: string
     priority: number
   }[]
-  
 }
 
 export type Deal = {

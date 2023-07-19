@@ -1,6 +1,7 @@
 import Image, { type ImageProps } from 'next/image'
+import * as React from 'react'
 
-import { Button, type ButtonProps } from '@/components/ui/button'
+import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
 function DashboardItemCardRoot({
@@ -62,21 +63,15 @@ function DashboardItemCardActions({
   )
 }
 
-interface DasboardItemCardAction extends ButtonProps {
-  icon: React.ElementType
-}
-
-function DashboardItemCardAction({
-  icon: Icon,
-  variant = 'outline',
-  ...props
-}: DasboardItemCardAction) {
-  return (
-    <Button variant={variant} size="icon" {...props}>
-      <Icon className="h-4 w-4" />
-    </Button>
-  )
-}
+const DashboardItemCardAction = React.forwardRef<
+  React.ElementRef<typeof Button>,
+  React.ComponentPropsWithoutRef<typeof Button> & { icon: React.ElementType }
+>(({ icon: Icon, variant = 'outline', ...props }, ref) => (
+  <Button ref={ref} variant={variant} size="icon" {...props}>
+    <Icon className="h-4 w-4" />
+  </Button>
+))
+DashboardItemCardAction.displayName = 'DashboardItemCardAction'
 
 export const DashboardItemCard = {
   Root: DashboardItemCardRoot,

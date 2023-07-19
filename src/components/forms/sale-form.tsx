@@ -90,7 +90,6 @@ export function SaleForm({ mode = 'create', sale }: SaleFormProps) {
       },
     },
   })
-  console.log(data)
 
   const categoryItems = React.useMemo(() => {
     const categoryItems = data?.categories.map((category) => ({
