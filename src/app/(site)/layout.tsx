@@ -1,6 +1,6 @@
 import * as React from 'react'
 
-import { SiteHeader } from '@/components/site-header'
+import { SiteHeader } from '@/components/layouts/site-header'
 
 interface SiteLayoutProps {
   children: React.ReactNode

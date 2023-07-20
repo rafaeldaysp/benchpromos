@@ -8,6 +8,7 @@ import {
   MenuSquare,
   Minus,
   Plus,
+  Search,
   Trash2,
   User2,
   X,
@@ -26,4 +27,5 @@ export const Icons = {
   Image,
   Check,
   Menu: MenuSquare,
+  Search,
 }

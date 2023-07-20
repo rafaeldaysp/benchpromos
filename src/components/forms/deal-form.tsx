@@ -48,7 +48,7 @@ const UPDATE_DEAL = gql`
 `
 
 const GET_COUPONS_AND_CASHBACKS_BY_RETAILER = gql`
-  query GetCouponsByRetailer($retailerId: ID) {
+  query GetCouponsAndCashbacksByRetailer($retailerId: ID) {
     coupons(retailerId: $retailerId) {
       id
       code

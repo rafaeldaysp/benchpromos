@@ -30,6 +30,7 @@ function DashboardItemCardImage({ className, src, alt, ...props }: ImageProps) {
         alt={alt}
         className={cn('object-contain', className)}
         fill
+        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         {...props}
       />
     </div>
