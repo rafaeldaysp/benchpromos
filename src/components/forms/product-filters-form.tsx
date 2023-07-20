@@ -30,14 +30,6 @@ const LINK_FILTERS = gql`
   }
 `
 
-// const UNLINK_FILTER = gql`
-//   mutation UnlinkFiltersToProduct($productId: ID!) {
-//     unlinkFiltersToProduct(productId: $productId) {
-//       id
-//     }
-//   }
-// `
-
 type Inputs = z.infer<typeof linkFiltersSchema>
 
 interface ProductFiltersFormProps {
@@ -53,11 +45,7 @@ export function ProductFiltersForm({
   productId,
   productFilters,
 }: ProductFiltersFormProps) {
-  console.log('renderizou')
-
-  console.log(productFilters)
-
-  // melhorar essa lógica
+  // verificar a necessidade do useMemo
   const productFilterOptionIds = React.useMemo(() => {
     const productFilterOptionIds = productFilters?.map(
       (productFilter) => productFilter.optionId,
@@ -99,12 +87,12 @@ export function ProductFiltersForm({
     onCompleted() {
       toast.success('Filtros atualizados com sucesso.')
       router.refresh()
-    }
+    },
   })
 
+  // mudar para optionIds no back
   async function onSubmit(data: Inputs) {
-    console.log(data)
-    const optionsId = data.filters
+    const optionIds = data.filters
       .filter((filter) => filter.optionId !== 'none')
       .map((filter) => filter.optionId)
 
@@ -112,7 +100,7 @@ export function ProductFiltersForm({
       variables: {
         input: {
           productId,
-          optionsId,
+          optionsId: optionIds,
         },
       },
     })

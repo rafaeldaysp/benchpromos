@@ -1,9 +1,19 @@
 'use client'
 
 import { gql, useMutation } from '@apollo/client'
+import dynamic from 'next/dynamic'
 import { useRouter } from 'next/navigation'
 import * as React from 'react'
+import {
+  DragDropContext,
+  Draggable,
+  type DropResult,
+} from 'react-beautiful-dnd'
 import { toast } from 'sonner'
+const Droppable = dynamic(
+  async () => (await import('react-beautiful-dnd')).Droppable,
+  { ssr: false },
+)
 
 import { DashboardItemCard } from '@/components/dashboard-item-card'
 import { CategoryForm } from '@/components/forms/category-form'
@@ -31,8 +41,17 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { env } from '@/env.mjs'
 import { type Category, type Filter } from '@/types'
+import { reorder } from '@/utils'
 import { FiltersMain } from './filters.main'
 import { SubcategoriesMain } from './subcategories-main'
+
+const UPDATE_CATEGORIES_ORDER = gql`
+  mutation UpdateCategoriesOrder($input: [UpdateCategoryInput!]!) {
+    updateCategories(updateCategoriesInput: $input) {
+      id
+    }
+  }
+`
 
 const DELETE_CATEGORY = gql`
   mutation DeleteCategory($categoryId: ID!) {
@@ -46,10 +65,28 @@ interface CategoriesMainProps {
   categories: (Category & { filters: Omit<Filter, 'categoryId'>[] })[]
 }
 
-export function CategoriesMain({ categories }: CategoriesMainProps) {
+export function CategoriesMain({
+  categories: initialCategories,
+}: CategoriesMainProps) {
+  const [categories, setCategories] = React.useState(initialCategories)
   const [selectedCategory, setSelectedCategory] =
     React.useState<(typeof categories)[0]>()
   const router = useRouter()
+
+  const [updateCategoriesOrder] = useMutation(UPDATE_CATEGORIES_ORDER, {
+    context: {
+      headers: {
+        'api-key': env.NEXT_PUBLIC_API_KEY,
+      },
+    },
+    onError(error, _clientOptions) {
+      toast.error(error.message)
+    },
+    onCompleted(_data, _clientOptions) {
+      toast.success('Categorias reordenadas com sucesso.')
+      router.refresh()
+    },
+  })
 
   const [deleteCategory] = useMutation(DELETE_CATEGORY, {
     context: {
@@ -66,16 +103,47 @@ export function CategoriesMain({ categories }: CategoriesMainProps) {
     },
   })
 
+  // update states only after server refresh
   React.useEffect(() => {
     setSelectedCategory((prev) =>
-      categories.find((category) => category.id === prev?.id),
+      initialCategories.find((category) => category.id === prev?.id),
     )
-  }, [categories])
+  }, [initialCategories])
+
+  function onDragEnd(result: DropResult) {
+    if (!result.destination) {
+      return
+    }
+
+    const reorderedCategories = reorder(
+      categories,
+      result.source.index,
+      result.destination.index,
+    )
+
+    setCategories(reorderedCategories)
+  }
 
   return (
     <div className="space-y-8">
       {/* Categories Actions */}
       <div className="flex justify-end gap-x-2">
+        <Button
+          variant="outline"
+          onClick={() =>
+            updateCategoriesOrder({
+              variables: {
+                input: categories.map((category, index) => ({
+                  id: category.id,
+                  priority: index,
+                })),
+              },
+            })
+          }
+        >
+          Salvar Ordenação
+        </Button>
+
         <Sheet>
           <SheetTrigger asChild>
             <Button variant="outline">Adicionar</Button>
@@ -108,7 +176,7 @@ export function CategoriesMain({ categories }: CategoriesMainProps) {
             </DashboardItemCard.Actions>
           </DashboardItemCard.Root>
 
-          <Tabs defaultValue="subcategories">
+          <Tabs defaultValue="subcategories" className="space-y-4">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="subcategories">Subcategorias</TabsTrigger>
               <TabsTrigger value="filters">Filtros</TabsTrigger>
@@ -127,64 +195,99 @@ export function CategoriesMain({ categories }: CategoriesMainProps) {
 
       {/* Categories */}
       {categories.length > 0 ? (
-        <ScrollArea className="rounded-md border bg-primary-foreground">
-          {categories.map((category) => (
-            <DashboardItemCard.Root key={category.id}>
-              <DashboardItemCard.Content
-                className="cursor-pointer"
-                onClick={() => setSelectedCategory(category)}
-              >
-                <p className="text-sm leading-7">{category.name}</p>
-              </DashboardItemCard.Content>
+        <DragDropContext onDragEnd={onDragEnd}>
+          <ScrollArea className="rounded-md border bg-primary-foreground p-2">
+            <Droppable droppableId="categories-droppable">
+              {(provided) => (
+                <div ref={provided.innerRef} {...provided.droppableProps}>
+                  {categories.map((category, index) => (
+                    <Draggable
+                      key={category.id}
+                      draggableId={category.id}
+                      index={index}
+                    >
+                      {(provided) => (
+                        <div
+                          className="mb-2"
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          {...provided.dragHandleProps}
+                        >
+                          <DashboardItemCard.Root>
+                            <DashboardItemCard.Content
+                              className="cursor-pointer"
+                              onClick={() => setSelectedCategory(category)}
+                            >
+                              <p className="text-sm leading-7">
+                                {category.name}
+                              </p>
+                            </DashboardItemCard.Content>
 
-              <DashboardItemCard.Actions>
-                <Sheet>
-                  <SheetTrigger asChild>
-                    <DashboardItemCard.Action icon={Icons.Edit} />
-                  </SheetTrigger>
-                  <SheetContent
-                    className="w-full space-y-4 overflow-auto sm:max-w-xl"
-                    side="left"
-                  >
-                    <SheetHeader>
-                      <SheetTitle>EDITAR CATEGORIA</SheetTitle>
-                    </SheetHeader>
-                    <CategoryForm mode="update" category={category} />
-                  </SheetContent>
-                </Sheet>
+                            <DashboardItemCard.Actions>
+                              <Sheet>
+                                <SheetTrigger asChild>
+                                  <DashboardItemCard.Action icon={Icons.Edit} />
+                                </SheetTrigger>
+                                <SheetContent
+                                  className="w-full space-y-4 overflow-auto sm:max-w-xl"
+                                  side="left"
+                                >
+                                  <SheetHeader>
+                                    <SheetTitle>EDITAR CATEGORIA</SheetTitle>
+                                  </SheetHeader>
+                                  <CategoryForm
+                                    mode="update"
+                                    category={category}
+                                  />
+                                </SheetContent>
+                              </Sheet>
 
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <DashboardItemCard.Action
-                      variant="destructive"
-                      icon={Icons.Trash}
-                    />
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Você tem certeza?</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        Essa ação não pode ser desfeita.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                      <AlertDialogAction
-                        onClick={() =>
-                          deleteCategory({
-                            variables: { categoryId: category.id },
-                          })
-                        }
-                      >
-                        Continuar
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-              </DashboardItemCard.Actions>
-            </DashboardItemCard.Root>
-          ))}
-        </ScrollArea>
+                              <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                  <DashboardItemCard.Action
+                                    variant="destructive"
+                                    icon={Icons.Trash}
+                                  />
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                  <AlertDialogHeader>
+                                    <AlertDialogTitle>
+                                      Você tem certeza?
+                                    </AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                      Essa ação não pode ser desfeita.
+                                    </AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter>
+                                    <AlertDialogCancel>
+                                      Cancelar
+                                    </AlertDialogCancel>
+                                    <AlertDialogAction
+                                      onClick={() =>
+                                        deleteCategory({
+                                          variables: {
+                                            categoryId: category.id,
+                                          },
+                                        })
+                                      }
+                                    >
+                                      Continuar
+                                    </AlertDialogAction>
+                                  </AlertDialogFooter>
+                                </AlertDialogContent>
+                              </AlertDialog>
+                            </DashboardItemCard.Actions>
+                          </DashboardItemCard.Root>
+                        </div>
+                      )}
+                    </Draggable>
+                  ))}
+                  {provided.placeholder}
+                </div>
+              )}
+            </Droppable>
+          </ScrollArea>
+        </DragDropContext>
       ) : (
         <div className="flex justify-center">
           <p className="text-muted-foreground">Nenhuma categoria encontrada.</p>
