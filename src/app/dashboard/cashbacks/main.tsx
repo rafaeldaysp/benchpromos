@@ -29,7 +29,7 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet'
 import { env } from '@/env.mjs'
-import { type Cashback, type Retailer } from '@/types'
+import { type Cashback } from '@/types'
 
 const DELETE_CASHBACK = gql`
   mutation DeleteCashback($cashbackId: ID!) {
@@ -40,7 +40,7 @@ const DELETE_CASHBACK = gql`
 `
 
 interface CashbacksMainProps {
-  cashbacks: (Cashback & { retailer: Pick<Retailer, 'name'> })[]
+  cashbacks: Cashback[]
 }
 
 export function CashbacksMain({ cashbacks }: CashbacksMainProps) {
@@ -88,7 +88,7 @@ export function CashbacksMain({ cashbacks }: CashbacksMainProps) {
           <DashboardItemCard.Content>
             <p className="text-sm leading-7">{selectedCashback.value}</p>
             <span className="text-xs text-muted-foreground">
-              {selectedCashback.retailer.name}
+              {selectedCashback.provider}
             </span>
           </DashboardItemCard.Content>
 
@@ -113,7 +113,7 @@ export function CashbacksMain({ cashbacks }: CashbacksMainProps) {
               >
                 <p className="text-sm leading-7">{cashback.value}</p>
                 <span className="text-xs text-muted-foreground">
-                  {cashback.retailer.name}
+                  {cashback.provider}
                 </span>
               </DashboardItemCard.Content>
 

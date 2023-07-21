@@ -2,13 +2,19 @@ import { env } from '@/env.mjs'
 
 import './globals.css'
 
+import dayjs from 'dayjs'
+import 'dayjs/locale/pt-br'
+import relativeTime from 'dayjs/plugin/relativeTime'
 import { type Metadata } from 'next'
 import * as React from 'react'
 
-import { ThemeProvider } from '@/components/theme-provider'
-import { siteConfig } from '@/config/site'
 import { ApolloWrapper } from '@/components/apollo-wrapper'
+import { ThemeProvider } from '@/components/theme-provider'
 import { Toaster } from '@/components/ui/toaster'
+import { siteConfig } from '@/config/site'
+
+dayjs.extend(relativeTime)
+dayjs.locale('pt-br')
 
 export const metadata: Metadata = {
   metadataBase: new URL(env.NEXT_PUBLIC_APP_URL),

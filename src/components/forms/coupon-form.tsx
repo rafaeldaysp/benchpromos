@@ -61,8 +61,8 @@ type Inputs = z.infer<typeof couponSchema>
 
 const defaultValues: Partial<Inputs> = {
   code: '',
+  description: '',
   discount: '',
-  availability: true,
 }
 
 interface CouponFormProps {

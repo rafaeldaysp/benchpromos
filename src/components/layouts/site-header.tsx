@@ -2,7 +2,7 @@ import Link from 'next/link'
 
 import { getCurrentUser } from '@/app/_actions/get-current-user'
 import { Combobox } from '@/components/combobox'
-import { SignInButton } from '@/components/sign-in-button'
+import { buttonVariants } from '@/components/ui/button'
 import { UserAccountNav } from '@/components/user-account-nav'
 
 export async function SiteHeader() {
@@ -32,7 +32,12 @@ export async function SiteHeader() {
                 }}
               />
             ) : (
-              <SignInButton />
+              <Link
+                href="/sign-in"
+                className={buttonVariants({ variant: 'secondary' })}
+              >
+                Entrar
+              </Link>
             )}
           </nav>
         </div>
