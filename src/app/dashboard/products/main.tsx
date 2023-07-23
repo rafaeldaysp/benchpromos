@@ -58,7 +58,7 @@ interface ProductsMainProps {
 
 export function ProductsMain({ products, filters }: ProductsMainProps) {
   const [selectedProduct, setSelectedProduct] =
-    React.useState<(typeof products)[0]>()
+    React.useState<(typeof products)[number]>()
   const router = useRouter()
 
   const categoryFilters = filters.filter(

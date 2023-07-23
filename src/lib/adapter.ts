@@ -1,7 +1,6 @@
 import { gql } from '@apollo/client'
-import type { Adapter } from 'next-auth/adapters'
+import { type Adapter } from 'next-auth/adapters'
 
-import { env } from '@/env.mjs'
 import { getClient } from './apollo'
 
 export function BenchAdapter(): Adapter {
@@ -19,11 +18,6 @@ export function BenchAdapter(): Adapter {
             }
           }
         `,
-        context: {
-          headers: {
-            'api-key': env.NEXT_PUBLIC_API_KEY,
-          },
-        },
         variables: {
           input: user,
         },
@@ -44,11 +38,6 @@ export function BenchAdapter(): Adapter {
             }
           }
         `,
-        context: {
-          headers: {
-            'api-key': env.NEXT_PUBLIC_API_KEY,
-          },
-        },
         variables: {
           id,
         },
@@ -69,11 +58,6 @@ export function BenchAdapter(): Adapter {
             }
           }
         `,
-        context: {
-          headers: {
-            'api-key': env.NEXT_PUBLIC_API_KEY,
-          },
-        },
         variables: {
           email,
         },
@@ -100,11 +84,6 @@ export function BenchAdapter(): Adapter {
             }
           }
         `,
-        context: {
-          headers: {
-            'api-key': env.NEXT_PUBLIC_API_KEY,
-          },
-        },
         variables: {
           providerAccountId,
           provider,
@@ -126,11 +105,6 @@ export function BenchAdapter(): Adapter {
             }
           }
         `,
-        context: {
-          headers: {
-            'api-key': env.NEXT_PUBLIC_API_KEY,
-          },
-        },
         variables: {
           id,
           input: user,
@@ -152,11 +126,6 @@ export function BenchAdapter(): Adapter {
             }
           }
         `,
-        context: {
-          headers: {
-            'api-key': env.NEXT_PUBLIC_API_KEY,
-          },
-        },
         variables: {
           id: userId,
         },
@@ -186,11 +155,6 @@ export function BenchAdapter(): Adapter {
             }
           }
         `,
-        context: {
-          headers: {
-            'api-key': env.NEXT_PUBLIC_API_KEY,
-          },
-        },
         variables: {
           input: account,
         },
@@ -226,11 +190,6 @@ export function BenchAdapter(): Adapter {
             }
           }
         `,
-        context: {
-          headers: {
-            'api-key': env.NEXT_PUBLIC_API_KEY,
-          },
-        },
         variables: {
           providerAccountId,
           provider,
@@ -251,11 +210,6 @@ export function BenchAdapter(): Adapter {
             }
           }
         `,
-        context: {
-          headers: {
-            'api-key': env.NEXT_PUBLIC_API_KEY,
-          },
-        },
         variables: {
           input: session,
         },
@@ -273,11 +227,6 @@ export function BenchAdapter(): Adapter {
             }
           }
         `,
-        context: {
-          headers: {
-            'api-key': env.NEXT_PUBLIC_API_KEY,
-          },
-        },
         variables: {
           sessionToken,
         },
@@ -300,11 +249,6 @@ export function BenchAdapter(): Adapter {
             }
           }
         `,
-        context: {
-          headers: {
-            'api-key': env.NEXT_PUBLIC_API_KEY,
-          },
-        },
         variables: {
           sessionToken,
           input: session,
@@ -325,11 +269,6 @@ export function BenchAdapter(): Adapter {
             }
           }
         `,
-        context: {
-          headers: {
-            'api-key': env.NEXT_PUBLIC_API_KEY,
-          },
-        },
         variables: {
           sessionToken,
         },
@@ -349,11 +288,6 @@ export function BenchAdapter(): Adapter {
             }
           }
         `,
-        context: {
-          headers: {
-            'api-key': env.NEXT_PUBLIC_API_KEY,
-          },
-        },
         variables: {
           input: verificationToken,
         },
@@ -373,11 +307,6 @@ export function BenchAdapter(): Adapter {
             }
           }
         `,
-        context: {
-          headers: {
-            'api-key': env.NEXT_PUBLIC_API_KEY,
-          },
-        },
         variables: {
           token,
           identifier,

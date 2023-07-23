@@ -45,7 +45,7 @@ interface CouponsMainProps {
 
 export function CouponsMain({ coupons }: CouponsMainProps) {
   const [selectedCoupon, setSelectedCoupon] =
-    React.useState<(typeof coupons)[0]>()
+    React.useState<(typeof coupons)[number]>()
   const router = useRouter()
 
   const [deleteCoupon] = useMutation(DELETE_COUPON, {

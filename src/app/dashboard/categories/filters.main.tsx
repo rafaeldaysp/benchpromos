@@ -84,8 +84,6 @@ interface FiltersMainProps {
   }
 }
 
-// mudar totalmente a lógica desse arquivo, backend mudou X_X
-
 // arquivo ficou grande, posteriormente da pra melhorar ¯\_(ツ)_/¯
 
 export function FiltersMain({ category }: FiltersMainProps) {

@@ -10,5 +10,8 @@ export const { getClient } = registerApolloClient(() => {
       uri: env.NEXT_PUBLIC_API_URL,
       fetchOptions: { cache: 'no-store' },
     }),
+    headers: {
+      'api-key': env.NEXT_PUBLIC_API_KEY,
+    },
   })
 })

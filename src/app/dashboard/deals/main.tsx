@@ -59,9 +59,9 @@ interface DealsMainProps {
 
 export function DealsMain({ deals, products, retailers }: DealsMainProps) {
   const [selectedProduct, setSelectedProduct] =
-    React.useState<(typeof products)[0]>()
+    React.useState<(typeof products)[number]>()
   const [selectedRetailer, setSelectedRetailer] =
-    React.useState<(typeof retailers)[0]>()
+    React.useState<(typeof retailers)[number]>()
   const router = useRouter()
 
   const filteredDeals = deals
@@ -81,11 +81,11 @@ export function DealsMain({ deals, products, retailers }: DealsMainProps) {
     .map((deal) => {
       const product = products.find(
         (product) => product.id === deal.productId,
-      ) as (typeof products)[0]
+      ) as (typeof products)[number]
 
       const retailer = retailers.find(
         (retailer) => retailer.id === deal.retailerId,
-      ) as (typeof retailers)[0]
+      ) as (typeof retailers)[number]
 
       return {
         ...deal,
@@ -171,6 +171,7 @@ export function DealsMain({ deals, products, retailers }: DealsMainProps) {
 
       {filteredDeals.length > 0 ? (
         <div className="space-y-4">
+          <div></div>
           <h4 className="font-medium tracking-tight">
             Anúncios • {filteredDeals.length}
           </h4>

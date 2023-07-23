@@ -1,19 +1,16 @@
 'use client'
 
 import { gql, useMutation } from '@apollo/client'
-import dynamic from 'next/dynamic'
 import { useRouter } from 'next/navigation'
 import * as React from 'react'
 import {
   DragDropContext,
   Draggable,
+  Droppable,
+  resetServerContext,
   type DropResult,
 } from 'react-beautiful-dnd'
 import { toast } from 'sonner'
-const Droppable = dynamic(
-  async () => (await import('react-beautiful-dnd')).Droppable,
-  { ssr: false },
-)
 
 import { DashboardItemCard } from '@/components/dashboard-item-card'
 import { CategoryForm } from '@/components/forms/category-form'
@@ -68,9 +65,11 @@ interface CategoriesMainProps {
 export function CategoriesMain({
   categories: initialCategories,
 }: CategoriesMainProps) {
+  resetServerContext()
+
   const [categories, setCategories] = React.useState(initialCategories)
   const [selectedCategory, setSelectedCategory] =
-    React.useState<(typeof categories)[0]>()
+    React.useState<(typeof categories)[number]>()
   const router = useRouter()
 
   const [updateCategoriesOrder] = useMutation(UPDATE_CATEGORIES_ORDER, {
@@ -105,6 +104,8 @@ export function CategoriesMain({
 
   // update states only after server refresh
   React.useEffect(() => {
+    setCategories(initialCategories)
+
     setSelectedCategory((prev) =>
       initialCategories.find((category) => category.id === prev?.id),
     )

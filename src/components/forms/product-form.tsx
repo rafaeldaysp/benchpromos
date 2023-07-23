@@ -1,6 +1,7 @@
 'use client'
 
-import { gql, useMutation, useQuery } from '@apollo/client'
+import { gql, useMutation } from '@apollo/client'
+import { useSuspenseQuery } from '@apollo/experimental-nextjs-app-support/ssr'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'next/navigation'
 import * as React from 'react'
@@ -91,13 +92,16 @@ export function ProductForm({ mode = 'create', product }: ProductFormProps) {
     name: 'specs',
   })
 
-  const { data } = useQuery<{ categories: Category[] }>(GET_CATEGORIES, {
-    context: {
-      headers: {
-        'api-key': env.NEXT_PUBLIC_API_KEY,
+  const { data } = useSuspenseQuery<{ categories: Category[] }>(
+    GET_CATEGORIES,
+    {
+      context: {
+        headers: {
+          'api-key': env.NEXT_PUBLIC_API_KEY,
+        },
       },
     },
-  })
+  )
 
   const categoryItems = React.useMemo(() => {
     const categoryItems = data?.categories.map((category) => ({
