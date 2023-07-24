@@ -38,9 +38,7 @@ export default async function ProductsDashboardPage() {
         </p>
       </div>
       <Separator />
-      <React.Suspense>
-        <ProductsMain filters={filters} />
-      </React.Suspense>
+      <ProductsMain filters={filters} />
     </div>
   )
 }

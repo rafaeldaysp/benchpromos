@@ -1,13 +1,14 @@
 import dayjs from 'dayjs'
 import Image from 'next/image'
+import Link from 'next/link'
 
 import { CopyButton } from '@/components/copy-button'
 import { Icons } from '@/components/icons'
+import { ReactionButton } from '@/components/reaction-button'
 import { Badge } from '@/components/ui/badge'
 import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { priceFormatter } from '@/utils/formatter'
-import { ReactionButton } from './reaction-button'
 
 interface SaleCardProps {
   sale: {
@@ -52,19 +53,19 @@ export function SaleCard({ sale }: SaleCardProps) {
       </header>
 
       <div>
-        <a
+        <Link
           href={`/promocao/${sale.id}/${sale.slug}`}
-          className="cursor-pointer hover:text-violet-500"
+          className="cursor-pointer"
         >
           {sale.title}
-        </a>
+        </Link>
       </div>
 
-      <div className="relative mx-auto aspect-square w-8/12">
-        <a
-          href={`/promocao/${sale.id}/${sale.slug}`}
-          className="cursor-pointer hover:text-violet-500"
-        >
+      <Link
+        href={`/promocao/${sale.id}/${sale.slug}`}
+        className="cursor-pointer"
+      >
+        <div className="relative mx-auto aspect-square w-8/12">
           <Image
             src={sale.imageUrl}
             alt={sale.title}
@@ -72,8 +73,8 @@ export function SaleCard({ sale }: SaleCardProps) {
             fill
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
-        </a>
-      </div>
+        </div>
+      </Link>
 
       {sale.caption && (
         <div>
@@ -130,26 +131,26 @@ export function SaleCard({ sale }: SaleCardProps) {
         </a>
       </div>
 
-      <div className="flex w-full items-center justify-between">
-        <div className="flex items-center gap-0.5">
+      <footer className="flex items-center justify-between">
+        <div className="flex items-center gap-x-0.5">
           {sale.reactions.map((reaction) => (
             <ReactionButton
-              initialUsers={reaction.users}
-              reaction={reaction.content}
-              saleId={sale.id}
               key={reaction.content}
+              initialUsers={reaction.users}
+              saleId={sale.id}
+              reaction={reaction.content}
             />
           ))}
         </div>
 
-        <a
+        <Link
           href={`/promocao/${sale.id}/${sale.slug}#comments`}
-          className="flex items-center justify-between gap-1 px-1 hover:text-violet-400"
+          className="flex items-center justify-between gap-x-1"
         >
           <span>{sale.comments.length}</span>
           <Icons.MessageCircle className="h-5 w-5" />
-        </a>
-      </div>
+        </Link>
+      </footer>
     </div>
   )
 }

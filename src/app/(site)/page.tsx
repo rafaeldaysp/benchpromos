@@ -1,9 +1,9 @@
 import { gql } from '@apollo/client'
+import Link from 'next/link'
 
-import { getClient } from '@/lib/apollo'
-import { type Comment, type Category, type Sale } from '@/types'
+import { Icons } from '@/components/icons'
+import { ReactionMenu } from '@/components/reaction-menu'
 import { SaleCard } from '@/components/sale-card'
-
 import {
   ContextMenu,
   ContextMenuContent,
@@ -13,8 +13,8 @@ import {
   ContextMenuSubTrigger,
   ContextMenuTrigger,
 } from '@/components/ui/context-menu'
-import { Icons } from '@/components/icons'
-import { ReactionMenu } from '@/components/reaction-menu'
+import { getClient } from '@/lib/apollo'
+import type { Category, Comment, Sale } from '@/types'
 
 const GET_SALES = gql`
   query GetSales {
@@ -81,28 +81,31 @@ export default async function Home() {
                 </ContextMenuSubTrigger>
                 <ReactionMenu saleId={sale.id} />
               </ContextMenuSub>
+
               <ContextMenuSeparator />
-              <a href={`/promocao/${sale.id}/${sale.slug}`}>
+
+              <Link href={`/promocao/${sale.id}/${sale.slug}`}>
                 <ContextMenuItem className="flex gap-2">
                   <Icons.GanttChartSquare className="h-4 w-4" />
                   <span>Mais detalhes</span>
                 </ContextMenuItem>
-              </a>
+              </Link>
+
               {sale.productSlug && (
-                <a href={`/${sale.category.slug}/${sale.productSlug}`}>
+                <Link href={`/${sale.category.slug}/${sale.productSlug}`}>
                   <ContextMenuItem className="flex gap-2">
                     <Icons.Eye className="h-4 w-4" />
                     <span>Ver produto</span>
                   </ContextMenuItem>
-                </a>
+                </Link>
               )}
 
-              <a href={`/promocao/${sale.id}/${sale.slug}#comments`}>
+              <Link href={`/promocao/${sale.id}/${sale.slug}#comments`}>
                 <ContextMenuItem className="flex gap-2">
                   <Icons.MessageCircle className="h-4 w-4" />
                   <span>Comentários</span>
                 </ContextMenuItem>
-              </a>
+              </Link>
             </ContextMenuContent>
           </ContextMenu>
         ))}

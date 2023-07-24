@@ -1,9 +1,13 @@
 'use client'
 
 import { gql, useMutation } from '@apollo/client'
-import { toast } from 'sonner'
-import { ContextMenuItem, ContextMenuSubContent } from './ui/context-menu'
 import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
+
+import {
+  ContextMenuItem,
+  ContextMenuSubContent,
+} from '@/components/ui/context-menu'
 
 type Reaction = {
   emote: string
@@ -81,7 +85,7 @@ export function ReactionMenu({ saleId }: ReactionMenuProps) {
           }
         >
           <span>{reaction.emote}</span>
-          {/* <span>{`${reaction.emote} ${reaction.label}`}</span> */}
+          <span className="sr-only">{reaction.label}</span>
         </ContextMenuItem>
       ))}
     </ContextMenuSubContent>

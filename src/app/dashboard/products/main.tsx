@@ -80,6 +80,9 @@ interface ProductsMainProps {
   filters: Filter[]
 }
 
+// esse infinite scroll é uma bomba, cada linha tem seu motivo de ser, tire uma e tudo para de funcionar
+// ainda falta atualizar os estados depois aconteceu algum submit (product form ou filter form)
+
 export function ProductsMain({ filters }: ProductsMainProps) {
   const [lastCardRef, , entry] = useInView({ threshold: 1 })
   const [page, setPage] = React.useState(1)
@@ -121,8 +124,6 @@ export function ProductsMain({ filters }: ProductsMainProps) {
       toast.success('Produto deletado com sucesso.')
     },
   })
-
-  console.log(products)
 
   React.useEffect(() => {
     startTransition(async () => {

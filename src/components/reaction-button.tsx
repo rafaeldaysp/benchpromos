@@ -1,11 +1,10 @@
 'use client'
 
-import * as React from 'react'
+import { gql, useMutation } from '@apollo/client'
+import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
 
 import { cn } from '@/lib/utils'
-import { gql, useMutation } from '@apollo/client'
-import { toast } from 'sonner'
-import { useRouter } from 'next/navigation'
 
 interface ReactionButtonProps {
   reaction: string
