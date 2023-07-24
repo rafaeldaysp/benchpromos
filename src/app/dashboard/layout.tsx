@@ -31,6 +31,10 @@ const sidebarNavItems = [
     title: 'Cashbacks',
     href: '/dashboard/cashbacks',
   },
+  {
+    title: 'Benchmarks',
+    href: '/dashboard/benchmarks',
+  },
 ]
 
 interface DashboardLayoutProps {
