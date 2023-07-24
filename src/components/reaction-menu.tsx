@@ -63,7 +63,7 @@ export function ReactionMenu({ saleId }: ReactionMenuProps) {
       toast.error(error.message)
     },
     onCompleted(_data, _clientOptions) {
-      router.refresh()
+      // router.refresh() // método paia
     },
   })
 

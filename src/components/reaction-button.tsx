@@ -1,7 +1,8 @@
 'use client'
 
+import * as React from 'react'
+
 import { gql, useMutation } from '@apollo/client'
-import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 
 import { cn } from '@/lib/utils'
@@ -25,9 +26,7 @@ export function ReactionButton({
   initialUsers,
   saleId,
 }: ReactionButtonProps) {
-  const router = useRouter()
-
-  //const [usersIds, setUsersIds] = React.useState<{ id: string }[]>(initialUsers)
+  const [users, setUsers] = React.useState<typeof initialUsers>(initialUsers)
 
   const [toggleReaction] = useMutation(TOGGLE_REACTION, {
     context: {
@@ -36,10 +35,12 @@ export function ReactionButton({
       },
     },
     onError(error, _clientOptions) {
-      toast.error(error.message)
+      toast.error(error.message) // login toast
     },
     onCompleted(_data, _clientOptions) {
-      router.refresh()
+      users.some((user) => user.id === MY_SESSION_ID)
+        ? setUsers(users.filter((user) => user.id !== MY_SESSION_ID))
+        : setUsers(users.concat({ id: MY_SESSION_ID }))
     },
   })
 
@@ -57,16 +58,16 @@ export function ReactionButton({
         })
       }
       className={cn(
-        'mx-auto flex cursor-pointer items-center gap-1 rounded-xl border px-1 transition-colors hover:bg-accent',
+        'mx-auto flex cursor-pointer items-center gap-x-1 rounded-xl border px-1 transition-colors hover:bg-accent',
         {
-          'bg-violet-500 hover:bg-violet-400':
-            MY_SESSION_ID &&
-            initialUsers.some((user) => user.id === MY_SESSION_ID),
+          'bg-primary hover:bg-primary/80 text-primary-foreground':
+            MY_SESSION_ID && users.some((user) => user.id === MY_SESSION_ID),
+          hidden: users.length < 1,
         },
       )}
     >
       {reaction}
-      <span className="text-sm">{initialUsers.length}</span>
+      <span className="text-sm">{users.length}</span>
     </div>
   )
 }
