@@ -44,7 +44,7 @@ const DELETE_SALE = gql`
 
 interface SalesMainProps {
   sales: Sale[]
-  products: (Pick<Product, 'id' | 'name' | 'imageUrl'> & {
+  products: (Pick<Product, 'slug' | 'name' | 'imageUrl'> & {
     category: Pick<Category, 'name'>
   })[]
 }
@@ -232,7 +232,7 @@ export function SalesMain({ sales, products }: SalesMainProps) {
               <ScrollArea className="rounded-md border bg-primary-foreground">
                 {products.map((product) => (
                   <DashboardItemCard.Root
-                    key={product.id}
+                    key={product.slug}
                     className="cursor-pointer"
                     onClick={() => {
                       setSelectedSale(undefined)

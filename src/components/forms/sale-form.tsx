@@ -75,7 +75,7 @@ const defaultValues: Partial<Inputs> = {
 
 interface SaleFormProps {
   mode?: 'create' | 'update'
-  sale?: { id?: string } & Partial<Inputs>
+  sale?: { id?: string; slug?: string } & Partial<Inputs>
 }
 
 export function SaleForm({ mode = 'create', sale }: SaleFormProps) {
@@ -134,6 +134,7 @@ export function SaleForm({ mode = 'create', sale }: SaleFormProps) {
       variables: {
         input: {
           id: sale?.id,
+          productSlug: sale?.slug,
           ...data,
         },
       },

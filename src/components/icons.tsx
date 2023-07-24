@@ -18,6 +18,11 @@ import {
   Trash2,
   User2,
   X,
+  MessageCircle,
+  Heart,
+  Eye,
+  SmilePlusIcon,
+  GanttChartSquare,
   type LucideProps,
 } from 'lucide-react'
 
@@ -41,6 +46,11 @@ export const Icons = {
   ExternalLink,
   SmilePlus,
   ChevronLeft,
+  MessageCircle,
+  Heart,
+  Eye,
+  SmilePlusIcon,
+  GanttChartSquare,
   Google: ({ ...props }: LucideProps) => (
     <svg
       aria-hidden="true"

@@ -78,6 +78,7 @@ export type Deal = {
 export type Sale = {
   id: string
   title: string
+  slug: string
   imageUrl: string
   url: string
   price: number
@@ -90,5 +91,24 @@ export type Sale = {
   coupon?: string
   cashback?: string
   createdAt: string
-  productId?: string
+  productSlug?: string
+}
+
+export type Comment = {
+  id: string
+  userId: string
+  text: string
+}
+
+export type Benchmark = {
+  id: string
+  name: string
+}
+
+export type BenchmarkResult = {
+  id: string
+  result: number
+  productId: string
+  benchmarkId: string
+  description?: string
 }

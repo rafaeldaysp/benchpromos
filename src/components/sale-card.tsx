@@ -7,12 +7,13 @@ import { Badge } from '@/components/ui/badge'
 import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { priceFormatter } from '@/utils/formatter'
-import { SaleReactions } from './sale-reactions'
+import { ReactionButton } from './reaction-button'
 
 interface SaleCardProps {
   sale: {
     id: string
     title: string
+    slug: string
     imageUrl: string
     url: string
     price: number
@@ -27,6 +28,15 @@ interface SaleCardProps {
     category: {
       name: string
     }
+    comments: {
+      id: string
+    }[]
+    reactions: {
+      content: string
+      users: {
+        id: string
+      }[]
+    }[]
   }
 }
 
@@ -42,17 +52,27 @@ export function SaleCard({ sale }: SaleCardProps) {
       </header>
 
       <div>
-        <p>{sale.title}</p>
+        <a
+          href={`/promocao/${sale.id}/${sale.slug}`}
+          className="cursor-pointer hover:text-violet-500"
+        >
+          {sale.title}
+        </a>
       </div>
 
       <div className="relative mx-auto aspect-square w-8/12">
-        <Image
-          src={sale.imageUrl}
-          alt={sale.title}
-          className="rounded-lg object-contain"
-          fill
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-        />
+        <a
+          href={`/promocao/${sale.id}/${sale.slug}`}
+          className="cursor-pointer hover:text-violet-500"
+        >
+          <Image
+            src={sale.imageUrl}
+            alt={sale.title}
+            className="rounded-lg object-contain"
+            fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          />
+        </a>
       </div>
 
       {sale.caption && (
@@ -61,12 +81,26 @@ export function SaleCard({ sale }: SaleCardProps) {
         </div>
       )}
 
-      <div className="flex items-center gap-x-2">
-        <strong>{priceFormatter.format(sale.price / 100)}</strong>
+      <div className="flex flex-col gap-x-2">
+        <span>
+          <strong className="text-2xl">
+            {priceFormatter.format(sale.price / 100)}
+          </strong>{' '}
+          à vista
+        </span>
+
         {sale.totalInstallmentPrice && (
-          <span>
-            ou {priceFormatter.format(sale.totalInstallmentPrice / 100)} em{' '}
-            {sale.installments}x
+          <span className="text-sm text-muted-foreground">
+            ou{' '}
+            <strong>
+              {priceFormatter.format(sale.totalInstallmentPrice / 100)}
+            </strong>{' '}
+            em até <strong>{sale.installments}x</strong> de{' '}
+            <strong>
+              {priceFormatter.format(
+                sale.totalInstallmentPrice / (100 * sale.installments!),
+              )}
+            </strong>
           </span>
         )}
       </div>
@@ -74,7 +108,7 @@ export function SaleCard({ sale }: SaleCardProps) {
       {sale.coupon && (
         <div>
           <span>Com cupom</span>
-          <div className="flex items-center overflow-hidden rounded-full border pl-2">
+          <div className="flex items-center overflow-hidden rounded-full border bg-foreground pl-2 text-primary-foreground">
             <Icons.Tag className="mr-2 h-4 w-4" />
             <span className="flex-1 uppercase tracking-widest">
               {sale.coupon}
@@ -91,8 +125,29 @@ export function SaleCard({ sale }: SaleCardProps) {
           rel="noreferrer"
           className={cn(buttonVariants(), 'w-full rounded-full')}
         >
-          <span className="mr-2">Acessar</span>
+          <span className="mr-2">ACESSAR</span>
           <Icons.ExternalLink className="h-4 w-4" />
+        </a>
+      </div>
+
+      <div className="flex w-full items-center justify-between">
+        <div className="flex items-center gap-0.5">
+          {sale.reactions.map((reaction) => (
+            <ReactionButton
+              initialUsers={reaction.users}
+              reaction={reaction.content}
+              saleId={sale.id}
+              key={reaction.content}
+            />
+          ))}
+        </div>
+
+        <a
+          href={`/promocao/${sale.id}/${sale.slug}#comments`}
+          className="flex items-center justify-between gap-1 px-1 hover:text-violet-400"
+        >
+          <span>{sale.comments.length}</span>
+          <Icons.MessageCircle className="h-5 w-5" />
         </a>
       </div>
     </div>

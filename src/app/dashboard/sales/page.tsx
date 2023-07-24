@@ -23,11 +23,11 @@ const GET_SALES_AND_PRODUCTS = gql`
       cashback
       createdAt
       categoryId
-      productId
+      productSlug
     }
     products {
-      id
       name
+      slug
       imageUrl
       category {
         name
@@ -39,7 +39,7 @@ const GET_SALES_AND_PRODUCTS = gql`
 export default async function SalesDashboardPage() {
   const response = await getClient().query<{
     sales: Sale[]
-    products: (Pick<Product, 'id' | 'name' | 'imageUrl'> & {
+    products: (Pick<Product, 'slug' | 'name' | 'imageUrl'> & {
       category: Pick<Category, 'name'>
     })[]
   }>({
