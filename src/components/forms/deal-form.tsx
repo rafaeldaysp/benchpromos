@@ -1,6 +1,7 @@
 'use client'
 
-import { gql, useMutation, useQuery } from '@apollo/client'
+import { gql, useMutation } from '@apollo/client'
+import { useSuspenseQuery } from '@apollo/experimental-nextjs-app-support/ssr'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'next/navigation'
 import * as React from 'react'
@@ -87,7 +88,7 @@ export function DealForm({
   })
   const router = useRouter()
 
-  const { data } = useQuery<{
+  const { data } = useSuspenseQuery<{
     coupons: Pick<Coupon, 'id' | 'code'>[]
     cashbacks: Pick<Cashback, 'id' | 'provider' | 'value'>[]
   }>(GET_COUPONS_AND_CASHBACKS_BY_RETAILER, {

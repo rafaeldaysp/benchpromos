@@ -1,6 +1,7 @@
 'use client'
 
-import { gql, useMutation, useQuery } from '@apollo/client'
+import { gql, useMutation } from '@apollo/client'
+import { useSuspenseQuery } from '@apollo/experimental-nextjs-app-support/ssr'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'next/navigation'
 import * as React from 'react'
@@ -75,7 +76,7 @@ export function CashbackForm({ mode = 'create', cashback }: CashbackFormProps) {
   })
   const router = useRouter()
 
-  const { data } = useQuery<{ retailers: Retailer[] }>(GET_RETAILERS, {
+  const { data } = useSuspenseQuery<{ retailers: Retailer[] }>(GET_RETAILERS, {
     context: {
       headers: {
         'api-key': env.NEXT_PUBLIC_API_KEY,

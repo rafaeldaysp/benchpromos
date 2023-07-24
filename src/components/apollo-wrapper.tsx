@@ -1,6 +1,6 @@
 'use client'
 
-import { ApolloLink, HttpLink, SuspenseCache } from '@apollo/client'
+import { ApolloLink, HttpLink } from '@apollo/client'
 import {
   ApolloNextAppProvider,
   NextSSRApolloClient,
@@ -18,7 +18,20 @@ function makeClient() {
   })
 
   return new NextSSRApolloClient({
-    cache: new NextSSRInMemoryCache(),
+    cache: new NextSSRInMemoryCache({
+      // typePolicies: {
+      //   Query: {
+      //     fields: {
+      //       productsWithMinPrice: {
+      //         keyArgs: false,
+      //         merge(existing = [], incoming) {
+      //           return [...existing, ...incoming]
+      //         },
+      //       },
+      //     },
+      //   },
+      // },
+    }),
     link:
       typeof window === 'undefined'
         ? ApolloLink.from([
@@ -31,16 +44,9 @@ function makeClient() {
   })
 }
 
-function makeSuspenseCache() {
-  return new SuspenseCache()
-}
-
 export function ApolloWrapper({ children }: React.PropsWithChildren) {
   return (
-    <ApolloNextAppProvider
-      makeClient={makeClient}
-      makeSuspenseCache={makeSuspenseCache}
-    >
+    <ApolloNextAppProvider makeClient={makeClient}>
       {children}
     </ApolloNextAppProvider>
   )

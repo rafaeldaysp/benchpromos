@@ -1,19 +1,15 @@
 'client'
 
 import { gql, useMutation } from '@apollo/client'
-import dynamic from 'next/dynamic'
 import { useRouter } from 'next/navigation'
 import * as React from 'react'
 import {
   DragDropContext,
   Draggable,
+  Droppable,
   type DropResult,
 } from 'react-beautiful-dnd'
 import { toast } from 'sonner'
-const Droppable = dynamic(
-  async () => (await import('react-beautiful-dnd')).Droppable,
-  { ssr: false },
-)
 
 import { DashboardItemCard } from '@/components/dashboard-item-card'
 import { SubcategoryForm } from '@/components/forms/subcategory-form'

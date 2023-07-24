@@ -45,7 +45,7 @@ interface CashbacksMainProps {
 
 export function CashbacksMain({ cashbacks }: CashbacksMainProps) {
   const [selectedCashback, setSelectedCashback] =
-    React.useState<(typeof cashbacks)[0]>()
+    React.useState<(typeof cashbacks)[number]>()
   const router = useRouter()
 
   const [deleteCashback] = useMutation(DELETE_CASHBACK, {

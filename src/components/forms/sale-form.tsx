@@ -1,6 +1,7 @@
 'use client'
 
-import { gql, useMutation, useQuery } from '@apollo/client'
+import { gql, useMutation } from '@apollo/client'
+import { useSuspenseQuery } from '@apollo/experimental-nextjs-app-support/ssr'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'next/navigation'
 import * as React from 'react'
@@ -84,7 +85,7 @@ export function SaleForm({ mode = 'create', sale }: SaleFormProps) {
   })
   const router = useRouter()
 
-  const { data } = useQuery<{
+  const { data } = useSuspenseQuery<{
     categories: Omit<Category, 'subcategories'>[]
   }>(GET_CATEGORIES, {
     context: {

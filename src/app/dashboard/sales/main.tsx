@@ -50,9 +50,10 @@ interface SalesMainProps {
 }
 
 export function SalesMain({ sales, products }: SalesMainProps) {
-  const [selectedSale, setSelectedSale] = React.useState<(typeof sales)[0]>()
+  const [selectedSale, setSelectedSale] =
+    React.useState<(typeof sales)[number]>()
   const [selectedProduct, setSelectedProduct] =
-    React.useState<(typeof products)[0]>()
+    React.useState<(typeof products)[number]>()
   const router = useRouter()
 
   const [deleteSale] = useMutation(DELETE_SALE, {

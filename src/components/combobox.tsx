@@ -1,7 +1,10 @@
 'use client'
 
 import { useDebounce } from '@/hooks/use-debounce'
+import { gql, useQuery } from '@apollo/client'
 import * as React from 'react'
+import Image from 'next/image'
+import { useRouter } from 'next/navigation'
 
 import { Icons } from '@/components/icons'
 import { Button } from '@/components/ui/button'
@@ -16,32 +19,68 @@ import {
 import { Skeleton } from '@/components/ui/skeleton'
 import { cn } from '@/lib/utils'
 
-const items = Array.from({ length: 5 }).map((_, i) => ({
-  id: i,
-  name: `Produto ${i}`,
-}))
+const GET_PRODUCTS_BY_SEARCH = gql`
+  query GetProductsBySearch($input: GetProductsInput) {
+    products(getProductsInput: $input) {
+      id
+      name
+      imageUrl
+      slug
+      category {
+        slug
+      }
+    }
+  }
+`
 
-// simulação de como vai funcionar a busca por produtos
+type SearchedProduct = {
+  id: string
+  name: string
+  imageUrl: string
+  slug: string
+  category: {
+    slug: string
+  }
+}
 
 export function Combobox() {
   const [isOpen, setIsOpen] = React.useState(false)
   const [query, setQuery] = React.useState('')
   const debouncedQuery = useDebounce(query, 300)
-  const [data, setData] = React.useState<typeof items | null>(null)
-
+  const [data, setData] = React.useState<{
+    products: SearchedProduct[]
+  } | null>(null)
   const [isPending, startTransition] = React.useTransition()
+  const router = useRouter()
+
+  const { refetch } = useQuery<{
+    products: SearchedProduct[]
+  }>(GET_PRODUCTS_BY_SEARCH, {
+    skip: true,
+    fetchPolicy: 'network-only',
+    refetchWritePolicy: 'overwrite',
+  })
+
+  const products = data?.products ?? []
 
   React.useEffect(() => {
     if (debouncedQuery.length === 0) setData(null)
 
     if (debouncedQuery.length > 0) {
       startTransition(async () => {
-        await new Promise((resolve) => {
-          setTimeout(resolve, 2000)
+        const { data } = await refetch({
+          input: {
+            search: debouncedQuery,
+            pagination: {
+              limit: 5,
+              page: 1,
+            },
+          },
         })
-        setData(items.filter((item) => item.name === debouncedQuery))
+        setData(data)
       })
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedQuery])
 
   React.useEffect(() => {
@@ -53,6 +92,11 @@ export function Combobox() {
     }
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [])
+
+  const handleSelect = React.useCallback((callback: () => unknown) => {
+    setIsOpen(false)
+    callback()
   }, [])
 
   React.useEffect(() => {
@@ -87,17 +131,47 @@ export function Combobox() {
           >
             Nenhum produto encontrado.
           </CommandEmpty>
-          {isPending ? (
+          {isPending && products.length === 0 ? (
             <div className="space-y-1 overflow-hidden px-1 py-2">
-              <Skeleton className="h-4 w-10 rounded" />
-              <Skeleton className="h-8 rounded-sm" />
-              <Skeleton className="h-8 rounded-sm" />
+              <Skeleton className="h-20 rounded-sm" />
+              <Skeleton className="h-20 rounded-sm" />
             </div>
           ) : (
-            !!data?.length && (
+            products.length > 0 && (
               <CommandGroup className="capitalize">
-                {data?.map((item) => (
-                  <CommandItem key={item.id}>{item.name}</CommandItem>
+                <CommandItem
+                  value={debouncedQuery}
+                  className="hidden"
+                  onSelect={() =>
+                    handleSelect(() =>
+                      router.push(`/search?q=${debouncedQuery}`),
+                    )
+                  }
+                />
+                {products?.map((product) => (
+                  <CommandItem
+                    key={product.id}
+                    value={product.name}
+                    className="h-20 space-x-4"
+                    onSelect={() =>
+                      handleSelect(() =>
+                        router.push(
+                          `/${product.category.slug}/${product.slug}`,
+                        ),
+                      )
+                    }
+                  >
+                    <div className="relative aspect-square h-full">
+                      <Image
+                        src={product.imageUrl}
+                        alt=""
+                        fill
+                        className="object-contain"
+                      />
+                    </div>
+
+                    <span>{product.name}</span>
+                  </CommandItem>
                 ))}
               </CommandGroup>
             )
