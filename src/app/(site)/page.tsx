@@ -37,6 +37,7 @@ const GET_SALES = gql`
       productSlug
       category {
         name
+        slug
       }
       comments {
         id
@@ -54,7 +55,7 @@ const GET_SALES = gql`
 export default async function Home() {
   const response = await getClient().query<{
     sales: (Sale & {
-      category: Category
+      category: Pick<Category, 'name' | 'slug'>
       comments: Pick<Comment, 'id'>[]
       reactions: { content: string; users: { id: string }[] }[]
     })[]
@@ -88,7 +89,7 @@ export default async function Home() {
                 </ContextMenuItem>
               </a>
               {sale.productSlug && (
-                <a href={`/produto/${sale.productSlug}`}>
+                <a href={`/${sale.category.slug}/${sale.productSlug}`}>
                   <ContextMenuItem className="flex gap-2">
                     <Icons.Eye className="h-4 w-4" />
                     <span>Ver produto</span>
