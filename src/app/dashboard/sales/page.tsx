@@ -7,7 +7,7 @@ import { removeNullValues } from '@/utils'
 import { SalesMain } from './main'
 
 const GET_SALES_AND_PRODUCTS = gql`
-  {
+  query GetSalesAndProducts {
     sales {
       id
       title

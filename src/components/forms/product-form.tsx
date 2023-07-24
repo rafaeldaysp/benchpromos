@@ -64,8 +64,10 @@ const GET_CATEGORIES = gql`
 type Inputs = z.infer<typeof productSchema>
 
 const defaultValues: Partial<Inputs> = {
-  name: '',
+  description: '',
   imageUrl: '',
+  name: '',
+  reviewUrl: '',
 }
 
 interface ProductFormProps {

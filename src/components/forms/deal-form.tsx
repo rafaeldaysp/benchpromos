@@ -64,9 +64,8 @@ const GET_COUPONS_AND_CASHBACKS_BY_RETAILER = gql`
 type Inputs = z.infer<typeof dealSchema>
 
 const defaultValues: Partial<Inputs> = {
-  price: 0,
-  availability: true,
   url: '',
+  sku: '',
 }
 
 interface DealFormProps {

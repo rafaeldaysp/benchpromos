@@ -62,10 +62,13 @@ const GET_CATEGORIES = gql`
 type Inputs = z.infer<typeof saleSchema>
 
 const defaultValues: Partial<Inputs> = {
-  title: '',
+  caption: '',
+  cashback: '',
+  coupon: '',
   imageUrl: '',
-  categoryId: '',
-  price: 0,
+  label: '',
+  review: '',
+  title: '',
   url: '',
 }
 

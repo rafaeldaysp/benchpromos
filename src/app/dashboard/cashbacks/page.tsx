@@ -2,7 +2,7 @@ import { gql } from '@apollo/client'
 
 import { Separator } from '@/components/ui/separator'
 import { getClient } from '@/lib/apollo'
-import { type Cashback, type Retailer } from '@/types'
+import { type Cashback } from '@/types'
 import { CashbacksMain } from './main'
 
 const GET_CASHBACKS = gql`
@@ -14,16 +14,13 @@ const GET_CASHBACKS = gql`
       url
       affiliatedUrl
       retailerId
-      retailer {
-        name
-      }
     }
   }
 `
 
 export default async function CashbacksDashboardPage() {
   const response = await getClient().query<{
-    cashbacks: (Cashback & { retailer: Pick<Retailer, 'name'> })[]
+    cashbacks: Cashback[]
   }>({
     query: GET_CASHBACKS,
   })

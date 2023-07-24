@@ -59,9 +59,7 @@ type Inputs = z.infer<typeof cashbackSchema>
 
 const defaultValues: Partial<Inputs> = {
   affiliatedUrl: '',
-  value: 0,
   provider: '',
-  retailerId: '',
   url: '',
 }
 
