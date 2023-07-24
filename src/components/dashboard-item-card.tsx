@@ -4,13 +4,13 @@ import * as React from 'react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
-function DashboardItemCardRoot({
-  className,
-  children,
-  ...props
-}: React.HTMLAttributes<HTMLDivElement>) {
+const DashboardItemCardRoot = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(function DashboardItemCardRoot({ className, children, ...props }, ref) {
   return (
     <div
+      ref={ref}
       className={cn(
         'flex items-start gap-x-6 rounded-md bg-card p-4 transition-colors hover:bg-muted sm:px-8',
         className,
@@ -20,7 +20,7 @@ function DashboardItemCardRoot({
       {children}
     </div>
   )
-}
+})
 
 function DashboardItemCardImage({ className, src, alt, ...props }: ImageProps) {
   return (

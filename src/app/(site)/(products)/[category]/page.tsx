@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button'
 import { type Product } from '@/types'
 
 const GET_PRODUCTS = gql`
-  query GetProducts {
+  query GetProductsWithMinPrice {
     products: productsWithMinPrice {
       id
     }

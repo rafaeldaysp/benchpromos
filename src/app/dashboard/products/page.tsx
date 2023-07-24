@@ -1,32 +1,13 @@
 import { gql } from '@apollo/client'
+import * as React from 'react'
 
 import { Separator } from '@/components/ui/separator'
 import { getClient } from '@/lib/apollo'
-import { type Category, type Filter, type Product } from '@/types'
-import { removeNullValues } from '@/utils'
+import { type Filter } from '@/types'
 import { ProductsMain } from './main'
 
-const GET_PRODUCTS_AND_FILTERS = gql`
-  query GetProductsAndFilters {
-    products {
-      id
-      name
-      imageUrl
-      specs
-      reviewUrl
-      description
-      referencePrice
-      categoryId
-      slug
-      subcategoryId
-      recommended
-      category {
-        name
-      }
-      filters {
-        optionId
-      }
-    }
+const GET_FILTERS = gql`
+  query GetFilters {
     filters {
       id
       name
@@ -41,18 +22,11 @@ const GET_PRODUCTS_AND_FILTERS = gql`
 
 export default async function ProductsDashboardPage() {
   const response = await getClient().query<{
-    products: (Product & {
-      category: Pick<Category, 'name'>
-      filters: { optionId: string }[]
-    })[]
     filters: Filter[]
   }>({
-    query: GET_PRODUCTS_AND_FILTERS,
+    query: GET_FILTERS,
   })
 
-  const products = response.data.products.map((product) =>
-    removeNullValues(product),
-  )
   const filters = response.data.filters
 
   return (
@@ -64,7 +38,9 @@ export default async function ProductsDashboardPage() {
         </p>
       </div>
       <Separator />
-      <ProductsMain products={products} filters={filters} />
+      <React.Suspense>
+        <ProductsMain filters={filters} />
+      </React.Suspense>
     </div>
   )
 }

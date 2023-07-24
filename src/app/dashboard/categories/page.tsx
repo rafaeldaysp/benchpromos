@@ -6,7 +6,7 @@ import { type Category, type Filter } from '@/types'
 import { CategoriesMain } from './main'
 
 const GET_CATEGORIES = gql`
-  query GetCategories {
+  query GetCategoriesWithSubcategoriesAndFilters {
     categories {
       id
       name

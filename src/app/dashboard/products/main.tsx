@@ -1,8 +1,9 @@
 'use client'
 
 import { gql, useMutation } from '@apollo/client'
-import { useRouter } from 'next/navigation'
+import { useSuspenseQuery } from '@apollo/experimental-nextjs-app-support/ssr'
 import * as React from 'react'
+import { useInView } from 'react-intersection-observer'
 import { toast } from 'sonner'
 
 import { DashboardItemCard } from '@/components/dashboard-item-card'
@@ -38,7 +39,34 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet'
 import { env } from '@/env.mjs'
-import { type Category, type Filter, type Product } from '@/types'
+import type { Category, Filter, Product } from '@/types'
+import { removeNullValues } from '@/utils'
+
+const PRODUCTS_PER_PAGE = 1
+
+const GET_PRODUCTS = gql`
+  query GetProducts($input: GetProductsInput) {
+    products(getProductsInput: $input) {
+      id
+      name
+      imageUrl
+      specs
+      reviewUrl
+      description
+      referencePrice
+      categoryId
+      slug
+      subcategoryId
+      recommended
+      category {
+        name
+      }
+      filters {
+        optionId
+      }
+    }
+  }
+`
 
 const DELETE_PRODUCT = gql`
   mutation DeleteProduct($productId: ID!) {
@@ -49,21 +77,36 @@ const DELETE_PRODUCT = gql`
 `
 
 interface ProductsMainProps {
-  products: (Product & {
-    category: Pick<Category, 'name'>
-    filters: { optionId: string }[]
-  })[]
   filters: Filter[]
 }
 
-export function ProductsMain({ products, filters }: ProductsMainProps) {
+export function ProductsMain({ filters }: ProductsMainProps) {
+  const [lastCardRef, , entry] = useInView({ threshold: 1 })
+  const [page, setPage] = React.useState(1)
+  const [isPending, startTransition] = React.useTransition()
+
+  const { data, fetchMore } = useSuspenseQuery<{
+    products: (Product & {
+      category: Pick<Category, 'name'>
+      filters: { optionId: string }[]
+    })[]
+  }>(GET_PRODUCTS, {
+    variables: {
+      input: {
+        pagination: {
+          limit: PRODUCTS_PER_PAGE,
+          page: 1,
+        },
+      },
+    },
+  })
+
+  const initialProducts = data.products.map((product) =>
+    removeNullValues(product),
+  )
+  const [products, setProducts] = React.useState(initialProducts)
   const [selectedProduct, setSelectedProduct] =
     React.useState<(typeof products)[number]>()
-  const router = useRouter()
-
-  const categoryFilters = filters.filter(
-    (filter) => filter.categoryId === selectedProduct?.categoryId,
-  )
 
   const [deleteProduct] = useMutation(DELETE_PRODUCT, {
     context: {
@@ -76,15 +119,44 @@ export function ProductsMain({ products, filters }: ProductsMainProps) {
     },
     onCompleted(_data, _clientOptions) {
       toast.success('Produto deletado com sucesso.')
-      router.refresh()
     },
   })
 
+  console.log(products)
+
   React.useEffect(() => {
-    setSelectedProduct((prev) =>
-      products.find((product) => product.id === prev?.id),
-    )
-  }, [products])
+    startTransition(async () => {
+      if (entry?.isIntersecting) {
+        const { data } = await fetchMore({
+          variables: {
+            input: {
+              pagination: {
+                limit: PRODUCTS_PER_PAGE,
+                page: page + 1,
+              },
+            },
+          },
+        })
+
+        if (data.products.length === 0) return
+
+        setProducts([
+          ...products,
+          ...data.products.map((product) => removeNullValues(product)),
+        ])
+        setPage((prev) => prev + 1)
+      }
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [entry])
+
+  const categoryFilters = React.useMemo(
+    () =>
+      filters.filter(
+        (filter) => filter.categoryId === selectedProduct?.categoryId,
+      ),
+    [filters, selectedProduct],
+  )
 
   return (
     <div className="space-y-8">
@@ -152,8 +224,11 @@ export function ProductsMain({ products, filters }: ProductsMainProps) {
         <div className="space-y-4">
           <Input placeholder="Pesquise por um produto..." />
           <ScrollArea className="rounded-md border bg-primary-foreground">
-            {products.map((product) => (
-              <DashboardItemCard.Root key={product.id}>
+            {products.map((product, index) => (
+              <DashboardItemCard.Root
+                key={product.id}
+                ref={index === products.length - 1 ? lastCardRef : undefined}
+              >
                 <DashboardItemCard.Image src={product.imageUrl} alt="" />
 
                 <DashboardItemCard.Content

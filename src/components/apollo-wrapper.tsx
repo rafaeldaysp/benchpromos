@@ -19,18 +19,18 @@ function makeClient() {
 
   return new NextSSRApolloClient({
     cache: new NextSSRInMemoryCache({
-      // typePolicies: {
-      //   Query: {
-      //     fields: {
-      //       productsWithMinPrice: {
-      //         keyArgs: false,
-      //         merge(existing = [], incoming) {
-      //           return [...existing, ...incoming]
-      //         },
-      //       },
-      //     },
-      //   },
-      // },
+      typePolicies: {
+        Query: {
+          fields: {
+            // productsWithMinPrice: {
+            //   keyArgs: false,
+            //   merge(existing = [], incoming) {
+            //     return [...existing, ...incoming]
+            //   },
+            // },
+          },
+        },
+      },
     }),
     link:
       typeof window === 'undefined'

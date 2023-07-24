@@ -50,7 +50,7 @@ const UPDATE_PRODUCT = gql`
 `
 
 const GET_CATEGORIES = gql`
-  query GetCategories {
+  query GetCategoriesWithSubcategories {
     categories {
       id
       name
