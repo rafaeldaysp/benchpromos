@@ -70,6 +70,7 @@ export function Combobox() {
       startTransition(async () => {
         const { data } = await refetch({
           input: {
+            hasDeals: false,
             search: debouncedQuery,
             pagination: {
               limit: 5,

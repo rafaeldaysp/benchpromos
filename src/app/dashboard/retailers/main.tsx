@@ -29,6 +29,7 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet'
 import { env } from '@/env.mjs'
+import { useFormStore } from '@/hooks/use-form-store'
 import { type Retailer } from '@/types'
 
 const DELETE_RETAILER = gql`
@@ -45,6 +46,7 @@ interface RetailersMainProps {
 
 export function RetailersMain({ retailers }: RetailersMainProps) {
   const [selectedRetailer, setSelectedRetailer] = React.useState<Retailer>()
+  const { openDialogs, setOpenDialog } = useFormStore()
   const router = useRouter()
 
   const [deleteRetailer] = useMutation(DELETE_RETAILER, {
@@ -66,7 +68,10 @@ export function RetailersMain({ retailers }: RetailersMainProps) {
     <div className="space-y-8">
       {/* Retailers Actions */}
       <div className="flex justify-end gap-x-2">
-        <Sheet>
+        <Sheet
+          open={openDialogs['retailerCreateForm']}
+          onOpenChange={(open) => setOpenDialog('retailerCreateForm', open)}
+        >
           <SheetTrigger asChild>
             <Button variant="outline">Adicionar</Button>
           </SheetTrigger>
@@ -110,7 +115,12 @@ export function RetailersMain({ retailers }: RetailersMainProps) {
               </DashboardItemCard.Content>
 
               <DashboardItemCard.Actions>
-                <Sheet>
+                <Sheet
+                  open={openDialogs[`retailerUpdateForm.${retailer.id}`]}
+                  onOpenChange={(open) =>
+                    setOpenDialog(`retailerUpdateForm.${retailer.id}`, open)
+                  }
+                >
                   <SheetTrigger asChild>
                     <DashboardItemCard.Action icon={Icons.Edit} />
                   </SheetTrigger>

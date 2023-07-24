@@ -19,6 +19,7 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { env } from '@/env.mjs'
+import { useFormStore } from '@/hooks/use-form-store'
 import { retailerSchema } from '@/lib/validations/retailer'
 
 const CREATE_RETAILER = gql`
@@ -53,6 +54,7 @@ export function RetailerForm({ mode = 'create', retailer }: RetailerFormProps) {
     resolver: zodResolver(retailerSchema),
     defaultValues: retailer ?? defaultValues,
   })
+  const { setOpenDialog } = useFormStore()
   const router = useRouter()
 
   const [mutateRetailer, { loading: isLoading }] = useMutation(
@@ -68,6 +70,13 @@ export function RetailerForm({ mode = 'create', retailer }: RetailerFormProps) {
       },
       onCompleted(_data, _clientOptions) {
         form.reset()
+
+        setOpenDialog(
+          mode === 'create'
+            ? 'retailerCreateForm'
+            : `retailerUpdateForm.${retailer?.id}`,
+          false,
+        )
 
         const message =
           mode === 'create'

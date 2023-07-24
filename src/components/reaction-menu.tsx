@@ -1,7 +1,6 @@
 'use client'
 
 import { gql, useMutation } from '@apollo/client'
-import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 
 import {
@@ -50,8 +49,6 @@ interface ReactionMenuProps {
 }
 
 export function ReactionMenu({ saleId }: ReactionMenuProps) {
-  const router = useRouter()
-
   const [toggleReaction] = useMutation(TOGGLE_REACTION, {
     context: {
       headers: {
@@ -62,9 +59,7 @@ export function ReactionMenu({ saleId }: ReactionMenuProps) {
     onError(error, _clientOptions) {
       toast.error(error.message)
     },
-    onCompleted(_data, _clientOptions) {
-      // router.refresh() // método paia
-    },
+    onCompleted(_data, _clientOptions) {},
   })
 
   return (

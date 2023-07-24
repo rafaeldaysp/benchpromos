@@ -3,7 +3,7 @@
 import { gql, useMutation } from '@apollo/client'
 import { useSuspenseQuery } from '@apollo/experimental-nextjs-app-support/ssr'
 import * as React from 'react'
-import { useInView } from 'react-intersection-observer'
+import { InView } from 'react-intersection-observer'
 import { toast } from 'sonner'
 
 import { DashboardItemCard } from '@/components/dashboard-item-card'
@@ -39,6 +39,7 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet'
 import { env } from '@/env.mjs'
+import { useFormStore } from '@/hooks/use-form-store'
 import type { Category, Filter, Product } from '@/types'
 import { removeNullValues } from '@/utils'
 
@@ -84,16 +85,17 @@ interface ProductsMainProps {
 // ainda falta atualizar os estados depois aconteceu algum submit (product form ou filter form)
 
 export function ProductsMain({ filters }: ProductsMainProps) {
-  const [lastCardRef, , entry] = useInView({ threshold: 1 })
-  const [page, setPage] = React.useState(1)
   const [isPending, startTransition] = React.useTransition()
+  const { openDialogs, setOpenDialog } = useFormStore()
+  const [page, setPage] = React.useState(1)
 
-  const { data, fetchMore } = useSuspenseQuery<{
+  const { data, refetch, fetchMore } = useSuspenseQuery<{
     products: (Product & {
       category: Pick<Category, 'name'>
       filters: { optionId: string }[]
     })[]
   }>(GET_PRODUCTS, {
+    refetchWritePolicy: 'overwrite',
     variables: {
       input: {
         pagination: {
@@ -125,32 +127,6 @@ export function ProductsMain({ filters }: ProductsMainProps) {
     },
   })
 
-  React.useEffect(() => {
-    startTransition(async () => {
-      if (entry?.isIntersecting) {
-        const { data } = await fetchMore({
-          variables: {
-            input: {
-              pagination: {
-                limit: PRODUCTS_PER_PAGE,
-                page: page + 1,
-              },
-            },
-          },
-        })
-
-        if (data.products.length === 0) return
-
-        setProducts([
-          ...products,
-          ...data.products.map((product) => removeNullValues(product)),
-        ])
-        setPage((prev) => prev + 1)
-      }
-    })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [entry])
-
   const categoryFilters = React.useMemo(
     () =>
       filters.filter(
@@ -159,12 +135,40 @@ export function ProductsMain({ filters }: ProductsMainProps) {
     [filters, selectedProduct],
   )
 
+  function onEntry() {
+    startTransition(async () => {
+      const { data } = await fetchMore({
+        variables: {
+          input: {
+            pagination: {
+              limit: PRODUCTS_PER_PAGE,
+              page: page + 1,
+            },
+          },
+        },
+      })
+
+      if (data.products.length === 0) null
+
+      setProducts([
+        ...products,
+        ...data.products.map((product) => removeNullValues(product)),
+      ])
+      setPage((prev) => prev + 1)
+    })
+  }
+
+  const hasMoreProducts = PRODUCTS_PER_PAGE * page <= products.length
+
   return (
     <div className="space-y-8">
       {/* Products Actions */}
       <div className="flex justify-end gap-x-2">
         {selectedProduct && (
-          <Dialog>
+          <Dialog
+            open={openDialogs['productFiltersForm']}
+            onOpenChange={(open) => setOpenDialog('productFiltersForm', open)}
+          >
             <DialogTrigger asChild>
               <Button variant="outline">Editar Filtros</Button>
             </DialogTrigger>
@@ -181,7 +185,10 @@ export function ProductsMain({ filters }: ProductsMainProps) {
           </Dialog>
         )}
 
-        <Sheet>
+        <Sheet
+          open={openDialogs['productCreateForm']}
+          onOpenChange={(open) => setOpenDialog('productCreateForm', open)}
+        >
           <SheetTrigger asChild>
             <Button variant="outline">Adicionar</Button>
           </SheetTrigger>
@@ -225,11 +232,8 @@ export function ProductsMain({ filters }: ProductsMainProps) {
         <div className="space-y-4">
           <Input placeholder="Pesquise por um produto..." />
           <ScrollArea className="rounded-md border bg-primary-foreground">
-            {products.map((product, index) => (
-              <DashboardItemCard.Root
-                key={product.id}
-                ref={index === products.length - 1 ? lastCardRef : undefined}
-              >
+            {products.map((product) => (
+              <DashboardItemCard.Root key={product.id}>
                 <DashboardItemCard.Image src={product.imageUrl} alt="" />
 
                 <DashboardItemCard.Content
@@ -243,7 +247,12 @@ export function ProductsMain({ filters }: ProductsMainProps) {
                 </DashboardItemCard.Content>
 
                 <DashboardItemCard.Actions>
-                  <Sheet>
+                  <Sheet
+                    open={openDialogs[`productUpdateForm.${product.id}`]}
+                    onOpenChange={(open) =>
+                      setOpenDialog(`productUpdateForm.${product.id}`, open)
+                    }
+                  >
                     <SheetTrigger asChild>
                       <DashboardItemCard.Action icon={Icons.Edit} />
                     </SheetTrigger>
@@ -289,6 +298,23 @@ export function ProductsMain({ filters }: ProductsMainProps) {
                 </DashboardItemCard.Actions>
               </DashboardItemCard.Root>
             ))}
+            {isPending ? (
+              <div className="flex justify-center py-4">
+                <Icons.Spinner
+                  className="mr-2 h-4 w-4 animate-spin"
+                  aria-hidden="true"
+                />
+              </div>
+            ) : (
+              <InView
+                as="div"
+                delay={500}
+                hidden={!hasMoreProducts}
+                onChange={(_, entry) => {
+                  if (entry.isIntersecting) onEntry()
+                }}
+              />
+            )}
           </ScrollArea>
         </div>
       ) : (

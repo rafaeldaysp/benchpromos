@@ -29,6 +29,7 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet'
 import { env } from '@/env.mjs'
+import { useFormStore } from '@/hooks/use-form-store'
 import { type Cashback } from '@/types'
 
 const DELETE_CASHBACK = gql`
@@ -46,6 +47,7 @@ interface CashbacksMainProps {
 export function CashbacksMain({ cashbacks }: CashbacksMainProps) {
   const [selectedCashback, setSelectedCashback] =
     React.useState<(typeof cashbacks)[number]>()
+  const { openDialogs, setOpenDialog } = useFormStore()
   const router = useRouter()
 
   const [deleteCashback] = useMutation(DELETE_CASHBACK, {
@@ -67,7 +69,10 @@ export function CashbacksMain({ cashbacks }: CashbacksMainProps) {
     <div className="space-y-8">
       {/* Cashbacks Actions */}
       <div className="flex justify-end gap-x-2">
-        <Sheet>
+        <Sheet
+          open={openDialogs['cashbackCreateForm']}
+          onOpenChange={(open) => setOpenDialog('cashbackCreateForm', open)}
+        >
           <SheetTrigger asChild>
             <Button variant="outline">Adicionar</Button>
           </SheetTrigger>
@@ -118,7 +123,12 @@ export function CashbacksMain({ cashbacks }: CashbacksMainProps) {
               </DashboardItemCard.Content>
 
               <DashboardItemCard.Actions>
-                <Sheet>
+                <Sheet
+                  open={openDialogs[`cashbackUpdateForm.${cashback.id}`]}
+                  onOpenChange={(open) =>
+                    setOpenDialog(`cashbackUpdateForm.${cashback.id}`, open)
+                  }
+                >
                   <SheetTrigger asChild>
                     <DashboardItemCard.Action icon={Icons.Edit} />
                   </SheetTrigger>

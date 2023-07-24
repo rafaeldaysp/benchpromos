@@ -35,6 +35,7 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet'
 import { env } from '@/env.mjs'
+import { useFormStore } from '@/hooks/use-form-store'
 import { type Category } from '@/types'
 import { reorder } from '@/utils'
 
@@ -62,6 +63,7 @@ export function SubcategoriesMain({ category }: SubcategoriesMainProps) {
   const [subcategories, setSubcategories] = React.useState(
     category.subcategories,
   )
+  const { openDialogs, setOpenDialog } = useFormStore()
   const router = useRouter()
 
   const [updateSubcategoriesOrder] = useMutation(UPDATE_SUBCATEGORIES_ORDER, {
@@ -132,7 +134,10 @@ export function SubcategoriesMain({ category }: SubcategoriesMainProps) {
           Salvar Ordenação
         </Button>
 
-        <Sheet>
+        <Sheet
+          open={openDialogs['subcategoryCreateForm']}
+          onOpenChange={(open) => setOpenDialog('subcategoryCreateForm', open)}
+        >
           <SheetTrigger asChild>
             <Button variant="outline">Adicionar</Button>
           </SheetTrigger>
@@ -176,7 +181,19 @@ export function SubcategoriesMain({ category }: SubcategoriesMainProps) {
                             </DashboardItemCard.Content>
 
                             <DashboardItemCard.Actions>
-                              <Sheet>
+                              <Sheet
+                                open={
+                                  openDialogs[
+                                    `subcategoryUpdateForm.${subcategory.id}`
+                                  ]
+                                }
+                                onOpenChange={(open) =>
+                                  setOpenDialog(
+                                    `subcategoryUpdateForm.${subcategory.id}`,
+                                    open,
+                                  )
+                                }
+                              >
                                 <SheetTrigger asChild>
                                   <DashboardItemCard.Action icon={Icons.Edit} />
                                 </SheetTrigger>

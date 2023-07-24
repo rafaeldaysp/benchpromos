@@ -19,6 +19,7 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { env } from '@/env.mjs'
+import { useFormStore } from '@/hooks/use-form-store'
 import { categorySchema } from '@/lib/validations/category'
 
 const CREATE_CATEGORY = gql`
@@ -53,6 +54,7 @@ export function CategoryForm({ mode = 'create', category }: CategoryFormProps) {
     resolver: zodResolver(categorySchema),
     defaultValues: category ?? defaultValues,
   })
+  const { setOpenDialog } = useFormStore()
   const router = useRouter()
 
   const [mutateCategory, { loading: isLoading }] = useMutation(
@@ -68,6 +70,13 @@ export function CategoryForm({ mode = 'create', category }: CategoryFormProps) {
       },
       onCompleted(_data, _clientOptions) {
         form.reset()
+
+        setOpenDialog(
+          mode === 'create'
+            ? 'categoryCreateForm'
+            : `categoryUpdateForm.${category?.id}`,
+          false,
+        )
 
         const message =
           mode === 'create'

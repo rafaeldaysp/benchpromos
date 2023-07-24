@@ -37,6 +37,7 @@ import {
 } from '@/components/ui/sheet'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { env } from '@/env.mjs'
+import { useFormStore } from '@/hooks/use-form-store'
 import { type Category, type Filter } from '@/types'
 import { reorder } from '@/utils'
 import { FiltersMain } from './filters.main'
@@ -70,6 +71,7 @@ export function CategoriesMain({
   const [categories, setCategories] = React.useState(initialCategories)
   const [selectedCategory, setSelectedCategory] =
     React.useState<(typeof categories)[number]>()
+  const { openDialogs, setOpenDialog } = useFormStore()
   const router = useRouter()
 
   const [updateCategoriesOrder] = useMutation(UPDATE_CATEGORIES_ORDER, {
@@ -145,7 +147,10 @@ export function CategoriesMain({
           Salvar Ordenação
         </Button>
 
-        <Sheet>
+        <Sheet
+          open={openDialogs['categoryCreateForm']}
+          onOpenChange={(open) => setOpenDialog('categoryCreateForm', open)}
+        >
           <SheetTrigger asChild>
             <Button variant="outline">Adicionar</Button>
           </SheetTrigger>
@@ -225,7 +230,19 @@ export function CategoriesMain({
                             </DashboardItemCard.Content>
 
                             <DashboardItemCard.Actions>
-                              <Sheet>
+                              <Sheet
+                                open={
+                                  openDialogs[
+                                    `categoryUpdateForm.${category.id}`
+                                  ]
+                                }
+                                onOpenChange={(open) =>
+                                  setOpenDialog(
+                                    `categoryUpdateForm.${category.id}`,
+                                    open,
+                                  )
+                                }
+                              >
                                 <SheetTrigger asChild>
                                   <DashboardItemCard.Action icon={Icons.Edit} />
                                 </SheetTrigger>

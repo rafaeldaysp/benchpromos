@@ -29,6 +29,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { env } from '@/env.mjs'
+import { useFormStore } from '@/hooks/use-form-store'
 import { dealSchema } from '@/lib/validations/deal'
 import { type Cashback, type Coupon } from '@/types'
 
@@ -67,6 +68,7 @@ type Inputs = z.infer<typeof dealSchema>
 const defaultValues: Partial<Inputs> = {
   url: '',
   sku: '',
+  availability: true,
 }
 
 interface DealFormProps {
@@ -86,6 +88,7 @@ export function DealForm({
     resolver: zodResolver(dealSchema),
     defaultValues: deal ?? defaultValues,
   })
+  const { setOpenDialog } = useFormStore()
   const router = useRouter()
 
   const { data } = useSuspenseQuery<{
@@ -133,6 +136,11 @@ export function DealForm({
       },
       onCompleted(_data, _clientOptions) {
         form.reset()
+
+        setOpenDialog(
+          mode === 'create' ? 'dealCreateForm' : `dealUpdateForm.${deal?.id}`,
+          false,
+        )
 
         const message =
           mode === 'create'

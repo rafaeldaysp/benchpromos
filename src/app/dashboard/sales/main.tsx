@@ -31,6 +31,7 @@ import {
 } from '@/components/ui/sheet'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { env } from '@/env.mjs'
+import { useFormStore } from '@/hooks/use-form-store'
 import { type Category, type Product, type Sale } from '@/types'
 import { priceFormatter } from '@/utils/formatter'
 
@@ -54,6 +55,7 @@ export function SalesMain({ sales, products }: SalesMainProps) {
     React.useState<(typeof sales)[number]>()
   const [selectedProduct, setSelectedProduct] =
     React.useState<(typeof products)[number]>()
+  const { openDialogs, setOpenDialog } = useFormStore()
   const router = useRouter()
 
   const [deleteSale] = useMutation(DELETE_SALE, {
@@ -75,7 +77,10 @@ export function SalesMain({ sales, products }: SalesMainProps) {
     <div className="space-y-8">
       {/* Sales Actions */}
       <div className="flex justify-end gap-x-2">
-        <Sheet>
+        <Sheet
+          open={openDialogs['saleCreateForm']}
+          onOpenChange={(open) => setOpenDialog('saleCreateForm', open)}
+        >
           <SheetTrigger asChild>
             <Button variant="outline">Adicionar</Button>
           </SheetTrigger>
@@ -87,7 +92,11 @@ export function SalesMain({ sales, products }: SalesMainProps) {
               <SheetTitle>ADICIONAR PROMOÇÃO</SheetTitle>
             </SheetHeader>
             <SaleForm
-              sale={{ ...selectedSale, ...selectedProduct, id: undefined }}
+              sale={{
+                ...selectedSale,
+                ...selectedProduct,
+                id: undefined,
+              }}
             />
           </SheetContent>
         </Sheet>
@@ -166,7 +175,12 @@ export function SalesMain({ sales, products }: SalesMainProps) {
                     </DashboardItemCard.Content>
 
                     <DashboardItemCard.Actions>
-                      <Sheet>
+                      <Sheet
+                        open={openDialogs[`saleUpdateForm.${sale.id}`]}
+                        onOpenChange={(open) =>
+                          setOpenDialog(`saleUpdateForm.${sale.id}`, open)
+                        }
+                      >
                         <SheetTrigger asChild>
                           <DashboardItemCard.Action icon={Icons.Edit} />
                         </SheetTrigger>

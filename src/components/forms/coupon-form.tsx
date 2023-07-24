@@ -30,6 +30,7 @@ import {
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { env } from '@/env.mjs'
+import { useFormStore } from '@/hooks/use-form-store'
 import { couponSchema } from '@/lib/validations/coupon'
 import { type Retailer } from '@/types'
 
@@ -64,6 +65,7 @@ const defaultValues: Partial<Inputs> = {
   code: '',
   description: '',
   discount: '',
+  availability: true,
 }
 
 interface CouponFormProps {
@@ -76,6 +78,7 @@ export function CouponForm({ mode = 'create', coupon }: CouponFormProps) {
     resolver: zodResolver(couponSchema),
     defaultValues: coupon ?? defaultValues,
   })
+  const { setOpenDialog } = useFormStore()
   const router = useRouter()
 
   const { data } = useSuspenseQuery<{ retailers: Retailer[] }>(GET_RETAILERS, {
@@ -108,6 +111,13 @@ export function CouponForm({ mode = 'create', coupon }: CouponFormProps) {
       },
       onCompleted(_data, _clientOptions) {
         form.reset()
+
+        setOpenDialog(
+          mode === 'create'
+            ? 'couponCreateForm'
+            : `couponUpdateForm.${coupon?.id}`,
+          false,
+        )
 
         const message =
           mode === 'create'

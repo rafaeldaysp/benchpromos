@@ -3,7 +3,6 @@
 import { gql, useMutation } from '@apollo/client'
 import { useSuspenseQuery } from '@apollo/experimental-nextjs-app-support/ssr'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useRouter } from 'next/navigation'
 import * as React from 'react'
 import { useFieldArray, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -30,6 +29,7 @@ import {
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { env } from '@/env.mjs'
+import { useFormStore } from '@/hooks/use-form-store'
 import { productSchema } from '@/lib/validations/product'
 import { type Category } from '@/types'
 
@@ -81,7 +81,7 @@ export function ProductForm({ mode = 'create', product }: ProductFormProps) {
     resolver: zodResolver(productSchema),
     defaultValues: product ?? defaultValues,
   })
-  const router = useRouter()
+  const { setOpenDialog } = useFormStore()
 
   const {
     fields: specsFields,
@@ -139,13 +139,19 @@ export function ProductForm({ mode = 'create', product }: ProductFormProps) {
       onCompleted(_data, _clientOptions) {
         form.reset()
 
+        setOpenDialog(
+          mode === 'create'
+            ? 'productCreateForm'
+            : `productUpdateForm.${product?.id}`,
+          false,
+        )
+
         const message =
           mode === 'create'
             ? 'Produto cadastrado com sucesso.'
             : 'Produto atualizado com sucesso.'
 
         toast.success(message)
-        router.refresh()
       },
     },
   )

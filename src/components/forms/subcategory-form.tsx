@@ -19,6 +19,7 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { env } from '@/env.mjs'
+import { useFormStore } from '@/hooks/use-form-store'
 import { subcategorySchema } from '@/lib/validations/category'
 
 const CREATE_SUBCATEGORY = gql`
@@ -61,6 +62,7 @@ export function SubcategoryForm({
       name: subcategory?.name ?? defaultValues.name,
     },
   })
+  const { setOpenDialog } = useFormStore()
   const router = useRouter()
 
   const [mutateSubcategory, { loading: isLoading }] = useMutation(
@@ -76,6 +78,13 @@ export function SubcategoryForm({
       },
       onCompleted(_data, _clientOptions) {
         form.reset()
+
+        setOpenDialog(
+          mode === 'create'
+            ? 'subcategoryCreateForm'
+            : `subcategoryUpdateForm.${subcategory?.id}`,
+          false,
+        )
 
         const message =
           mode === 'create'

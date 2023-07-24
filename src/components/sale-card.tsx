@@ -47,7 +47,7 @@ export function SaleCard({ sale }: SaleCardProps) {
       <div className="flex-1 space-y-4">
         <header className="flex items-center text-sm">
           <span className="flex-1">{sale.category.name}</span>
-          {sale.label && <Badge variant={'secondary'}>{sale.label}</Badge>}
+          {sale.label && <Badge variant="secondary">{sale.label}</Badge>}
           <span className="flex-1 text-end">
             {dayjs(sale.createdAt).fromNow()}
           </span>
@@ -62,18 +62,20 @@ export function SaleCard({ sale }: SaleCardProps) {
           </Link>
         </div>
 
-        <div className="relative mx-auto aspect-square w-8/12">
+        <div>
           <Link
             href={`/promocao/${sale.id}/${sale.slug}`}
             className="cursor-pointer"
           >
-            <Image
-              src={sale.imageUrl}
-              alt={sale.title}
-              className="rounded-lg object-contain"
-              fill
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            />
+            <div className="relative mx-auto aspect-square w-8/12">
+              <Image
+                src={sale.imageUrl}
+                alt={sale.title}
+                className="rounded-lg object-contain"
+                fill
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              />
+            </div>
           </Link>
         </div>
 

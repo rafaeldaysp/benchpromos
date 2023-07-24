@@ -31,6 +31,7 @@ import {
 } from '@/components/ui/sheet'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { env } from '@/env.mjs'
+import { useFormStore } from '@/hooks/use-form-store'
 import {
   type Cashback,
   type Coupon,
@@ -62,6 +63,7 @@ export function DealsMain({ deals, products, retailers }: DealsMainProps) {
     React.useState<(typeof products)[number]>()
   const [selectedRetailer, setSelectedRetailer] =
     React.useState<(typeof retailers)[number]>()
+  const { openDialogs, setOpenDialog } = useFormStore()
   const router = useRouter()
 
   const filteredDeals = deals
@@ -113,7 +115,10 @@ export function DealsMain({ deals, products, retailers }: DealsMainProps) {
     <div className="space-y-8">
       {selectedProduct && selectedRetailer && (
         <div className="flex justify-end gap-x-2">
-          <Sheet>
+          <Sheet
+            open={openDialogs['dealCreateForm']}
+            onOpenChange={(open) => setOpenDialog('dealCreateForm', open)}
+          >
             <SheetTrigger asChild>
               <Button variant="outline">Adicionar</Button>
             </SheetTrigger>
@@ -195,7 +200,12 @@ export function DealsMain({ deals, products, retailers }: DealsMainProps) {
                 </DashboardItemCard.Content>
 
                 <DashboardItemCard.Actions>
-                  <Sheet>
+                  <Sheet
+                    open={openDialogs[`dealUpdateForm.${deal.id}`]}
+                    onOpenChange={(open) =>
+                      setOpenDialog(`dealUpdateForm.${deal.id}`, open)
+                    }
+                  >
                     <SheetTrigger asChild>
                       <DashboardItemCard.Action icon={Icons.Edit} />
                     </SheetTrigger>

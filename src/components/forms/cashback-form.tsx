@@ -28,6 +28,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { env } from '@/env.mjs'
+import { useFormStore } from '@/hooks/use-form-store'
 import { cashbackSchema } from '@/lib/validations/cashback'
 import { type Retailer } from '@/types'
 
@@ -74,6 +75,7 @@ export function CashbackForm({ mode = 'create', cashback }: CashbackFormProps) {
     resolver: zodResolver(cashbackSchema),
     defaultValues: cashback ?? defaultValues,
   })
+  const { setOpenDialog } = useFormStore()
   const router = useRouter()
 
   const { data } = useSuspenseQuery<{ retailers: Retailer[] }>(GET_RETAILERS, {
@@ -106,6 +108,13 @@ export function CashbackForm({ mode = 'create', cashback }: CashbackFormProps) {
       },
       onCompleted(_data, _clientOptions) {
         form.reset()
+
+        setOpenDialog(
+          mode === 'create'
+            ? 'cashbackCreateForm'
+            : `cashbackUpdateForm.${cashback?.id}`,
+          false,
+        )
 
         const message =
           mode === 'create'

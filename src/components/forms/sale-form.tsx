@@ -30,6 +30,7 @@ import {
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { env } from '@/env.mjs'
+import { useFormStore } from '@/hooks/use-form-store'
 import { saleSchema } from '@/lib/validations/sale'
 import { type Category } from '@/types'
 
@@ -81,8 +82,12 @@ interface SaleFormProps {
 export function SaleForm({ mode = 'create', sale }: SaleFormProps) {
   const form = useForm<Inputs>({
     resolver: zodResolver(saleSchema),
-    defaultValues: sale ?? defaultValues,
+    defaultValues: {
+      ...defaultValues,
+      ...sale,
+    },
   })
+  const { setOpenDialog } = useFormStore()
   const router = useRouter()
 
   const { data } = useSuspenseQuery<{
@@ -117,6 +122,11 @@ export function SaleForm({ mode = 'create', sale }: SaleFormProps) {
       },
       onCompleted(_data, _clientOptions) {
         form.reset()
+
+        setOpenDialog(
+          mode === 'create' ? 'saleCreateForm' : `saleUpdateForm.${sale?.id}`,
+          false,
+        )
 
         const message =
           mode === 'create'

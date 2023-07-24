@@ -29,6 +29,7 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet'
 import { env } from '@/env.mjs'
+import { useFormStore } from '@/hooks/use-form-store'
 import { type Coupon, type Retailer } from '@/types'
 
 const DELETE_COUPON = gql`
@@ -46,6 +47,7 @@ interface CouponsMainProps {
 export function CouponsMain({ coupons }: CouponsMainProps) {
   const [selectedCoupon, setSelectedCoupon] =
     React.useState<(typeof coupons)[number]>()
+  const { openDialogs, setOpenDialog } = useFormStore()
   const router = useRouter()
 
   const [deleteCoupon] = useMutation(DELETE_COUPON, {
@@ -67,7 +69,10 @@ export function CouponsMain({ coupons }: CouponsMainProps) {
     <div className="space-y-8">
       {/* Coupons Actions */}
       <div className="flex justify-end gap-x-2">
-        <Sheet>
+        <Sheet
+          open={openDialogs['couponCreateForm']}
+          onOpenChange={(open) => setOpenDialog('couponCreateForm', open)}
+        >
           <SheetTrigger asChild>
             <Button variant="outline">Adicionar</Button>
           </SheetTrigger>
@@ -118,7 +123,12 @@ export function CouponsMain({ coupons }: CouponsMainProps) {
               </DashboardItemCard.Content>
 
               <DashboardItemCard.Actions>
-                <Sheet>
+                <Sheet
+                  open={openDialogs[`couponUpdateForm.${coupon.id}`]}
+                  onOpenChange={(open) =>
+                    setOpenDialog(`couponUpdateForm.${coupon.id}`, open)
+                  }
+                >
                   <SheetTrigger asChild>
                     <DashboardItemCard.Action icon={Icons.Edit} />
                   </SheetTrigger>

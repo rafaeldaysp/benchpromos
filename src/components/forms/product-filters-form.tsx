@@ -19,6 +19,7 @@ import {
 } from '@/components/ui/form'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { env } from '@/env.mjs'
+import { useFormStore } from '@/hooks/use-form-store'
 import { linkFiltersSchema } from '@/lib/validations/product'
 import { type Filter } from '@/types'
 
@@ -68,6 +69,7 @@ export function ProductFiltersForm({
       })),
     },
   })
+  const { setOpenDialog } = useFormStore()
   const router = useRouter()
 
   useFieldArray({
@@ -85,6 +87,8 @@ export function ProductFiltersForm({
       toast.error(error.message)
     },
     onCompleted() {
+      setOpenDialog('productFiltersForm', false)
+
       toast.success('Filtros atualizados com sucesso.')
       router.refresh()
     },
