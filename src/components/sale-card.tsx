@@ -53,7 +53,7 @@ export function SaleCard({ sale }: SaleCardProps) {
 
       <div>
         <a
-          href={`/${sale.id}/${sale.slug}`}
+          href={`/promocao/${sale.id}/${sale.slug}`}
           className="cursor-pointer hover:text-violet-500"
         >
           {sale.title}
@@ -62,7 +62,7 @@ export function SaleCard({ sale }: SaleCardProps) {
 
       <div className="relative mx-auto aspect-square w-8/12">
         <a
-          href={`/${sale.id}/${sale.slug}`}
+          href={`/promocao/${sale.id}/${sale.slug}`}
           className="cursor-pointer hover:text-violet-500"
         >
           <Image
