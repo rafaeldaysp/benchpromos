@@ -13,5 +13,5 @@ export const saleSchema = z.object({
   label: z.string().optional(),
   coupon: z.string().optional(),
   cashback: z.string().optional(),
-  productId: z.string().optional(),
+  productSlug: z.string().optional(),
 })
