@@ -180,7 +180,7 @@ export function DealsMain({ deals, products, retailers }: DealsMainProps) {
           <h4 className="font-medium tracking-tight">
             Anúncios • {filteredDeals.length}
           </h4>
-          <ScrollArea className="rounded-md border bg-primary-foreground">
+          <ScrollArea className="rounded-md border">
             {filteredDeals.map((deal) => (
               <DashboardItemCard.Root key={deal.id}>
                 <DashboardItemCard.Image src={deal.product.imageUrl} alt="" />

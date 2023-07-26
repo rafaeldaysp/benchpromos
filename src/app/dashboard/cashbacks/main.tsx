@@ -109,7 +109,7 @@ export function CashbacksMain({ cashbacks }: CashbacksMainProps) {
 
       {/* Cashbacks */}
       {cashbacks.length > 0 ? (
-        <ScrollArea className="rounded-md border bg-primary-foreground">
+        <ScrollArea className="rounded-md border">
           {cashbacks.map((cashback) => (
             <DashboardItemCard.Root key={cashback.id}>
               <DashboardItemCard.Content

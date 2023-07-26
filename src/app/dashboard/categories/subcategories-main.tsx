@@ -156,7 +156,7 @@ export function SubcategoriesMain({ category }: SubcategoriesMainProps) {
       {/* Subcategories */}
       {subcategories.length > 0 ? (
         <DragDropContext onDragEnd={onDragEnd}>
-          <ScrollArea className="rounded-md border bg-primary-foreground p-2">
+          <ScrollArea className="rounded-md border bg-muted-foreground/5 p-2">
             <Droppable droppableId="subcategories-droppable">
               {(provided) => (
                 <div ref={provided.innerRef} {...provided.droppableProps}>

@@ -22,22 +22,22 @@ interface ProductsPageProps {
 }
 
 export default function ProductsPage({ params }: ProductsPageProps) {
+  const [isPending, startTransition] = React.useTransition()
   const { category } = params
 
   const { data, fetchMore } = useSuspenseQuery<{ products: Product[] }>(
     GET_PRODUCTS,
   )
-  const products = data.products
+  const initialProducts = data.products
+  const [products, setProducts] = React.useState<Product[]>(initialProducts)
 
   async function fetchMoreProducts() {
-    await fetchMore({
-      updateQuery(previousQueryResult, { fetchMoreResult }) {
-        const products = previousQueryResult.products
-        const newProducts = fetchMoreResult.products
-        return {
-          products: [...products, ...newProducts],
-        }
-      },
+    startTransition(async () => {
+      const { data } = await fetchMore({})
+
+      if (data.products.length === 0) null
+
+      setProducts([...products, ...data.products])
     })
   }
 

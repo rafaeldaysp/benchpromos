@@ -1,5 +1,5 @@
 import { gql } from '@apollo/client'
-import { type NextAuthOptions, type Session } from 'next-auth'
+import type { NextAuthOptions, Session } from 'next-auth'
 import GoogleProvider from 'next-auth/providers/google'
 
 import { env } from '../env.mjs'
@@ -12,7 +12,7 @@ export const authOptions: NextAuthOptions = {
     strategy: 'jwt',
   },
   pages: {
-    signIn: '/',
+    signIn: '/sign-in',
   },
   secret: env.NEXTAUTH_SECRET,
   providers: [
@@ -73,6 +73,14 @@ export const authOptions: NextAuthOptions = {
       }
 
       return session
+    },
+  },
+  events: {
+    signIn(message) {
+      console.log(message)
+    },
+    signOut(message) {
+      console.log(message)
     },
   },
   debug: env.NODE_ENV === 'development',

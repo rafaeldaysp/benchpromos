@@ -109,7 +109,7 @@ export function CouponsMain({ coupons }: CouponsMainProps) {
 
       {/* Coupons */}
       {coupons.length > 0 ? (
-        <ScrollArea className="rounded-md border bg-primary-foreground">
+        <ScrollArea className="rounded-md border">
           {coupons.map((coupon) => (
             <DashboardItemCard.Root key={coupon.id}>
               <DashboardItemCard.Content

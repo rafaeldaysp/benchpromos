@@ -155,7 +155,7 @@ export function SalesMain({ sales, products }: SalesMainProps) {
           {sales.length > 0 ? (
             <div className="space-y-4">
               <Input placeholder="Pesquise por uma promoção..." />
-              <ScrollArea className="rounded-md border bg-primary-foreground">
+              <ScrollArea className="rounded-md border">
                 {sales.map((sale) => (
                   <DashboardItemCard.Root key={sale.id}>
                     <DashboardItemCard.Image src={sale.imageUrl} alt="" />
@@ -243,7 +243,7 @@ export function SalesMain({ sales, products }: SalesMainProps) {
           {products.length > 0 ? (
             <div className="space-y-4">
               <Input placeholder="Pesquise por um produto..." />
-              <ScrollArea className="rounded-md border bg-primary-foreground">
+              <ScrollArea className="rounded-md border">
                 {products.map((product) => (
                   <DashboardItemCard.Root
                     key={product.slug}

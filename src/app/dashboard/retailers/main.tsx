@@ -104,7 +104,7 @@ export function RetailersMain({ retailers }: RetailersMainProps) {
 
       {/* Retailers */}
       {retailers.length > 0 ? (
-        <ScrollArea className="rounded-md border bg-primary-foreground">
+        <ScrollArea className="rounded-md border">
           {retailers.map((retailer) => (
             <DashboardItemCard.Root key={retailer.id}>
               <DashboardItemCard.Content

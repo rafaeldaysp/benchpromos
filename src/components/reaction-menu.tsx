@@ -3,6 +3,7 @@
 import { gql, useMutation } from '@apollo/client'
 import { toast } from 'sonner'
 
+import { getCurrentUser } from '@/app/_actions/get-current-user'
 import {
   ContextMenuItem,
   ContextMenuSubContent,
@@ -52,7 +53,7 @@ export function ReactionMenu({ saleId }: ReactionMenuProps) {
   const [toggleReaction] = useMutation(TOGGLE_REACTION, {
     context: {
       headers: {
-        Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNsa2JweDk4eTAwMDBoaHpjajY3dGZva3kiLCJpc0FkbWluIjp0cnVlfQ.iYwNIO99BqOCWIQVmuvoZBEkGo_2mY07bOnR_86AYzo`, // resolver o token e enviar para o server
+        Authorization: `Bearer eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..lXeMhCGgVjrU_aIY.xwtWsISOtKeIqLY5O9Bsrgp9I6PpW2TOZsNn9zNstuOs06AMILDHG1aWfWSU9A9SXDlohYPH_ykVChJvl6mQAa_ckT_oBvQJ_bIC4R2EimIKpvhQQsKZWh_tolYfw3sZINn5NlgDuGSEXabfcU89K79jd11jK4oZ9pOSjpj-aVT4zB_KIJ40l8I6GCxILB3kUkTibwaehp4DVFpCiYZG5H7CUvXYOPnYlN-ymRoL8WRdt1hgJz2jV80l9yiHg_tLLyvs-Nsl6TifeWTOUJFkAXf7jdXjF4lKTK78CIJwOS17IDtzjM5FhEsLffZL9M_1CgKFucjntw9O7YKHDdLsHNJQsZNM5dEx3iIiH7f-rnOmIPO4f9aQqdQLlKLu4W5G-EKq-Yx6.uDrEiBgIObLpBSyRz-0USQ`, // resolver o token e enviar para o server
       },
     },
 
@@ -66,14 +67,13 @@ export function ReactionMenu({ saleId }: ReactionMenuProps) {
     <ContextMenuSubContent>
       {reactions.map((reaction) => (
         <ContextMenuItem
-          className="flex justify-between"
           key={reaction.emote}
           onClick={() =>
             toggleReaction({
               variables: {
                 input: {
-                  content: reaction.emote,
                   saleId,
+                  content: reaction.emote,
                 },
               },
             })

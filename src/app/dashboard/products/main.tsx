@@ -231,7 +231,7 @@ export function ProductsMain({ filters }: ProductsMainProps) {
       {products.length > 0 ? (
         <div className="space-y-4">
           <Input placeholder="Pesquise por um produto..." />
-          <ScrollArea className="rounded-md border bg-primary-foreground">
+          <ScrollArea className="rounded-md border">
             {products.map((product) => (
               <DashboardItemCard.Root key={product.id}>
                 <DashboardItemCard.Image src={product.imageUrl} alt="" />

@@ -1,18 +1,6 @@
 import { gql } from '@apollo/client'
-import Link from 'next/link'
 
-import { Icons } from '@/components/icons'
-import { ReactionMenu } from '@/components/reaction-menu'
 import { SaleCard } from '@/components/sale-card'
-import {
-  ContextMenu,
-  ContextMenuContent,
-  ContextMenuItem,
-  ContextMenuSeparator,
-  ContextMenuSub,
-  ContextMenuSubTrigger,
-  ContextMenuTrigger,
-} from '@/components/ui/context-menu'
 import { getClient } from '@/lib/apollo'
 import type { Category, Comment, Sale } from '@/types'
 
@@ -69,45 +57,7 @@ export default async function Home() {
     <div className="px-4 sm:container">
       <div className="my-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {sales.map((sale) => (
-          <ContextMenu key={sale.id}>
-            <ContextMenuTrigger>
-              <SaleCard sale={sale} />
-            </ContextMenuTrigger>
-            <ContextMenuContent>
-              <ContextMenuSub>
-                <ContextMenuSubTrigger className="flex gap-2">
-                  <Icons.SmilePlus className="h-4 w-4" />
-                  <span>Reagir</span>
-                </ContextMenuSubTrigger>
-                <ReactionMenu saleId={sale.id} />
-              </ContextMenuSub>
-
-              <ContextMenuSeparator />
-
-              <Link href={`/promocao/${sale.id}/${sale.slug}`}>
-                <ContextMenuItem className="flex gap-2">
-                  <Icons.GanttChartSquare className="h-4 w-4" />
-                  <span>Mais detalhes</span>
-                </ContextMenuItem>
-              </Link>
-
-              {sale.productSlug && (
-                <Link href={`/${sale.category.slug}/${sale.productSlug}`}>
-                  <ContextMenuItem className="flex gap-2">
-                    <Icons.Eye className="h-4 w-4" />
-                    <span>Ver produto</span>
-                  </ContextMenuItem>
-                </Link>
-              )}
-
-              <Link href={`/promocao/${sale.id}/${sale.slug}#comments`}>
-                <ContextMenuItem className="flex gap-2">
-                  <Icons.MessageCircle className="h-4 w-4" />
-                  <span>Comentários</span>
-                </ContextMenuItem>
-              </Link>
-            </ContextMenuContent>
-          </ContextMenu>
+          <SaleCard key={sale.id} sale={sale} />
         ))}
       </div>
     </div>
