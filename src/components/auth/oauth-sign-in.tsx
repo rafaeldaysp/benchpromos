@@ -40,7 +40,7 @@ export function OAuthSignIn() {
             aria-label={`Entrar com ${provider.name}`}
             key={provider.name}
             variant="outline"
-            className="w-full bg-background sm:w-auto"
+            className="w-full bg-background capitalize sm:w-auto"
             onClick={() => oauthSignIn(provider.name)}
             disabled={isLoading !== null}
           >

@@ -199,9 +199,7 @@ export function ProductsMain({ filters }: ProductsMainProps) {
             <SheetHeader>
               <SheetTitle>ADICIONAR PRODUTO</SheetTitle>
             </SheetHeader>
-            <ProductForm
-              product={{ ...selectedProduct, id: undefined, name: '' }}
-            />
+            <ProductForm product={{ ...selectedProduct, id: undefined }} />
           </SheetContent>
         </Sheet>
       </div>

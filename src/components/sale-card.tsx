@@ -9,6 +9,14 @@ import { ReactionMenu } from '@/components/reaction-menu'
 import { Badge } from '@/components/ui/badge'
 import { buttonVariants } from '@/components/ui/button'
 import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
@@ -20,7 +28,7 @@ import {
 import { cn } from '@/lib/utils'
 import { priceFormatter } from '@/utils/formatter'
 
-interface SaleCardProps {
+interface SaleCardProps extends React.HTMLAttributes<HTMLDivElement> {
   sale: {
     id: string
     title: string
@@ -53,29 +61,35 @@ interface SaleCardProps {
   }
 }
 
-export function SaleCard({ sale }: SaleCardProps) {
+export function SaleCard({ sale, className, ...props }: SaleCardProps) {
   return (
     <ContextMenu>
-      <ContextMenuTrigger>
-        <div className="flex h-full flex-col gap-4 rounded-lg border p-2.5">
-          <div className="flex-1 space-y-4">
-            <header className="flex items-center text-sm">
-              <span className="flex-1">{sale.category.name}</span>
-              {sale.label && (
-                <Badge className="bg-amber-200 text-black dark:bg-amber-200">
-                  {sale.label}
-                </Badge>
-              )}
-              <span className="flex-1 text-end">
-                {dayjs(sale.createdAt).fromNow()}
-              </span>
-            </header>
+      <ContextMenuTrigger asChild>
+        <Card
+          className={cn('flex flex-col overflow-hidden', className)}
+          {...props}
+        >
+          <CardHeader className="flex-row items-center text-sm">
+            <span className="flex-1">{sale.category.name}</span>
+            {sale.label && (
+              <Badge
+                variant="outline"
+                className="bg-amber-200 text-black dark:bg-amber-200"
+              >
+                {sale.label}
+              </Badge>
+            )}
+            <span className="flex-1 text-end">
+              {dayjs(sale.createdAt).fromNow()}
+            </span>
+          </CardHeader>
 
-            <div>
+          <CardContent className="flex-1 space-y-2.5">
+            <CardTitle>
               <Link href={`/promocao/${sale.id}/${sale.slug}`}>
                 {sale.title}
               </Link>
-            </div>
+            </CardTitle>
 
             <div>
               <Link href={`/promocao/${sale.id}/${sale.slug}`}>
@@ -92,16 +106,14 @@ export function SaleCard({ sale }: SaleCardProps) {
             </div>
 
             {sale.caption && (
-              <div>
-                <p className="line-clamp-3 text-sm tracking-wide text-muted-foreground ">
-                  {sale.caption}
-                </p>
-              </div>
+              <CardDescription className="line-clamp-3">
+                {sale.caption}
+              </CardDescription>
             )}
 
-            <div className="flex flex-col gap-x-2">
+            <div className="flex flex-col">
               <span>
-                <strong className="text-2xl">
+                <strong className="text-xl">
                   {priceFormatter.format(sale.price / 100)}
                 </strong>{' '}
                 à vista
@@ -126,8 +138,8 @@ export function SaleCard({ sale }: SaleCardProps) {
             {sale.coupon && (
               <div>
                 <span>Com cupom</span>
-                <div className="flex items-center overflow-hidden rounded-full border-2 bg-amber-200 pl-2 text-black dark:bg-amber-200">
-                  <Icons.Tag className="mr-2 h-4 w-4 text-primary" />
+                <div className="flex items-center overflow-hidden rounded-full border bg-amber-200 pl-2 text-black dark:bg-amber-200">
+                  <Icons.Tag className="mr-2 h-4 w-4" />
                   <span className="flex-1 overflow-hidden text-sm font-medium uppercase tracking-widest">
                     {sale.coupon}
                   </span>
@@ -145,15 +157,18 @@ export function SaleCard({ sale }: SaleCardProps) {
                 href={sale.url}
                 target="_blank"
                 rel="noreferrer"
-                className={cn(buttonVariants(), 'w-full rounded-full')}
+                className={cn(
+                  buttonVariants({ size: 'lg' }),
+                  'w-full rounded-full',
+                )}
               >
                 <span className="mr-2">ACESSAR</span>
                 <Icons.ExternalLink className="h-4 w-4" />
               </a>
             </div>
-          </div>
+          </CardContent>
 
-          <footer className="flex items-end justify-between">
+          <CardFooter className="flex items-end justify-between">
             <div className="flex items-center gap-x-0.5">
               {sale.reactions.map((reaction) => (
                 <ReactionButton
@@ -172,9 +187,10 @@ export function SaleCard({ sale }: SaleCardProps) {
               <span className="mr-1 text-sm">{sale.comments.length}</span>
               <Icons.MessageCircle className="h-4 w-4" />
             </Link>
-          </footer>
-        </div>
+          </CardFooter>
+        </Card>
       </ContextMenuTrigger>
+
       <ContextMenuContent>
         <ContextMenuSub>
           <ContextMenuSubTrigger className="flex gap-2">

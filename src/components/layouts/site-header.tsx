@@ -24,13 +24,7 @@ export async function SiteHeader() {
             <Combobox />
 
             {user ? (
-              <UserAccountNav
-                user={{
-                  name: user.name,
-                  image: user.image,
-                  email: user.email,
-                }}
-              />
+              <UserAccountNav user={user} />
             ) : (
               <Link
                 href="/sign-in"

@@ -274,7 +274,7 @@ export function DealsMain({ deals, products, retailers }: DealsMainProps) {
           {products.length > 0 ? (
             <div className="space-y-4">
               <Input placeholder="Pesquise por um produto..." />
-              <ScrollArea className="rounded-md border bg-primary-foreground">
+              <ScrollArea className="rounded-md border">
                 {products.map((product) => (
                   <DashboardItemCard.Root
                     key={product.id}
@@ -303,7 +303,7 @@ export function DealsMain({ deals, products, retailers }: DealsMainProps) {
           {retailers.length > 0 ? (
             <div className="space-y-4">
               <Input placeholder="Pesquise por um anunciante..." />
-              <ScrollArea className="rounded-md border bg-primary-foreground">
+              <ScrollArea className="rounded-md border">
                 {retailers.map((retailer) => (
                   <DashboardItemCard.Root
                     key={retailer.id}

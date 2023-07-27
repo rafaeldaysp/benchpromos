@@ -1,6 +1,9 @@
 import {
   Check,
   ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
   CircleDollarSign,
   Copy,
   Edit2,
@@ -18,7 +21,6 @@ import {
   Plus,
   Search,
   SmilePlus,
-  SmilePlusIcon,
   Tag,
   Trash2,
   User2,
@@ -46,11 +48,13 @@ export const Icons = {
   ExternalLink,
   SmilePlus,
   ChevronLeft,
+  ChevronRight,
   MessageCircle,
   Heart,
   Eye,
-  SmilePlusIcon,
   GanttChartSquare,
+  ChevronsLeft,
+  ChevronsRight,
   Google: ({ ...props }: LucideProps) => (
     <svg
       aria-hidden="true"

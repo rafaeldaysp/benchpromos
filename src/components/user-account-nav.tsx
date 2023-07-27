@@ -1,6 +1,6 @@
 'use client'
 
-import { type User } from 'next-auth'
+import { type Session } from 'next-auth'
 import { signOut } from 'next-auth/react'
 import Link from 'next/link'
 import * as React from 'react'
@@ -16,7 +16,7 @@ import {
 import { UserAvatar } from '@/components/user-avatar'
 
 interface UserAccountNavProps extends React.HTMLAttributes<HTMLDivElement> {
-  user: Pick<User, 'name' | 'image' | 'email'>
+  user: Session['user']
 }
 
 export function UserAccountNav({ user }: UserAccountNavProps) {
@@ -39,13 +39,17 @@ export function UserAccountNav({ user }: UserAccountNavProps) {
             )}
           </div>
         </div>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem className="cursor-pointer" asChild>
-          <Link href="/dashboard/sales">
-            <Icons.Lock className="mr-2 h-4 w-4" />
-            <span>Dashboard</span>
-          </Link>
-        </DropdownMenuItem>
+        {user.isAdmin && (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem className="cursor-pointer" asChild>
+              <Link href="/dashboard/sales">
+                <Icons.Lock className="mr-2 h-4 w-4" />
+                <span>Dashboard</span>
+              </Link>
+            </DropdownMenuItem>
+          </>
+        )}
         <DropdownMenuSeparator />
         <DropdownMenuItem
           className="cursor-pointer"
