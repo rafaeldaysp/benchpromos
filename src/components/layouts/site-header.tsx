@@ -1,6 +1,6 @@
 import Link from 'next/link'
 
-import { getCurrentUser } from '@/app/_actions/get-current-user'
+import { getCurrentUser } from '@/app/_actions/user'
 import { Combobox } from '@/components/combobox'
 import { buttonVariants } from '@/components/ui/button'
 import { UserAccountNav } from '@/components/user-account-nav'

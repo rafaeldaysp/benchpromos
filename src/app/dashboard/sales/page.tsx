@@ -25,12 +25,15 @@ const GET_SALES_AND_PRODUCTS = gql`
       categoryId
       productSlug
     }
-    products {
-      name
-      slug
-      imageUrl
-      category {
+    productsList: products {
+      pages
+      products {
         name
+        slug
+        imageUrl
+        category {
+          name
+        }
       }
     }
   }
@@ -39,15 +42,17 @@ const GET_SALES_AND_PRODUCTS = gql`
 export default async function SalesDashboardPage() {
   const response = await getClient().query<{
     sales: Sale[]
-    products: (Pick<Product, 'slug' | 'name' | 'imageUrl'> & {
-      category: Pick<Category, 'name'>
-    })[]
+    productsList: {
+      products: (Pick<Product, 'slug' | 'name' | 'imageUrl'> & {
+        category: Pick<Category, 'name'>
+      })[]
+    }
   }>({
     query: GET_SALES_AND_PRODUCTS,
   })
 
   const sales = response.data.sales.map((sale) => removeNullValues(sale))
-  const products = response.data.products
+  const products = response.data.productsList.products
 
   return (
     <div className="space-y-6">

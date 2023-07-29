@@ -4,12 +4,14 @@ import { gql, useMutation } from '@apollo/client'
 import * as React from 'react'
 import { toast } from 'sonner'
 
-import { cn } from '@/lib/utils'
+import { getCurrentUserToken } from '@/app/_actions/user'
+import { Button } from '@/components/ui/button'
 
 interface ReactionButtonProps {
-  reaction: string
   saleId: string
-  initialUsers: { id: string }[]
+  userId?: string
+  reaction: string
+  users: { id: string }[]
 }
 
 const TOGGLE_REACTION = gql`
@@ -21,52 +23,51 @@ const TOGGLE_REACTION = gql`
 `
 
 export function ReactionButton({
-  reaction,
-  initialUsers,
   saleId,
+  userId,
+  reaction,
+  users: initialUsers,
 }: ReactionButtonProps) {
-  const [users, setUsers] = React.useState<typeof initialUsers>(initialUsers)
+  const [users, setUsers] = React.useState(initialUsers)
 
   const [toggleReaction] = useMutation(TOGGLE_REACTION, {
-    context: {
-      headers: {
-        Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNsa2JweDk4eTAwMDBoaHpjajY3dGZva3kiLCJpc0FkbWluIjp0cnVlfQ.iYwNIO99BqOCWIQVmuvoZBEkGo_2mY07bOnR_86AYzo`, // substituir com o token da sessão do usuário
-      },
-    },
     onError(error, _clientOptions) {
-      toast.error(error.message) // login toast
+      toast.error(error.message)
     },
     onCompleted(_data, _clientOptions) {
-      users.some((user) => user.id === MY_SESSION_ID)
-        ? setUsers(users.filter((user) => user.id !== MY_SESSION_ID))
-        : setUsers(users.concat({ id: MY_SESSION_ID }))
+      // atualizar os usuários
     },
   })
 
-  const MY_SESSION_ID = 'clkbpx98y0000hhzcj67tfoky' // substituir com o id da sessão do usuário
-  return (
-    <div
-      onClick={() =>
-        toggleReaction({
-          variables: {
-            input: {
-              content: reaction,
-              saleId,
-            },
-          },
-        })
-      }
-      className={cn(
-        'mx-auto flex cursor-pointer items-center gap-x-1 rounded-xl border px-1 transition-colors hover:bg-accent',
-        {
-          'bg-primary hover:bg-primary/80 text-primary-foreground':
-            MY_SESSION_ID && users.some((user) => user.id === MY_SESSION_ID),
-          hidden: users.length < 1,
+  async function handleToggleReaction(emote: string) {
+    const token = await getCurrentUserToken()
+
+    await toggleReaction({
+      context: {
+        headers: {
+          Authorization: `Bearer ${token}`,
         },
-      )}
+      },
+      variables: {
+        input: {
+          saleId,
+          content: emote,
+        },
+      },
+    })
+  }
+
+  const userReacted = users.some((user) => user.id === userId)
+
+  return (
+    <Button
+      variant={userReacted ? 'default' : 'outline'}
+      size="icon"
+      className="h-fit rounded-full"
+      onClick={() => handleToggleReaction(reaction)}
     >
       {reaction}
       <span className="text-sm">{users.length}</span>
-    </div>
+    </Button>
   )
 }

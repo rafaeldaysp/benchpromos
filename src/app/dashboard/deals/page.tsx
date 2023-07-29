@@ -35,10 +35,12 @@ const GET_DEALS_AND_PRODUCTS_AND_RETAILERS = gql`
         discount
       }
     }
-    products {
-      id
-      name
-      imageUrl
+    productsList: products {
+      products {
+        id
+        name
+        imageUrl
+      }
     }
     retailers {
       id
@@ -52,14 +54,16 @@ export default async function DealsDashboardPage() {
     deals: (Deal & { cashback?: Pick<Cashback, 'value'> } & {
       coupon?: Pick<Coupon, 'discount'>
     })[]
-    products: Pick<Product, 'id' | 'name' | 'imageUrl'>[]
+    productsList: {
+      products: Pick<Product, 'id' | 'name' | 'imageUrl'>[]
+    }
     retailers: Retailer[]
   }>({
     query: GET_DEALS_AND_PRODUCTS_AND_RETAILERS,
   })
 
   const deals = response.data.deals.map((deal) => removeNullValues(deal))
-  const products = response.data.products
+  const products = response.data.productsList.products
   const retailers = response.data.retailers
 
   return (

@@ -21,13 +21,15 @@ import { cn } from '@/lib/utils'
 
 const GET_PRODUCTS_BY_SEARCH = gql`
   query GetProductsBySearch($input: GetProductsInput) {
-    products(getProductsInput: $input) {
-      id
-      name
-      imageUrl
-      slug
-      category {
+    productsList: products(getProductsInput: $input) {
+      products {
+        id
+        name
+        imageUrl
         slug
+        category {
+          slug
+        }
       }
     }
   }
@@ -54,7 +56,9 @@ export function Combobox() {
   const router = useRouter()
 
   const { refetch } = useQuery<{
-    products: SearchedProduct[]
+    productsList: {
+      products: SearchedProduct[]
+    }
   }>(GET_PRODUCTS_BY_SEARCH, {
     skip: true,
     fetchPolicy: 'network-only',
@@ -70,7 +74,7 @@ export function Combobox() {
       startTransition(async () => {
         const { data } = await refetch({
           input: {
-            hasDeals: false,
+            hasDeals: true,
             search: debouncedQuery,
             pagination: {
               limit: 5,
@@ -78,7 +82,7 @@ export function Combobox() {
             },
           },
         })
-        setData(data)
+        setData(data.productsList)
       })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

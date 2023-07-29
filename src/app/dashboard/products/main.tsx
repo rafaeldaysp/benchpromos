@@ -43,27 +43,30 @@ import { useFormStore } from '@/hooks/use-form-store'
 import type { Category, Filter, Product } from '@/types'
 import { removeNullValues } from '@/utils'
 
-const PRODUCTS_PER_PAGE = 1
+const PRODUCTS_PER_PAGE = 10
 
 const GET_PRODUCTS = gql`
   query GetProducts($input: GetProductsInput) {
-    products(getProductsInput: $input) {
-      id
-      name
-      imageUrl
-      specs
-      reviewUrl
-      description
-      referencePrice
-      categoryId
-      slug
-      subcategoryId
-      recommended
-      category {
+    productsList: products(getProductsInput: $input) {
+      pages
+      products {
+        id
         name
-      }
-      filters {
-        optionId
+        imageUrl
+        specs
+        reviewUrl
+        description
+        referencePrice
+        categoryId
+        slug
+        subcategoryId
+        recommended
+        category {
+          name
+        }
+        filters {
+          optionId
+        }
       }
     }
   }
@@ -81,19 +84,19 @@ interface ProductsMainProps {
   filters: Filter[]
 }
 
-// esse infinite scroll é uma bomba, cada linha tem seu motivo de ser, tire uma e tudo para de funcionar
-// ainda falta atualizar os estados depois aconteceu algum submit (product form ou filter form)
-
 export function ProductsMain({ filters }: ProductsMainProps) {
   const [isPending, startTransition] = React.useTransition()
   const { openDialogs, setOpenDialog } = useFormStore()
   const [page, setPage] = React.useState(1)
 
-  const { data, refetch, fetchMore } = useSuspenseQuery<{
-    products: (Product & {
-      category: Pick<Category, 'name'>
-      filters: { optionId: string }[]
-    })[]
+  const { data, fetchMore } = useSuspenseQuery<{
+    productsList: {
+      pages: number
+      products: (Product & {
+        category: Pick<Category, 'name'>
+        filters: { optionId: string }[]
+      })[]
+    }
   }>(GET_PRODUCTS, {
     refetchWritePolicy: 'overwrite',
     variables: {
@@ -106,7 +109,8 @@ export function ProductsMain({ filters }: ProductsMainProps) {
     },
   })
 
-  const initialProducts = data.products.map((product) =>
+  const pageCount = data.productsList.pages
+  const initialProducts = data.productsList.products.map((product) =>
     removeNullValues(product),
   )
   const [products, setProducts] = React.useState(initialProducts)
@@ -148,17 +152,17 @@ export function ProductsMain({ filters }: ProductsMainProps) {
         },
       })
 
-      if (data.products.length === 0) null
-
       setProducts([
         ...products,
-        ...data.products.map((product) => removeNullValues(product)),
+        ...data.productsList.products.map((product) =>
+          removeNullValues(product),
+        ),
       ])
       setPage((prev) => prev + 1)
     })
   }
 
-  const hasMoreProducts = PRODUCTS_PER_PAGE * page <= products.length
+  const hasMoreProducts = page < pageCount
 
   return (
     <div className="space-y-8">

@@ -1,7 +1,9 @@
 import dayjs from 'dayjs'
 import Image from 'next/image'
 import Link from 'next/link'
+import * as React from 'react'
 
+import { getCurrentUser } from '@/app/_actions/user'
 import { CopyButton } from '@/components/copy-button'
 import { Icons } from '@/components/icons'
 import { ReactionButton } from '@/components/reaction-button'
@@ -61,7 +63,9 @@ interface SaleCardProps extends React.HTMLAttributes<HTMLDivElement> {
   }
 }
 
-export function SaleCard({ sale, className, ...props }: SaleCardProps) {
+export async function SaleCard({ sale, className, ...props }: SaleCardProps) {
+  const user = await getCurrentUser()
+
   return (
     <ContextMenu>
       <ContextMenuTrigger asChild>
@@ -168,21 +172,25 @@ export function SaleCard({ sale, className, ...props }: SaleCardProps) {
             </div>
           </CardContent>
 
-          <CardFooter className="flex items-end justify-between">
-            <div className="flex items-center gap-x-0.5">
+          <CardFooter className="flex items-center justify-between gap-x-2">
+            <div className="flex flex-wrap gap-1">
               {sale.reactions.map((reaction) => (
                 <ReactionButton
                   key={reaction.content}
                   saleId={sale.id}
+                  userId={user?.id}
                   reaction={reaction.content}
-                  initialUsers={reaction.users}
+                  users={reaction.users}
                 />
               ))}
             </div>
 
             <Link
               href={`/promocao/${sale.id}/${sale.slug}#comments`}
-              className={cn(buttonVariants({ variant: 'ghost', size: 'icon' }))}
+              className={cn(
+                buttonVariants({ variant: 'ghost', size: 'icon' }),
+                'shrink-0',
+              )}
             >
               <span className="mr-1 text-sm">{sale.comments.length}</span>
               <Icons.MessageCircle className="h-4 w-4" />
@@ -190,7 +198,6 @@ export function SaleCard({ sale, className, ...props }: SaleCardProps) {
           </CardFooter>
         </Card>
       </ContextMenuTrigger>
-
       <ContextMenuContent>
         <ContextMenuSub>
           <ContextMenuSubTrigger className="flex gap-2">

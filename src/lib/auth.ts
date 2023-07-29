@@ -1,10 +1,30 @@
 import { gql } from '@apollo/client'
+import dayjs from 'dayjs'
 import type { NextAuthOptions, Session } from 'next-auth'
 import GoogleProvider from 'next-auth/providers/google'
+import { cookies } from 'next/headers'
 
 import { env } from '../env.mjs'
 import { BenchAdapter } from './adapter'
 import { getClient } from './apollo'
+
+const GET_USER = gql`
+  query GetUser($userId: String!) {
+    user: getUser(id: $userId) {
+      id
+      name
+      email
+      image
+      isAdmin
+    }
+  }
+`
+
+const GET_TOKEN = gql`
+  query Query($userId: String!) {
+    token(userId: $userId)
+  }
+`
 
 export const authOptions: NextAuthOptions = {
   adapter: BenchAdapter(),
@@ -24,17 +44,7 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user }) {
       const response = await getClient().query<{ user: Session['user'] }>({
-        query: gql`
-          query GetUser($userId: String!) {
-            user: getUser(id: $userId) {
-              id
-              name
-              email
-              image
-              isAdmin
-            }
-          }
-        `,
+        query: GET_USER,
         context: {
           headers: {
             'api-key': env.NEXT_PUBLIC_API_KEY,
@@ -76,11 +86,33 @@ export const authOptions: NextAuthOptions = {
     },
   },
   events: {
-    signIn(message) {
-      console.log(message)
+    async signIn({ user }) {
+      const { data } = await getClient().query<{ token: string }>({
+        query: GET_TOKEN,
+        context: {
+          headers: {
+            'api-key': env.NEXT_PUBLIC_API_KEY,
+          },
+        },
+        variables: {
+          userId: user.id,
+        },
+      })
+
+      const token = data.token
+
+      cookies().set({
+        name: 'bench-promos.session-token',
+        value: token,
+        expires: dayjs().add(30, 'days').toDate(),
+      })
     },
-    signOut(message) {
-      console.log(message)
+    async signOut() {
+      cookies().set({
+        name: 'bench-promos.session-token',
+        value: '',
+        maxAge: 0,
+      })
     },
   },
   debug: env.NODE_ENV === 'development',

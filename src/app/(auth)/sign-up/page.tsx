@@ -2,7 +2,7 @@ import { type Metadata } from 'next'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 
-import { getCurrentUser } from '@/app/_actions/get-current-user'
+import { getCurrentUser } from '@/app/_actions/user'
 import { OAuthSignIn } from '@/components/auth/oauth-sign-in'
 import { SignUpForm } from '@/components/forms/sign-up-form'
 import {
