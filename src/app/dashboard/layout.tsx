@@ -33,7 +33,7 @@ const sidebarNavItems = [
   },
   {
     title: 'Benchmarks',
-    href: '/dashboard/benchmarks',
+    href: '/dashboard/product-benchmarks',
   },
 ]
 

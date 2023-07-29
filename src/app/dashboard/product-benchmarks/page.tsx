@@ -15,6 +15,7 @@ const GET_BENCHMARKS = gql`
       product {
         id
         name
+        imageUrl
       }
       description
       result

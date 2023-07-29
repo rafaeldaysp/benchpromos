@@ -25,6 +25,8 @@ import {
   Trash2,
   User2,
   X,
+  ArrowUpDown,
+  GitPullRequestDraft,
   type LucideProps,
 } from 'lucide-react'
 
@@ -55,6 +57,8 @@ export const Icons = {
   GanttChartSquare,
   ChevronsLeft,
   ChevronsRight,
+  ArrowUpDown,
+  GitPullRequestDraft,
   Google: ({ ...props }: LucideProps) => (
     <svg
       aria-hidden="true"
