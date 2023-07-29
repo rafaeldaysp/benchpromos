@@ -27,6 +27,7 @@ import {
   X,
   ArrowUpDown,
   GitPullRequestDraft,
+  MoreHorizontal,
   type LucideProps,
 } from 'lucide-react'
 
@@ -59,6 +60,7 @@ export const Icons = {
   ChevronsRight,
   ArrowUpDown,
   GitPullRequestDraft,
+  MoreHorizontal,
   Google: ({ ...props }: LucideProps) => (
     <svg
       aria-hidden="true"

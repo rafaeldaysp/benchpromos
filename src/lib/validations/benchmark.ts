@@ -7,6 +7,7 @@ export const benchmarkSchema = z.object({
   }),
   benchmark: z.object({
     id: z.string(),
+    name: z.string(),
   }),
   description: z.string().nullable(),
   result: z.number(),

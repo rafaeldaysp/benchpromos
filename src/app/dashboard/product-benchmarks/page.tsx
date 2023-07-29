@@ -20,6 +20,16 @@ const GET_BENCHMARKS = gql`
       description
       result
     }
+    products {
+      products {
+        id
+        name
+      }
+    }
+    benchmarksNames: benchmarks {
+      id
+      name
+    }
   }
 `
 
