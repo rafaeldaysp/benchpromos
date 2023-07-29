@@ -4,6 +4,7 @@ import { DashboardItemCard } from '@/components/dashboard-item-card'
 import { DataTableRowActions } from '@/components/data-table/data-table-row-actions'
 import { Icons } from '@/components/icons'
 import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
 import { type Product } from '@/types'
 import { type ColumnDef } from '@tanstack/react-table'
 import Image from 'next/image'
@@ -18,40 +19,77 @@ export type BenchmarkType = {
 
 export const columns: ColumnDef<BenchmarkType>[] = [
   {
-    id: 'image',
-    accessorKey: 'product.imageUrl',
-    header: '',
-    cell: ({ row }) => {
-      return (
-        <div className="relative h-16 w-16">
-          <Image
-            src={row.getValue('image')}
-            alt=""
-            className="rounded-lg object-contain"
-            fill
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          />
-        </div>
-      )
+    id: 'id',
+    accessorKey: 'id',
+    enableSorting: false,
+    header({ column }) {
+      column.toggleVisibility(false)
     },
-    footer: 'Imagem',
+  },
+  {
+    id: 'select',
+    header: '',
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        onCheckedChange={(value) => {
+          row.toggleSelected(!!value)
+        }}
+        aria-label="Select row"
+      />
+    ),
+    enableHiding: false,
   },
   {
     id: 'product',
-    accessorKey: 'product.name',
-    header: 'Produto',
-    cell: ({ row }) => {
+    accessorKey: 'product',
+    header: ({ column }) => {
       return (
-        <div className="flex-1">
-          <p className="text-sm leading-7">{row.getValue('product')}</p>
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+        >
+          Produto
+          <Icons.ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      )
+    },
+    cell: ({ row }) => {
+      const product = row.getValue('product') as Pick<
+        Product,
+        'id' | 'imageUrl' | 'name'
+      >
+      return (
+        <div className="flex gap-x-4">
+          <div className="relative h-16 w-16">
+            <Image
+              src={product.imageUrl}
+              alt=""
+              className="rounded-lg object-contain"
+              fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            />
+          </div>
+          <div className="flex-1">
+            <p className="text-sm leading-7">{product.name}</p>
+          </div>
         </div>
       )
     },
     filterFn: (row, id, value) => {
-      const rowValue = row.getValue(id) as string
-      const search = value as string
+      const rowValue = row.getValue(id) as Pick<
+        Product,
+        'id' | 'imageUrl' | 'name'
+      >
+      const input = value as string
 
-      return rowValue.toLowerCase().includes(search.toLowerCase())
+      const productName = rowValue.name.toLowerCase()
+      const searchArray = input.toLowerCase().split(' ')
+
+      return (
+        row.getIsSelected() ||
+        searchArray.every((search) => productName.includes(search))
+      )
     },
     footer: 'Produto',
   },

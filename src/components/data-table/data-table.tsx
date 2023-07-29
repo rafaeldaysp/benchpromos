@@ -26,7 +26,6 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { DataTablePagination } from '@/components/data-table/data-table-pagination'
-import { Input } from '../ui/input'
 import { DataTableToolbar } from './data-table-toolbar'
 
 interface DataTableProps<TData, TValue> {
@@ -68,6 +67,9 @@ export function DataTable<TData, TValue>({
     getFacetedUniqueValues: getFacetedUniqueValues(),
   })
 
+  table
+    .getRowModel()
+    .rows.sort((a, b) => Number(b.getIsSelected()) - Number(a.getIsSelected()))
   return (
     <div className="space-y-4">
       <DataTableToolbar table={table} />
