@@ -105,8 +105,6 @@ export function DataTableRowActions<TData>({
     },
   })
 
-  console.log(benchmark.result)
-
   return (
     <>
       <DropdownMenu>

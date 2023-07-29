@@ -26,7 +26,7 @@ const GET_BENCHMARKS = gql`
         name
       }
     }
-    benchmarksNames: benchmarks {
+    allBenchmarks: benchmarks {
       id
       name
     }
@@ -34,7 +34,7 @@ const GET_BENCHMARKS = gql`
 `
 
 export default async function BenchmarksDashboardPageAux() {
-  const benchmarks = await getBenchmarks()
+  const { benchmarks, allBenchmarks, products } = await getBenchmarks()
 
   return (
     <div className="space-y-6">
@@ -45,7 +45,11 @@ export default async function BenchmarksDashboardPageAux() {
         </p>
       </div>
       <Separator />
-      <BenchmarksMain benchmarks={benchmarks} />
+      <BenchmarksMain
+        benchmarks={benchmarks}
+        allBenchmarks={allBenchmarks}
+        products={products}
+      />
     </div>
   )
 }
@@ -53,11 +57,19 @@ export default async function BenchmarksDashboardPageAux() {
 export async function getBenchmarks() {
   const response = await getClient().query<{
     benchmarks: BenchmarkType[]
+    allBenchmarks: { id: string; name: string }[]
+    products: { products: { id: string; name: string } }
   }>({
     query: GET_BENCHMARKS,
   })
 
   const benchmarks = response.data.benchmarks
+  const products = response.data.products.products
+  const allBenchmarks = response.data.allBenchmarks
 
-  return benchmarks
+  return {
+    benchmarks,
+    products,
+    allBenchmarks,
+  }
 }

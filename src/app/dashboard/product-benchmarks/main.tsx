@@ -17,6 +17,8 @@ import { useRouter } from 'next/navigation'
 
 interface BenchmarksMainProps {
   benchmarks: BenchmarkType[]
+  allBenchmarks: { id: string; name: string }[]
+  products: { id: string; name: string }
 }
 
 export function BenchmarksMain({ benchmarks }: BenchmarksMainProps) {
