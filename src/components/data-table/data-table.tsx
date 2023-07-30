@@ -4,7 +4,6 @@ import {
   type ColumnDef,
   type ColumnFiltersState,
   type SortingState,
-  type Table as TableDef,
   type VisibilityState,
   flexRender,
   getCoreRowModel,
@@ -31,12 +30,13 @@ import { DataTableToolbar } from './data-table-toolbar'
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
+  benchmarks: { name: string }[]
 }
 
-export function DataTable<TData, TValue>({
-  columns,
-  data,
-}: DataTableProps<TData, TValue>) {
+export function DataTable<TData, TValue>(
+  { columns, data, benchmarks }: DataTableProps<TData, TValue>,
+  //{ benchmarks, products }: DataTableToolbarListingProps,
+) {
   const [rowSelection, setRowSelection] = React.useState({})
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({})
@@ -72,7 +72,7 @@ export function DataTable<TData, TValue>({
     .rows.sort((a, b) => Number(b.getIsSelected()) - Number(a.getIsSelected()))
   return (
     <div className="space-y-4">
-      <DataTableToolbar table={table} />
+      <DataTableToolbar table={table} benchmarks={benchmarks} />
       <div className="rounded-md border">
         <Table>
           <TableHeader>

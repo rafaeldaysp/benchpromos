@@ -2,7 +2,6 @@ import * as React from 'react'
 
 import { type Column } from '@tanstack/react-table'
 
-import { cn } from '@/lib/utils'
 import { Badge } from '../ui/badge'
 import { Button } from '../ui/button'
 import {
@@ -17,6 +16,7 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
 import { Separator } from '../ui/separator'
 import { Icons } from '../icons'
+import { Checkbox } from '../ui/checkbox'
 
 interface DataTableFacetedFilter<TData, TValue> {
   column?: Column<TData, TValue>
@@ -101,16 +101,7 @@ export function DataTableFacetedFilter<TData, TValue>({
                       )
                     }}
                   >
-                    <div
-                      className={cn(
-                        'mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-foreground',
-                        isSelected
-                          ? 'bg-foreground text-primary'
-                          : 'opacity-50 [&_svg]:invisible',
-                      )}
-                    >
-                      <Icons.Check className={cn('h-4 w-4')} />
-                    </div>
+                    <Checkbox className="mr-2" checked={isSelected} />
 
                     <span>{option.label}</span>
                     {facets?.get(option.value) && (

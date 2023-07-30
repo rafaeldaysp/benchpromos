@@ -9,7 +9,7 @@ export const benchmarkSchema = z.object({
     id: z.string(),
     name: z.string(),
   }),
-  description: z.string().nullable(),
+  description: z.string().optional(),
   result: z.number(),
 })
 
@@ -19,7 +19,6 @@ export const benchmarkValidator = z.object({
 
 export const benchmarkResultValidator = z.object({
   benchmarkId: z.string(),
-  productId: z.string(),
   result: z.number(),
   description: z.string().optional(),
 })

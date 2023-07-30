@@ -18,14 +18,7 @@ import { gql, useMutation } from '@apollo/client'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 import { env } from '@/env.mjs'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '../ui/dialog'
-import { Input } from '../ui/input'
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -37,18 +30,19 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '../ui/alert-dialog'
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '../ui/sheet'
+import { BenchmarkResultForm } from '../forms/benchmark-result-form'
+import { useFormStore } from '@/hooks/use-form-store'
 
 const REMOVE_BENCHMARK_RESULT = gql`
   mutation RemoveBenchmarkResult($resultId: ID!) {
     removeBenchmarkResult(id: $resultId) {
-      id
-    }
-  }
-`
-
-const UPDATE_BENCHMARK_RESULT = gql`
-  mutation UpdateBenchmarkResult($input: UpdateBenchmarkResultInput!) {
-    updateBenchmarkResult(updateBenchmarkResultInput: $input) {
       id
     }
   }
@@ -63,32 +57,9 @@ export function DataTableRowActions<TData>({
 }: DataTableRowActionsProps<TData>) {
   const benchmark = benchmarkSchema.parse(row.original)
 
-  const [benchmarkResultInput, setBenchmarkResultInput] = React.useState(
-    benchmark.result,
-  )
+  const { openDialogs, setOpenDialog } = useFormStore()
 
   const router = useRouter()
-
-  const [mutateBenchmarkResult, { loading: isLoading }] = useMutation(
-    UPDATE_BENCHMARK_RESULT,
-    {
-      context: {
-        headers: {
-          'api-key': env.NEXT_PUBLIC_API_KEY,
-        },
-      },
-      onError(error, _clientOptions) {
-        toast.error(error.message)
-      },
-      onCompleted(_data, _clientOptions) {
-        const message = 'Resultado atualizado com sucesso.'
-
-        toast.success(message)
-
-        router.refresh()
-      },
-    },
-  )
 
   const [removeBenchmarkResult] = useMutation(REMOVE_BENCHMARK_RESULT, {
     context: {
@@ -122,50 +93,37 @@ export function DataTableRowActions<TData>({
           <DropdownMenuSeparator />
           <DropdownMenuItem
             className="p-0"
-            onClick={(event) => event.preventDefault()}
+            onSelect={(e) => e.preventDefault()}
             onPointerMove={(e) => e.preventDefault()}
           >
-            <Dialog>
-              <DialogTrigger className="flex-1 cursor-pointer rounded-sm px-2 py-1.5 text-left outline-none transition-colors hover:bg-accent hover:text-accent-foreground">
-                Editar
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>EDITAR RESULTADO</DialogTitle>
-                </DialogHeader>
-
-                <div className="flex gap-x-2">
-                  <Input
-                    type="number"
-                    value={benchmarkResultInput}
-                    onChange={(e) =>
-                      setBenchmarkResultInput(Number(e.target.value))
-                    }
-                  />
-                  <Button
-                    disabled={!benchmarkResultInput || isLoading}
-                    onClick={() =>
-                      mutateBenchmarkResult({
-                        variables: {
-                          input: {
-                            id: benchmark.id,
-                            result: benchmarkResultInput,
-                          },
-                        },
-                      })
-                    }
-                  >
-                    Atualizar
-                  </Button>
-                </div>
-              </DialogContent>
-            </Dialog>
+            <Sheet
+              open={openDialogs[`benchmarkResultUpdateForm.${benchmark.id}`]}
+              onOpenChange={(open) =>
+                setOpenDialog(`benchmarkResultUpdateForm.${benchmark.id}`, open)
+              }
+            >
+              <SheetTrigger asChild>
+                <p className="flex-1 cursor-pointer rounded-sm px-2 py-1.5 text-left outline-none transition-colors hover:bg-accent hover:text-accent-foreground">
+                  Editar
+                </p>
+              </SheetTrigger>
+              <SheetContent
+                className="w-full space-y-4 overflow-auto sm:max-w-xl"
+                side="left"
+              >
+                <SheetHeader>
+                  <SheetTitle>EDITAR TESTE</SheetTitle>
+                </SheetHeader>
+                <BenchmarkResultForm
+                  mode="update"
+                  benchmarkResult={benchmark}
+                />
+              </SheetContent>
+            </Sheet>
           </DropdownMenuItem>
           <DropdownMenuItem
             className="p-0"
-            onClick={(event) => {
-              event.preventDefault()
-            }}
+            onSelect={(event) => event.preventDefault()}
           >
             <AlertDialog>
               <AlertDialogTrigger className="flex-1 cursor-pointer rounded-sm px-2 py-1.5 text-left outline-none transition-colors hover:bg-accent hover:text-accent-foreground">

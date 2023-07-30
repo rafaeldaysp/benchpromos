@@ -7,31 +7,18 @@ import { Input } from '../ui/input'
 import { DataTableViewOptions } from './data-table-view-options'
 
 import { DataTableFacetedFilter } from './data-table-faceted-filter'
-import { gql, useSuspenseQuery } from '@apollo/client'
 import { Icons } from '../icons'
-
-const GET_BENCHMARKS_NAMES = gql`
-  query GetBenchmarks {
-    benchmarks {
-      id
-      name
-    }
-  }
-`
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>
+  benchmarks: { name: string }[]
 }
 
 export function DataTableToolbar<TData>({
   table,
+  benchmarks,
 }: DataTableToolbarProps<TData>) {
   const isFiltered = table.getState().columnFilters.length > 0
-
-  const { data } = useSuspenseQuery<{
-    benchmarks: { id: string; name: string }[]
-  }>(GET_BENCHMARKS_NAMES)
-  const benchmarks = data.benchmarks
 
   const benchmarkOptions = benchmarks.map((benchmark) => {
     return {
@@ -39,6 +26,13 @@ export function DataTableToolbar<TData>({
       value: benchmark.name,
     }
   })
+
+  // const productOptions = products.map((product) => {
+  //   return {
+  //     label: product.name,
+  //     value: product.name,
+  //   }
+  // })
 
   return (
     <div className="flex items-center justify-between">
@@ -51,6 +45,14 @@ export function DataTableToolbar<TData>({
           }
           className="h-8 w-[150px] lg:w-[250px]"
         />
+
+        {/* {table.getColumn('product') && (
+          <DataTableFacetedFilter
+            column={table.getColumn('product')}
+            title="Produtos"
+            options={productOptions}
+          />
+        )} */}
 
         {table.getColumn('benchmark') && (
           <DataTableFacetedFilter

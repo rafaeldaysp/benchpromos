@@ -1,6 +1,5 @@
 'use client'
 
-import { DashboardItemCard } from '@/components/dashboard-item-card'
 import { DataTableRowActions } from '@/components/data-table/data-table-row-actions'
 import { Icons } from '@/components/icons'
 import { Button } from '@/components/ui/button'
@@ -28,14 +27,20 @@ export const columns: ColumnDef<BenchmarkType>[] = [
   },
   {
     id: 'select',
-    header: '',
+    header: ({ table }) => (
+      <Checkbox
+        checked={table.getIsAllPageRowsSelected()}
+        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        aria-label="Selecionar todos"
+      />
+    ),
     cell: ({ row }) => (
       <Checkbox
         checked={row.getIsSelected()}
         onCheckedChange={(value) => {
           row.toggleSelected(!!value)
         }}
-        aria-label="Select row"
+        aria-label="Selecionar linha"
       />
     ),
     enableHiding: false,
