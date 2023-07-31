@@ -17,14 +17,14 @@ export type BenchmarkType = {
 }
 
 export const columns: ColumnDef<BenchmarkType>[] = [
-  {
-    id: 'id',
-    accessorKey: 'id',
-    enableSorting: false,
-    header({ column }) {
-      column.toggleVisibility(false)
-    },
-  },
+  // {
+  //   id: 'id',
+  //   accessorKey: 'id',
+  //   enableSorting: false,
+  //   header({ column }) {
+  //     column.toggleVisibility(false)
+  //   },
+  // },
   {
     id: 'select',
     header: ({ table }) => (
@@ -106,7 +106,17 @@ export const columns: ColumnDef<BenchmarkType>[] = [
   {
     id: 'benchmark',
     accessorKey: 'benchmark.name',
-    header: 'Teste',
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+        >
+          Teste
+          <Icons.ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      )
+    },
     filterFn: (row, id, value) => {
       return value.includes(row.getValue(id))
     },

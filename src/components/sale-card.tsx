@@ -54,18 +54,12 @@ interface SaleCardProps extends React.HTMLAttributes<HTMLDivElement> {
     comments: {
       id: string
     }[]
-    reactions: {
-      content: string
-      users: {
-        id: string
-      }[]
-    }[]
+    reactions: { content: string; users: { id: string }[] }[]
   }
 }
 
 export async function SaleCard({ sale, className, ...props }: SaleCardProps) {
   const user = await getCurrentUser()
-
   return (
     <ContextMenu>
       <ContextMenuTrigger asChild>
@@ -204,7 +198,7 @@ export async function SaleCard({ sale, className, ...props }: SaleCardProps) {
             <Icons.SmilePlus className="h-4 w-4" />
             <span>Reagir</span>
           </ContextMenuSubTrigger>
-          <ReactionMenu saleId={sale.id} />
+          <ReactionMenu saleId={sale.id} userId={user?.id} />
         </ContextMenuSub>
 
         <ContextMenuSeparator />

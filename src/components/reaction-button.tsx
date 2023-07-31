@@ -6,6 +6,7 @@ import { toast } from 'sonner'
 
 import { getCurrentUserToken } from '@/app/_actions/user'
 import { Button } from '@/components/ui/button'
+import { useReactionStore } from '@/hooks/use-reaction-store'
 
 interface ReactionButtonProps {
   saleId: string
@@ -28,14 +29,39 @@ export function ReactionButton({
   reaction,
   users: initialUsers,
 }: ReactionButtonProps) {
+  const { reactions, setReactions } = useReactionStore()
+
+  React.useEffect(() => {
+    setReactions([
+      ...reactions,
+      ...initialUsers.map((user) => {
+        return {
+          userId: user.id,
+          saleId,
+          content: reaction,
+        }
+      }),
+    ])
+    // console.log(reactions)
+  }, [setReactions, initialUsers])
+
   const [users, setUsers] = React.useState(initialUsers)
 
   const [toggleReaction] = useMutation(TOGGLE_REACTION, {
     onError(error, _clientOptions) {
       toast.error(error.message)
     },
-    onCompleted(_data, _clientOptions) {
-      // atualizar os usuários
+    onCompleted(_data, clientOptions) {
+      const emote = clientOptions?.variables?.input.content as string
+
+      if (!userId) return
+      const currentToggle = { userId, saleId, content: emote }
+
+      reactions.includes(currentToggle)
+        ? setReactions(
+            reactions.filter((reaction) => reaction !== currentToggle),
+          )
+        : setReactions([...reactions, currentToggle])
     },
   })
 
@@ -56,8 +82,8 @@ export function ReactionButton({
       },
     })
   }
-
-  const userReacted = users.some((user) => user.id === userId)
+  console.log(reactions)
+  const userReacted = reactions.some((reaction) => reaction.userId === userId)
 
   return (
     <Button

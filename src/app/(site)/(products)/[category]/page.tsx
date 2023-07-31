@@ -6,13 +6,15 @@ import type { Category, Product } from '@/types'
 
 const GET_PRODUCTS = gql`
   query GetProductsWithMinPrice($input: GetProductsInput) {
-    products: productsWithMinPrice(getProductsInput: $input) {
-      id
-      name
-      imageUrl
-      slug
-      category {
+    products(getProductsInput: $input) {
+      products {
+        id
+        name
+        imageUrl
         slug
+        category {
+          slug
+        }
       }
     }
   }
@@ -42,11 +44,15 @@ export default async function ProductsPage({
   const { page } = searchParams
 
   const { data } = await getClient().query<{
-    products: (Product & { category: Pick<Category, 'slug'> })[]
+    products: {
+      products: (Product & { category: Pick<Category, 'slug'> })[]
+      pages: number
+      _count: { products: number }
+    }
   }>({
     query: GET_PRODUCTS,
   })
-  const products = data.products
+  const products = data.products.products
 
   console.log(category, page)
 

@@ -59,8 +59,6 @@ const GET_BENCHMARKS = gql`
   }
 `
 
-//type Inputs = Omit<z.infer<typeof benchmarkSchema>, 'product' | 'id'>
-
 type Inputs = z.infer<typeof benchmarkResultValidator>
 
 type BenchmarkResult = z.infer<typeof benchmarkSchema>

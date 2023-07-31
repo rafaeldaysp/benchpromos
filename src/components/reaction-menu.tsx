@@ -8,13 +8,14 @@ import {
   ContextMenuItem,
   ContextMenuSubContent,
 } from '@/components/ui/context-menu'
+import { useReactionStore } from '@/hooks/use-reaction-store'
 
-type Reaction = {
+type Emote = {
   emote: string
   label: string
 }
 
-const reactions: Reaction[] = [
+const emotes: Emote[] = [
   {
     emote: '👍',
     label: 'Curtida',
@@ -47,12 +48,27 @@ const TOGGLE_REACTION = gql`
 
 interface ReactionMenuProps {
   saleId: string
+  userId: string | undefined
 }
 
-export function ReactionMenu({ saleId }: ReactionMenuProps) {
+export function ReactionMenu({ saleId, userId }: ReactionMenuProps) {
+  const { reactions, setReactions } = useReactionStore()
+
   const [toggleReaction] = useMutation(TOGGLE_REACTION, {
     onError(error, _clientOptions) {
       toast.error(error.message)
+    },
+    onCompleted(data, clientOptions) {
+      const emote = clientOptions?.variables?.input.content as string
+
+      if (!userId) return
+      const currentToggle = { userId, saleId, content: emote }
+
+      reactions.includes(currentToggle)
+        ? setReactions(
+            reactions.filter((reaction) => reaction !== currentToggle),
+          )
+        : setReactions([...reactions, currentToggle])
     },
   })
 
@@ -76,13 +92,13 @@ export function ReactionMenu({ saleId }: ReactionMenuProps) {
 
   return (
     <ContextMenuSubContent>
-      {reactions.map((reaction) => (
+      {emotes.map((emote) => (
         <ContextMenuItem
-          key={reaction.emote}
-          onClick={() => handleToggleReaction(reaction.emote)}
+          key={emote.emote}
+          onClick={() => handleToggleReaction(emote.emote)}
         >
-          <span>{reaction.emote}</span>
-          <span className="sr-only">{reaction.label}</span>
+          <span>{emote.emote}</span>
+          <span className="sr-only">{emote.label}</span>
         </ContextMenuItem>
       ))}
     </ContextMenuSubContent>
