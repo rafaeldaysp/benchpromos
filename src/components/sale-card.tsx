@@ -68,7 +68,10 @@ export async function SaleCard({ sale, className, ...props }: SaleCardProps) {
     <ContextMenu>
       <ContextMenuTrigger asChild>
         <Card
-          className={cn('flex flex-col overflow-hidden', className)}
+          className={cn(
+            'flex flex-col overflow-hidden transition-colors dark:hover:bg-muted/50',
+            className,
+          )}
           {...props}
         >
           <CardHeader className="flex-row items-center text-sm">

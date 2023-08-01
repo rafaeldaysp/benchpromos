@@ -130,10 +130,7 @@ export function BenchmarksMain({ benchmarks, products }: BenchmarksMainProps) {
               <Input placeholder="Pesquise por um benchmark..." />
               <ScrollArea className="rounded-md border">
                 {benchmarks.map((benchmark) => (
-                  <DashboardItemCard.Root
-                    key={benchmark.id}
-                    className="cursor-pointer"
-                  >
+                  <DashboardItemCard.Root key={benchmark.id}>
                     <DashboardItemCard.Content>
                       <p className="text-sm leading-7">{benchmark.name}</p>
                     </DashboardItemCard.Content>

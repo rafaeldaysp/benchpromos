@@ -23,7 +23,7 @@ export const columns: ColumnDef<BenchmarkData>[] = [
         checked={table.getIsAllPageRowsSelected()}
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
         aria-label="Selecionar tudo"
-        className="translate-y-[2px]"
+        className="translate-y-[2px] border-black data-[state=checked]:bg-black data-[state=checked]:text-white dark:border-white dark:data-[state=checked]:bg-white dark:data-[state=checked]:text-black"
       />
     ),
     cell: ({ row }) => (
@@ -31,7 +31,7 @@ export const columns: ColumnDef<BenchmarkData>[] = [
         checked={row.getIsSelected()}
         onCheckedChange={(value) => row.toggleSelected(!!value)}
         aria-label="Selecionar linha"
-        className="translate-y-[2px]"
+        className="translate-y-[2px] border-black data-[state=checked]:bg-black data-[state=checked]:text-white dark:border-white dark:data-[state=checked]:bg-white dark:data-[state=checked]:text-black"
       />
     ),
     enableSorting: false,
