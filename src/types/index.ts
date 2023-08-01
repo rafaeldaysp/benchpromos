@@ -99,3 +99,16 @@ export type Comment = {
   userId: string
   text: string
 }
+
+export type Benchmark = {
+  id: string
+  name: string
+}
+
+export type BenchmarkResult = {
+  id: string
+  benchmarkId: string
+  productId: string
+  result: number
+  description?: string
+}

@@ -1,29 +1,14 @@
 'use client'
 
-import { DataTable } from '@/components/data-table/data-table'
-
-import {
-  type BenchmarkType,
-  columns,
-} from '../../../components/data-table/columns'
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from '@/components/ui/sheet'
-import { Button } from '@/components/ui/button'
-import React from 'react'
-import { useFormStore } from '@/hooks/use-form-store'
+import { gql, useMutation } from '@apollo/client'
 import { useRouter } from 'next/navigation'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { Input } from '@/components/ui/input'
+import { toast } from 'sonner'
+
 import { DashboardItemCard } from '@/components/dashboard-item-card'
-import { type Product } from '@/types'
-import { Icons } from '@/components/icons'
+import { DataTable } from '@/components/data-table/data-table'
 import { BenchmarkForm } from '@/components/forms/benchmark-form'
+import { BenchmarkResultForm } from '@/components/forms/benchmark-result-form'
+import { Icons } from '@/components/icons'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -35,10 +20,21 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
-import { gql, useMutation } from '@apollo/client'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { ScrollArea } from '@/components/ui/scroll-area'
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/sheet'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { env } from '@/env.mjs'
-import { toast } from 'sonner'
-import { BenchmarkResultForm } from '@/components/forms/benchmark-result-form'
+import { useFormStore } from '@/hooks/use-form-store'
+import type { Benchmark, BenchmarkResult, Product } from '@/types'
+import { type BenchmarkData, columns } from '@/components/data-table/columns'
 
 const DELETE_BENCHMARK = gql`
   mutation DeleteBenchmark($benchmarkId: ID!) {
@@ -49,18 +45,16 @@ const DELETE_BENCHMARK = gql`
 `
 
 interface BenchmarksMainProps {
-  benchmarks: BenchmarkType[]
-  allBenchmarks: { id: string; name: string; results: { id: string }[] }[]
+  benchmarks: (Benchmark & {
+    results: (Pick<BenchmarkResult, 'id' | 'result' | 'description'> & {
+      product: Pick<Product, 'id' | 'name' | 'imageUrl'>
+    })[]
+  })[]
   products: Pick<Product, 'id' | 'name' | 'imageUrl'>[]
 }
 
-export function BenchmarksMain({
-  benchmarks,
-  products,
-  allBenchmarks,
-}: BenchmarksMainProps) {
+export function BenchmarksMain({ benchmarks, products }: BenchmarksMainProps) {
   const { openDialogs, setOpenDialog } = useFormStore()
-
   const router = useRouter()
 
   const [deleteBenchmark] = useMutation(DELETE_BENCHMARK, {
@@ -73,10 +67,25 @@ export function BenchmarksMain({
       toast.error(error.message)
     },
     onCompleted(_data, _clientOptions) {
-      toast.success('Teste deletado com sucesso.')
+      toast.success('Benchmark deletado com sucesso.')
       router.refresh()
     },
   })
+
+  const benchmarkData = benchmarks.reduce((acc, benchmark) => {
+    const benchmarkDataRow = benchmark.results.map((result) => ({
+      id: result.id,
+      result: result.result,
+      description: result.description,
+      benchmark: {
+        id: benchmark.id,
+        name: benchmark.name,
+      },
+      product: result.product,
+    }))
+
+    return [...acc, ...benchmarkDataRow]
+  }, [] as BenchmarkData[])
 
   return (
     <div className="space-y-8">
@@ -86,97 +95,41 @@ export function BenchmarksMain({
           onOpenChange={(open) => setOpenDialog('benchmarkCreateForm', open)}
         >
           <SheetTrigger asChild>
-            <Button variant="outline">Novo</Button>
+            <Button variant="outline">Adicionar</Button>
           </SheetTrigger>
           <SheetContent
             className="w-full space-y-4 overflow-auto sm:max-w-xl"
             side="left"
           >
             <SheetHeader>
-              <SheetTitle>NOVO BENCHMARK</SheetTitle>
+              <SheetTitle>ADICIONAR BENCHMARK</SheetTitle>
             </SheetHeader>
 
             <BenchmarkForm />
           </SheetContent>
         </Sheet>
       </div>
+
       <DataTable
         columns={columns}
-        data={benchmarks}
-        benchmarks={allBenchmarks.filter(
+        data={benchmarkData}
+        benchmarks={benchmarks.filter(
           (benchmark) => benchmark.results.length > 0,
         )}
       />
 
-      <Tabs defaultValue="products">
+      <Tabs defaultValue="benchmarks">
         <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="benchmarks">Becnhmarks</TabsTrigger>
           <TabsTrigger value="products">Produtos</TabsTrigger>
-          <TabsTrigger value="benchmarks">Testes</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="products">
-          {products.length > 0 ? (
-            <div className="space-y-4">
-              <Input placeholder="Pesquise por um produto..." />
-              <ScrollArea className="h-[600px] rounded-md border">
-                {products.map((product) => (
-                  <DashboardItemCard.Root
-                    key={product.id}
-                    className="cursor-pointer"
-                  >
-                    <DashboardItemCard.Image src={product.imageUrl} alt="" />
-
-                    <DashboardItemCard.Content>
-                      <p className="text-sm leading-7">{product.name}</p>
-                    </DashboardItemCard.Content>
-                    <DashboardItemCard.Actions>
-                      <Sheet
-                        open={
-                          openDialogs[`benchmarkResultCreateForm.${product.id}`]
-                        }
-                        onOpenChange={(open) =>
-                          setOpenDialog(
-                            `benchmarkResultCreateForm.${product.id}`,
-                            open,
-                          )
-                        }
-                      >
-                        <SheetTrigger asChild>
-                          <DashboardItemCard.Action icon={Icons.Plus} />
-                        </SheetTrigger>
-                        <SheetContent
-                          className="w-full space-y-4 overflow-auto sm:max-w-xl"
-                          side="left"
-                        >
-                          <SheetHeader>
-                            <SheetTitle>ADICIONAR TESTE</SheetTitle>
-                          </SheetHeader>
-                          <BenchmarkResultForm
-                            mode="create"
-                            productId={product.id}
-                          />
-                        </SheetContent>
-                      </Sheet>
-                    </DashboardItemCard.Actions>
-                  </DashboardItemCard.Root>
-                ))}
-              </ScrollArea>
-            </div>
-          ) : (
-            <div className="flex justify-center">
-              <p className="text-muted-foreground">
-                Nenhum produto encontrado.
-              </p>
-            </div>
-          )}
-        </TabsContent>
-
         <TabsContent value="benchmarks">
-          {allBenchmarks.length > 0 ? (
+          {benchmarks.length > 0 ? (
             <div className="space-y-4">
-              <Input placeholder="Pesquise por um teste..." />
-              <ScrollArea className="h-[600px] rounded-md border">
-                {allBenchmarks.map((benchmark) => (
+              <Input placeholder="Pesquise por um benchmark..." />
+              <ScrollArea className="rounded-md border">
+                {benchmarks.map((benchmark) => (
                   <DashboardItemCard.Root
                     key={benchmark.id}
                     className="cursor-pointer"
@@ -204,7 +157,7 @@ export function BenchmarksMain({
                           side="left"
                         >
                           <SheetHeader>
-                            <SheetTitle>EDITAR TESTE</SheetTitle>
+                            <SheetTitle>EDITAR BENCHMARK</SheetTitle>
                           </SheetHeader>
                           <BenchmarkForm mode="update" benchmark={benchmark} />
                         </SheetContent>
@@ -249,6 +202,57 @@ export function BenchmarksMain({
             <div className="flex justify-center">
               <p className="text-muted-foreground">
                 Nenhum benchmark encontrado.
+              </p>
+            </div>
+          )}
+        </TabsContent>
+
+        <TabsContent value="products">
+          {products.length > 0 ? (
+            <div className="space-y-4">
+              <Input placeholder="Pesquise por um produto..." />
+              <ScrollArea className="rounded-md border">
+                {products.map((product) => (
+                  <DashboardItemCard.Root key={product.id}>
+                    <DashboardItemCard.Image src={product.imageUrl} alt="" />
+
+                    <DashboardItemCard.Content>
+                      <p className="text-sm leading-7">{product.name}</p>
+                    </DashboardItemCard.Content>
+                    <DashboardItemCard.Actions>
+                      <Sheet
+                        open={
+                          openDialogs[`benchmarkResultCreateForm.${product.id}`]
+                        }
+                        onOpenChange={(open) =>
+                          setOpenDialog(
+                            `benchmarkResultCreateForm.${product.id}`,
+                            open,
+                          )
+                        }
+                      >
+                        <SheetTrigger asChild>
+                          <DashboardItemCard.Action icon={Icons.Plus} />
+                        </SheetTrigger>
+                        <SheetContent
+                          className="w-full space-y-4 overflow-auto sm:max-w-xl"
+                          side="left"
+                        >
+                          <SheetHeader>
+                            <SheetTitle>ADICIONAR RESULTADO</SheetTitle>
+                          </SheetHeader>
+                          <BenchmarkResultForm productId={product.id} />
+                        </SheetContent>
+                      </Sheet>
+                    </DashboardItemCard.Actions>
+                  </DashboardItemCard.Root>
+                ))}
+              </ScrollArea>
+            </div>
+          ) : (
+            <div className="flex justify-center">
+              <p className="text-muted-foreground">
+                Nenhum produto encontrado.
               </p>
             </div>
           )}

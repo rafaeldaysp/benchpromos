@@ -15,13 +15,13 @@ const GET_RETAILERS = gql`
 `
 
 export default async function RetailersDashboardPage() {
-  const response = await getClient().query<{
+  const { data } = await getClient().query<{
     retailers: Retailer[]
   }>({
     query: GET_RETAILERS,
   })
 
-  const retailers = response.data.retailers
+  const retailers = data.retailers
 
   return (
     <div className="space-y-6">

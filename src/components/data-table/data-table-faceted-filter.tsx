@@ -1,9 +1,7 @@
-import * as React from 'react'
-
 import { type Column } from '@tanstack/react-table'
 
-import { Badge } from '../ui/badge'
-import { Button } from '../ui/button'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import {
   Command,
   CommandEmpty,
@@ -12,11 +10,15 @@ import {
   CommandItem,
   CommandList,
   CommandSeparator,
-} from '../ui/command'
-import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
-import { Separator } from '../ui/separator'
-import { Icons } from '../icons'
-import { Checkbox } from '../ui/checkbox'
+} from '@/components/ui/command'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover'
+import { Separator } from '@/components/ui/separator'
+import { cn } from '@/lib/utils'
+import { Check, PlusCircle } from 'lucide-react'
 
 interface DataTableFacetedFilter<TData, TValue> {
   column?: Column<TData, TValue>
@@ -24,7 +26,6 @@ interface DataTableFacetedFilter<TData, TValue> {
   options: {
     label: string
     value: string
-    icon?: React.ComponentType<{ className?: string }>
   }[]
 }
 
@@ -40,7 +41,7 @@ export function DataTableFacetedFilter<TData, TValue>({
     <Popover>
       <PopoverTrigger asChild>
         <Button variant="outline" size="sm" className="h-8 border-dashed">
-          <Icons.Plus className="mr-2 h-4 w-4" />
+          <PlusCircle className="mr-2 h-4 w-4" />
           {title}
           {selectedValues?.size > 0 && (
             <>
@@ -77,18 +78,17 @@ export function DataTableFacetedFilter<TData, TValue>({
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="p-0" align="start">
+      <PopoverContent className="w-[200px] p-0" align="start">
         <Command>
           <CommandInput placeholder={title} />
           <CommandList>
-            <CommandEmpty>Não encontrado</CommandEmpty>
+            <CommandEmpty>Nenhum resultado encontrado.</CommandEmpty>
             <CommandGroup>
               {options.map((option) => {
                 const isSelected = selectedValues.has(option.value)
                 return (
                   <CommandItem
                     key={option.value}
-                    className="cursor-pointer"
                     onSelect={() => {
                       if (isSelected) {
                         selectedValues.delete(option.value)
@@ -101,7 +101,16 @@ export function DataTableFacetedFilter<TData, TValue>({
                       )
                     }}
                   >
-                    <Checkbox className="mr-2" checked={isSelected} />
+                    <div
+                      className={cn(
+                        'mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary',
+                        isSelected
+                          ? 'bg-primary text-primary-foreground'
+                          : 'opacity-50 [&_svg]:invisible',
+                      )}
+                    >
+                      <Check className="h-4 w-4" />
+                    </div>
 
                     <span>{option.label}</span>
                     {facets?.get(option.value) && (

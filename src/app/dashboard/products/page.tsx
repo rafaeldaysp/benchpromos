@@ -21,13 +21,13 @@ const GET_FILTERS = gql`
 `
 
 export default async function ProductsDashboardPage() {
-  const response = await getClient().query<{
+  const { data } = await getClient().query<{
     filters: Filter[]
   }>({
     query: GET_FILTERS,
   })
 
-  const filters = response.data.filters
+  const filters = data.filters
 
   return (
     <div className="space-y-6">

@@ -20,7 +20,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
-import { benchmarkValidator } from '@/lib/validations/benchmark'
+import { benchmarkSchema } from '@/lib/validations/benchmark'
 
 const CREATE_BENCHMARK = gql`
   mutation CreateBenchmark($name: String!) {
@@ -38,7 +38,7 @@ const UPDATE_BENCHMARK = gql`
   }
 `
 
-type Inputs = z.infer<typeof benchmarkValidator>
+type Inputs = z.infer<typeof benchmarkSchema>
 
 const defaultValues: Partial<Inputs> = {
   name: '',
@@ -54,7 +54,7 @@ export function BenchmarkForm({
   benchmark,
 }: BenchmarkFormProps) {
   const form = useForm<Inputs>({
-    resolver: zodResolver(benchmarkValidator),
+    resolver: zodResolver(benchmarkSchema),
     defaultValues: benchmark ?? defaultValues,
   })
   const { setOpenDialog } = useFormStore()
@@ -83,8 +83,8 @@ export function BenchmarkForm({
 
         const message =
           mode === 'create'
-            ? 'Teste cadastrado com sucesso.'
-            : 'Teste atualizado com sucesso.'
+            ? 'Benchmark cadastrado com sucesso.'
+            : 'Benchmark atualizado com sucesso.'
 
         toast.success(message)
         router.refresh()

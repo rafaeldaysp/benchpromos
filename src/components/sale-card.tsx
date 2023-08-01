@@ -6,8 +6,8 @@ import * as React from 'react'
 import { getCurrentUser } from '@/app/_actions/user'
 import { CopyButton } from '@/components/copy-button'
 import { Icons } from '@/components/icons'
-import { ReactionButton } from '@/components/reaction-button'
 import { ReactionMenu } from '@/components/reaction-menu'
+import { Reactions } from '@/components/reactions'
 import { Badge } from '@/components/ui/badge'
 import { buttonVariants } from '@/components/ui/button'
 import {
@@ -54,12 +54,16 @@ interface SaleCardProps extends React.HTMLAttributes<HTMLDivElement> {
     comments: {
       id: string
     }[]
-    reactions: { content: string; users: { id: string }[] }[]
+    reactions: {
+      content: string
+      users: { id: string }[]
+    }[]
   }
 }
 
 export async function SaleCard({ sale, className, ...props }: SaleCardProps) {
   const user = await getCurrentUser()
+
   return (
     <ContextMenu>
       <ContextMenuTrigger asChild>
@@ -167,17 +171,11 @@ export async function SaleCard({ sale, className, ...props }: SaleCardProps) {
           </CardContent>
 
           <CardFooter className="flex items-center justify-between gap-x-2">
-            <div className="flex flex-wrap gap-1">
-              {sale.reactions.map((reaction) => (
-                <ReactionButton
-                  key={reaction.content}
-                  saleId={sale.id}
-                  userId={user?.id}
-                  reaction={reaction.content}
-                  users={reaction.users}
-                />
-              ))}
-            </div>
+            <Reactions
+              saleId={sale.id}
+              userId={user?.id}
+              reactions={sale.reactions}
+            />
 
             <Link
               href={`/promocao/${sale.id}/${sale.slug}#comments`}

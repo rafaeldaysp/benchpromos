@@ -24,15 +24,13 @@ const GET_COUPONS = gql`
 `
 
 export default async function CouponsDashboardPage() {
-  const response = await getClient().query<{
+  const { data } = await getClient().query<{
     coupons: (Coupon & { retailer: Pick<Retailer, 'name'> })[]
   }>({
     query: GET_COUPONS,
   })
 
-  const coupons = response.data.coupons.map((coupon) =>
-    removeNullValues(coupon),
-  )
+  const coupons = data.coupons.map((coupon) => removeNullValues(coupon))
 
   return (
     <div className="space-y-6">

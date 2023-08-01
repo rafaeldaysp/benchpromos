@@ -40,7 +40,7 @@ const GET_SALES_AND_PRODUCTS = gql`
 `
 
 export default async function SalesDashboardPage() {
-  const response = await getClient().query<{
+  const { data } = await getClient().query<{
     sales: Sale[]
     productsList: {
       products: (Pick<Product, 'slug' | 'name' | 'imageUrl'> & {
@@ -51,8 +51,8 @@ export default async function SalesDashboardPage() {
     query: GET_SALES_AND_PRODUCTS,
   })
 
-  const sales = response.data.sales.map((sale) => removeNullValues(sale))
-  const products = response.data.productsList.products
+  const sales = data.sales.map((sale) => removeNullValues(sale))
+  const products = data.productsList.products
 
   return (
     <div className="space-y-6">

@@ -12,7 +12,7 @@ const DashboardItemCardRoot = React.forwardRef<
     <div
       ref={ref}
       className={cn(
-        'flex items-start gap-x-6 rounded-md bg-card p-4 transition-colors hover:bg-muted/50 sm:px-8',
+        'flex items-start gap-x-6 rounded-md bg-card p-4 transition-colors hover:bg-muted sm:px-8',
         className,
       )}
       {...props}

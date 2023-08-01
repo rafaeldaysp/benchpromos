@@ -19,13 +19,13 @@ const GET_CASHBACKS = gql`
 `
 
 export default async function CashbacksDashboardPage() {
-  const response = await getClient().query<{
+  const { data } = await getClient().query<{
     cashbacks: Cashback[]
   }>({
     query: GET_CASHBACKS,
   })
 
-  const cashbacks = response.data.cashbacks
+  const cashbacks = data.cashbacks
 
   return (
     <div className="space-y-6">

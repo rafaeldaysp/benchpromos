@@ -2,13 +2,10 @@
 
 import { gql, useMutation } from '@apollo/client'
 import { toast } from 'sonner'
+import * as React from 'react'
 
 import { getCurrentUserToken } from '@/app/_actions/user'
-import {
-  ContextMenuItem,
-  ContextMenuSubContent,
-} from '@/components/ui/context-menu'
-import { emotes } from '@/constants'
+import { Button } from '@/components/ui/button'
 
 const TOGGLE_REACTION = gql`
   mutation ToggleReaction($input: ToggleSaleReactionInput!) {
@@ -18,12 +15,20 @@ const TOGGLE_REACTION = gql`
   }
 `
 
-interface ReactionMenuProps {
+interface ReactionsProps {
   saleId: string
   userId?: string
+  reactions: {
+    content: string
+    users: { id: string }[]
+  }[]
 }
 
-export function ReactionMenu({ saleId, userId }: ReactionMenuProps) {
+export function Reactions({
+  saleId,
+  userId,
+  reactions: initialReactions,
+}: ReactionsProps) {
   const [toggleReaction] = useMutation(TOGGLE_REACTION, {
     onError(error, _clientOptions) {
       toast.error(error.message)
@@ -50,16 +55,23 @@ export function ReactionMenu({ saleId, userId }: ReactionMenuProps) {
   }
 
   return (
-    <ContextMenuSubContent>
-      {emotes.map((emote) => (
-        <ContextMenuItem
-          key={emote.emote}
-          onClick={() => handleToggleReaction(emote.emote)}
-        >
-          <span>{emote.emote}</span>
-          <span className="sr-only">{emote.label}</span>
-        </ContextMenuItem>
-      ))}
-    </ContextMenuSubContent>
+    <div className="flex flex-wrap gap-1">
+      {initialReactions.map((reaction) => {
+        const userReacted = reaction.users.some((user) => user.id === userId)
+
+        return (
+          <Button
+            key={reaction.content}
+            variant={userReacted ? 'default' : 'outline'}
+            size="icon"
+            className="h-fit rounded-full"
+            onClick={() => handleToggleReaction(reaction.content)}
+          >
+            {reaction.content}
+            <span className="text-sm">{reaction.users.length}</span>
+          </Button>
+        )
+      })}
+    </div>
   )
 }

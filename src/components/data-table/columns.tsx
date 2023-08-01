@@ -1,69 +1,50 @@
 'use client'
 
-import { DataTableRowActions } from '@/components/data-table/data-table-row-actions'
-import { Icons } from '@/components/icons'
-import { Button } from '@/components/ui/button'
-import { Checkbox } from '@/components/ui/checkbox'
-import { type Product } from '@/types'
 import { type ColumnDef } from '@tanstack/react-table'
 import Image from 'next/image'
 
-export type BenchmarkType = {
+import { DataTableColumnHeader } from '@/components/data-table/data-table-column-header'
+import { DataTableRowActions } from '@/components/data-table/data-table-row-actions'
+import { Checkbox } from '@/components/ui/checkbox'
+
+export type BenchmarkData = {
   id: string
-  benchmark: { id: string; name: string }
-  product: { id: string; name: string }
   result: number
   description?: string
+  benchmark: { id: string; name: string }
+  product: { id: string; name: string; imageUrl: string }
 }
 
-export const columns: ColumnDef<BenchmarkType>[] = [
-  // {
-  //   id: 'id',
-  //   accessorKey: 'id',
-  //   enableSorting: false,
-  //   header({ column }) {
-  //     column.toggleVisibility(false)
-  //   },
-  // },
+export const columns: ColumnDef<BenchmarkData>[] = [
   {
     id: 'select',
     header: ({ table }) => (
       <Checkbox
         checked={table.getIsAllPageRowsSelected()}
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Selecionar todos"
+        aria-label="Selecionar tudo"
+        className="translate-y-[2px]"
       />
     ),
     cell: ({ row }) => (
       <Checkbox
         checked={row.getIsSelected()}
-        onCheckedChange={(value) => {
-          row.toggleSelected(!!value)
-        }}
+        onCheckedChange={(value) => row.toggleSelected(!!value)}
         aria-label="Selecionar linha"
+        className="translate-y-[2px]"
       />
     ),
+    enableSorting: false,
     enableHiding: false,
   },
   {
-    id: 'product',
     accessorKey: 'product',
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-        >
-          Produto
-          <Icons.ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      )
-    },
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Produto" />
+    ),
     cell: ({ row }) => {
-      const product = row.getValue('product') as Pick<
-        Product,
-        'id' | 'imageUrl' | 'name'
-      >
+      const product = row.getValue('product') as BenchmarkData['product']
+
       return (
         <div className="flex gap-x-4">
           <div className="relative h-16 w-16">
@@ -82,13 +63,10 @@ export const columns: ColumnDef<BenchmarkType>[] = [
       )
     },
     filterFn: (row, id, value) => {
-      const rowValue = row.getValue(id) as Pick<
-        Product,
-        'id' | 'imageUrl' | 'name'
-      >
+      const product = row.getValue(id) as BenchmarkData['product']
       const input = value as string
 
-      const productName = rowValue.name.toLowerCase()
+      const productName = product.name.toLowerCase()
       const searchArray = input.toLowerCase().split(' ')
 
       return (
@@ -96,57 +74,39 @@ export const columns: ColumnDef<BenchmarkType>[] = [
         searchArray.every((search) => productName.includes(search))
       )
     },
-    footer: 'Produto',
+    meta: {
+      header: 'Produtos',
+    },
   },
   {
     accessorKey: 'description',
     header: 'Descrição',
-    footer: 'Descrição',
+    meta: {
+      header: 'Descrição',
+    },
   },
   {
     id: 'benchmark',
     accessorKey: 'benchmark.name',
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-        >
-          Teste
-          <Icons.ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      )
-    },
+    header: 'Benchmark',
     filterFn: (row, id, value) => {
       return value.includes(row.getValue(id))
     },
-    footer: 'Teste',
+    meta: {
+      header: 'Benchmark',
+    },
   },
-
   {
-    id: 'result',
     accessorKey: 'result',
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-        >
-          Resultado
-          <Icons.ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      )
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Resultado" />
+    ),
+    meta: {
+      header: 'Resultado',
     },
-    cell: ({ row }) => {
-      const result = row.getValue('result') as number
-      return <div className="text-center">{result}</div>
-    },
-    footer: 'Resultado',
   },
   {
     id: 'actions',
-    cell: ({ row }) => {
-      return <DataTableRowActions row={row} />
-    },
+    cell: ({ row }) => <DataTableRowActions row={row} />,
   },
 ]

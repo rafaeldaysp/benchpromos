@@ -1,6 +1,16 @@
 'use client'
 
+import { gql, useMutation } from '@apollo/client'
+import { useQuery } from '@apollo/experimental-nextjs-app-support/ssr'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useRouter } from 'next/navigation'
+import * as React from 'react'
+import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
 import { type z } from 'zod'
+
+import { Icons } from '@/components/icons'
+import { Button } from '@/components/ui/button'
 import {
   Form,
   FormControl,
@@ -8,31 +18,19 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '../ui/form'
-import {
-  benchmarkResultValidator,
-  type benchmarkSchema,
-} from '@/lib/validations/benchmark'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useRouter } from 'next/navigation'
-import { useFormStore } from '@/hooks/use-form-store'
-import { gql, useMutation } from '@apollo/client'
-import { toast } from 'sonner'
+} from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../ui/select'
-import { useSuspenseQuery } from '@apollo/experimental-nextjs-app-support/ssr'
-import React from 'react'
-import { Input } from '../ui/input'
-import { Textarea } from '../ui/textarea'
-import { Button } from '../ui/button'
-import { Icons } from '../icons'
+} from '@/components/ui/select'
+import { Textarea } from '@/components/ui/textarea'
 import { env } from '@/env.mjs'
+import { useFormStore } from '@/hooks/use-form-store'
+import { benchmarkResultSchema } from '@/lib/validations/benchmark'
 
 const CREATE_BENCHMARK_RESULT = gql`
   mutation CreateBenchmarkResult($input: CreateBenchmarkResultInput!) {
@@ -59,38 +57,35 @@ const GET_BENCHMARKS = gql`
   }
 `
 
-type Inputs = z.infer<typeof benchmarkResultValidator>
-
-type BenchmarkResult = z.infer<typeof benchmarkSchema>
+type Inputs = z.infer<typeof benchmarkResultSchema>
 
 const defaultValues: Partial<Inputs> = {
   description: '',
-  benchmarkId: '',
 }
 
 interface BenchmarkResultFormProps {
-  mode: 'create' | 'update'
+  mode?: 'create' | 'update'
   productId?: string
-  benchmarkResult?: BenchmarkResult
+  benchmarkResult?: { id?: string } & Partial<Inputs>
 }
 
 export function BenchmarkResultForm({
+  mode = 'create',
   productId,
-  mode,
   benchmarkResult,
 }: BenchmarkResultFormProps) {
   const form = useForm<Inputs>({
-    resolver: zodResolver(benchmarkResultValidator),
-    defaultValues: benchmarkResult
-      ? {
-          benchmarkId: benchmarkResult.benchmark.id,
-          result: benchmarkResult.result,
-          description: benchmarkResult.description,
-        }
-      : defaultValues,
+    resolver: zodResolver(benchmarkResultSchema),
+    defaultValues: {
+      ...defaultValues,
+      ...benchmarkResult,
+    },
   })
 
-  const { data } = useSuspenseQuery<{
+  const { setOpenDialog } = useFormStore()
+  const router = useRouter()
+
+  const { data } = useQuery<{
     benchmarks: { id: string; name: string }[]
   }>(GET_BENCHMARKS, {
     context: {
@@ -109,10 +104,6 @@ export function BenchmarkResultForm({
     return benchmarkItems
   }, [data])
 
-  const { setOpenDialog } = useFormStore()
-
-  const router = useRouter()
-
   const [mutateBenchmarkResult, { loading: isLoading }] = useMutation(
     mode === 'create' ? CREATE_BENCHMARK_RESULT : UPDATE_BENCHMARK_RESULT,
     {
@@ -129,7 +120,7 @@ export function BenchmarkResultForm({
 
         setOpenDialog(
           mode === 'create'
-            ? 'benchmarkResultCreateForm'
+            ? `benchmarkResultCreateForm.${productId}`
             : `benchmarkResultUpdateForm.${benchmarkResult?.id}`,
           false,
         )
@@ -155,6 +146,7 @@ export function BenchmarkResultForm({
       },
     })
   }
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
@@ -163,11 +155,11 @@ export function BenchmarkResultForm({
           name="benchmarkId"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Teste</FormLabel>
+              <FormLabel>Benchmark</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Selecione um teste" />
+                    <SelectValue placeholder="Selecione um benchmark" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -196,7 +188,6 @@ export function BenchmarkResultForm({
                 <Input
                   aria-invalid={!!form.formState.errors.result}
                   {...field}
-                  onChange={(event) => field.onChange(+event.target.value)}
                 />
               </FormControl>
               <FormMessage />

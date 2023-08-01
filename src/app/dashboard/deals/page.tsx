@@ -50,7 +50,7 @@ const GET_DEALS_AND_PRODUCTS_AND_RETAILERS = gql`
 `
 
 export default async function DealsDashboardPage() {
-  const response = await getClient().query<{
+  const { data } = await getClient().query<{
     deals: (Deal & { cashback?: Pick<Cashback, 'value'> } & {
       coupon?: Pick<Coupon, 'discount'>
     })[]
@@ -62,9 +62,9 @@ export default async function DealsDashboardPage() {
     query: GET_DEALS_AND_PRODUCTS_AND_RETAILERS,
   })
 
-  const deals = response.data.deals.map((deal) => removeNullValues(deal))
-  const products = response.data.productsList.products
-  const retailers = response.data.retailers
+  const deals = data.deals.map((deal) => removeNullValues(deal))
+  const products = data.productsList.products
+  const retailers = data.retailers
 
   return (
     <div className="space-y-6">

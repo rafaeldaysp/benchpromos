@@ -1,10 +1,6 @@
 'use client'
 
 import {
-  type ColumnDef,
-  type ColumnFiltersState,
-  type SortingState,
-  type VisibilityState,
   flexRender,
   getCoreRowModel,
   getFacetedRowModel,
@@ -13,9 +9,15 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
+  type ColumnDef,
+  type ColumnFiltersState,
+  type SortingState,
+  type VisibilityState,
 } from '@tanstack/react-table'
 import * as React from 'react'
 
+import { DataTablePagination } from '@/components/data-table/data-table-pagination'
+import { DataTableToolbar } from '@/components/data-table/data-table-toolbar'
 import {
   Table,
   TableBody,
@@ -24,8 +26,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { DataTablePagination } from '@/components/data-table/data-table-pagination'
-import { DataTableToolbar } from './data-table-toolbar'
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -33,10 +33,11 @@ interface DataTableProps<TData, TValue> {
   benchmarks: { name: string }[]
 }
 
-export function DataTable<TData, TValue>(
-  { columns, data, benchmarks }: DataTableProps<TData, TValue>,
-  //{ benchmarks, products }: DataTableToolbarListingProps,
-) {
+export function DataTable<TData, TValue>({
+  columns,
+  data,
+  benchmarks,
+}: DataTableProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = React.useState({})
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({})
@@ -67,9 +68,10 @@ export function DataTable<TData, TValue>(
     getFacetedUniqueValues: getFacetedUniqueValues(),
   })
 
-  table
-    .getRowModel()
-    .rows.sort((a, b) => Number(b.getIsSelected()) - Number(a.getIsSelected()))
+  // table
+  //   .getRowModel()
+  //   .rows.sort((a, b) => Number(b.getIsSelected()) - Number(a.getIsSelected()))
+
   return (
     <div className="space-y-4">
       <DataTableToolbar table={table} benchmarks={benchmarks} />
