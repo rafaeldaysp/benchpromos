@@ -7,6 +7,8 @@ import * as React from 'react'
 import { getCurrentUserToken } from '@/app/_actions/user'
 import { Button } from '@/components/ui/button'
 
+import { type Reaction } from '@/types'
+
 const TOGGLE_REACTION = gql`
   mutation ToggleReaction($input: ToggleSaleReactionInput!) {
     toggleSaleReaction(toggleSaleReactionInput: $input) {
@@ -17,23 +19,25 @@ const TOGGLE_REACTION = gql`
 
 interface ReactionsProps {
   saleId: string
+  reactions: Reaction[]
   userId?: string
-  reactions: {
-    content: string
-    users: { id: string }[]
-  }[]
+  onReact: (content: string) => void
 }
 
 export function Reactions({
   saleId,
+  reactions,
   userId,
-  reactions: initialReactions,
+  onReact,
 }: ReactionsProps) {
   const [toggleReaction] = useMutation(TOGGLE_REACTION, {
     onError(error, _clientOptions) {
       toast.error(error.message)
     },
-    onCompleted(_data, _clientOptions) {},
+    onCompleted(_data, _clientOptions) {
+      const emote = _clientOptions?.variables?.input.content as string
+      onReact(emote)
+    },
   })
 
   async function handleToggleReaction(emote: string) {
@@ -56,7 +60,7 @@ export function Reactions({
 
   return (
     <div className="flex flex-wrap gap-1">
-      {initialReactions.map((reaction) => {
+      {reactions.map((reaction) => {
         const userReacted = reaction.users.some((user) => user.id === userId)
 
         return (

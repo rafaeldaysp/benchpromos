@@ -1,9 +1,10 @@
+'use client'
+
 import dayjs from 'dayjs'
 import Image from 'next/image'
 import Link from 'next/link'
 import * as React from 'react'
 
-import { getCurrentUser } from '@/app/_actions/user'
 import { CopyButton } from '@/components/copy-button'
 import { Icons } from '@/components/icons'
 import { ReactionMenu } from '@/components/reaction-menu'
@@ -30,6 +31,8 @@ import {
 import { cn } from '@/lib/utils'
 import { priceFormatter } from '@/utils/formatter'
 
+import { type Reaction } from '@/types'
+
 interface SaleCardProps extends React.HTMLAttributes<HTMLDivElement> {
   sale: {
     id: string
@@ -54,15 +57,54 @@ interface SaleCardProps extends React.HTMLAttributes<HTMLDivElement> {
     comments: {
       id: string
     }[]
-    reactions: {
-      content: string
-      users: { id: string }[]
-    }[]
+    reactions: Reaction[]
   }
+  userId?: string
 }
 
-export async function SaleCard({ sale, className, ...props }: SaleCardProps) {
-  const user = await getCurrentUser()
+export function SaleCard({ sale, className, userId, ...props }: SaleCardProps) {
+  const [currentReactions, setCurrentReactions] = React.useState<Reaction[]>(
+    sale.reactions,
+  )
+
+  const onReact = (content: string) => {
+    if (!userId) return
+
+    const reaction = currentReactions.find(
+      (reaction) => reaction.content === content,
+    )
+
+    if (!reaction) {
+      setCurrentReactions([
+        ...currentReactions,
+        { content, users: [{ id: userId }] },
+      ])
+      return
+    }
+
+    const newCurrentReactions = reaction.users.some(
+      (user) => user.id === userId,
+    )
+      ? [
+          ...currentReactions.filter(
+            (reaction) => reaction.content !== content,
+          ),
+          {
+            content,
+            users: [...reaction.users.filter((user) => user.id !== userId)],
+          },
+        ]
+      : [
+          ...currentReactions.filter(
+            (reaction) => reaction.content !== content,
+          ),
+          { content, users: [...reaction.users, { id: userId }] },
+        ]
+
+    setCurrentReactions(
+      newCurrentReactions.filter((reaction) => reaction.users.length > 0),
+    )
+  }
 
   return (
     <ContextMenu>
@@ -85,7 +127,8 @@ export async function SaleCard({ sale, className, ...props }: SaleCardProps) {
               </Badge>
             )}
             <span className="flex-1 text-end">
-              {dayjs(sale.createdAt).fromNow()}
+              {/* {dayjs(sale.createdAt).fromNow()} */}
+              foda-se
             </span>
           </CardHeader>
 
@@ -176,8 +219,9 @@ export async function SaleCard({ sale, className, ...props }: SaleCardProps) {
           <CardFooter className="flex items-center justify-between gap-x-2">
             <Reactions
               saleId={sale.id}
-              userId={user?.id}
-              reactions={sale.reactions}
+              userId={userId}
+              reactions={currentReactions}
+              onReact={onReact}
             />
 
             <Link
@@ -199,7 +243,7 @@ export async function SaleCard({ sale, className, ...props }: SaleCardProps) {
             <Icons.SmilePlus className="h-4 w-4" />
             <span>Reagir</span>
           </ContextMenuSubTrigger>
-          <ReactionMenu saleId={sale.id} userId={user?.id} />
+          <ReactionMenu saleId={sale.id} onReact={onReact} />
         </ContextMenuSub>
 
         <ContextMenuSeparator />

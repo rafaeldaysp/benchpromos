@@ -20,15 +20,18 @@ const TOGGLE_REACTION = gql`
 
 interface ReactionMenuProps {
   saleId: string
-  userId?: string
+  onReact: (content: string) => void
 }
 
-export function ReactionMenu({ saleId, userId }: ReactionMenuProps) {
+export function ReactionMenu({ saleId, onReact }: ReactionMenuProps) {
   const [toggleReaction] = useMutation(TOGGLE_REACTION, {
     onError(error, _clientOptions) {
       toast.error(error.message)
     },
-    onCompleted(_data, _clientOptions) {},
+    onCompleted(_data, _clientOptions) {
+      const emote = _clientOptions?.variables?.input.content as string
+      onReact(emote)
+    },
   })
 
   async function handleToggleReaction(emote: string) {

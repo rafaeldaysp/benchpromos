@@ -4,6 +4,8 @@ import { SaleCard } from '@/components/sale-card'
 import { getClient } from '@/lib/apollo'
 import type { Category, Comment, Sale } from '@/types'
 
+import { getCurrentUser } from '../_actions/user'
+
 const GET_SALES = gql`
   query GetSales {
     sales {
@@ -53,11 +55,13 @@ export default async function Home() {
 
   const sales = response.data.sales
 
+  const user = await getCurrentUser()
+
   return (
     <div className="px-4 sm:container">
       <div className="my-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {sales.map((sale) => (
-          <SaleCard key={sale.id} sale={sale} />
+          <SaleCard key={sale.id} sale={sale} userId={user?.id} />
         ))}
       </div>
     </div>

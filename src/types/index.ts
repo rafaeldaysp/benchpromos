@@ -112,3 +112,10 @@ export type BenchmarkResult = {
   result: number
   description?: string
 }
+
+export type Reaction = {
+  content: string
+  users: {
+    id: string
+  }[]
+}
