@@ -102,49 +102,50 @@ export function SalesMain({ sales, products }: SalesMainProps) {
         </Sheet>
       </div>
 
-      {selectedSale && (
-        <DashboardItemCard.Root className="border">
-          <DashboardItemCard.Image src={selectedSale.imageUrl} alt="" />
+      <div className="space-y-2">
+        {selectedSale && (
+          <DashboardItemCard.Root className="border">
+            <DashboardItemCard.Image src={selectedSale.imageUrl} alt="" />
 
-          <DashboardItemCard.Content>
-            <p className="text-sm leading-7">{selectedSale.title}</p>
-            <span className="text-xs text-muted-foreground">
-              {selectedSale.createdAt} •{' '}
-              {priceFormatter.format(selectedSale.price / 100)}
-            </span>
-          </DashboardItemCard.Content>
+            <DashboardItemCard.Content>
+              <p className="text-sm leading-7">{selectedSale.title}</p>
+              <span className="text-xs text-muted-foreground">
+                {selectedSale.createdAt} •{' '}
+                {priceFormatter.format(selectedSale.price / 100)}
+              </span>
+            </DashboardItemCard.Content>
 
-          <DashboardItemCard.Actions>
-            <DashboardItemCard.Action
-              variant="destructive"
-              icon={Icons.X}
-              onClick={() => setSelectedSale(undefined)}
-            />
-          </DashboardItemCard.Actions>
-        </DashboardItemCard.Root>
-      )}
+            <DashboardItemCard.Actions>
+              <DashboardItemCard.Action
+                variant="destructive"
+                icon={Icons.X}
+                onClick={() => setSelectedSale(undefined)}
+              />
+            </DashboardItemCard.Actions>
+          </DashboardItemCard.Root>
+        )}
 
-      {selectedProduct && (
-        <DashboardItemCard.Root className="border">
-          <DashboardItemCard.Image src={selectedProduct.imageUrl} alt="" />
+        {selectedProduct && (
+          <DashboardItemCard.Root className="border">
+            <DashboardItemCard.Image src={selectedProduct.imageUrl} alt="" />
 
-          <DashboardItemCard.Content>
-            <p className="text-sm leading-7">{selectedProduct.name}</p>
-            <span className="text-xs text-muted-foreground">
-              {selectedProduct.category.name}
-            </span>
-          </DashboardItemCard.Content>
+            <DashboardItemCard.Content>
+              <p className="text-sm leading-7">{selectedProduct.name}</p>
+              <span className="text-xs text-muted-foreground">
+                {selectedProduct.category.name}
+              </span>
+            </DashboardItemCard.Content>
 
-          <DashboardItemCard.Actions>
-            <DashboardItemCard.Action
-              variant="destructive"
-              icon={Icons.X}
-              onClick={() => setSelectedProduct(undefined)}
-            />
-          </DashboardItemCard.Actions>
-        </DashboardItemCard.Root>
-      )}
-
+            <DashboardItemCard.Actions>
+              <DashboardItemCard.Action
+                variant="destructive"
+                icon={Icons.X}
+                onClick={() => setSelectedProduct(undefined)}
+              />
+            </DashboardItemCard.Actions>
+          </DashboardItemCard.Root>
+        )}
+      </div>
       <Tabs defaultValue="sales">
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="sales">Promoções</TabsTrigger>
@@ -163,7 +164,11 @@ export function SalesMain({ sales, products }: SalesMainProps) {
                     <DashboardItemCard.Content
                       className="cursor-pointer"
                       onClick={() => {
-                        // setSelectedProduct(undefined)
+                        setSelectedProduct(
+                          products.find(
+                            (product) => product.slug === sale.productSlug,
+                          ),
+                        )
                         setSelectedSale(sale)
                       }}
                     >
@@ -191,7 +196,10 @@ export function SalesMain({ sales, products }: SalesMainProps) {
                           <SheetHeader>
                             <SheetTitle>EDITAR PROMOÇÃO</SheetTitle>
                           </SheetHeader>
-                          <SaleForm mode="update" sale={sale} />
+                          <SaleForm
+                            mode="update"
+                            sale={{ ...sale, ...selectedProduct }}
+                          />
                         </SheetContent>
                       </Sheet>
 
