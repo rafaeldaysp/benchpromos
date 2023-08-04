@@ -12,11 +12,11 @@ const sidebarNavItems = [
     href: '/dashboard/products',
   },
   {
-    title: 'Anúncios',
+    title: 'Ofertas',
     href: '/dashboard/deals',
   },
   {
-    title: 'Anunciantes',
+    title: 'Varejistas',
     href: '/dashboard/retailers',
   },
   {

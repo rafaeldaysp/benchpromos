@@ -146,7 +146,7 @@ export function CashbackForm({ mode = 'create', cashback }: CashbackFormProps) {
           name="retailerId"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Retailer</FormLabel>
+              <FormLabel>Varejista</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
@@ -174,7 +174,7 @@ export function CashbackForm({ mode = 'create', cashback }: CashbackFormProps) {
           name="provider"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Provider</FormLabel>
+              <FormLabel>Provedor</FormLabel>
               <FormControl>
                 <Input
                   aria-invalid={!!form.formState.errors.provider}
@@ -191,7 +191,7 @@ export function CashbackForm({ mode = 'create', cashback }: CashbackFormProps) {
           name="value"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Percent Value</FormLabel>
+              <FormLabel>Valor (%)</FormLabel>
               <FormControl>
                 <Input
                   aria-invalid={!!form.formState.errors.value}
@@ -208,7 +208,7 @@ export function CashbackForm({ mode = 'create', cashback }: CashbackFormProps) {
           name="url"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Url</FormLabel>
+              <FormLabel>Página do Cashback</FormLabel>
               <FormControl>
                 <Input aria-invalid={!!form.formState.errors.url} {...field} />
               </FormControl>
@@ -222,7 +222,7 @@ export function CashbackForm({ mode = 'create', cashback }: CashbackFormProps) {
           name="affiliatedUrl"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Affiliated Url</FormLabel>
+              <FormLabel>Link de afiliado</FormLabel>
               <FormControl>
                 <Input
                   aria-invalid={!!form.formState.errors.affiliatedUrl}

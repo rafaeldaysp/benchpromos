@@ -150,7 +150,7 @@ export function DealsMain({
       toast.error(error.message)
     },
     onCompleted(_data, _clientOptions) {
-      toast.success('Anúncio deletado com sucesso.')
+      toast.success('Oferta deletada com sucesso.')
       router.refresh()
     },
   })
@@ -171,7 +171,7 @@ export function DealsMain({
               side="left"
             >
               <SheetHeader>
-                <SheetTitle>ADICIONAR ANÚNCIO</SheetTitle>
+                <SheetTitle>ADICIONAR OFERTA</SheetTitle>
               </SheetHeader>
               <DealForm
                 productId={selectedProduct.id}
@@ -222,7 +222,7 @@ export function DealsMain({
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h4 className="font-medium tracking-tight">
-              Anúncios • {filteredDeals.length}
+              Ofertas • {filteredDeals.length}
             </h4>
             <div className="flex items-center gap-2">
               {selectedRetailer && (
@@ -332,7 +332,7 @@ export function DealsMain({
                         side="left"
                       >
                         <SheetHeader>
-                          <SheetTitle>EDITAR ANÚNCIO</SheetTitle>
+                          <SheetTitle>EDITAR OFERTA</SheetTitle>
                         </SheetHeader>
                         <DealForm
                           mode="update"
@@ -378,14 +378,14 @@ export function DealsMain({
         </div>
       ) : (
         <div className="flex justify-center">
-          <p className="text-muted-foreground">Nenhum anúncio encontrado.</p>
+          <p className="text-muted-foreground">Nenhuma oferta encontrada.</p>
         </div>
       )}
 
       <Tabs defaultValue="products">
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="products">Produtos</TabsTrigger>
-          <TabsTrigger value="retailers">Anunciantes</TabsTrigger>
+          <TabsTrigger value="retailers">Varejistas</TabsTrigger>
         </TabsList>
 
         <TabsContent value="products">
@@ -424,7 +424,7 @@ export function DealsMain({
         <TabsContent value="retailers">
           {retailers.length > 0 ? (
             <div className="space-y-4">
-              <Input placeholder="Pesquise por um anunciante..." />
+              <Input placeholder="Pesquise por um varejista..." />
               <ScrollArea className="rounded-md border">
                 {retailers.map((retailer) => (
                   <DashboardItemCard.Root
@@ -446,7 +446,7 @@ export function DealsMain({
           ) : (
             <div className="flex justify-center">
               <p className="text-muted-foreground">
-                Nenhum anunciante encontrado.
+                Nenhum varejista encontrado.
               </p>
             </div>
           )}

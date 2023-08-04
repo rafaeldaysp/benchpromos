@@ -144,8 +144,8 @@ export function DealForm({
 
         const message =
           mode === 'create'
-            ? 'Anúncio cadastrado com sucesso.'
-            : 'Anúncio atualizado com sucesso.'
+            ? 'Oferta cadastrada com sucesso.'
+            : 'Oferta atualizada com sucesso.'
 
         toast.success(message)
         router.refresh()

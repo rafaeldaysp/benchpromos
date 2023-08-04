@@ -31,6 +31,7 @@ import {
 import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
 import { type Coupon, type Retailer } from '@/types'
+import { couponFormatter } from '@/utils/formatter'
 
 const DELETE_COUPON = gql`
   mutation DeleteCoupon($couponId: ID!) {
@@ -118,7 +119,7 @@ export function CouponsMain({ coupons }: CouponsMainProps) {
               >
                 <p className="text-sm leading-7">{coupon.code}</p>
                 <span className="text-xs text-muted-foreground">
-                  {coupon.retailer.name}
+                  {coupon.retailer.name} • {couponFormatter(coupon.discount)}
                 </span>
               </DashboardItemCard.Content>
 

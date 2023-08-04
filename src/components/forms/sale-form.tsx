@@ -144,8 +144,8 @@ export function SaleForm({ mode = 'create', sale }: SaleFormProps) {
       variables: {
         input: {
           id: sale?.id,
-          productSlug: sale?.slug,
           ...data,
+          productSlug: sale?.slug,
         },
       },
     })

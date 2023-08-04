@@ -26,9 +26,9 @@ export default async function RetailersDashboardPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-lg font-medium">Anunciantes</h3>
+        <h3 className="text-lg font-medium">Varejistas</h3>
         <p className="text-sm text-muted-foreground">
-          Realize a criação, edição ou remoção de um anunciante.
+          Realize a criação, edição ou remoção de um varejista.
         </p>
       </div>
       <Separator />

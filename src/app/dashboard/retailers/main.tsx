@@ -59,7 +59,7 @@ export function RetailersMain({ retailers }: RetailersMainProps) {
       toast.error(error.message)
     },
     onCompleted(_data, _clientOptions) {
-      toast.success('Anunciante deletado com sucesso.')
+      toast.success('Varejista deletado com sucesso.')
       router.refresh()
     },
   })
@@ -80,7 +80,7 @@ export function RetailersMain({ retailers }: RetailersMainProps) {
             side="left"
           >
             <SheetHeader>
-              <SheetTitle>ADICIONAR ANUNCIANTE</SheetTitle>
+              <SheetTitle>ADICIONAR VAREJISTA</SheetTitle>
             </SheetHeader>
             <RetailerForm />
           </SheetContent>
@@ -129,7 +129,7 @@ export function RetailersMain({ retailers }: RetailersMainProps) {
                     side="left"
                   >
                     <SheetHeader>
-                      <SheetTitle>EDITAR ANUNCIANTE</SheetTitle>
+                      <SheetTitle>EDITAR VAREJISTA</SheetTitle>
                     </SheetHeader>
                     <RetailerForm mode="update" retailer={retailer} />
                   </SheetContent>
@@ -169,7 +169,7 @@ export function RetailersMain({ retailers }: RetailersMainProps) {
         </ScrollArea>
       ) : (
         <div className="flex justify-center">
-          <p className="text-muted-foreground">Nenhum anunciante encontrado.</p>
+          <p className="text-muted-foreground">Nenhum varejista encontrado.</p>
         </div>
       )}
     </div>

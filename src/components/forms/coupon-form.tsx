@@ -153,7 +153,7 @@ export function CouponForm({ mode = 'create', coupon }: CouponFormProps) {
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Selecione um anunciante" />
+                    <SelectValue placeholder="Selecione um varejista" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>

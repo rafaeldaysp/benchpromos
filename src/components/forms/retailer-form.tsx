@@ -80,8 +80,8 @@ export function RetailerForm({ mode = 'create', retailer }: RetailerFormProps) {
 
         const message =
           mode === 'create'
-            ? 'Anunciante cadastrado com sucesso.'
-            : 'Anunciante atualizado com sucesso.'
+            ? 'Varejista cadastrado com sucesso.'
+            : 'Varejista atualizado com sucesso.'
 
         toast.success(message)
         router.refresh()

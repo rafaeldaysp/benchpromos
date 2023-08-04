@@ -30,7 +30,7 @@ import {
 } from '@/components/ui/sheet'
 import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
-import { type Cashback } from '@/types'
+import { type Retailer, type Cashback } from '@/types'
 
 const DELETE_CASHBACK = gql`
   mutation DeleteCashback($cashbackId: ID!) {
@@ -41,7 +41,7 @@ const DELETE_CASHBACK = gql`
 `
 
 interface CashbacksMainProps {
-  cashbacks: Cashback[]
+  cashbacks: (Cashback & { retailer: Retailer })[]
 }
 
 export function CashbacksMain({ cashbacks }: CashbacksMainProps) {
@@ -91,9 +91,9 @@ export function CashbacksMain({ cashbacks }: CashbacksMainProps) {
       {selectedCashback && (
         <DashboardItemCard.Root className="border">
           <DashboardItemCard.Content>
-            <p className="text-sm leading-7">{selectedCashback.value}</p>
+            <p className="text-sm leading-7">{selectedCashback.provider}</p>
             <span className="text-xs text-muted-foreground">
-              {selectedCashback.provider}
+              {selectedCashback.retailer.name} • {selectedCashback.value}%
             </span>
           </DashboardItemCard.Content>
 
@@ -116,9 +116,9 @@ export function CashbacksMain({ cashbacks }: CashbacksMainProps) {
                 className="cursor-pointer"
                 onClick={() => setSelectedCashback(cashback)}
               >
-                <p className="text-sm leading-7">{cashback.value}</p>
+                <p className="text-sm leading-7">{cashback.provider}</p>
                 <span className="text-xs text-muted-foreground">
-                  {cashback.provider}
+                  {cashback.retailer.name} • {cashback.value}%
                 </span>
               </DashboardItemCard.Content>
 
