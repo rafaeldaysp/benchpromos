@@ -41,7 +41,7 @@ import {
   type Product,
   type Retailer,
 } from '@/types'
-import { priceFormatter } from '@/utils/formatter'
+import { couponFormatter, priceFormatter } from '@/utils/formatter'
 import { priceCalculator } from '@/utils/price-calculator'
 import { cn } from '@/lib/utils'
 import {
@@ -59,7 +59,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
-import DealsAssignForm from '@/components/forms/deals-link-form'
 
 const DELETE_DEAL = gql`
   mutation DeleteDeal($dealId: ID!) {
@@ -227,7 +226,10 @@ export function DealsMain({
             </h4>
             <div className="flex items-center gap-2">
               {selectedRetailer && (
-                <Dialog>
+                <Dialog
+                  open={openDialogs['dealsLinkForm']}
+                  onOpenChange={(open) => setOpenDialog('dealsLinkForm', open)}
+                >
                   <DialogTrigger asChild>
                     {selectedDeals.length > 0 && selectedRetailer && (
                       <Button variant="outline">Vincular</Button>
@@ -306,8 +308,12 @@ export function DealsMain({
                           deal.cashback?.value,
                         ) / 100,
                       )}
-                      {deal.coupon && ` • ${deal.coupon.code}`}
-                      {deal.cashback && ` • ${deal.cashback.provider}`}
+                      {deal.coupon &&
+                        ` • ${couponFormatter(deal.coupon.discount)} ${
+                          deal.coupon.code
+                        }`}
+                      {deal.cashback &&
+                        ` • ${deal.cashback.value}% ${deal.cashback.provider}`}
                     </span>
                   </DashboardItemCard.Content>
 

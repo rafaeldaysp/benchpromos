@@ -93,7 +93,7 @@ export default function DealsLinkForm({
       toast.error(error.message)
     },
     onCompleted(_data, _clientOptions) {
-      setOpenDialog('assignToDealsForm', false)
+      setOpenDialog('dealsLinkForm', false)
       toast.success('Cupom e cashback vinculados com sucesso')
       router.refresh()
     },
