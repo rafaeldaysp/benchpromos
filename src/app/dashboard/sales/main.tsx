@@ -256,10 +256,7 @@ export function SalesMain({ sales, products }: SalesMainProps) {
                   <DashboardItemCard.Root
                     key={product.slug}
                     className="cursor-pointer"
-                    onClick={() => {
-                      // setSelectedSale(undefined)
-                      setSelectedProduct(product)
-                    }}
+                    onClick={() => setSelectedProduct(product)}
                   >
                     <DashboardItemCard.Image src={product.imageUrl} alt="" />
                     <DashboardItemCard.Content>
