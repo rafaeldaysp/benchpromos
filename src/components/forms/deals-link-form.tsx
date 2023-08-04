@@ -1,7 +1,7 @@
 'use clint'
 
 import { env } from '@/env.mjs'
-import { AssigntoDealsSchema } from '@/lib/validations/deal'
+import { dealsLinkSchema } from '@/lib/validations/deal'
 import { type Cashback, type Coupon } from '@/types'
 import { gql, useMutation, useSuspenseQuery } from '@apollo/client'
 import { toast } from 'sonner'
@@ -54,7 +54,7 @@ const UPDATE_DEALS = gql`
   }
 `
 
-type Inputs = z.infer<typeof AssigntoDealsSchema>
+type Inputs = z.infer<typeof dealsLinkSchema>
 
 interface DealsLinkFormProps {
   retailerId: string
@@ -78,7 +78,7 @@ export default function DealsLinkForm({
   const cashbacks = data?.cashbacks
 
   const form = useForm<Inputs>({
-    resolver: zodResolver(AssigntoDealsSchema),
+    resolver: zodResolver(dealsLinkSchema),
   })
   const { setOpenDialog } = useFormStore()
   const router = useRouter()
