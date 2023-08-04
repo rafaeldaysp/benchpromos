@@ -10,3 +10,8 @@ export const dealSchema = z.object({
   couponId: z.string().optional(),
   cashbackId: z.string().optional(),
 })
+
+export const AssigntoDealsSchema = z.object({
+  couponId: z.string().optional(),
+  cashbackId: z.string().optional(),
+})

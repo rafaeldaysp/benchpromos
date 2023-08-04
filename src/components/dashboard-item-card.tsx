@@ -3,6 +3,7 @@ import * as React from 'react'
 
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
+import { Checkbox } from './ui/checkbox'
 
 const DashboardItemCardRoot = React.forwardRef<
   HTMLDivElement,
@@ -36,6 +37,18 @@ function DashboardItemCardImage({ className, src, alt, ...props }: ImageProps) {
     </div>
   )
 }
+
+const DashboardItemCardSelect = React.forwardRef<
+  React.ElementRef<typeof Checkbox>,
+  React.ComponentPropsWithoutRef<typeof Checkbox>
+>(({ ...props }, ref) => (
+  <Checkbox
+    ref={ref}
+    className="translate-y-[2px] self-center border-black data-[state=checked]:bg-black data-[state=checked]:text-white dark:border-white dark:data-[state=checked]:bg-white dark:data-[state=checked]:text-black"
+    {...props}
+  />
+))
+DashboardItemCardSelect.displayName = 'DashboardItemCardSelect'
 
 function DashboardItemCardContent({
   className,
@@ -80,4 +93,5 @@ export const DashboardItemCard = {
   Content: DashboardItemCardContent,
   Actions: DashboardItemCardActions,
   Action: DashboardItemCardAction,
+  Select: DashboardItemCardSelect,
 }

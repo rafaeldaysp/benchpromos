@@ -7,6 +7,7 @@ import { toast } from 'sonner'
 
 import { DashboardItemCard } from '@/components/dashboard-item-card'
 import { DealForm } from '@/components/forms/deal-form'
+import DealsLinkForm from '@/components/forms/deals-link-form'
 import { Icons } from '@/components/icons'
 import {
   AlertDialog,
@@ -33,6 +34,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
 import {
+  type Category,
   type Cashback,
   type Coupon,
   type Deal,
@@ -41,6 +43,23 @@ import {
 } from '@/types'
 import { priceFormatter } from '@/utils/formatter'
 import { priceCalculator } from '@/utils/price-calculator'
+import { cn } from '@/lib/utils'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
+import DealsAssignForm from '@/components/forms/deals-link-form'
 
 const DELETE_DEAL = gql`
   mutation DeleteDeal($dealId: ID!) {
@@ -51,20 +70,46 @@ const DELETE_DEAL = gql`
 `
 
 interface DealsMainProps {
-  deals: (Deal & { cashback?: Pick<Cashback, 'value'> } & {
-    coupon?: Pick<Coupon, 'discount'>
+  deals: (Deal & { cashback?: Pick<Cashback, 'value' | 'provider'> } & {
+    coupon?: Pick<Coupon, 'discount' | 'code'>
   })[]
-  products: Pick<Product, 'id' | 'name' | 'imageUrl'>[]
+  products: (Pick<Product, 'id' | 'name' | 'imageUrl'> & {
+    category: Pick<Category, 'id' | 'name'>
+  })[]
   retailers: Retailer[]
+  categories: string[]
 }
 
-export function DealsMain({ deals, products, retailers }: DealsMainProps) {
+export function DealsMain({
+  deals,
+  products,
+  retailers,
+  categories,
+}: DealsMainProps) {
   const [selectedProduct, setSelectedProduct] =
     React.useState<(typeof products)[number]>()
   const [selectedRetailer, setSelectedRetailer] =
     React.useState<(typeof retailers)[number]>()
+  const [selectedDeals, setSelectedDeals] = React.useState<typeof deals>([])
+  const [selectedCategory, setSelectedCategory] = React.useState<
+    string | undefined
+  >(undefined)
   const { openDialogs, setOpenDialog } = useFormStore()
   const router = useRouter()
+
+  const onDealSelect = (
+    deal: Deal & { cashback?: Pick<Cashback, 'value' | 'provider'> } & {
+      coupon?: Pick<Coupon, 'discount' | 'code'>
+    },
+  ) => {
+    selectedDeals.some((selectedDeal) => selectedDeal.id === deal.id)
+      ? setSelectedDeals([
+          ...selectedDeals.filter(
+            (selectedDeal) => selectedDeal.id !== deal.id,
+          ),
+        ])
+      : setSelectedDeals([...selectedDeals, deal])
+  }
 
   const filteredDeals = deals
     .filter((deal) => {
@@ -176,86 +221,153 @@ export function DealsMain({ deals, products, retailers }: DealsMainProps) {
 
       {filteredDeals.length > 0 ? (
         <div className="space-y-4">
-          <div></div>
-          <h4 className="font-medium tracking-tight">
-            Anúncios • {filteredDeals.length}
-          </h4>
-          <ScrollArea className="rounded-md border">
-            {filteredDeals.map((deal) => (
-              <DashboardItemCard.Root key={deal.id}>
-                <DashboardItemCard.Image src={deal.product.imageUrl} alt="" />
-
-                <DashboardItemCard.Content className="cursor-pointer">
-                  <p className="text-sm leading-7">{deal.product.name}</p>
-                  <span className="text-xs text-muted-foreground">
-                    {deal.retailer.name} •{' '}
-                    {priceFormatter.format(
-                      priceCalculator(
-                        deal.price,
-                        deal.coupon?.discount,
-                        deal.cashback?.value,
-                      ) / 100,
+          <div className="flex items-center justify-between">
+            <h4 className="font-medium tracking-tight">
+              Anúncios • {filteredDeals.length}
+            </h4>
+            <div className="flex items-center gap-2">
+              {selectedRetailer && (
+                <Dialog>
+                  <DialogTrigger asChild>
+                    {selectedDeals.length > 0 && selectedRetailer && (
+                      <Button variant="outline">Vincular</Button>
                     )}
-                  </span>
-                </DashboardItemCard.Content>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>VINCULAR</DialogTitle>
+                      <DialogDescription>
+                        Vincule cupom e/ou cashback a múltiplas ofertas.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <DealsLinkForm
+                      dealsId={selectedDeals.map((deal) => deal.id)}
+                      retailerId={selectedRetailer.id}
+                    />
+                  </DialogContent>
+                </Dialog>
+              )}
+              <Select
+                value={selectedCategory}
+                onValueChange={(value) => {
+                  setSelectedCategory(
+                    categories.find((category) => category === value),
+                  )
+                }}
+              >
+                <SelectTrigger className="w-[200px]">
+                  <SelectValue placeholder="Selecione uma categoria" />
+                </SelectTrigger>
+                <SelectContent side="top">
+                  <SelectItem value={'fdsfasfdsf'}>Todas</SelectItem>
+                  {categories.map((category) => (
+                    <SelectItem key={category} value={category}>
+                      {category}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <ScrollArea className="rounded-md border">
+            {filteredDeals
+              .filter((deal) =>
+                deal.product.category.name.includes(selectedCategory ?? ''),
+              )
+              .map((deal) => (
+                <DashboardItemCard.Root
+                  key={deal.id}
+                  className={cn('cursor-pointer', {
+                    'bg-muted hover:bg-muted': selectedDeals.some(
+                      (selectedDeal) => selectedDeal.id === deal.id,
+                    ),
+                  })}
+                  onClick={() => onDealSelect(deal)}
+                >
+                  <DashboardItemCard.Select
+                    checked={selectedDeals.some(
+                      (selectedDeal) => selectedDeal.id === deal.id,
+                    )}
+                    onCheckedChange={() => onDealSelect(deal)}
+                  />
 
-                <DashboardItemCard.Actions>
-                  <Sheet
-                    open={openDialogs[`dealUpdateForm.${deal.id}`]}
-                    onOpenChange={(open) =>
-                      setOpenDialog(`dealUpdateForm.${deal.id}`, open)
-                    }
-                  >
-                    <SheetTrigger asChild>
-                      <DashboardItemCard.Action icon={Icons.Edit} />
-                    </SheetTrigger>
-                    <SheetContent
-                      className="w-full space-y-4 overflow-auto sm:max-w-xl"
-                      side="left"
+                  <DashboardItemCard.Image src={deal.product.imageUrl} alt="" />
+
+                  <DashboardItemCard.Content>
+                    <p className="text-sm leading-7">
+                      {deal.product.name} | {deal.product.category.name}
+                    </p>
+                    <span className="text-xs text-muted-foreground">
+                      {deal.retailer.name} •{' '}
+                      {priceFormatter.format(
+                        priceCalculator(
+                          deal.price,
+                          deal.coupon?.discount,
+                          deal.cashback?.value,
+                        ) / 100,
+                      )}
+                      {deal.coupon && ` • ${deal.coupon.code}`}
+                      {deal.cashback && ` • ${deal.cashback.provider}`}
+                    </span>
+                  </DashboardItemCard.Content>
+
+                  <DashboardItemCard.Actions>
+                    <Sheet
+                      open={openDialogs[`dealUpdateForm.${deal.id}`]}
+                      onOpenChange={(open) =>
+                        setOpenDialog(`dealUpdateForm.${deal.id}`, open)
+                      }
                     >
-                      <SheetHeader>
-                        <SheetTitle>EDITAR ANÚNCIO</SheetTitle>
-                      </SheetHeader>
-                      <DealForm
-                        mode="update"
-                        productId={deal.productId}
-                        retailerId={deal.retailerId}
-                        deal={deal}
-                      />
-                    </SheetContent>
-                  </Sheet>
+                      <SheetTrigger asChild>
+                        <DashboardItemCard.Action icon={Icons.Edit} />
+                      </SheetTrigger>
+                      <SheetContent
+                        className="w-full space-y-4 overflow-auto sm:max-w-xl"
+                        side="left"
+                      >
+                        <SheetHeader>
+                          <SheetTitle>EDITAR ANÚNCIO</SheetTitle>
+                        </SheetHeader>
+                        <DealForm
+                          mode="update"
+                          productId={deal.productId}
+                          retailerId={deal.retailerId}
+                          deal={deal}
+                        />
+                      </SheetContent>
+                    </Sheet>
 
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <DashboardItemCard.Action
-                        variant="destructive"
-                        icon={Icons.Trash}
-                      />
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>Você tem certeza?</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          Essa ação não pode ser desfeita.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                        <AlertDialogAction
-                          onClick={() =>
-                            deleteDeal({
-                              variables: { dealId: deal.id },
-                            })
-                          }
-                        >
-                          Continuar
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
-                </DashboardItemCard.Actions>
-              </DashboardItemCard.Root>
-            ))}
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <DashboardItemCard.Action
+                          variant="destructive"
+                          icon={Icons.Trash}
+                        />
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Você tem certeza?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Essa ação não pode ser desfeita.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() =>
+                              deleteDeal({
+                                variables: { dealId: deal.id },
+                              })
+                            }
+                          >
+                            Continuar
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </DashboardItemCard.Actions>
+                </DashboardItemCard.Root>
+              ))}
           </ScrollArea>
         </div>
       ) : (
@@ -279,7 +391,11 @@ export function DealsMain({ deals, products, retailers }: DealsMainProps) {
                   <DashboardItemCard.Root
                     key={product.id}
                     className="cursor-pointer"
-                    onClick={() => setSelectedProduct(product)}
+                    onClick={() => {
+                      setSelectedProduct(product)
+                      setSelectedDeals([])
+                      setSelectedCategory(undefined)
+                    }}
                   >
                     <DashboardItemCard.Image src={product.imageUrl} alt="" />
 
@@ -308,7 +424,11 @@ export function DealsMain({ deals, products, retailers }: DealsMainProps) {
                   <DashboardItemCard.Root
                     key={retailer.id}
                     className="cursor-pointer"
-                    onClick={() => setSelectedRetailer(retailer)}
+                    onClick={() => {
+                      setSelectedRetailer(retailer)
+                      setSelectedDeals([])
+                      setSelectedCategory(undefined)
+                    }}
                   >
                     <DashboardItemCard.Content>
                       <p className="text-sm leading-7">{retailer.name}</p>

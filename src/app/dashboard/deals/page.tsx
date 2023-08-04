@@ -3,6 +3,7 @@ import { gql } from '@apollo/client'
 import { Separator } from '@/components/ui/separator'
 import { getClient } from '@/lib/apollo'
 import {
+  type Category,
   type Cashback,
   type Coupon,
   type Deal,
@@ -29,10 +30,12 @@ const GET_DEALS_AND_PRODUCTS_AND_RETAILERS = gql`
       createdAt
       updatedAt
       cashback {
+        provider
         value
       }
       coupon {
         discount
+        code
       }
     }
     productsList: products {
@@ -40,10 +43,17 @@ const GET_DEALS_AND_PRODUCTS_AND_RETAILERS = gql`
         id
         name
         imageUrl
+        category {
+          id
+          name
+        }
       }
     }
     retailers {
       id
+      name
+    }
+    categories {
       name
     }
   }
@@ -51,13 +61,16 @@ const GET_DEALS_AND_PRODUCTS_AND_RETAILERS = gql`
 
 export default async function DealsDashboardPage() {
   const { data } = await getClient().query<{
-    deals: (Deal & { cashback?: Pick<Cashback, 'value'> } & {
-      coupon?: Pick<Coupon, 'discount'>
+    deals: (Deal & { cashback?: Pick<Cashback, 'value' | 'provider'> } & {
+      coupon?: Pick<Coupon, 'discount' | 'code'>
     })[]
     productsList: {
-      products: Pick<Product, 'id' | 'name' | 'imageUrl'>[]
+      products: (Pick<Product, 'id' | 'name' | 'imageUrl'> & {
+        category: Pick<Category, 'id' | 'name'>
+      })[]
     }
     retailers: Retailer[]
+    categories: Pick<Category, 'id' | 'name'>[]
   }>({
     query: GET_DEALS_AND_PRODUCTS_AND_RETAILERS,
   })
@@ -65,6 +78,7 @@ export default async function DealsDashboardPage() {
   const deals = data.deals.map((deal) => removeNullValues(deal))
   const products = data.productsList.products
   const retailers = data.retailers
+  const categories = data.categories.map((c) => c.name)
 
   return (
     <div className="space-y-6">
@@ -75,7 +89,12 @@ export default async function DealsDashboardPage() {
         </p>
       </div>
       <Separator />
-      <DealsMain deals={deals} products={products} retailers={retailers} />
+      <DealsMain
+        deals={deals}
+        products={products}
+        retailers={retailers}
+        categories={categories}
+      />
     </div>
   )
 }

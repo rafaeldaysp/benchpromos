@@ -163,7 +163,7 @@ export function SalesMain({ sales, products }: SalesMainProps) {
                     <DashboardItemCard.Content
                       className="cursor-pointer"
                       onClick={() => {
-                        setSelectedProduct(undefined)
+                        // setSelectedProduct(undefined)
                         setSelectedSale(sale)
                       }}
                     >
@@ -249,7 +249,7 @@ export function SalesMain({ sales, products }: SalesMainProps) {
                     key={product.slug}
                     className="cursor-pointer"
                     onClick={() => {
-                      setSelectedSale(undefined)
+                      // setSelectedSale(undefined)
                       setSelectedProduct(product)
                     }}
                   >
