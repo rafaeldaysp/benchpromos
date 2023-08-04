@@ -79,13 +79,6 @@ export const columns: ColumnDef<BenchmarkData>[] = [
     },
   },
   {
-    accessorKey: 'description',
-    header: 'Descrição',
-    meta: {
-      header: 'Descrição',
-    },
-  },
-  {
     id: 'benchmark',
     accessorKey: 'benchmark.name',
     header: 'Benchmark',
@@ -103,6 +96,13 @@ export const columns: ColumnDef<BenchmarkData>[] = [
     ),
     meta: {
       header: 'Resultado',
+    },
+  },
+  {
+    accessorKey: 'description',
+    header: 'Descrição',
+    meta: {
+      header: 'Descrição',
     },
   },
   {

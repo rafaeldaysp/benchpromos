@@ -52,7 +52,10 @@ interface RetailerFormProps {
 export function RetailerForm({ mode = 'create', retailer }: RetailerFormProps) {
   const form = useForm<Inputs>({
     resolver: zodResolver(retailerSchema),
-    defaultValues: retailer ?? defaultValues,
+    defaultValues: {
+      ...defaultValues,
+      ...retailer,
+    },
   })
   const { setOpenDialog } = useFormStore()
   const router = useRouter()

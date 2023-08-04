@@ -1,7 +1,7 @@
 'use client'
 
 import { gql, useMutation } from '@apollo/client'
-import { useSuspenseQuery } from '@apollo/experimental-nextjs-app-support/ssr'
+import { useQuery } from '@apollo/experimental-nextjs-app-support/ssr'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'next/navigation'
 import * as React from 'react'
@@ -32,7 +32,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
 import { saleSchema } from '@/lib/validations/sale'
-import { type Category } from '@/types'
+import type { Category } from '@/types'
 
 const saleLabels = ['LANÇAMENTO', 'BAIXOU', 'PREÇÃO', 'PARCELADO']
 
@@ -76,10 +76,15 @@ const defaultValues: Partial<Inputs> = {
 
 interface SaleFormProps {
   mode?: 'create' | 'update'
-  sale?: { id?: string; slug?: string } & Partial<Inputs>
+  productSlug?: string | null
+  sale?: { id?: string } & Partial<Inputs>
 }
 
-export function SaleForm({ mode = 'create', sale }: SaleFormProps) {
+export function SaleForm({
+  mode = 'create',
+  productSlug,
+  sale,
+}: SaleFormProps) {
   const form = useForm<Inputs>({
     resolver: zodResolver(saleSchema),
     defaultValues: {
@@ -90,7 +95,7 @@ export function SaleForm({ mode = 'create', sale }: SaleFormProps) {
   const { setOpenDialog } = useFormStore()
   const router = useRouter()
 
-  const { data } = useSuspenseQuery<{
+  const { data } = useQuery<{
     categories: Omit<Category, 'subcategories'>[]
   }>(GET_CATEGORIES, {
     context: {
@@ -144,8 +149,8 @@ export function SaleForm({ mode = 'create', sale }: SaleFormProps) {
       variables: {
         input: {
           id: sale?.id,
+          productSlug,
           ...data,
-          productSlug: sale?.slug,
         },
       },
     })
@@ -249,13 +254,13 @@ export function SaleForm({ mode = 'create', sale }: SaleFormProps) {
 
         <FormField
           control={form.control}
-          name="installments"
+          name="totalInstallmentPrice"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Quantidade de Parcelas (opcional)</FormLabel>
+              <FormLabel>Preço Total Parcelado (opcional)</FormLabel>
               <FormControl>
                 <Input
-                  aria-invalid={!!form.formState.errors.installments}
+                  aria-invalid={!!form.formState.errors.totalInstallmentPrice}
                   {...field}
                 />
               </FormControl>
@@ -266,13 +271,13 @@ export function SaleForm({ mode = 'create', sale }: SaleFormProps) {
 
         <FormField
           control={form.control}
-          name="totalInstallmentPrice"
+          name="installments"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Preço Total Parcelado (opcional)</FormLabel>
+              <FormLabel>Quantidade de Parcelas (opcional)</FormLabel>
               <FormControl>
                 <Input
-                  aria-invalid={!!form.formState.errors.totalInstallmentPrice}
+                  aria-invalid={!!form.formState.errors.installments}
                   {...field}
                 />
               </FormControl>

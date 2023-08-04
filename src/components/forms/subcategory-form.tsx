@@ -58,8 +58,8 @@ export function SubcategoryForm({
   const form = useForm<Inputs>({
     resolver: zodResolver(subcategorySchema),
     defaultValues: {
-      categoryId,
-      name: subcategory?.name ?? defaultValues.name,
+      ...defaultValues,
+      ...subcategory,
     },
   })
   const { setOpenDialog } = useFormStore()
@@ -102,6 +102,7 @@ export function SubcategoryForm({
       variables: {
         input: {
           id: subcategory?.id,
+          categoryId,
           ...data,
         },
       },

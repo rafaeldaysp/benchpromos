@@ -2,7 +2,7 @@ import { gql } from '@apollo/client'
 
 import { Separator } from '@/components/ui/separator'
 import { getClient } from '@/lib/apollo'
-import { type Category, type Product, type Sale } from '@/types'
+import type { Category, Product, Sale } from '@/types'
 import { removeNullValues } from '@/utils'
 import { SalesMain } from './main'
 
@@ -32,6 +32,7 @@ const GET_SALES_AND_PRODUCTS = gql`
         slug
         imageUrl
         category {
+          id
           name
         }
       }
@@ -44,7 +45,7 @@ export default async function SalesDashboardPage() {
     sales: Sale[]
     productsList: {
       products: (Pick<Product, 'slug' | 'name' | 'imageUrl'> & {
-        category: Pick<Category, 'name'>
+        category: Pick<Category, 'id' | 'name'>
       })[]
     }
   }>({

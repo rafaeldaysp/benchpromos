@@ -32,7 +32,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
-import { type Category, type Product, type Sale } from '@/types'
+import type { Category, Product, Sale } from '@/types'
 import { priceFormatter } from '@/utils/formatter'
 
 const DELETE_SALE = gql`
@@ -46,7 +46,7 @@ const DELETE_SALE = gql`
 interface SalesMainProps {
   sales: Sale[]
   products: (Pick<Product, 'slug' | 'name' | 'imageUrl'> & {
-    category: Pick<Category, 'name'>
+    category: Pick<Category, 'id' | 'name'>
   })[]
 }
 
@@ -55,6 +55,7 @@ export function SalesMain({ sales, products }: SalesMainProps) {
     React.useState<(typeof sales)[number]>()
   const [selectedProduct, setSelectedProduct] =
     React.useState<(typeof products)[number]>()
+  const [openTab, setOpenTab] = React.useState('sales')
   const { openDialogs, setOpenDialog } = useFormStore()
   const router = useRouter()
 
@@ -77,6 +78,18 @@ export function SalesMain({ sales, products }: SalesMainProps) {
     <div className="space-y-8">
       {/* Sales Actions */}
       <div className="flex justify-end gap-x-2">
+        {selectedSale && (
+          <Button
+            variant="outline"
+            onClick={() => {
+              setOpenTab('sales')
+              setOpenDialog(`saleUpdateForm.${selectedSale.id}`, true)
+            }}
+          >
+            Editar
+          </Button>
+        )}
+
         <Sheet
           open={openDialogs['saleCreateForm']}
           onOpenChange={(open) => setOpenDialog('saleCreateForm', open)}
@@ -92,9 +105,12 @@ export function SalesMain({ sales, products }: SalesMainProps) {
               <SheetTitle>ADICIONAR PROMOÇÃO</SheetTitle>
             </SheetHeader>
             <SaleForm
+              productSlug={selectedProduct?.slug ?? null}
               sale={{
+                title: selectedProduct?.name,
+                imageUrl: selectedProduct?.imageUrl,
+                categoryId: selectedProduct?.category.id,
                 ...selectedSale,
-                ...selectedProduct,
                 id: undefined,
               }}
             />
@@ -146,7 +162,8 @@ export function SalesMain({ sales, products }: SalesMainProps) {
           </DashboardItemCard.Root>
         )}
       </div>
-      <Tabs defaultValue="sales">
+
+      <Tabs value={openTab} onValueChange={setOpenTab}>
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="sales">Promoções</TabsTrigger>
           <TabsTrigger value="products">Produtos</TabsTrigger>
@@ -164,12 +181,12 @@ export function SalesMain({ sales, products }: SalesMainProps) {
                     <DashboardItemCard.Content
                       className="cursor-pointer"
                       onClick={() => {
+                        setSelectedSale(sale)
                         setSelectedProduct(
                           products.find(
                             (product) => product.slug === sale.productSlug,
                           ),
                         )
-                        setSelectedSale(sale)
                       }}
                     >
                       <p className="text-sm leading-7">{sale.title}</p>
@@ -198,7 +215,8 @@ export function SalesMain({ sales, products }: SalesMainProps) {
                           </SheetHeader>
                           <SaleForm
                             mode="update"
-                            sale={{ ...sale, ...selectedProduct }}
+                            productSlug={selectedProduct?.slug ?? null}
+                            sale={sale}
                           />
                         </SheetContent>
                       </Sheet>

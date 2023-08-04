@@ -2,11 +2,9 @@
 
 import { gql, useMutation } from '@apollo/client'
 import { toast } from 'sonner'
-import * as React from 'react'
 
 import { getCurrentUserToken } from '@/app/_actions/user'
 import { Button } from '@/components/ui/button'
-
 import { type Reaction } from '@/types'
 
 const TOGGLE_REACTION = gql`
@@ -34,8 +32,8 @@ export function Reactions({
     onError(error, _clientOptions) {
       toast.error(error.message)
     },
-    onCompleted(_data, _clientOptions) {
-      const emote = _clientOptions?.variables?.input.content as string
+    onCompleted(_data, clientOptions) {
+      const emote = clientOptions?.variables?.input.content as string
       onReact(emote)
     },
   })

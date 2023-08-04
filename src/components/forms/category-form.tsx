@@ -52,7 +52,10 @@ interface CategoryFormProps {
 export function CategoryForm({ mode = 'create', category }: CategoryFormProps) {
   const form = useForm<Inputs>({
     resolver: zodResolver(categorySchema),
-    defaultValues: category ?? defaultValues,
+    defaultValues: {
+      ...defaultValues,
+      ...category,
+    },
   })
   const { setOpenDialog } = useFormStore()
   const router = useRouter()

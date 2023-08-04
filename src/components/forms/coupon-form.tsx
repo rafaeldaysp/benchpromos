@@ -1,7 +1,7 @@
 'use client'
 
 import { gql, useMutation } from '@apollo/client'
-import { useSuspenseQuery } from '@apollo/experimental-nextjs-app-support/ssr'
+import { useQuery } from '@apollo/experimental-nextjs-app-support/ssr'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'next/navigation'
 import * as React from 'react'
@@ -32,7 +32,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
 import { couponSchema } from '@/lib/validations/coupon'
-import { type Retailer } from '@/types'
+import type { Retailer } from '@/types'
 
 const CREATE_COUPON = gql`
   mutation CreateCoupon($input: CreateCouponInput!) {
@@ -76,18 +76,15 @@ interface CouponFormProps {
 export function CouponForm({ mode = 'create', coupon }: CouponFormProps) {
   const form = useForm<Inputs>({
     resolver: zodResolver(couponSchema),
-    defaultValues: coupon ?? defaultValues,
+    defaultValues: {
+      ...defaultValues,
+      ...coupon,
+    },
   })
   const { setOpenDialog } = useFormStore()
   const router = useRouter()
 
-  const { data } = useSuspenseQuery<{ retailers: Retailer[] }>(GET_RETAILERS, {
-    context: {
-      headers: {
-        'api-key': env.NEXT_PUBLIC_API_KEY,
-      },
-    },
-  })
+  const { data } = useQuery<{ retailers: Retailer[] }>(GET_RETAILERS)
 
   const retailerItems = React.useMemo(() => {
     const retailerItems = data?.retailers.map((retailer) => ({
@@ -149,7 +146,7 @@ export function CouponForm({ mode = 'create', coupon }: CouponFormProps) {
           name="retailerId"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Aunciante</FormLabel>
+              <FormLabel>Varejista</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>

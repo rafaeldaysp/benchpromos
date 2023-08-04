@@ -1,7 +1,7 @@
 'use client'
 
 import { gql, useMutation } from '@apollo/client'
-import { useSuspenseQuery } from '@apollo/experimental-nextjs-app-support/ssr'
+import { useQuery } from '@apollo/experimental-nextjs-app-support/ssr'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as React from 'react'
 import { useFieldArray, useForm } from 'react-hook-form'
@@ -31,7 +31,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
 import { productSchema } from '@/lib/validations/product'
-import { type Category } from '@/types'
+import type { Category } from '@/types'
 
 const CREATE_PRODUCT = gql`
   mutation CreateProduct($input: CreateProductInput!) {
@@ -79,7 +79,10 @@ interface ProductFormProps {
 export function ProductForm({ mode = 'create', product }: ProductFormProps) {
   const form = useForm<Inputs>({
     resolver: zodResolver(productSchema),
-    defaultValues: product ?? defaultValues,
+    defaultValues: {
+      ...defaultValues,
+      ...product,
+    },
   })
   const { setOpenDialog } = useFormStore()
 
@@ -92,16 +95,7 @@ export function ProductForm({ mode = 'create', product }: ProductFormProps) {
     name: 'specs',
   })
 
-  const { data } = useSuspenseQuery<{ categories: Category[] }>(
-    GET_CATEGORIES,
-    {
-      context: {
-        headers: {
-          'api-key': env.NEXT_PUBLIC_API_KEY,
-        },
-      },
-    },
-  )
+  const { data } = useQuery<{ categories: Category[] }>(GET_CATEGORIES)
 
   const categoryItems = React.useMemo(() => {
     const categoryItems = data?.categories.map((category) => ({
@@ -210,7 +204,7 @@ export function ProductForm({ mode = 'create', product }: ProductFormProps) {
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="" />
+                    <SelectValue placeholder="Selecione uma categoria" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -237,8 +231,10 @@ export function ProductForm({ mode = 'create', product }: ProductFormProps) {
               <FormLabel>Subcategoria (opcional)</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
-                  <SelectTrigger disabled={!selectedCategoryId}>
-                    <SelectValue placeholder="" />
+                  <SelectTrigger
+                    disabled={!selectedCategoryId || !subcategoryItems}
+                  >
+                    <SelectValue placeholder="Selecione uma subcategoria" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>

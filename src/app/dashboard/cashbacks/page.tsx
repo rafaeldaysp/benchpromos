@@ -2,7 +2,7 @@ import { gql } from '@apollo/client'
 
 import { Separator } from '@/components/ui/separator'
 import { getClient } from '@/lib/apollo'
-import { type Retailer, type Cashback } from '@/types'
+import type { Cashback, Retailer } from '@/types'
 import { CashbacksMain } from './main'
 
 const GET_CASHBACKS = gql`

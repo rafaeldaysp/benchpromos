@@ -1,15 +1,16 @@
 'use clint'
 
-import { env } from '@/env.mjs'
-import { dealsLinkSchema } from '@/lib/validations/deal'
-import { type Cashback, type Coupon } from '@/types'
-import { gql, useMutation, useSuspenseQuery } from '@apollo/client'
+import { gql, useMutation } from '@apollo/client'
+import { useQuery } from '@apollo/experimental-nextjs-app-support/ssr'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useRouter } from 'next/navigation'
+import * as React from 'react'
+import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { type z } from 'zod'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useFormStore } from '@/hooks/use-form-store'
-import { useRouter } from 'next/navigation'
+
+import { Icons } from '@/components/icons'
+import { Button } from '@/components/ui/button'
 import {
   Form,
   FormControl,
@@ -17,36 +18,19 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '../ui/form'
+} from '@/components/ui/form'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../ui/select'
-import { Button } from '../ui/button'
-import { Icons } from '../icons'
+} from '@/components/ui/select'
+import { env } from '@/env.mjs'
+import { useFormStore } from '@/hooks/use-form-store'
+import { dealsLinkSchema } from '@/lib/validations/deal'
+import type { Cashback, Coupon } from '@/types'
 import { couponFormatter } from '@/utils/formatter'
-
-const GET_COUPONS_AND_CASHBACKS = gql`
-  query GetCoupons($retailerId: ID) {
-    coupons(retailerId: $retailerId) {
-      id
-      code
-      discount
-      availability
-      retailerId
-      minimumSpend
-    }
-    cashbacks(retailerId: $retailerId) {
-      id
-      provider
-      value
-      retailerId
-    }
-  }
-`
 
 const UPDATE_DEALS = gql`
   mutation UpdateDeals($input: AssignCouponAndCashbackToManyInput!) {
@@ -54,34 +38,64 @@ const UPDATE_DEALS = gql`
   }
 `
 
+const GET_COUPONS_AND_CASHBACKS_BY_RETAILER = gql`
+  query GetCouponsAndCashbacksByRetailer($retailerId: ID) {
+    coupons(retailerId: $retailerId) {
+      id
+      code
+      discount
+    }
+    cashbacks(retailerId: $retailerId) {
+      id
+      provider
+      value
+    }
+  }
+`
+
 type Inputs = z.infer<typeof dealsLinkSchema>
 
 interface DealsLinkFormProps {
   retailerId: string
-  dealsId: string[]
+  dealIds: string[]
 }
 
 export default function DealsLinkForm({
   retailerId,
-  dealsId,
+  dealIds,
 }: DealsLinkFormProps) {
-  const { data } = useSuspenseQuery<{
-    coupons: Omit<Coupon, 'description'>[]
-    cashbacks: Omit<Cashback, 'affiliatedUrl'>[]
-  }>(GET_COUPONS_AND_CASHBACKS, {
-    variables: {
-      retailerId,
-    },
-  })
-
-  const coupons = data?.coupons
-  const cashbacks = data?.cashbacks
-
   const form = useForm<Inputs>({
     resolver: zodResolver(dealsLinkSchema),
   })
   const { setOpenDialog } = useFormStore()
   const router = useRouter()
+
+  const { data } = useQuery<{
+    coupons: Pick<Coupon, 'id' | 'code' | 'discount'>[]
+    cashbacks: Pick<Cashback, 'id' | 'provider' | 'value'>[]
+  }>(GET_COUPONS_AND_CASHBACKS_BY_RETAILER, {
+    variables: {
+      retailerId,
+    },
+  })
+
+  const couponItems = React.useMemo(() => {
+    const couponItems = data?.coupons.map((coupon) => ({
+      label: `${coupon.code} • ${couponFormatter(coupon.discount)}`,
+      value: coupon.id,
+    }))
+
+    return couponItems
+  }, [data])
+
+  const cashbackItems = React.useMemo(() => {
+    const cashbackItems = data?.cashbacks.map((cashback) => ({
+      label: `${cashback.provider} • ${cashback.value}%`,
+      value: cashback.id,
+    }))
+
+    return cashbackItems
+  }, [data])
 
   const [mutateDeals, { loading: isLoading }] = useMutation(UPDATE_DEALS, {
     context: {
@@ -94,22 +108,26 @@ export default function DealsLinkForm({
     },
     onCompleted(_data, _clientOptions) {
       setOpenDialog('dealsLinkForm', false)
-      toast.success('Cupom e cashback vinculados com sucesso')
+      toast.success('Ofertas atualizadas com sucesso.')
       router.refresh()
     },
   })
 
-  async function onSubmit({ cashbackId, couponId }: Inputs) {
+  // mudar para dealIds no back
+  async function onSubmit({ couponId, cashbackId }: Inputs) {
     await mutateDeals({
       variables: {
         input: {
-          dealsId,
-          cashbackId: cashbackId?.includes('null') ? null : cashbackId,
-          couponId: couponId?.includes('null') ? null : couponId,
+          dealsId: dealIds,
+          couponId: couponId === 'none' ? null : couponId,
+          cashbackId: cashbackId === 'none' ? null : cashbackId,
         },
       },
     })
   }
+
+  const selectedCoupon = form.getValues('couponId')
+  const selectedCashback = form.getValues('cashbackId')
 
   return (
     <Form {...form}>
@@ -119,7 +137,7 @@ export default function DealsLinkForm({
           name="couponId"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Cupom</FormLabel>
+              <FormLabel>Cupom (opcional)</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
@@ -127,10 +145,10 @@ export default function DealsLinkForm({
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value={'null'}>Nenhum</SelectItem>
-                  {coupons?.map((coupon) => (
-                    <SelectItem key={coupon.id} value={coupon.id}>
-                      {coupon.code} • {couponFormatter(coupon.discount)}
+                  <SelectItem value="none">Nenhum</SelectItem>
+                  {couponItems?.map((couponItem) => (
+                    <SelectItem key={couponItem.value} value={couponItem.value}>
+                      {couponItem.label}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -145,7 +163,7 @@ export default function DealsLinkForm({
           name="cashbackId"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Cashback</FormLabel>
+              <FormLabel>Cashback (opcional)</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
@@ -153,10 +171,13 @@ export default function DealsLinkForm({
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value={'null'}>Nenhum</SelectItem>
-                  {cashbacks?.map((cashback) => (
-                    <SelectItem key={cashback.id} value={cashback.id}>
-                      {cashback.provider} • {cashback.value}%
+                  <SelectItem value="none">Nenhum</SelectItem>
+                  {cashbackItems?.map((cashbackItem) => (
+                    <SelectItem
+                      key={cashbackItem.value}
+                      value={cashbackItem.value}
+                    >
+                      {cashbackItem.label}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -166,14 +187,17 @@ export default function DealsLinkForm({
           )}
         />
 
-        <Button type="submit" disabled={isLoading}>
+        <Button
+          type="submit"
+          disabled={isLoading || (!selectedCoupon && !selectedCashback)}
+        >
           {isLoading && (
             <Icons.Spinner
               className="mr-2 h-4 w-4 animate-spin"
               aria-hidden="true"
             />
           )}
-          Vincular
+          Salvar
         </Button>
       </form>
     </Form>

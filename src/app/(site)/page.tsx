@@ -3,7 +3,6 @@ import { gql } from '@apollo/client'
 import { SaleCard } from '@/components/sale-card'
 import { getClient } from '@/lib/apollo'
 import type { Category, Comment, Sale } from '@/types'
-
 import { getCurrentUser } from '../_actions/user'
 
 const GET_SALES = gql`

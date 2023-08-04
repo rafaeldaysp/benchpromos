@@ -2,19 +2,19 @@ import { gql } from '@apollo/client'
 
 import { Separator } from '@/components/ui/separator'
 import { getClient } from '@/lib/apollo'
-import {
-  type Category,
-  type Cashback,
-  type Coupon,
-  type Deal,
-  type Product,
-  type Retailer,
+import type {
+  Cashback,
+  Category,
+  Coupon,
+  Deal,
+  Product,
+  Retailer,
 } from '@/types'
 import { removeNullValues } from '@/utils'
 import { DealsMain } from './main'
 
-const GET_DEALS_AND_PRODUCTS_AND_RETAILERS = gql`
-  query GetDealsAndProductsAndRetailers {
+const GET_DEALS = gql`
+  query GetDeals {
     deals {
       id
       price
@@ -54,6 +54,7 @@ const GET_DEALS_AND_PRODUCTS_AND_RETAILERS = gql`
       name
     }
     categories {
+      id
       name
     }
   }
@@ -72,13 +73,13 @@ export default async function DealsDashboardPage() {
     retailers: Retailer[]
     categories: Pick<Category, 'id' | 'name'>[]
   }>({
-    query: GET_DEALS_AND_PRODUCTS_AND_RETAILERS,
+    query: GET_DEALS,
   })
 
   const deals = data.deals.map((deal) => removeNullValues(deal))
   const products = data.productsList.products
   const retailers = data.retailers
-  const categories = data.categories.map((c) => c.name)
+  const categories = data.categories
 
   return (
     <div className="space-y-6">

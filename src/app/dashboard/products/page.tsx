@@ -1,9 +1,8 @@
 import { gql } from '@apollo/client'
-import * as React from 'react'
 
 import { Separator } from '@/components/ui/separator'
 import { getClient } from '@/lib/apollo'
-import { type Filter } from '@/types'
+import type { Filter } from '@/types'
 import { ProductsMain } from './main'
 
 const GET_FILTERS = gql`

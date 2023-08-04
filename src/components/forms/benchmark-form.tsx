@@ -55,7 +55,10 @@ export function BenchmarkForm({
 }: BenchmarkFormProps) {
   const form = useForm<Inputs>({
     resolver: zodResolver(benchmarkSchema),
-    defaultValues: benchmark ?? defaultValues,
+    defaultValues: {
+      ...defaultValues,
+      ...benchmark,
+    },
   })
   const { setOpenDialog } = useFormStore()
   const router = useRouter()

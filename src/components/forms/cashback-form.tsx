@@ -1,7 +1,7 @@
 'use client'
 
 import { gql, useMutation } from '@apollo/client'
-import { useSuspenseQuery } from '@apollo/experimental-nextjs-app-support/ssr'
+import { useQuery } from '@apollo/experimental-nextjs-app-support/ssr'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'next/navigation'
 import * as React from 'react'
@@ -30,7 +30,7 @@ import {
 import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
 import { cashbackSchema } from '@/lib/validations/cashback'
-import { type Retailer } from '@/types'
+import type { Retailer } from '@/types'
 
 const CREATE_CASHBACK = gql`
   mutation CreateCashback($input: CreateCashbackInput!) {
@@ -73,18 +73,15 @@ interface CashbackFormProps {
 export function CashbackForm({ mode = 'create', cashback }: CashbackFormProps) {
   const form = useForm<Inputs>({
     resolver: zodResolver(cashbackSchema),
-    defaultValues: cashback ?? defaultValues,
+    defaultValues: {
+      ...defaultValues,
+      ...cashback,
+    },
   })
   const { setOpenDialog } = useFormStore()
   const router = useRouter()
 
-  const { data } = useSuspenseQuery<{ retailers: Retailer[] }>(GET_RETAILERS, {
-    context: {
-      headers: {
-        'api-key': env.NEXT_PUBLIC_API_KEY,
-      },
-    },
-  })
+  const { data } = useQuery<{ retailers: Retailer[] }>(GET_RETAILERS)
 
   const retailerItems = React.useMemo(() => {
     const retailerItems = data?.retailers.map((retailer) => ({
@@ -150,7 +147,7 @@ export function CashbackForm({ mode = 'create', cashback }: CashbackFormProps) {
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="" />
+                    <SelectValue placeholder="Selecione um varejista" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -222,7 +219,7 @@ export function CashbackForm({ mode = 'create', cashback }: CashbackFormProps) {
           name="affiliatedUrl"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Link de afiliado</FormLabel>
+              <FormLabel>Link de Afiliado</FormLabel>
               <FormControl>
                 <Input
                   aria-invalid={!!form.formState.errors.affiliatedUrl}

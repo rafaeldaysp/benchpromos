@@ -1,6 +1,6 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import * as React from 'react'
 
 import { Icons } from '@/components/icons'
@@ -13,6 +13,8 @@ interface PaginationProps {
 
 export function Pagination({ page, pageCount }: PaginationProps) {
   const [isPending, startTransition] = React.useTransition()
+  const searchParams = useSearchParams()
+  const pathname = usePathname()
   const router = useRouter()
 
   const paginationRange = React.useMemo(() => {
@@ -42,6 +44,23 @@ export function Pagination({ page, pageCount }: PaginationProps) {
     return range
   }, [page, pageCount])
 
+  const createQueryString = React.useCallback(
+    (params: Record<string, string | number | null>) => {
+      const newSearchParams = new URLSearchParams(searchParams?.toString())
+
+      for (const [key, value] of Object.entries(params)) {
+        if (value === null) {
+          newSearchParams.delete(key)
+        } else {
+          newSearchParams.set(key, String(value))
+        }
+      }
+
+      return newSearchParams.toString()
+    },
+    [searchParams],
+  )
+
   return (
     <div className="flex flex-wrap items-center justify-center gap-2">
       <Button
@@ -52,7 +71,11 @@ export function Pagination({ page, pageCount }: PaginationProps) {
         disabled={page === 1 || isPending}
         onClick={() => {
           startTransition(() => {
-            router.push('')
+            router.push(
+              `${pathname}?${createQueryString({
+                page: 1,
+              })}`,
+            )
           })
         }}
       >
@@ -66,7 +89,11 @@ export function Pagination({ page, pageCount }: PaginationProps) {
         disabled={page === 1 || isPending}
         onClick={() => {
           startTransition(() => {
-            router.push('')
+            router.push(
+              `${pathname}?${createQueryString({
+                page: Number(page) - 1,
+              })}`,
+            )
           })
         }}
       >
@@ -94,7 +121,11 @@ export function Pagination({ page, pageCount }: PaginationProps) {
             disabled={isPending}
             onClick={() => {
               startTransition(() => {
-                router.push('')
+                router.push(
+                  `${pathname}?${createQueryString({
+                    page: pageNumber,
+                  })}`,
+                )
               })
             }}
           >
@@ -110,7 +141,11 @@ export function Pagination({ page, pageCount }: PaginationProps) {
         disabled={page === pageCount || isPending}
         onClick={() => {
           startTransition(() => {
-            router.push('')
+            router.push(
+              `${pathname}?${createQueryString({
+                page: Number(page) + 1,
+              })}`,
+            )
           })
         }}
       >
@@ -123,7 +158,11 @@ export function Pagination({ page, pageCount }: PaginationProps) {
         className="hidden h-8 w-8 lg:flex"
         disabled={page === pageCount || isPending}
         onClick={() => {
-          router.push('')
+          router.push(
+            `${pathname}?${createQueryString({
+              page: pageCount,
+            })}`,
+          )
         }}
       >
         <Icons.ChevronsRight className="h-4 w-4" aria-hidden="true" />

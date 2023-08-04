@@ -6,7 +6,11 @@ import type { Category, Product } from '@/types'
 
 const GET_PRODUCTS = gql`
   query GetProductsWithMinPrice($input: GetProductsInput) {
-    products(getProductsInput: $input) {
+    productsList: products(getProductsInput: $input) {
+      pages
+      _count {
+        products
+      }
       products {
         id
         name
@@ -44,22 +48,30 @@ export default async function ProductsPage({
   const { page } = searchParams
 
   const { data } = await getClient().query<{
-    products: {
-      products: (Product & { category: Pick<Category, 'slug'> })[]
+    productsList: {
       pages: number
-      _count: { products: number }
+      products: (Product & { category: Pick<Category, 'slug'> })[]
     }
   }>({
     query: GET_PRODUCTS,
+    variables: {
+      input: {
+        pagination: {
+          limit: 1,
+          page: page ? Number(page) : 1,
+        },
+        category,
+        hasDeals: false,
+      },
+    },
   })
-  const products = data.products.products
-
-  console.log(category, page)
+  const products = data.productsList.products
+  const pageCount = data.productsList.pages
 
   return (
     <div className="px-4 py-10 sm:container">
       <div>
-        <Products products={products} />
+        <Products products={products} pageCount={pageCount} />
       </div>
     </div>
   )

@@ -1,6 +1,5 @@
 'use client'
 
-import dayjs from 'dayjs'
 import Image from 'next/image'
 import Link from 'next/link'
 import * as React from 'react'
@@ -29,9 +28,8 @@ import {
   ContextMenuTrigger,
 } from '@/components/ui/context-menu'
 import { cn } from '@/lib/utils'
-import { priceFormatter } from '@/utils/formatter'
-
 import { type Reaction } from '@/types'
+import { priceFormatter } from '@/utils/formatter'
 
 interface SaleCardProps extends React.HTMLAttributes<HTMLDivElement> {
   sale: {

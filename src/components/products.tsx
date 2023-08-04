@@ -1,33 +1,20 @@
 'use client'
 
-import * as React from 'react'
 import { type Category, type Product } from '@/types'
-import { usePathname, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 
 import { Pagination } from '@/components/pagination'
 import { ProductCard } from '@/components/product-card'
 
 interface ProductsProps {
   products: (Product & { category: Pick<Category, 'slug'> })[]
+  pageCount: number
 }
 
-export function Products({ products }: ProductsProps) {
-  const pathname = usePathname()
+export function Products({ products, pageCount }: ProductsProps) {
   const searchParams = useSearchParams()
 
   const page = searchParams.get('page') ?? '1'
-
-  console.log(page)
-
-  const createQueryString = React.useCallback(
-    (name: string, value: string) => {
-      const params = new URLSearchParams(searchParams.toString())
-      params.set(name, value)
-
-      return params.toString()
-    },
-    [searchParams],
-  )
 
   return (
     <div className="space-y-6">
@@ -40,7 +27,9 @@ export function Products({ products }: ProductsProps) {
           />
         ))}
       </div>
-      {products.length && <Pagination page={1} pageCount={33} />}
+      {products.length && (
+        <Pagination page={Number(page)} pageCount={pageCount} />
+      )}
     </div>
   )
 }

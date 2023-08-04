@@ -31,6 +31,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
 import { benchmarkResultSchema } from '@/lib/validations/benchmark'
+import type { Benchmark } from '@/types'
 
 const CREATE_BENCHMARK_RESULT = gql`
   mutation CreateBenchmarkResult($input: CreateBenchmarkResultInput!) {
@@ -86,14 +87,8 @@ export function BenchmarkResultForm({
   const router = useRouter()
 
   const { data } = useQuery<{
-    benchmarks: { id: string; name: string }[]
-  }>(GET_BENCHMARKS, {
-    context: {
-      headers: {
-        'api-key': env.NEXT_PUBLIC_API_KEY,
-      },
-    },
-  })
+    benchmarks: Benchmark[]
+  }>(GET_BENCHMARKS)
 
   const benchmarkItems = React.useMemo(() => {
     const benchmarkItems = data?.benchmarks.map((benchmark) => ({

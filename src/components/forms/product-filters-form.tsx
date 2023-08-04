@@ -20,8 +20,8 @@ import {
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
-import { linkFiltersSchema } from '@/lib/validations/product'
-import { type Filter } from '@/types'
+import { filtersLinkSchema } from '@/lib/validations/product'
+import type { Filter } from '@/types'
 
 const LINK_FILTERS = gql`
   mutation LinkFiltersToProduct($input: LinkProductFiltersInput!) {
@@ -31,7 +31,7 @@ const LINK_FILTERS = gql`
   }
 `
 
-type Inputs = z.infer<typeof linkFiltersSchema>
+type Inputs = z.infer<typeof filtersLinkSchema>
 
 interface ProductFiltersFormProps {
   categoryFilters: Filter[]
@@ -61,7 +61,7 @@ export function ProductFiltersForm({
   }, [categoryFilters, productFilters])
 
   const form = useForm<Inputs>({
-    resolver: zodResolver(linkFiltersSchema),
+    resolver: zodResolver(filtersLinkSchema),
     defaultValues: {
       filters: categoryFilters.map((filter, index) => ({
         id: filter.id,
@@ -148,7 +148,7 @@ export function ProductFiltersForm({
                       <FormControl>
                         <RadioGroupItem value="none" />
                       </FormControl>
-                      <FormLabel className="font-normal">Nada</FormLabel>
+                      <FormLabel className="font-normal">Nenhum</FormLabel>
                     </FormItem>
                   </RadioGroup>
                 </FormControl>

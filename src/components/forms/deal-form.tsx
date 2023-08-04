@@ -1,7 +1,7 @@
 'use client'
 
 import { gql, useMutation } from '@apollo/client'
-import { useSuspenseQuery } from '@apollo/experimental-nextjs-app-support/ssr'
+import { useQuery } from '@apollo/experimental-nextjs-app-support/ssr'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'next/navigation'
 import * as React from 'react'
@@ -31,7 +31,8 @@ import {
 import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
 import { dealSchema } from '@/lib/validations/deal'
-import { type Cashback, type Coupon } from '@/types'
+import type { Cashback, Coupon } from '@/types'
+import { couponFormatter } from '@/utils/formatter'
 
 const CREATE_DEAL = gql`
   mutation CreateDeal($input: CreateDealInput!) {
@@ -54,6 +55,7 @@ const GET_COUPONS_AND_CASHBACKS_BY_RETAILER = gql`
     coupons(retailerId: $retailerId) {
       id
       code
+      discount
     }
     cashbacks(retailerId: $retailerId) {
       id
@@ -86,20 +88,18 @@ export function DealForm({
 }: DealFormProps) {
   const form = useForm<Inputs>({
     resolver: zodResolver(dealSchema),
-    defaultValues: deal ?? defaultValues,
+    defaultValues: {
+      ...defaultValues,
+      ...deal,
+    },
   })
   const { setOpenDialog } = useFormStore()
   const router = useRouter()
 
-  const { data } = useSuspenseQuery<{
-    coupons: Pick<Coupon, 'id' | 'code'>[]
+  const { data } = useQuery<{
+    coupons: Pick<Coupon, 'id' | 'code' | 'discount'>[]
     cashbacks: Pick<Cashback, 'id' | 'provider' | 'value'>[]
   }>(GET_COUPONS_AND_CASHBACKS_BY_RETAILER, {
-    context: {
-      headers: {
-        'api-key': env.NEXT_PUBLIC_API_KEY,
-      },
-    },
     variables: {
       retailerId,
     },
@@ -107,7 +107,7 @@ export function DealForm({
 
   const couponItems = React.useMemo(() => {
     const couponItems = data?.coupons.map((coupon) => ({
-      label: coupon.code,
+      label: `${coupon.code} • ${couponFormatter(coupon.discount)}`,
       value: coupon.id,
     }))
 
@@ -116,7 +116,7 @@ export function DealForm({
 
   const cashbackItems = React.useMemo(() => {
     const cashbackItems = data?.cashbacks.map((cashback) => ({
-      label: `${cashback.provider} - ${cashback.value}%`,
+      label: `${cashback.provider} • ${cashback.value}%`,
       value: cashback.id,
     }))
 
@@ -202,27 +202,10 @@ export function DealForm({
 
         <FormField
           control={form.control}
-          name="installments"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Quantidade de Parcelas</FormLabel>
-              <FormControl>
-                <Input
-                  aria-invalid={!!form.formState.errors.installments}
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
           name="totalInstallmentPrice"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Preço Parcelado</FormLabel>
+              <FormLabel>Preço Total Parcelado (opcional)</FormLabel>
               <FormControl>
                 <Input
                   aria-invalid={!!form.formState.errors.totalInstallmentPrice}
@@ -236,14 +219,31 @@ export function DealForm({
 
         <FormField
           control={form.control}
+          name="installments"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Quantidade de Parcelas (opcional)</FormLabel>
+              <FormControl>
+                <Input
+                  aria-invalid={!!form.formState.errors.installments}
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
           name="couponId"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Cupom</FormLabel>
+              <FormLabel>Cupom (opcional)</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="" />
+                    <SelectValue placeholder="Selecione um cupom" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -264,11 +264,11 @@ export function DealForm({
           name="cashbackId"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Cashback</FormLabel>
+              <FormLabel>Cashback (opcional)</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="" />
+                    <SelectValue placeholder="Selecione um cashback" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -309,7 +309,7 @@ export function DealForm({
           name="sku"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Sku</FormLabel>
+              <FormLabel>Sku (opcional)</FormLabel>
               <FormControl>
                 <Input aria-invalid={!!form.formState.errors.sku} {...field} />
               </FormControl>
