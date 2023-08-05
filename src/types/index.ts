@@ -49,11 +49,13 @@ export type Cashback = {
 export type Filter = {
   id: string
   name: string
+  slug: string
   categoryId: string
   priority: number
   options: {
     id: string
     value: string
+    slug: string
     priority: number
   }[]
 }

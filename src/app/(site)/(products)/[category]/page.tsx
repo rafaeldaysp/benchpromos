@@ -1,11 +1,12 @@
 import { gql } from '@apollo/client'
+import { notFound } from 'next/navigation'
 
 import { Products } from '@/components/products'
 import { getClient } from '@/lib/apollo'
-import type { Category, Product } from '@/types'
+import type { Category, Filter, Product } from '@/types'
 
 const GET_PRODUCTS = gql`
-  query GetProductsWithMinPrice($input: GetProductsInput) {
+  query GetProducts($input: GetProductsInput) {
     productsList: products(getProductsInput: $input) {
       pages
       _count {
@@ -24,12 +25,28 @@ const GET_PRODUCTS = gql`
   }
 `
 
+const GET_CATEGORY = gql`
+  query GetCategory($categoryId: ID!) {
+    category(id: $categoryId) {
+      filters {
+        id
+        name
+        slug
+        options {
+          value
+          slug
+        }
+      }
+    }
+  }
+`
+
 interface ProductsPageProps {
   params: {
     category: string
   }
   searchParams: {
-    [key: string]: string | string[] | undefined
+    [key: string]: string | undefined
   }
 }
 
@@ -45,7 +62,42 @@ export default async function ProductsPage({
   searchParams,
 }: ProductsPageProps) {
   const { category } = params
-  const { page } = searchParams
+  const { page, subcategory, ...filters } = searchParams
+
+  const { data: categoryData } = await getClient().query<{
+    category: {
+      filters: Filter[]
+    }
+  }>({
+    query: GET_CATEGORY,
+    variables: {
+      categoryId: category,
+    },
+    errorPolicy: 'all',
+  })
+
+  if (!categoryData) {
+    return notFound()
+  }
+
+  const categoryFilters = categoryData.category.filters
+
+  // const validFilterSlugs = categoryFilters.map((filter) => filter.slug)
+
+  // for (const slug in filters) {
+  //   if (!validFilterSlugs.includes(slug)) {
+  //     delete filters[slug]
+  //   }
+  // }
+
+  const filtersInput = Object.entries(filters)
+    .filter(([, value]) => value)
+    .map(([key, value]) => {
+      return {
+        slug: key,
+        options: value!.split('.'),
+      }
+    })
 
   const { data } = await getClient().query<{
     productsList: {
@@ -56,12 +108,13 @@ export default async function ProductsPage({
     query: GET_PRODUCTS,
     variables: {
       input: {
+        category,
+        hasDeals: false,
         pagination: {
           limit: 1,
           page: page ? Number(page) : 1,
         },
-        category,
-        hasDeals: false,
+        // filters: filtersInput,
       },
     },
   })
@@ -71,7 +124,12 @@ export default async function ProductsPage({
   return (
     <div className="px-4 py-10 sm:container">
       <div>
-        <Products products={products} pageCount={pageCount} />
+        <Products
+          products={products}
+          pageCount={pageCount}
+          categoryFilters={categoryFilters}
+          filters={filtersInput}
+        />
       </div>
     </div>
   )
