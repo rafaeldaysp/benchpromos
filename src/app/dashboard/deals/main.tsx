@@ -268,6 +268,19 @@ export function DealsMain({
                     ))}
                   </SelectContent>
                 </Select>
+
+                <Button
+                  variant={'outline'}
+                  onClick={() =>
+                    selectedDealIds.length === filteredDeals.length
+                      ? setSelectedDealIds([])
+                      : setSelectedDealIds(filteredDeals.map((deal) => deal.id))
+                  }
+                >
+                  {selectedDealIds.length === filteredDeals.length
+                    ? 'Desmarcar todos'
+                    : 'Marcar todos'}
+                </Button>
               </>
             )}
           </div>
@@ -282,10 +295,12 @@ export function DealsMain({
                   'bg-muted hover:bg-muted': selectedDealIds.includes(deal.id),
                 })}
               >
-                <DashboardItemCard.Select
-                  checked={selectedDealIds.includes(deal.id)}
-                  onCheckedChange={() => onDealSelect(deal.id)}
-                />
+                {selectedRetailer && (
+                  <DashboardItemCard.Select
+                    checked={selectedDealIds.includes(deal.id)}
+                    onCheckedChange={() => onDealSelect(deal.id)}
+                  />
+                )}
 
                 <DashboardItemCard.Image src={deal.product.imageUrl} alt="" />
 
