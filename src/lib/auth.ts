@@ -2,11 +2,13 @@ import { gql } from '@apollo/client'
 import dayjs from 'dayjs'
 import type { NextAuthOptions, Session } from 'next-auth'
 import GoogleProvider from 'next-auth/providers/google'
+import CredentialsProvider from 'next-auth/providers/credentials'
 import { cookies } from 'next/headers'
 
 import { env } from '../env.mjs'
 import { BenchAdapter } from './adapter'
 import { getClient } from './apollo'
+import { authSchema } from './validations/auth'
 
 const GET_USER = gql`
   query GetUser($userId: String!) {
@@ -26,6 +28,19 @@ const GET_TOKEN = gql`
   }
 `
 
+const AUTHORIZE = gql`
+  query ($credentials: CredentialsInput!) {
+    user: authorize(credentials: $credentials) {
+      id
+      email
+      emailVerified
+      image
+      name
+      isAdmin
+    }
+  }
+`
+
 export const authOptions: NextAuthOptions = {
   adapter: BenchAdapter(),
   session: {
@@ -39,6 +54,40 @@ export const authOptions: NextAuthOptions = {
     GoogleProvider({
       clientId: env.GOOGLE_CLIENT_ID,
       clientSecret: env.GOOGLE_CLIENT_SECRET,
+    }),
+    CredentialsProvider({
+      credentials: {
+        email: { type: 'text', placeholder: 'email@example.com' },
+        password: { type: 'password', placeholder: '********' },
+      },
+      async authorize(credentials, _req) {
+        const { email, password } = authSchema.parse(credentials)
+
+        const { data, errors } = await getClient().query<{
+          user: Session['user']
+        }>({
+          query: AUTHORIZE,
+          context: {
+            headers: {
+              'api-key': env.NEXT_PUBLIC_API_KEY,
+            },
+          },
+          variables: {
+            credentials: {
+              email,
+              password,
+            },
+          },
+        })
+
+        if (errors) return null
+
+        const user = data?.user
+
+        if (!user) return null
+
+        return user
+      },
     }),
   ],
   callbacks: {

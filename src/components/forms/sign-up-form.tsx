@@ -1,10 +1,12 @@
 'use client'
 
+import { gql, useApolloClient, useMutation } from '@apollo/client'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
 import { type z } from 'zod'
 
-import { authSchema } from '@/lib/validations/auth'
+import { Icons } from '@/components/icons'
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -15,7 +17,23 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { Icons } from '@/components/icons'
+import { authSchema } from '@/lib/validations/auth'
+import { env } from '@/env.mjs'
+import { usePathname } from 'next/navigation'
+
+const CREATE_USER = gql`
+  mutation CreateUser($input: AddUserInput!) {
+    createUser(input: $input) {
+      id
+    }
+  }
+`
+
+const SEND_EMAIL_VERIFICATION = gql`
+  query SendConfirmationLink($input: SendTokenToEmailInput!) {
+    sendTokenToEmail(sendTokenToEmailInput: $input)
+  }
+`
 
 type Inputs = z.infer<typeof authSchema>
 
@@ -28,8 +46,52 @@ export function SignUpForm() {
     },
   })
 
-  function onSubmit(data: Inputs) {
-    console.log(data)
+  const pathname = usePathname()
+  const client = useApolloClient()
+
+  const [createUser, { loading: isLoading }] = useMutation(CREATE_USER, {
+    context: {
+      headers: {
+        'api-key': env.NEXT_PUBLIC_API_KEY,
+      },
+    },
+    onError(error, clientOptions) {
+      toast.error(error.message)
+    },
+    async onCompleted(data, clientOptions) {
+      const email = clientOptions?.variables?.input.email as string
+
+      console.log(email)
+
+      await client.query({
+        query: SEND_EMAIL_VERIFICATION,
+        context: {
+          headers: {
+            'api-key': env.NEXT_PUBLIC_API_KEY,
+          },
+        },
+        variables: {
+          input: {
+            email,
+            tokenType: 'EMAIL_CONFIRMATION',
+            redirectUrl: `${pathname}/verify-email`,
+          },
+        },
+      })
+
+      toast.success('Um link de confirmação foi enviado para o seu email')
+    },
+  })
+
+  function onSubmit({ email, password }: Inputs) {
+    createUser({
+      variables: {
+        input: {
+          email,
+          password,
+        },
+      },
+    })
   }
 
   return (
@@ -64,8 +126,8 @@ export function SignUpForm() {
             </FormItem>
           )}
         />
-        <Button disabled={true}>
-          {false && (
+        <Button disabled={isLoading}>
+          {isLoading && (
             <Icons.Spinner
               className="mr-2 h-4 w-4 animate-spin"
               aria-hidden="true"

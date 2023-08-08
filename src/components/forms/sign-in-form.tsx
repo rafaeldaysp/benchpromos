@@ -16,6 +16,8 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { authSchema } from '@/lib/validations/auth'
+import { signIn } from 'next-auth/react'
+import { toast } from 'sonner'
 
 type Inputs = z.infer<typeof authSchema>
 
@@ -28,8 +30,16 @@ export function SignInForm() {
     },
   })
 
-  function onSubmit(data: Inputs) {
-    console.log(data)
+  async function onSubmit(data: Inputs) {
+    const callback = await signIn('credentials', {
+      ...data,
+      callbackUrl: '/',
+      redirect: false,
+    })
+
+    if (callback?.error) {
+      toast.error(callback.error)
+    }
   }
 
   return (
@@ -64,7 +74,7 @@ export function SignInForm() {
             </FormItem>
           )}
         />
-        <Button disabled={true}>
+        <Button disabled={false}>
           {false && (
             <Icons.Spinner
               className="mr-2 h-4 w-4 animate-spin"

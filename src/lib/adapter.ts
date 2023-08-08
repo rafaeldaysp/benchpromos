@@ -25,7 +25,7 @@ export function BenchAdapter(): Adapter {
           },
         },
         variables: {
-          input: user,
+          input: { ...user, emailVerified: new Date() },
         },
       })
 
