@@ -22,8 +22,8 @@ import { env } from '@/env.mjs'
 import { usePathname } from 'next/navigation'
 
 const CREATE_USER = gql`
-  mutation CreateUser($input: AddUserInput!) {
-    createUser(input: $input) {
+  mutation CreateUserWithCredentials($input: AddUserInput!) {
+    createUserWithCredentials(input: $input) {
       id
     }
   }
@@ -55,7 +55,7 @@ export function SignUpForm() {
         'api-key': env.NEXT_PUBLIC_API_KEY,
       },
     },
-    onError(error, clientOptions) {
+    onError(error, _clientOptions) {
       toast.error(error.message)
     },
     async onCompleted(data, clientOptions) {
