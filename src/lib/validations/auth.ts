@@ -1,6 +1,10 @@
 import * as z from 'zod'
 
 export const authSchema = z.object({
+  name: z
+    .string()
+    .min(1, 'O nome de usuário deve possuir, no mínimo 1, caracter.')
+    .max(30, 'O nome de usuário deve posuir, no máximo, 30 caracteres.'),
   email: z.string().email({
     message: 'Por favor, insira um endereço de e-mail válido',
   }),

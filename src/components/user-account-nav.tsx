@@ -28,6 +28,7 @@ export function UserAccountNav({ user }: UserAccountNavProps) {
           className="h-8 w-8"
         />
       </DropdownMenuTrigger>
+
       <DropdownMenuContent align="end">
         <div className="flex items-center justify-start gap-2 p-2">
           <div className="flex flex-col space-y-1 leading-none">
@@ -39,9 +40,24 @@ export function UserAccountNav({ user }: UserAccountNavProps) {
             )}
           </div>
         </div>
+
+        <DropdownMenuSeparator />
+        <DropdownMenuItem className="cursor-pointer" asChild>
+          <Link href="/user/profile">
+            <Icons.User className="mr-2 h-4 w-4" />
+            <span>Perfil</span>
+          </Link>
+        </DropdownMenuItem>
+
+        <DropdownMenuItem className="cursor-pointer" asChild>
+          <Link href="/user/alerts">
+            <Icons.Bell className="mr-2 h-4 w-4" />
+            <span>Alertas</span>
+          </Link>
+        </DropdownMenuItem>
+
         {user.isAdmin && (
           <>
-            <DropdownMenuSeparator />
             <DropdownMenuItem className="cursor-pointer" asChild>
               <Link href="/dashboard/sales">
                 <Icons.Lock className="mr-2 h-4 w-4" />
@@ -50,6 +66,7 @@ export function UserAccountNav({ user }: UserAccountNavProps) {
             </DropdownMenuItem>
           </>
         )}
+
         <DropdownMenuSeparator />
         <DropdownMenuItem
           className="cursor-pointer"

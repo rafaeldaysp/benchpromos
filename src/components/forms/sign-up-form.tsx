@@ -83,12 +83,13 @@ export function SignUpForm() {
     },
   })
 
-  function onSubmit({ email, password }: Inputs) {
+  function onSubmit({ email, password, name }: Inputs) {
     createUser({
       variables: {
         input: {
           email,
           password,
+          name,
         },
       },
     })
@@ -100,6 +101,19 @@ export function SignUpForm() {
         className="grid gap-4"
         onSubmit={(...args) => void form.handleSubmit(onSubmit)(...args)}
       >
+        <FormField
+          control={form.control}
+          name="name"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Nome de usuário</FormLabel>
+              <FormControl>
+                <Input placeholder="Rafael Days" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <FormField
           control={form.control}
           name="email"
