@@ -19,7 +19,6 @@ import {
 import { Input } from '@/components/ui/input'
 import { authSchema } from '@/lib/validations/auth'
 import { env } from '@/env.mjs'
-import { usePathname } from 'next/navigation'
 
 const CREATE_USER = gql`
   mutation CreateUserWithCredentials($input: AddUserInput!) {
@@ -46,8 +45,9 @@ export function SignUpForm() {
     },
   })
 
-  const pathname = usePathname()
   const client = useApolloClient()
+
+  const url = window.location.href
 
   const [createUser, { loading: isLoading }] = useMutation(CREATE_USER, {
     context: {
@@ -61,8 +61,6 @@ export function SignUpForm() {
     async onCompleted(data, clientOptions) {
       const email = clientOptions?.variables?.input.email as string
 
-      console.log(email)
-
       await client.query({
         query: SEND_EMAIL_VERIFICATION,
         context: {
@@ -74,7 +72,7 @@ export function SignUpForm() {
           input: {
             email,
             tokenType: 'EMAIL_CONFIRMATION',
-            redirectUrl: `${pathname}/verify-email`,
+            redirectUrl: `${url}/step2`,
           },
         },
       })
