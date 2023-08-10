@@ -3,6 +3,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { type z } from 'zod'
+import * as React from 'react'
 
 import { Icons } from '@/components/icons'
 import { Button } from '@/components/ui/button'
@@ -16,21 +17,69 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { resetPasswordSchema } from '@/lib/validations/auth'
+import { gql, useMutation } from '@apollo/client'
+import { toast } from 'sonner'
+import { signIn } from 'next-auth/react'
+
+const RESET_PASSWORD = gql`
+  mutation ResetPassword($input: ResetPasswordInput!) {
+    user: resetPassword(resetPasswordInput: $input) {
+      email
+    }
+  }
+`
 
 type Inputs = z.infer<typeof resetPasswordSchema>
 
-export function ResetPasswordStep2Form() {
+interface ResetPasswordStep2FormProps {
+  token: string
+}
+
+export function ResetPasswordStep2Form({ token }: ResetPasswordStep2FormProps) {
   const form = useForm<Inputs>({
     resolver: zodResolver(resetPasswordSchema),
     defaultValues: {
       password: '',
       confirmPassword: '',
-      code: '',
     },
   })
 
-  function onSubmit(data: Inputs) {
-    console.log(data)
+  const [isLoading, setIsLoading] = React.useState(false)
+
+  const [resetPassword] = useMutation(RESET_PASSWORD, {
+    onError(error, _clientOptions) {
+      toast.error(error.message)
+      setIsLoading(false)
+    },
+    async onCompleted(data, clientOptions) {
+      const email = data.user.email as string
+      const password = clientOptions?.variables?.input.password
+
+      const callback = await signIn('credentials', {
+        email,
+        password,
+        callbackUrl: '/',
+        redirect: true,
+      })
+
+      if (callback?.error) {
+        toast.error(callback.error)
+      }
+
+      setIsLoading(false)
+    },
+  })
+
+  function onSubmit({ password }: Inputs) {
+    setIsLoading(true)
+    resetPassword({
+      variables: {
+        input: {
+          password,
+          token,
+        },
+      },
+    })
   }
 
   return (
@@ -65,28 +114,9 @@ export function ResetPasswordStep2Form() {
             </FormItem>
           )}
         />
-        <FormField
-          control={form.control}
-          name="code"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Código</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="169420"
-                  {...field}
-                  onChange={(e) => {
-                    e.target.value = e.target.value.trim()
-                    field.onChange(e)
-                  }}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <Button disabled={true}>
-          {false && (
+
+        <Button disabled={isLoading}>
+          {isLoading && (
             <Icons.Spinner
               className="mr-2 h-4 w-4 animate-spin"
               aria-hidden="true"

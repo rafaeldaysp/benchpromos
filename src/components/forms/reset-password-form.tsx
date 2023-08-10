@@ -3,6 +3,8 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { type z } from 'zod'
+import * as React from 'react'
+import { toast } from 'sonner'
 
 import { Icons } from '@/components/icons'
 import { Button } from '@/components/ui/button'
@@ -16,6 +18,13 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { checkEmailSchema } from '@/lib/validations/auth'
+import { gql, useApolloClient } from '@apollo/client'
+
+const SEND_EMAIL_AUTHORIZATION = gql`
+  query SendEmailAuthorization($input: SendTokenToEmailInput!) {
+    sendTokenToEmail(sendTokenToEmailInput: $input)
+  }
+`
 
 type Inputs = z.infer<typeof checkEmailSchema>
 
@@ -27,8 +36,34 @@ export function ResetPasswordForm() {
     },
   })
 
-  function onSubmit(data: Inputs) {
-    console.log(data)
+  const [isLoading, setIsLoading] = React.useState(false)
+
+  const client = useApolloClient()
+
+  const url = document.location.href
+
+  async function onSubmit({ email }: Inputs) {
+    setIsLoading(true)
+    const { data, errors } = await client.query({
+      query: SEND_EMAIL_AUTHORIZATION,
+      variables: {
+        input: {
+          tokenType: 'RESET_PASSWORD',
+          email,
+          redirectUrl: `${url}/step2`,
+        },
+      },
+      errorPolicy: 'all',
+    })
+    setIsLoading(false)
+    console.log(data.sendTokenToEmail)
+    data.sendTokenToEmail === true
+      ? toast.success(
+          'Um link de mudança de senha foi enviado ao email inserido',
+        )
+      : toast.error(
+          errors?.[0].message ?? 'Não foi possível realizar esta operação',
+        )
   }
 
   return (
@@ -50,8 +85,8 @@ export function ResetPasswordForm() {
             </FormItem>
           )}
         />
-        <Button disabled={true}>
-          {false && (
+        <Button disabled={isLoading}>
+          {isLoading && (
             <Icons.Spinner
               className="mr-2 h-4 w-4 animate-spin"
               aria-hidden="true"

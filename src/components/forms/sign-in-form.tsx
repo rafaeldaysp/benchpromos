@@ -38,7 +38,7 @@ export function SignInForm() {
     const callback = await signIn('credentials', {
       ...data,
       callbackUrl: '/',
-      redirect: true,
+      redirect: false,
     })
     setIsLoading(false)
 

@@ -18,7 +18,6 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { authSchema } from '@/lib/validations/auth'
-import { env } from '@/env.mjs'
 
 const CREATE_USER = gql`
   mutation CreateUserWithCredentials($input: AddUserInput!) {
@@ -50,11 +49,6 @@ export function SignUpForm() {
   const url = window.location.href
 
   const [createUser, { loading: isLoading }] = useMutation(CREATE_USER, {
-    context: {
-      headers: {
-        'api-key': env.NEXT_PUBLIC_API_KEY,
-      },
-    },
     onError(error, _clientOptions) {
       toast.error(error.message)
     },
@@ -63,11 +57,6 @@ export function SignUpForm() {
 
       await client.query({
         query: SEND_EMAIL_VERIFICATION,
-        context: {
-          headers: {
-            'api-key': env.NEXT_PUBLIC_API_KEY,
-          },
-        },
         variables: {
           input: {
             email,

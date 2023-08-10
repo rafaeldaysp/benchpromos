@@ -10,13 +10,23 @@ import {
 } from '@/components/ui/card'
 import { env } from '@/env.mjs'
 
+interface ResetPasswordStep2PageProps {
+  searchParams: {
+    token: string
+  }
+}
+
 export const metadata: Metadata = {
   metadataBase: new URL(env.NEXT_PUBLIC_APP_URL),
   title: 'Redefinir senha',
   description: 'Insira seu e-mail para redefinir sua senha',
 }
+export default function ResetPasswordStep2Page({
+  searchParams,
+}: ResetPasswordStep2PageProps) {
+  const { token } = searchParams
+  console.log(token)
 
-export default function ResetPasswordStep2Page() {
   return (
     <div>
       <Card>
@@ -27,7 +37,7 @@ export default function ResetPasswordStep2Page() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <ResetPasswordStep2Form />
+          <ResetPasswordStep2Form token={token} />
         </CardContent>
       </Card>
     </div>
