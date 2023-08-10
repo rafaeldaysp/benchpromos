@@ -3,6 +3,8 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { type z } from 'zod'
+import { signIn } from 'next-auth/react'
+import { toast } from 'sonner'
 
 import { Icons } from '@/components/icons'
 import { Button } from '@/components/ui/button'
@@ -16,8 +18,6 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { authSchema } from '@/lib/validations/auth'
-import { signIn } from 'next-auth/react'
-import { toast } from 'sonner'
 
 type Inputs = z.infer<typeof authSchema>
 
