@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form'
 import { type z } from 'zod'
 import { signIn } from 'next-auth/react'
 import { toast } from 'sonner'
+import * as React from 'react'
 
 import { Icons } from '@/components/icons'
 import { Button } from '@/components/ui/button'
@@ -19,23 +20,27 @@ import {
 import { Input } from '@/components/ui/input'
 import { authSchema } from '@/lib/validations/auth'
 
-type Inputs = z.infer<typeof authSchema>
+type Inputs = Omit<z.infer<typeof authSchema>, 'name'>
 
 export function SignInForm() {
   const form = useForm<Inputs>({
-    resolver: zodResolver(authSchema),
+    resolver: zodResolver(authSchema.omit({ name: true })),
     defaultValues: {
       email: '',
       password: '',
     },
   })
 
+  const [isLoading, setIsLoading] = React.useState(false)
+
   async function onSubmit(data: Inputs) {
+    setIsLoading(true)
     const callback = await signIn('credentials', {
       ...data,
       callbackUrl: '/',
-      redirect: false,
+      redirect: true,
     })
+    setIsLoading(false)
 
     if (callback?.error) {
       toast.error(callback.error)
@@ -74,8 +79,8 @@ export function SignInForm() {
             </FormItem>
           )}
         />
-        <Button disabled={false}>
-          {false && (
+        <Button disabled={isLoading}>
+          {isLoading && (
             <Icons.Spinner
               className="mr-2 h-4 w-4 animate-spin"
               aria-hidden="true"

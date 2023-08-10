@@ -31,7 +31,13 @@ export function ProductCard({
   ...props
 }: ProductCardProps) {
   return (
-    <Card className={cn('flex flex-col overflow-hidden', className)} {...props}>
+    <Card
+      className={cn(
+        'flex flex-col overflow-hidden transition-colors hover:bg-muted/50',
+        className,
+      )}
+      {...props}
+    >
       <Link
         aria-label={`Visualizar detalhes de ${product.name}`}
         href={`/${product.category.slug}/${product.slug}`}

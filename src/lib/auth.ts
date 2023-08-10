@@ -62,7 +62,9 @@ export const authOptions: NextAuthOptions = {
         password: { type: 'password', placeholder: '********' },
       },
       async authorize(credentials, _req) {
-        const { email, password } = authSchema.parse(credentials)
+        const { email, password } = authSchema
+          .omit({ name: true })
+          .parse(credentials)
 
         const { data, errors } = await getClient().query<{
           user: Session['user']
