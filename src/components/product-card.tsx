@@ -22,6 +22,12 @@ interface ProductCardProps extends React.HTMLAttributes<HTMLDivElement> {
     category: {
       slug: string
     }
+    deals: {
+      price: number
+      retailer: {
+        name: string
+      }
+    }[]
   }
 }
 
@@ -33,7 +39,7 @@ export function ProductCard({
   return (
     <Card
       className={cn(
-        'flex flex-col overflow-hidden transition-colors hover:bg-muted/50',
+        'flex flex-col overflow-hidden transition-colors dark:hover:bg-muted/50',
         className,
       )}
       {...props}
@@ -63,7 +69,11 @@ export function ProductCard({
           <CardTitle>{product.name}</CardTitle>
         </Link>
 
-        <CardDescription>{priceFormatter.format(100000)}</CardDescription>
+        <CardDescription>
+          Menor preço via <span>Retailer</span>
+        </CardDescription>
+
+        <strong>{priceFormatter.format(product.deals[0].price / 100)}</strong>
       </CardContent>
 
       <CardFooter className="p-0">

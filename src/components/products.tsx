@@ -3,11 +3,19 @@
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import * as React from 'react'
 
+import { Icons } from '@/components/icons'
 import { Pagination } from '@/components/pagination'
 import { ProductCard } from '@/components/product-card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { ScrollArea } from '@/components/ui/scroll-area'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
 import {
   Sheet,
@@ -20,11 +28,15 @@ import {
 import { Slider } from '@/components/ui/slider'
 import { Toggle } from '@/components/ui/toggle'
 import { useDebounce } from '@/hooks/use-debounce'
-import type { Category, Filter, Product } from '@/types'
+import type { Category, Deal, Filter, Product, Retailer } from '@/types'
 
 interface ProductsProps {
-  products: (Product & { category: Pick<Category, 'slug'> })[]
+  products: (Product & {
+    category: Pick<Category, 'slug'>
+    deals: (Pick<Deal, 'price'> & { retailer: Pick<Retailer, 'name'> })[]
+  })[]
   pageCount: number
+  productCount: number
   categoryFilters: Filter[]
   filters: { slug: string; options: string[] }[]
 }
@@ -32,6 +44,7 @@ interface ProductsProps {
 export function Products({
   products,
   pageCount,
+  productCount,
   categoryFilters,
   filters: initialFilters,
 }: ProductsProps) {
@@ -66,14 +79,39 @@ export function Products({
     setFilters(initialFilters)
   }, [initialFilters])
 
+  React.useEffect(() => {
+    const [min, max] = debouncedPrice
+
+    if (min === 0 && max === 500) return
+
+    startTransition(() => {
+      router.push(
+        `${pathname}?${createQueryString({
+          price_range: `${min}-${max}`,
+        })}`,
+      )
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedPrice])
+
   return (
     <div className="space-y-6">
       <div>
         <Sheet>
           <SheetTrigger asChild>
-            <Button aria-label="Filtrar produtos">Filtros</Button>
+            <Button
+              aria-label="Filtrar produtos"
+              variant="outline"
+              className="rounded-full"
+            >
+              <Icons.SlidersHorizontal className="mr-2 h-4 w-4" />
+              <span>Filtros</span>
+            </Button>
           </SheetTrigger>
-          <SheetContent side="left" className="flex flex-col px-0">
+          <SheetContent
+            side="left"
+            className="flex w-full flex-col px-0 sm:max-w-md"
+          >
             <SheetHeader className="px-4">
               <SheetTitle>Filtros</SheetTitle>
             </SheetHeader>
@@ -81,10 +119,17 @@ export function Products({
             <ScrollArea className="flex-1">
               <div className="space-y-10 px-4">
                 <div className="space-y-4">
-                  <h3 className="text-sm font-medium tracking-wide text-foreground">
-                    Preços ($)
+                  <h3 className="font-medium tracking-wide text-foreground">
+                    Preços (R$)
                   </h3>
-                  <Slider />
+                  <Slider
+                    variant="range"
+                    value={priceRange}
+                    step={1}
+                    onValueChange={(value: typeof priceRange) => {
+                      setPriceRange(value)
+                    }}
+                  />
                   <div className="flex items-center space-x-4">
                     <Input
                       type="number"
@@ -98,7 +143,7 @@ export function Products({
                         setPriceRange([value, priceRange[1]])
                       }}
                     />
-                    <span className="text-muted-foreground">-</span>
+                    <span className="text-muted-foreground">até</span>
                     <Input
                       type="number"
                       inputMode="numeric"
@@ -121,8 +166,8 @@ export function Products({
                     )
 
                     return (
-                      <div key={categoryFilter.id}>
-                        <h3 className="text-sm font-medium tracking-wide text-foreground">
+                      <div key={categoryFilter.id} className="space-y-2">
+                        <h3 className="font-medium tracking-wide text-foreground">
                           {categoryFilter.name}
                         </h3>
                         <div className="flex flex-wrap gap-2.5">
@@ -135,6 +180,7 @@ export function Products({
                               <Toggle
                                 key={option.id}
                                 variant="outline"
+                                size="sm"
                                 pressed={setted}
                                 className="rounded-full"
                                 onClick={() => {
@@ -151,6 +197,7 @@ export function Products({
 
                                     router.push(
                                       `${pathname}?${createQueryString({
+                                        page: null,
                                         [categoryFilter.slug]: value,
                                       })}`,
                                     )
@@ -187,7 +234,37 @@ export function Products({
           </SheetContent>
         </Sheet>
       </div>
-      <div className="grid justify-center gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+
+      <div className="flex justify-between">
+        <div className="flex flex-1 items-center justify-between gap-x-4 lg:justify-normal">
+          <div>{productCount} resultados</div>
+          <Select defaultValue="1">
+            <SelectTrigger className="w-[180px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="1">Relevância</SelectItem>
+              <SelectItem value="3">Menor Preço</SelectItem>
+              <SelectItem value="2">Maior Preço</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="hidden items-center gap-x-4 lg:flex">
+          <div>Produtos por página</div>
+          <Select defaultValue="15">
+            <SelectTrigger className="w-[90px]">
+              <SelectValue placeholder="Theme" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="15">15</SelectItem>
+              <SelectItem value="30">30</SelectItem>
+              <SelectItem value="45">45</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+      <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
         {products.map((product) => (
           <ProductCard
             key={product.id}

@@ -1,9 +1,12 @@
 'use client'
 
+import { gql, useMutation } from '@apollo/client'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm } from 'react-hook-form'
-import { type z } from 'zod'
+import { signIn } from 'next-auth/react'
 import * as React from 'react'
+import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
+import { type z } from 'zod'
 
 import { Icons } from '@/components/icons'
 import { Button } from '@/components/ui/button'
@@ -17,9 +20,6 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { resetPasswordSchema } from '@/lib/validations/auth'
-import { gql, useMutation } from '@apollo/client'
-import { toast } from 'sonner'
-import { signIn } from 'next-auth/react'
 
 const RESET_PASSWORD = gql`
   mutation ResetPassword($input: ResetPasswordInput!) {
@@ -44,12 +44,9 @@ export function ResetPasswordStep2Form({ token }: ResetPasswordStep2FormProps) {
     },
   })
 
-  const [isLoading, setIsLoading] = React.useState(false)
-
-  const [resetPassword] = useMutation(RESET_PASSWORD, {
+  const [resetPassword, { loading: isLoading }] = useMutation(RESET_PASSWORD, {
     onError(error, _clientOptions) {
       toast.error(error.message)
-      setIsLoading(false)
     },
     async onCompleted(data, clientOptions) {
       const email = data.user.email as string
@@ -65,18 +62,15 @@ export function ResetPasswordStep2Form({ token }: ResetPasswordStep2FormProps) {
       if (callback?.error) {
         toast.error(callback.error)
       }
-
-      setIsLoading(false)
     },
   })
 
-  function onSubmit({ password }: Inputs) {
-    setIsLoading(true)
-    resetPassword({
+  async function onSubmit(data: Inputs) {
+    await resetPassword({
       variables: {
         input: {
-          password,
           token,
+          ...data,
         },
       },
     })

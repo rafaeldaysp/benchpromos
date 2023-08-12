@@ -109,7 +109,7 @@ export function SalesMain({ sales, products }: SalesMainProps) {
               sale={{
                 title: selectedProduct?.name ?? '',
                 imageUrl: selectedProduct?.imageUrl ?? '',
-                categoryId: selectedProduct?.category.id ?? '',
+                categoryId: selectedProduct?.category.id,
                 ...selectedSale,
                 id: undefined,
               }}

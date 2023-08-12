@@ -58,10 +58,10 @@ export const authOptions: NextAuthOptions = {
     }),
     CredentialsProvider({
       credentials: {
-        email: { type: 'text', placeholder: 'email@example.com' },
+        email: { type: 'text', placeholder: 'bboyrafinhazika@gmail.com' },
         password: { type: 'password', placeholder: '********' },
       },
-      async authorize(credentials, _req) {
+      async authorize(credentials) {
         const { email, password } = authSchema
           .omit({ name: true })
           .parse(credentials)

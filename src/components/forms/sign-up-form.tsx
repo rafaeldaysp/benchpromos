@@ -39,11 +39,11 @@ export function SignUpForm() {
   const form = useForm<Inputs>({
     resolver: zodResolver(authSchema),
     defaultValues: {
+      name: '',
       email: '',
       password: '',
     },
   })
-
   const client = useApolloClient()
 
   const url = window.location.href
@@ -52,7 +52,7 @@ export function SignUpForm() {
     onError(error, _clientOptions) {
       toast.error(error.message)
     },
-    async onCompleted(data, clientOptions) {
+    async onCompleted(_data, clientOptions) {
       const email = clientOptions?.variables?.input.email as string
 
       await client.query({
@@ -66,17 +66,15 @@ export function SignUpForm() {
         },
       })
 
-      toast.success('Um link de confirmação foi enviado para o seu email')
+      toast.success('Um link de confirmação será enviado para o seu email.')
     },
   })
 
-  function onSubmit({ email, password, name }: Inputs) {
-    createUser({
+  async function onSubmit(data: Inputs) {
+    await createUser({
       variables: {
         input: {
-          email,
-          password,
-          name,
+          ...data,
         },
       },
     })
@@ -93,7 +91,7 @@ export function SignUpForm() {
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Nome de usuário</FormLabel>
+              <FormLabel>Nome</FormLabel>
               <FormControl>
                 <Input placeholder="Rafael Days" {...field} />
               </FormControl>

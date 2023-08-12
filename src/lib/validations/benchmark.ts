@@ -5,7 +5,7 @@ export const benchmarkSchema = z.object({
 })
 
 export const benchmarkResultSchema = z.object({
-  benchmarkId: z.string().nonempty({ message: 'Selecione um benchmark' }),
+  benchmarkId: z.string({ required_error: 'Selecione um benchmark' }),
   result: z.coerce.number({ required_error: 'Campo obrigatório' }).int(),
   description: z.string().optional(),
 })

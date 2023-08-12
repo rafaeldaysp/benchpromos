@@ -165,7 +165,7 @@ export function SaleCard({ sale, className, userId, ...props }: SaleCardProps) {
                 à vista
               </span>
 
-              {sale.installments && sale.totalInstallmentPrice && (
+              {!!sale.installments && !!sale.totalInstallmentPrice && (
                 <span className="text-sm text-muted-foreground">
                   ou{' '}
                   <strong>

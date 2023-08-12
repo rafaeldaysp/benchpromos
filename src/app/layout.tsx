@@ -6,12 +6,19 @@ import dayjs from 'dayjs'
 import 'dayjs/locale/pt-br'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { type Metadata } from 'next'
+import { Montserrat as FontSans } from 'next/font/google'
 import * as React from 'react'
 
 import { ApolloWrapper } from '@/components/apollo-wrapper'
 import { ThemeProvider } from '@/components/theme-provider'
 import { Toaster } from '@/components/ui/toaster'
 import { siteConfig } from '@/config/site'
+import { cn } from '@/lib/utils'
+
+const fontSans = FontSans({
+  subsets: ['latin'],
+  variable: '--font-sans',
+})
 
 dayjs.extend(relativeTime)
 dayjs.locale('pt-br')
@@ -66,7 +73,12 @@ export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="pt-BR" suppressHydrationWarning>
       <head />
-      <body className="min-h-screen bg-background antialiased">
+      <body
+        className={cn(
+          'min-h-screen bg-background antialiased',
+          fontSans.className,
+        )}
+      >
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <ApolloWrapper>{children}</ApolloWrapper>
         </ThemeProvider>

@@ -1,4 +1,6 @@
 import {
+  ArrowUpDown,
+  Bell,
   Check,
   ChevronLeft,
   ChevronRight,
@@ -10,6 +12,7 @@ import {
   ExternalLink,
   Eye,
   GanttChartSquare,
+  GitPullRequestDraft,
   Heart,
   Image,
   Loader2,
@@ -18,17 +21,15 @@ import {
   MenuSquare,
   MessageCircle,
   Minus,
+  MoreHorizontal,
   Plus,
   Search,
+  SlidersHorizontal,
   SmilePlus,
   Tag,
   Trash2,
   User2,
   X,
-  ArrowUpDown,
-  GitPullRequestDraft,
-  MoreHorizontal,
-  Bell,
   type LucideProps,
 } from 'lucide-react'
 
@@ -62,6 +63,7 @@ export const Icons = {
   ArrowUpDown,
   GitPullRequestDraft,
   MoreHorizontal,
+  SlidersHorizontal,
   Bell,
   Google: ({ ...props }: LucideProps) => (
     <svg

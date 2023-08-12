@@ -25,7 +25,6 @@ export default function ResetPasswordStep2Page({
   searchParams,
 }: ResetPasswordStep2PageProps) {
   const { token } = searchParams
-  console.log(token)
 
   return (
     <div>

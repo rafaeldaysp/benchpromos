@@ -1,12 +1,20 @@
+import { gql } from '@apollo/client'
+import { type Session } from 'next-auth'
+import Link from 'next/link'
+
 import { Icons } from '@/components/icons'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { buttonVariants } from '@/components/ui/button'
-import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 import { env } from '@/env.mjs'
 import { getClient } from '@/lib/apollo'
 import { cn } from '@/lib/utils'
-import { gql } from '@apollo/client'
-import { type User } from 'next-auth'
-import Link from 'next/link'
 
 const VERIFY_EMAIL = gql`
   mutation VerifyEmail($token: String!) {
@@ -27,10 +35,8 @@ export default async function SignUpStep2Page({
 }: SignUpStep2PageProps) {
   const { token } = searchParams
 
-  console.log(token)
-
   const { data } = await getClient().mutate<{
-    verified: User
+    verified: Session['user']
   }>({
     mutation: VERIFY_EMAIL,
     context: {
@@ -47,20 +53,30 @@ export default async function SignUpStep2Page({
   const userVerified = data?.verified
 
   return (
-    <Card className="text-center">
+    <Card>
       <CardHeader>
-        <h1 className="text-xl font-semibold">Verificação de email</h1>
+        <CardTitle className="text-2xl">Verificação de email</CardTitle>
       </CardHeader>
-      <CardContent className="flex items-center justify-center space-y-4">
+      <CardContent>
         {userVerified ? (
-          <>
-            <Icons.Check className="text-green-500" /> Conta verificada com
-            sucesso
-          </>
+          <Alert>
+            <Icons.Check className="h-4 w-4" />
+            <AlertTitle>Verificação concluída</AlertTitle>
+            <AlertDescription>
+              Parabéns! Seu e-mail foi verificado com sucesso. Você pode agora
+              desfrutar de todos os recursos do nosso aplicativo.
+            </AlertDescription>
+          </Alert>
         ) : (
-          <>
-            <Icons.X className="text-red-500" /> Verificação inválida
-          </>
+          <Alert variant="destructive">
+            <Icons.X className="h-4 w-4" />
+            <AlertTitle>Verificação pendente</AlertTitle>
+            <AlertDescription>
+              Parece que ainda não verificamos seu e-mail. Por favor, verifique
+              seu e-mail e clique no link de verificação para acessar todos os
+              recursos do nosso aplicativo.
+            </AlertDescription>
+          </Alert>
         )}
       </CardContent>
       <CardFooter>

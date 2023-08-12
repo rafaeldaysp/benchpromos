@@ -18,20 +18,7 @@ function makeClient() {
   })
 
   return new NextSSRApolloClient({
-    cache: new NextSSRInMemoryCache({
-      typePolicies: {
-        Query: {
-          fields: {
-            // productsWithMinPrice: {
-            //   keyArgs: false,
-            //   merge(existing = [], incoming) {
-            //     return [...existing, ...incoming]
-            //   },
-            // },
-          },
-        },
-      },
-    }),
+    cache: new NextSSRInMemoryCache(),
     link:
       typeof window === 'undefined'
         ? ApolloLink.from([

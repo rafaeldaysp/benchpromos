@@ -4,7 +4,7 @@ import { gql, useMutation } from '@apollo/client'
 import { toast } from 'sonner'
 
 import { getCurrentUserToken } from '@/app/_actions/user'
-import { Button } from '@/components/ui/button'
+import { Toggle } from '@/components/ui/toggle'
 import { type Reaction } from '@/types'
 
 const TOGGLE_REACTION = gql`
@@ -62,16 +62,16 @@ export function Reactions({
         const userReacted = reaction.users.some((user) => user.id === userId)
 
         return (
-          <Button
+          <Toggle
             key={reaction.content}
-            variant={userReacted ? 'default' : 'outline'}
-            size="icon"
-            className="h-fit rounded-full"
+            pressed={userReacted}
+            className="h-fit rounded-full p-0 px-1.5"
+            variant="outline"
             onClick={() => handleToggleReaction(reaction.content)}
           >
             {reaction.content}
-            <span className="text-sm">{reaction.users.length}</span>
-          </Button>
+            <span className="ml-0.5 text-xs">{reaction.users.length}</span>
+          </Toggle>
         )
       })}
     </div>

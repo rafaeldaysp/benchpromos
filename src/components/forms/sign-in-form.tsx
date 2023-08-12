@@ -30,16 +30,17 @@ export function SignInForm() {
       password: '',
     },
   })
-
   const [isLoading, setIsLoading] = React.useState(false)
 
   async function onSubmit(data: Inputs) {
     setIsLoading(true)
+
     const callback = await signIn('credentials', {
       ...data,
       callbackUrl: '/',
       redirect: false,
     })
+
     setIsLoading(false)
 
     if (callback?.error) {

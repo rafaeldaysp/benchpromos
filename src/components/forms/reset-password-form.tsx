@@ -1,10 +1,11 @@
 'use client'
 
+import { gql, useApolloClient } from '@apollo/client'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm } from 'react-hook-form'
-import { type z } from 'zod'
 import * as React from 'react'
+import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
+import { type z } from 'zod'
 
 import { Icons } from '@/components/icons'
 import { Button } from '@/components/ui/button'
@@ -18,7 +19,6 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { checkEmailSchema } from '@/lib/validations/auth'
-import { gql, useApolloClient } from '@apollo/client'
 
 const SEND_EMAIL_AUTHORIZATION = gql`
   query SendEmailAuthorization($input: SendTokenToEmailInput!) {
@@ -35,15 +35,14 @@ export function ResetPasswordForm() {
       email: '',
     },
   })
-
   const [isLoading, setIsLoading] = React.useState(false)
-
   const client = useApolloClient()
 
   const url = document.location.href
 
   async function onSubmit({ email }: Inputs) {
     setIsLoading(true)
+
     const { data, errors } = await client.query({
       query: SEND_EMAIL_AUTHORIZATION,
       variables: {
@@ -55,14 +54,13 @@ export function ResetPasswordForm() {
       },
       errorPolicy: 'all',
     })
+
     setIsLoading(false)
-    console.log(data.sendTokenToEmail)
+
     data.sendTokenToEmail === true
-      ? toast.success(
-          'Um link de mudança de senha foi enviado ao email inserido',
-        )
+      ? toast.success('Um link de redefinição será enviado para o seu email.')
       : toast.error(
-          errors?.[0].message ?? 'Não foi possível realizar esta operação',
+          errors?.[0].message ?? 'Algo deu errado, tente novamente mais tarde.',
         )
   }
 
