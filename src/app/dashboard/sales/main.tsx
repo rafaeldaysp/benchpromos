@@ -107,9 +107,9 @@ export function SalesMain({ sales, products }: SalesMainProps) {
             <SaleForm
               productSlug={selectedProduct?.slug ?? null}
               sale={{
-                title: selectedProduct?.name,
-                imageUrl: selectedProduct?.imageUrl,
-                categoryId: selectedProduct?.category.id,
+                title: selectedProduct?.name ?? '',
+                imageUrl: selectedProduct?.imageUrl ?? '',
+                categoryId: selectedProduct?.category.id ?? '',
                 ...selectedSale,
                 id: undefined,
               }}

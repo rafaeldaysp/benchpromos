@@ -6,6 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'next/navigation'
 import * as React from 'react'
 import { useForm } from 'react-hook-form'
+import { NumericFormat } from 'react-number-format'
 import { toast } from 'sonner'
 import { type z } from 'zod'
 
@@ -180,9 +181,14 @@ export function BenchmarkResultForm({
             <FormItem>
               <FormLabel>Resultado</FormLabel>
               <FormControl>
-                <Input
-                  aria-invalid={!!form.formState.errors.result}
-                  {...field}
+                <NumericFormat
+                  customInput={Input}
+                  displayType="input"
+                  decimalScale={0}
+                  value={field.value ? field.value : undefined}
+                  onValueChange={({ floatValue }) =>
+                    field.onChange(floatValue ?? 0)
+                  }
                 />
               </FormControl>
               <FormMessage />

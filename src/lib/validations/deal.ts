@@ -1,12 +1,7 @@
 import * as z from 'zod'
 
 export const dealSchema = z.object({
-  price: z.coerce
-    .number({
-      required_error: 'Campo obrigatório',
-      invalid_type_error: 'Valor inválido',
-    })
-    .int(),
+  price: z.coerce.number({ required_error: 'Campo obrigatório' }).int().gt(0),
   availability: z.boolean().default(true),
   url: z.string().min(1, 'Campo obrigatório').url('Endereço inválido'),
   installments: z.coerce.number().int().optional(),

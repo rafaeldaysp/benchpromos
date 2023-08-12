@@ -43,7 +43,7 @@ import { useFormStore } from '@/hooks/use-form-store'
 import type { Category, Filter, Product } from '@/types'
 import { removeNullValues } from '@/utils'
 
-const PRODUCTS_PER_PAGE = 10
+const PRODUCTS_PER_PAGE = 1
 
 const GET_PRODUCTS = gql`
   query GetProducts($input: GetProductsInput) {

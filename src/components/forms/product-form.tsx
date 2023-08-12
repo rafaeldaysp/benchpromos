@@ -9,6 +9,7 @@ import { toast } from 'sonner'
 import { type z } from 'zod'
 
 import { Icons } from '@/components/icons'
+import { PriceInput } from '@/components/price-input'
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -260,9 +261,11 @@ export function ProductForm({ mode = 'create', product }: ProductFormProps) {
             <FormItem>
               <FormLabel>Preço de Referência (opcional)</FormLabel>
               <FormControl>
-                <Input
-                  aria-invalid={!!form.formState.errors.referencePrice}
-                  {...field}
+                <PriceInput
+                  value={field.value ? field.value / 100 : undefined}
+                  onValueChange={({ floatValue }) =>
+                    field.onChange(~~((floatValue ?? 0) * 100))
+                  }
                 />
               </FormControl>
               <FormMessage />

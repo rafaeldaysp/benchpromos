@@ -2,8 +2,8 @@ import Image, { type ImageProps } from 'next/image'
 import * as React from 'react'
 
 import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
 import { cn } from '@/lib/utils'
-import { Checkbox } from './ui/checkbox'
 
 const DashboardItemCardRoot = React.forwardRef<
   HTMLDivElement,

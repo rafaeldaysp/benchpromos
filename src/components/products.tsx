@@ -176,7 +176,7 @@ export function Products({
                 onClick={() => {
                   startTransition(() => {
                     startTransition(() => {
-                      router.push(`${pathname}?page=${page}`)
+                      router.push(pathname)
                     })
                   })
                 }}

@@ -3,8 +3,8 @@ import * as z from 'zod'
 export const saleSchema = z.object({
   title: z.string().min(1, 'Campo obrigatório'),
   imageUrl: z.string().min(1, 'Campo obrigatório'),
-  categoryId: z.string({ required_error: 'Selecione uma categoria' }),
-  price: z.coerce.number().int(),
+  categoryId: z.string().nonempty({ message: 'Selecione uma categoria' }),
+  price: z.coerce.number().int().gt(0),
   url: z.string().min(1, 'Campo obrigatório').url('Endereço inválido'),
   installments: z.coerce.number().int().optional(),
   totalInstallmentPrice: z.coerce.number().int().optional(),

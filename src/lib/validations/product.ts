@@ -6,7 +6,7 @@ export const productSchema = z.object({
     .string()
     .min(1, 'Campo obrigatório')
     .url('Endereço da imagem inválido'),
-  categoryId: z.string({ required_error: 'Selecione uma categoria' }),
+  categoryId: z.string().nonempty({ message: 'Selecione uma categoria' }),
   specs: z.array(
     z.object({
       title: z.string(),
