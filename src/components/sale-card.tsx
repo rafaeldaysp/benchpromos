@@ -68,15 +68,22 @@ export function SaleCard({ sale, className, userId, ...props }: SaleCardProps) {
   const onReact = (content: string) => {
     if (!userId) return
 
+    const sortedReactions = (reactions: Reaction[]) =>
+      reactions
+        .sort((a, b) => a.content.codePointAt(1)! - b.content.codePointAt(1)!)
+        .sort((a, b) => b.users.length - a.users.length)
+
     const reaction = currentReactions.find(
       (reaction) => reaction.content === content,
     )
 
     if (!reaction) {
-      setCurrentReactions([
-        ...currentReactions,
-        { content, users: [{ id: userId }] },
-      ])
+      setCurrentReactions(
+        sortedReactions([
+          ...currentReactions,
+          { content, users: [{ id: userId }] },
+        ]),
+      )
       return
     }
 
@@ -100,7 +107,9 @@ export function SaleCard({ sale, className, userId, ...props }: SaleCardProps) {
         ]
 
     setCurrentReactions(
-      newCurrentReactions.filter((reaction) => reaction.users.length > 0),
+      sortedReactions(
+        newCurrentReactions.filter((reaction) => reaction.users.length > 0),
+      ),
     )
   }
 
@@ -183,7 +192,7 @@ export function SaleCard({ sale, className, userId, ...props }: SaleCardProps) {
 
             {sale.coupon && (
               <div>
-                <span>Com cupom</span>
+                <span className="text-muted-foreground">Com cupom</span>
                 <div className="flex items-center overflow-hidden rounded-full border bg-amber-200 pl-2 text-black dark:bg-amber-200">
                   <Icons.Tag className="mr-2 h-4 w-4" />
                   <span className="flex-1 overflow-hidden text-sm font-medium uppercase tracking-widest">

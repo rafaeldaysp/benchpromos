@@ -8,15 +8,15 @@ export const emotes = [
     label: 'Descurtida',
   },
   {
-    emote: '❤️',
-    label: 'Coração',
+    emote: '💩',
+    label: 'Cocô',
   },
   {
     emote: '🔥',
     label: 'Fogo',
   },
   {
-    emote: '💩',
-    label: 'Cocô',
+    emote: '❤️',
+    label: 'Coração',
   },
 ]
