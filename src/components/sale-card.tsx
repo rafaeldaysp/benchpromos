@@ -118,7 +118,7 @@ export function SaleCard({ sale, className, userId, ...props }: SaleCardProps) {
       <ContextMenuTrigger asChild>
         <Card
           className={cn(
-            'flex flex-col overflow-hidden transition-colors dark:hover:bg-muted/50',
+            'flex flex-col overflow-hidden transition-colors hover:bg-muted/50',
             className,
           )}
           {...props}
@@ -167,12 +167,12 @@ export function SaleCard({ sale, className, userId, ...props }: SaleCardProps) {
             )}
 
             <div className="flex flex-col">
-              <span>
-                <strong className="text-xl">
+              <p>
+                <strong className="text-2xl">
                   {priceFormatter.format(sale.price / 100)}
                 </strong>{' '}
-                à vista
-              </span>
+                <span className="text-sm text-muted-foreground">à vista </span>
+              </p>
 
               {!!sale.installments && !!sale.totalInstallmentPrice && (
                 <span className="text-sm text-muted-foreground">
