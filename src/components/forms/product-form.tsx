@@ -28,7 +28,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Textarea } from '@/components/ui/textarea'
 import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
 import { productSchema } from '@/lib/validations/product'
@@ -66,7 +65,6 @@ const GET_CATEGORIES = gql`
 type Inputs = z.infer<typeof productSchema>
 
 const defaultValues: Partial<Inputs> = {
-  description: '',
   imageUrl: '',
   name: '',
   reviewUrl: '',
@@ -94,6 +92,24 @@ export function ProductForm({ mode = 'create', product }: ProductFormProps) {
   } = useFieldArray({
     control: form.control,
     name: 'specs',
+  })
+
+  const {
+    fields: prosFields,
+    append: prosAppend,
+    remove: prosRemove,
+  } = useFieldArray({
+    control: form.control,
+    name: 'pros',
+  })
+
+  const {
+    fields: consFields,
+    append: consAppend,
+    remove: consRemove,
+  } = useFieldArray({
+    control: form.control,
+    name: 'cons',
   })
 
   const { data } = useQuery<{ categories: Category[] }>(GET_CATEGORIES)
@@ -172,7 +188,11 @@ export function ProductForm({ mode = 'create', product }: ProductFormProps) {
             <FormItem>
               <FormLabel>Nome</FormLabel>
               <FormControl>
-                <Input aria-invalid={!!form.formState.errors.name} {...field} />
+                <Input
+                  placeholder="Dell G15 I5 13450HX..."
+                  aria-invalid={!!form.formState.errors.name}
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -187,6 +207,7 @@ export function ProductForm({ mode = 'create', product }: ProductFormProps) {
               <FormLabel>Imagem</FormLabel>
               <FormControl>
                 <Input
+                  placeholder="https://imagem.com.br/imagem.png"
                   aria-invalid={!!form.formState.errors.imageUrl}
                   {...field}
                 />
@@ -262,6 +283,7 @@ export function ProductForm({ mode = 'create', product }: ProductFormProps) {
               <FormLabel>Preço de Referência (opcional)</FormLabel>
               <FormControl>
                 <PriceInput
+                  placeholder="Abaixo deste valor, o produto vale a pena"
                   value={field.value ? field.value / 100 : undefined}
                   onValueChange={({ floatValue }) =>
                     field.onChange(~~((floatValue ?? 0) * 100))
@@ -281,6 +303,7 @@ export function ProductForm({ mode = 'create', product }: ProductFormProps) {
               <FormLabel>Review (opcional)</FormLabel>
               <FormControl>
                 <Input
+                  placeholder="https://youtube.com/embed/(ID do vídeo)"
                   aria-invalid={!!form.formState.errors.reviewUrl}
                   {...field}
                 />
@@ -322,7 +345,7 @@ export function ProductForm({ mode = 'create', product }: ProductFormProps) {
                   render={({ field }) => (
                     <FormItem>
                       <FormControl>
-                        <Input {...field} />
+                        <Input {...field} placeholder="Placa de Vídeo" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -334,7 +357,7 @@ export function ProductForm({ mode = 'create', product }: ProductFormProps) {
                   render={({ field }) => (
                     <FormItem>
                       <FormControl>
-                        <Input {...field} />
+                        <Input {...field} placeholder="RTX 3050" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -345,19 +368,95 @@ export function ProductForm({ mode = 'create', product }: ProductFormProps) {
           </div>
         </div>
 
-        <FormField
-          control={form.control}
-          name="description"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Descrição (opcional)</FormLabel>
-              <FormControl>
-                <Textarea rows={4} {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <label className={labelVariants()}>Prós (opcional)</label>
+            <div className="space-x-2">
+              <Button
+                type="button"
+                size="icon"
+                variant="secondary"
+                onClick={() => prosAppend({ value: '' })}
+              >
+                <Icons.Plus className="h-4 w-4" />
+              </Button>
+              <Button
+                type="button"
+                size="icon"
+                variant="secondary"
+                onClick={() => prosRemove(-1)}
+              >
+                <Icons.Minus className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            {prosFields.map((field, index) => (
+              <FormField
+                key={index}
+                control={form.control}
+                name={`pros.${index}.value`}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Input
+                        placeholder="Apresentou boas temperaturas..."
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            ))}
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <label className={labelVariants()}>Contras (opcional)</label>
+            <div className="space-x-2">
+              <Button
+                type="button"
+                size="icon"
+                variant="secondary"
+                onClick={() => consAppend({ value: '' })}
+              >
+                <Icons.Plus className="h-4 w-4" />
+              </Button>
+              <Button
+                type="button"
+                size="icon"
+                variant="secondary"
+                onClick={() => consRemove(-1)}
+              >
+                <Icons.Minus className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            {consFields.map((field, index) => (
+              <FormField
+                key={index}
+                control={form.control}
+                name={`cons.${index}.value`}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Input
+                        placeholder="Tela básica para categoria..."
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            ))}
+          </div>
+        </div>
 
         <Button type="submit" disabled={isLoading}>
           {isLoading && (

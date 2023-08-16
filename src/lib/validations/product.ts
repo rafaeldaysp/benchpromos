@@ -13,8 +13,17 @@ export const productSchema = z.object({
       value: z.string(),
     }),
   ),
+  pros: z.array(
+    z.object({
+      value: z.string(),
+    }),
+  ),
+  cons: z.array(
+    z.object({
+      value: z.string(),
+    }),
+  ),
   reviewUrl: z.string().optional(),
-  description: z.string().optional(),
   referencePrice: z.coerce.number().int().optional(),
   subcategoryId: z.string().optional(),
 })

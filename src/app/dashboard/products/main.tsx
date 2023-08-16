@@ -53,9 +53,17 @@ const GET_PRODUCTS = gql`
         id
         name
         imageUrl
-        specs
+        specs {
+          title
+          value
+        }
+        pros {
+          value
+        }
+        cons {
+          value
+        }
         reviewUrl
-        description
         referencePrice
         categoryId
         slug

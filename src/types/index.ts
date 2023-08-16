@@ -19,8 +19,13 @@ export type Product = {
     title: string
     value: string
   }[]
+  pros: {
+    value: string
+  }[]
+  cons: {
+    value: string
+  }[]
   reviewUrl?: string
-  description?: string
   referencePrice?: number
   categoryId: string
   slug: string
