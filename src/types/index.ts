@@ -115,6 +115,18 @@ export type BenchmarkResult = {
   description?: string
 }
 
+export type BenchmarkChartData = {
+  id: string
+  name: string
+  results: {
+    result: string
+    description: string
+    product: {
+      name: string
+    }
+  }[]
+}
+
 export type Reaction = {
   content: string
   users: {

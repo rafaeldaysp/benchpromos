@@ -180,7 +180,7 @@ export function SaleCard({ sale, className, userId, ...props }: SaleCardProps) {
                   <strong>
                     {priceFormatter.format(sale.totalInstallmentPrice / 100)}
                   </strong>{' '}
-                  em até <strong>{sale.installments}x</strong> de{' '}
+                  em <strong>{sale.installments}x</strong> de{' '}
                   <strong>
                     {priceFormatter.format(
                       sale.totalInstallmentPrice / (100 * sale.installments),
