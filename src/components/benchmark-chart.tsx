@@ -11,23 +11,31 @@ import {
   YAxis,
 } from 'recharts'
 
-import { type BenchmarkChartData } from '@/types'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from './ui/select'
+} from '@/components/ui/select'
 
 interface BenchmarkChartProps {
-  benchmarks: BenchmarkChartData[]
+  benchmarks: {
+    id: string
+    name: string
+    results: {
+      result: number
+      description?: string
+      product: {
+        name: string
+      }
+    }[]
+  }[]
 }
 
 export function BenchmarkChart({ benchmarks }: BenchmarkChartProps) {
-  const [selectedBenchark, setSelectedBenchmark] = React.useState<
-    BenchmarkChartData | undefined
-  >(undefined)
+  const [selectedBenchark, setSelectedBenchmark] =
+    React.useState<(typeof benchmarks)[number]>()
 
   return (
     <div className="space-y-5">

@@ -46,7 +46,7 @@ export const columns: ColumnDef<BenchmarkData>[] = [
       const product = row.getValue('product') as BenchmarkData['product']
 
       return (
-        <div className="flex gap-x-4">
+        <div className="ml-2 flex gap-x-4">
           <div className="relative h-16 w-16">
             <Image
               src={product.imageUrl}
@@ -94,6 +94,11 @@ export const columns: ColumnDef<BenchmarkData>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Resultado" />
     ),
+    cell({ row }) {
+      const result = row.getValue('result') as BenchmarkData['result']
+
+      return <div className="ml-4">{result}</div>
+    },
     meta: {
       header: 'Resultado',
     },

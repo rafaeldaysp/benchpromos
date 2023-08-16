@@ -39,7 +39,7 @@ export function ProductCard({
   return (
     <Card
       className={cn(
-        'flex flex-col overflow-hidden transition-colors dark:hover:bg-muted/50',
+        'flex flex-col overflow-hidden transition-colors hover:bg-muted/50',
         className,
       )}
       {...props}

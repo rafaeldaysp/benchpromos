@@ -4,6 +4,7 @@ import { getCurrentUser } from '@/app/_actions/user'
 import { Combobox } from '@/components/combobox'
 import { buttonVariants } from '@/components/ui/button'
 import { UserAccountNav } from '@/components/user-account-nav'
+import { ModeToggle } from '../mode-toggle'
 
 export async function SiteHeader() {
   const user = await getCurrentUser()
@@ -22,6 +23,8 @@ export async function SiteHeader() {
         <div className="flex flex-1 justify-end">
           <nav className="flex items-center space-x-2">
             <Combobox />
+
+            <ModeToggle />
 
             {user ? (
               <UserAccountNav user={user} />

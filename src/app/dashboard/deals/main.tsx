@@ -250,6 +250,7 @@ export function DealsMain({
                 </Dialog>
 
                 <Select
+                  defaultValue=""
                   onValueChange={(value) => {
                     setSelectedCategory(
                       categories.find((category) => category.id === value),
@@ -260,7 +261,7 @@ export function DealsMain({
                     <SelectValue placeholder="Selecione uma categoria" />
                   </SelectTrigger>
                   <SelectContent side="top">
-                    <SelectItem value={'fdsfasfdsf'}>Todas</SelectItem>
+                    <SelectItem value="">Todas</SelectItem>
                     {categories.map((category) => (
                       <SelectItem key={category.id} value={category.id}>
                         {category.name}
@@ -270,7 +271,7 @@ export function DealsMain({
                 </Select>
 
                 <Button
-                  variant={'outline'}
+                  variant="outline"
                   onClick={() =>
                     selectedDealIds.length === filteredDeals.length
                       ? setSelectedDealIds([])

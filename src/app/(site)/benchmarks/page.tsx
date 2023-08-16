@@ -2,7 +2,7 @@ import { gql } from '@apollo/client'
 
 import { BenchmarkChart } from '@/components/benchmark-chart'
 import { getClient } from '@/lib/apollo'
-import { type BenchmarkChartData } from '@/types'
+import type { Benchmark, BenchmarkResult, Product } from '@/types'
 
 const GET_BENCHMARKS = gql`
   query GetBenchmarks {
@@ -22,7 +22,11 @@ const GET_BENCHMARKS = gql`
 
 export default async function BenchmarksPage() {
   const { data } = await getClient().query<{
-    benchmarks: BenchmarkChartData[]
+    benchmarks: (Benchmark & {
+      results: (Pick<BenchmarkResult, 'result' | 'description'> & {
+        product: Pick<Product, 'name'>
+      })[]
+    })[]
   }>({
     query: GET_BENCHMARKS,
   })
