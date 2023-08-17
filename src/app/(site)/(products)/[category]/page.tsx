@@ -3,7 +3,15 @@ import { notFound } from 'next/navigation'
 
 import { Products } from '@/components/products'
 import { getClient } from '@/lib/apollo'
-import type { Category, Deal, Filter, Product, Retailer } from '@/types'
+import type {
+  Cashback,
+  Category,
+  Coupon,
+  Deal,
+  Filter,
+  Product,
+  Retailer,
+} from '@/types'
 
 const GET_PRODUCTS = gql`
   query GetProducts($input: GetProductsInput) {
@@ -17,14 +25,18 @@ const GET_PRODUCTS = gql`
         name
         imageUrl
         slug
+        reviewUrl
         category {
           slug
         }
         deals {
           price
-          # retailer {
-          #   name
-          # }
+          totalInstallmentPrice
+          installments
+          availability
+          retailer {
+            name
+          }
         }
       }
     }
@@ -114,7 +126,12 @@ export default async function ProductsPage({
       }
       products: (Product & {
         category: Pick<Category, 'slug'>
-        deals: (Pick<Deal, 'price'> & { retailer: Pick<Retailer, 'name'> })[]
+        deals: (Pick<
+          Deal,
+          'price' | 'availability' | 'installments' | 'totalInstallmentPrice'
+        > & { retailer: Pick<Retailer, 'name'> } & {
+          coupon: Pick<Coupon, 'code' | 'discount'>
+        } & { cashback: Pick<Cashback, 'value' | 'provider'> })[]
       })[]
     }
   }>({

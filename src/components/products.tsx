@@ -28,12 +28,25 @@ import {
 import { Slider } from '@/components/ui/slider'
 import { Toggle } from '@/components/ui/toggle'
 import { useDebounce } from '@/hooks/use-debounce'
-import type { Category, Deal, Filter, Product, Retailer } from '@/types'
+import type {
+  Cashback,
+  Category,
+  Coupon,
+  Deal,
+  Filter,
+  Product,
+  Retailer,
+} from '@/types'
 
 interface ProductsProps {
   products: (Product & {
     category: Pick<Category, 'slug'>
-    deals: (Pick<Deal, 'price'> & { retailer: Pick<Retailer, 'name'> })[]
+    deals: (Pick<
+      Deal,
+      'price' | 'availability' | 'installments' | 'totalInstallmentPrice'
+    > & { retailer: Pick<Retailer, 'name'> } & {
+      coupon: Pick<Coupon, 'code' | 'discount'>
+    } & { cashback: Pick<Cashback, 'value' | 'provider'> })[]
   })[]
   pageCount: number
   productCount: number
