@@ -17,6 +17,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -102,6 +103,7 @@ export function DealForm({
     coupons: Pick<Coupon, 'id' | 'code' | 'discount'>[]
     cashbacks: Pick<Cashback, 'id' | 'provider' | 'value'>[]
   }>(GET_COUPONS_AND_CASHBACKS_BY_RETAILER, {
+    fetchPolicy: 'network-only',
     variables: {
       retailerId,
     },
@@ -179,6 +181,7 @@ export function DealForm({
               <FormLabel>Preço</FormLabel>
               <FormControl>
                 <PriceInput
+                  placeholder="4.447,00"
                   value={field.value ? field.value / 100 : undefined}
                   onValueChange={({ floatValue }) =>
                     field.onChange(~~((floatValue ?? 0) * 100))
@@ -197,7 +200,11 @@ export function DealForm({
             <FormItem>
               <FormLabel>Link</FormLabel>
               <FormControl>
-                <Input aria-invalid={!!form.formState.errors.url} {...field} />
+                <Input
+                  placeholder="https://tidd.ly/<id>"
+                  aria-invalid={!!form.formState.errors.url}
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -212,6 +219,7 @@ export function DealForm({
               <FormLabel>Preço Total Parcelado (opcional)</FormLabel>
               <FormControl>
                 <PriceInput
+                  placeholder="4.447,00"
                   value={field.value ? field.value / 100 : undefined}
                   onValueChange={({ floatValue }) =>
                     field.onChange(~~((floatValue ?? 0) * 100))
@@ -233,6 +241,7 @@ export function DealForm({
                 <NumericFormat
                   customInput={Input}
                   displayType="input"
+                  placeholder="12"
                   decimalScale={0}
                   value={field.value ? field.value : undefined}
                   onValueChange={({ floatValue }) =>
@@ -302,7 +311,7 @@ export function DealForm({
           control={form.control}
           name="availability"
           render={({ field }) => (
-            <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+            <FormItem className="flex flex-row items-start justify-between space-x-3 space-y-0">
               <FormLabel>Disponibilidade</FormLabel>
               <FormControl>
                 <Checkbox
@@ -320,10 +329,11 @@ export function DealForm({
           name="sku"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Sku (opcional)</FormLabel>
+              <FormLabel>SKU (opcional)</FormLabel>
               <FormControl>
                 <Input aria-invalid={!!form.formState.errors.sku} {...field} />
               </FormControl>
+              <FormDescription>Identificador interno.</FormDescription>
               <FormMessage />
             </FormItem>
           )}

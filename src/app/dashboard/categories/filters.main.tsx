@@ -227,6 +227,7 @@ export function FilterModal({ categoryId, filter }: FilterModalProps) {
         </DialogHeader>
         <div className="flex gap-x-2">
           <Input
+            placeholder="Processador"
             value={filterInput}
             onChange={(e) => setFilterInput(e.target.value)}
           />
@@ -301,7 +302,7 @@ export function FilterOptionModal({ filter }: FilterOptionModalProps) {
         </Button>
       </SheetTrigger>
       <SheetContent
-        className="w-full space-y-8 overflow-auto sm:max-w-xl"
+        className="w-full space-y-4 overflow-auto sm:max-w-xl"
         side="left"
       >
         <SheetHeader>
@@ -310,6 +311,7 @@ export function FilterOptionModal({ filter }: FilterOptionModalProps) {
         <div className="space-y-8">
           <div className="flex gap-x-2">
             <Input
+              placeholder="I5 13450HX"
               value={filterOptionInput}
               onChange={(e) => setFilterOptionInput(e.target.value)}
             />

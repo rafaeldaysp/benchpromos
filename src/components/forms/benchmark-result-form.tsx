@@ -184,6 +184,7 @@ export function BenchmarkResultForm({
                 <NumericFormat
                   customInput={Input}
                   displayType="input"
+                  placeholder="100"
                   decimalScale={0}
                   value={field.value ? field.value : undefined}
                   onValueChange={({ floatValue }) =>

@@ -113,7 +113,11 @@ export function CategoryForm({ mode = 'create', category }: CategoryFormProps) {
             <FormItem>
               <FormLabel>Nome</FormLabel>
               <FormControl>
-                <Input aria-invalid={!!form.formState.errors.name} {...field} />
+                <Input
+                  placeholder="Notebooks"
+                  aria-invalid={!!form.formState.errors.name}
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>

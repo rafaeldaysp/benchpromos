@@ -46,7 +46,7 @@ export const columns: ColumnDef<BenchmarkData>[] = [
       const product = row.getValue('product') as BenchmarkData['product']
 
       return (
-        <div className="ml-2 flex gap-x-4">
+        <div className="ml-2 flex min-w-[200px] gap-x-4">
           <div className="relative h-16 w-16">
             <Image
               src={product.imageUrl}

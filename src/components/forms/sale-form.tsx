@@ -100,6 +100,7 @@ export function SaleForm({
   const { data } = useQuery<{
     categories: Omit<Category, 'subcategories'>[]
   }>(GET_CATEGORIES, {
+    fetchPolicy: 'network-only',
     context: {
       headers: {
         'api-key': env.NEXT_PUBLIC_API_KEY,
@@ -169,6 +170,7 @@ export function SaleForm({
               <FormLabel>Título</FormLabel>
               <FormControl>
                 <Input
+                  placeholder="Dell G15 5530 I5 13450HX..."
                   aria-invalid={!!form.formState.errors.title}
                   {...field}
                 />
@@ -186,6 +188,7 @@ export function SaleForm({
               <FormLabel>Imagem</FormLabel>
               <FormControl>
                 <Input
+                  placeholder="https://media.discordapp.net/attachments/**/*.png"
                   aria-invalid={!!form.formState.errors.title}
                   {...field}
                 />
@@ -231,6 +234,7 @@ export function SaleForm({
               <FormLabel>Preço à Vista</FormLabel>
               <FormControl>
                 <PriceInput
+                  placeholder="4.447,00"
                   value={field.value ? field.value / 100 : undefined}
                   onValueChange={({ floatValue }) =>
                     field.onChange(~~((floatValue ?? 0) * 100))
@@ -249,7 +253,11 @@ export function SaleForm({
             <FormItem>
               <FormLabel>Link</FormLabel>
               <FormControl>
-                <Input aria-invalid={!!form.formState.errors.url} {...field} />
+                <Input
+                  placeholder="https://tidd.ly/<id>"
+                  aria-invalid={!!form.formState.errors.url}
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -264,6 +272,7 @@ export function SaleForm({
               <FormLabel>Preço Total Parcelado (opcional)</FormLabel>
               <FormControl>
                 <PriceInput
+                  placeholder="4.447,00"
                   value={field.value ? field.value / 100 : undefined}
                   onValueChange={({ floatValue }) =>
                     field.onChange(~~((floatValue ?? 0) * 100))
@@ -285,6 +294,7 @@ export function SaleForm({
                 <NumericFormat
                   customInput={Input}
                   displayType="input"
+                  placeholder="12"
                   decimalScale={0}
                   value={field.value ? field.value : undefined}
                   onValueChange={({ floatValue }) =>
@@ -310,8 +320,8 @@ export function SaleForm({
                 />
               </FormControl>
               <FormDescription>
-                Coloque as especificações do produto ou algo de extrema
-                importância sobre a promoção.
+                Preencha com as especifições do produto ou uma informação
+                essencial sobre a promoção.
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -351,6 +361,7 @@ export function SaleForm({
               <FormLabel>Cupom (opcional)</FormLabel>
               <FormControl>
                 <Input
+                  placeholder="BENCHPROMOSGM"
                   aria-invalid={!!form.formState.errors.coupon}
                   {...field}
                 />
@@ -368,6 +379,7 @@ export function SaleForm({
               <FormLabel>Cashback (opcional)</FormLabel>
               <FormControl>
                 <Input
+                  placeholder="5%"
                   aria-invalid={!!form.formState.errors.cashback}
                   {...field}
                 />
@@ -386,7 +398,10 @@ export function SaleForm({
               <FormControl>
                 <Textarea rows={4} {...field} />
               </FormControl>
-              <FormDescription>Famoso textinho.</FormDescription>
+              <FormDescription>
+                Adicione comentários extras sobre a promoção, cupom, cashback
+                etc.
+              </FormDescription>
               <FormMessage />
             </FormItem>
           )}

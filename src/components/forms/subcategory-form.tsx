@@ -119,7 +119,11 @@ export function SubcategoryForm({
             <FormItem>
               <FormLabel>Nome</FormLabel>
               <FormControl>
-                <Input aria-invalid={!!form.formState.errors.name} {...field} />
+                <Input
+                  placeholder="Produtividade"
+                  aria-invalid={!!form.formState.errors.name}
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>

@@ -14,6 +14,7 @@ import { Button } from '@/components/ui/button'
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -112,7 +113,9 @@ export function ProductForm({ mode = 'create', product }: ProductFormProps) {
     name: 'cons',
   })
 
-  const { data } = useQuery<{ categories: Category[] }>(GET_CATEGORIES)
+  const { data } = useQuery<{ categories: Category[] }>(GET_CATEGORIES, {
+    fetchPolicy: 'network-only',
+  })
 
   const categoryItems = React.useMemo(() => {
     const categoryItems = data?.categories.map((category) => ({
@@ -189,7 +192,7 @@ export function ProductForm({ mode = 'create', product }: ProductFormProps) {
               <FormLabel>Nome</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="Dell G15 I5 13450HX..."
+                  placeholder="Dell G15 5530 I5 13450HX..."
                   aria-invalid={!!form.formState.errors.name}
                   {...field}
                 />
@@ -207,7 +210,7 @@ export function ProductForm({ mode = 'create', product }: ProductFormProps) {
               <FormLabel>Imagem</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="https://exemplo.com/imagem.png"
+                  placeholder="https://media.discordapp.net/attachments/**/*.png"
                   aria-invalid={!!form.formState.errors.imageUrl}
                   {...field}
                 />
@@ -283,13 +286,16 @@ export function ProductForm({ mode = 'create', product }: ProductFormProps) {
               <FormLabel>Preço de Referência (opcional)</FormLabel>
               <FormControl>
                 <PriceInput
-                  placeholder="Se estiver mais barato, o produto vale a pena"
+                  placeholder="4.447,00"
                   value={field.value ? field.value / 100 : undefined}
                   onValueChange={({ floatValue }) =>
                     field.onChange(~~((floatValue ?? 0) * 100))
                   }
                 />
               </FormControl>
+              <FormDescription>
+                Valor de comparação para avaliar o preço atual.
+              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -446,7 +452,7 @@ export function ProductForm({ mode = 'create', product }: ProductFormProps) {
                   <FormItem>
                     <FormControl>
                       <Input
-                        placeholder="Tela básica para categoria"
+                        placeholder="Botão de ligar/desligar junto ao teclado"
                         {...field}
                       />
                     </FormControl>

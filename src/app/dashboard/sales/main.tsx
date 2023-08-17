@@ -142,24 +142,40 @@ export function SalesMain({ sales, products }: SalesMainProps) {
         )}
 
         {selectedProduct && (
-          <DashboardItemCard.Root className="border">
-            <DashboardItemCard.Image src={selectedProduct.imageUrl} alt="" />
+          <div className="space-y-1">
+            <DashboardItemCard.Root className="border">
+              <DashboardItemCard.Image src={selectedProduct.imageUrl} alt="" />
 
-            <DashboardItemCard.Content>
-              <p className="text-sm leading-7">{selectedProduct.name}</p>
-              <span className="text-xs text-muted-foreground">
-                {selectedProduct.category.name}
-              </span>
-            </DashboardItemCard.Content>
+              <DashboardItemCard.Content>
+                <p className="text-sm leading-7">{selectedProduct.name}</p>
+                <span className="text-xs text-muted-foreground">
+                  {selectedProduct.category.name}
+                </span>
+              </DashboardItemCard.Content>
 
-            <DashboardItemCard.Actions>
-              <DashboardItemCard.Action
-                variant="destructive"
-                icon={Icons.X}
-                onClick={() => setSelectedProduct(undefined)}
-              />
-            </DashboardItemCard.Actions>
-          </DashboardItemCard.Root>
+              <DashboardItemCard.Actions>
+                <DashboardItemCard.Action
+                  variant="destructive"
+                  icon={Icons.X}
+                  onClick={() => setSelectedProduct(undefined)}
+                />
+              </DashboardItemCard.Actions>
+            </DashboardItemCard.Root>
+            <div className="text-xs text-muted-foreground">
+              {!selectedSale
+                ? 'Obs: Ao criar uma nova promoção, este produto será automaticamente vinculado'
+                : selectedSale.productSlug === selectedProduct.slug
+                ? 'Obs: Este produto está vinculado à promoção selecionada'
+                : 'Obs: Este produto NÃO está vinculado à promoção selecionada. Para vincular, clique em editar e salve a promoção selecionada'}
+            </div>
+          </div>
+        )}
+
+        {selectedSale?.productSlug && !selectedProduct && (
+          <div className="text-xs text-muted-foreground">
+            Observação: O produto vinculado a esta promoção foi removido. Para
+            salvar, clique em editar e salve a promoção selecionada.
+          </div>
         )}
       </div>
 

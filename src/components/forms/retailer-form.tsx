@@ -113,7 +113,11 @@ export function RetailerForm({ mode = 'create', retailer }: RetailerFormProps) {
             <FormItem>
               <FormLabel>Nome</FormLabel>
               <FormControl>
-                <Input aria-invalid={!!form.formState.errors.name} {...field} />
+                <Input
+                  placeholder="Dell"
+                  aria-invalid={!!form.formState.errors.name}
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>

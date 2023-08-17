@@ -15,6 +15,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -84,7 +85,9 @@ export function CouponForm({ mode = 'create', coupon }: CouponFormProps) {
   const { setOpenDialog } = useFormStore()
   const router = useRouter()
 
-  const { data } = useQuery<{ retailers: Retailer[] }>(GET_RETAILERS)
+  const { data } = useQuery<{ retailers: Retailer[] }>(GET_RETAILERS, {
+    fetchPolicy: 'network-only',
+  })
 
   const retailerItems = React.useMemo(() => {
     const retailerItems = data?.retailers.map((retailer) => ({
@@ -176,7 +179,11 @@ export function CouponForm({ mode = 'create', coupon }: CouponFormProps) {
             <FormItem>
               <FormLabel>Código</FormLabel>
               <FormControl>
-                <Input aria-invalid={!!form.formState.errors.code} {...field} />
+                <Input
+                  placeholder="BENCHPROMOSGM"
+                  aria-invalid={!!form.formState.errors.code}
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -188,15 +195,17 @@ export function CouponForm({ mode = 'create', coupon }: CouponFormProps) {
           name="discount"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>
-                Desconto (&quot;5&quot; para R$ 5,00 ou &quot;5%&quot; para 5%)
-              </FormLabel>
+              <FormLabel>Desconto</FormLabel>
               <FormControl>
                 <Input
+                  placeholder="5%"
                   aria-invalid={!!form.formState.errors.discount}
                   {...field}
                 />
               </FormControl>
+              <FormDescription>
+                Insira 5 para R$ 5,00 ou 5% para 5%.
+              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -214,6 +223,7 @@ export function CouponForm({ mode = 'create', coupon }: CouponFormProps) {
                   {...field}
                 />
               </FormControl>
+              <FormDescription>Valor mínimo para uso do cupom.</FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -228,6 +238,9 @@ export function CouponForm({ mode = 'create', coupon }: CouponFormProps) {
               <FormControl>
                 <Textarea rows={4} {...field} />
               </FormControl>
+              <FormDescription>
+                Detalhes sobre funcionamento e restrições do cupom.
+              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -237,7 +250,7 @@ export function CouponForm({ mode = 'create', coupon }: CouponFormProps) {
           control={form.control}
           name="availability"
           render={({ field }) => (
-            <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+            <FormItem className="flex flex-row items-start justify-between space-x-3 space-y-0">
               <FormLabel>Disponibilidade</FormLabel>
               <FormControl>
                 <Checkbox

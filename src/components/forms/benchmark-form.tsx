@@ -114,7 +114,11 @@ export function BenchmarkForm({
             <FormItem>
               <FormLabel>Nome</FormLabel>
               <FormControl>
-                <Input aria-invalid={!!form.formState.errors.name} {...field} />
+                <Input
+                  placeholder="Forza Horizon Ultra FHD"
+                  aria-invalid={!!form.formState.errors.name}
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>

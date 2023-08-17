@@ -6,6 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'next/navigation'
 import * as React from 'react'
 import { useForm } from 'react-hook-form'
+import { NumericFormat } from 'react-number-format'
 import { toast } from 'sonner'
 import { type z } from 'zod'
 
@@ -81,7 +82,9 @@ export function CashbackForm({ mode = 'create', cashback }: CashbackFormProps) {
   const { setOpenDialog } = useFormStore()
   const router = useRouter()
 
-  const { data } = useQuery<{ retailers: Retailer[] }>(GET_RETAILERS)
+  const { data } = useQuery<{ retailers: Retailer[] }>(GET_RETAILERS, {
+    fetchPolicy: 'network-only',
+  })
 
   const retailerItems = React.useMemo(() => {
     const retailerItems = data?.retailers.map((retailer) => ({
@@ -174,6 +177,7 @@ export function CashbackForm({ mode = 'create', cashback }: CashbackFormProps) {
               <FormLabel>Provedor</FormLabel>
               <FormControl>
                 <Input
+                  placeholder="Cuponomia"
                   aria-invalid={!!form.formState.errors.provider}
                   {...field}
                 />
@@ -190,9 +194,15 @@ export function CashbackForm({ mode = 'create', cashback }: CashbackFormProps) {
             <FormItem>
               <FormLabel>Valor (%)</FormLabel>
               <FormControl>
-                <Input
-                  aria-invalid={!!form.formState.errors.value}
-                  {...field}
+                <NumericFormat
+                  customInput={Input}
+                  displayType="input"
+                  placeholder="5"
+                  decimalScale={0}
+                  value={field.value ? field.value : undefined}
+                  onValueChange={({ floatValue }) =>
+                    field.onChange(floatValue ?? 0)
+                  }
                 />
               </FormControl>
               <FormMessage />
@@ -207,7 +217,11 @@ export function CashbackForm({ mode = 'create', cashback }: CashbackFormProps) {
             <FormItem>
               <FormLabel>Página do Cashback</FormLabel>
               <FormControl>
-                <Input aria-invalid={!!form.formState.errors.url} {...field} />
+                <Input
+                  placeholder="https://www.cuponomia.com.br"
+                  aria-invalid={!!form.formState.errors.url}
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -222,6 +236,7 @@ export function CashbackForm({ mode = 'create', cashback }: CashbackFormProps) {
               <FormLabel>Link de Afiliado</FormLabel>
               <FormControl>
                 <Input
+                  placeholder="https://www.cuponomia.com.br/ref/<id>"
                   aria-invalid={!!form.formState.errors.affiliatedUrl}
                   {...field}
                 />
