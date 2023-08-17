@@ -20,6 +20,8 @@ const GET_PRODUCTS = gql`
       _count {
         products
       }
+      minPrice
+      maxPrice
       products {
         id
         name
@@ -89,7 +91,7 @@ export default async function ProductsPage({
   searchParams,
 }: ProductsPageProps) {
   const { category } = params
-  const { page, subcategory, ...filters } = searchParams
+  const { page, subcategory, priceRange, ...filters } = searchParams
 
   const { data: categoryData } = await getClient().query<{
     category: {
@@ -126,12 +128,16 @@ export default async function ProductsPage({
       }
     })
 
+  const [min, max] = priceRange?.split('-') ?? []
+
   const { data } = await getClient().query<{
     productsList: {
       pages: number
       _count: {
         products: number
       }
+      minPrice: number
+      maxPrice: number
       products: (Product & {
         category: Pick<Category, 'slug'>
         deals: (Pick<
@@ -152,13 +158,23 @@ export default async function ProductsPage({
           limit: 1,
           page: page ? Number(page) : 1,
         },
-        // filters: filtersInput,
+        filters: filtersInput,
+        priceRange: {
+          min: Number(min),
+          max: Number(max),
+        },
       },
     },
   })
   const products = data.productsList.products
   const pageCount = data.productsList.pages
   const productCount = data.productsList._count.products
+  const productsPriceRange = [
+    data.productsList.minPrice,
+    data.productsList.maxPrice,
+  ] as [number, number]
+
+  console.log(filtersInput)
 
   return (
     <div className="px-4 py-10 sm:container">
@@ -169,6 +185,7 @@ export default async function ProductsPage({
           productCount={productCount}
           categoryFilters={categoryFilters}
           filters={filtersInput}
+          productsPriceRange={productsPriceRange}
         />
       </div>
     </div>

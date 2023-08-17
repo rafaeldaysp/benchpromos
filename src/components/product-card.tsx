@@ -1,3 +1,4 @@
+import { StarFilledIcon } from '@radix-ui/react-icons'
 import Image from 'next/image'
 import Link from 'next/link'
 
@@ -13,7 +14,12 @@ import {
 } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
 import { priceFormatter } from '@/utils/formatter'
-import { Icons } from './icons'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from './ui/tooltip'
 
 interface ProductCardProps extends React.HTMLAttributes<HTMLDivElement> {
   product: {
@@ -54,11 +60,25 @@ export function ProductCard({
   return (
     <Card
       className={cn(
-        'flex flex-col overflow-hidden transition-colors hover:bg-muted/50',
+        'relative flex flex-col overflow-hidden transition-colors hover:bg-muted/50',
         className,
       )}
       {...props}
     >
+      {!product.reviewUrl && (
+        <div className="absolute right-2 top-2">
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger>
+                <StarFilledIcon className="  mr-1 h-4 w-4" />
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Já passou pelo canal!</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
+      )}
       <Link
         aria-label={`Visualizar detalhes de ${product.name}`}
         href={`/${product.category.slug}/${product.slug}`}
@@ -126,13 +146,6 @@ export function ProductCard({
             {bestDeal.cashback.value}% de cashback com{' '}
             <span>{bestDeal.cashback.provider}</span>
           </strong>
-        )}
-
-        {!product.reviewUrl && (
-          <span className="flex items-center text-sm text-muted-foreground">
-            <Icons.Check className="mr-1 h-4 w-4" />
-            Testado no canal
-          </span>
         )}
       </CardContent>
 

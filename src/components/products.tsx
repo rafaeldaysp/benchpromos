@@ -52,6 +52,7 @@ interface ProductsProps {
   productCount: number
   categoryFilters: Filter[]
   filters: { slug: string; options: string[] }[]
+  productsPriceRange: [number, number]
 }
 
 export function Products({
@@ -60,9 +61,11 @@ export function Products({
   productCount,
   categoryFilters,
   filters: initialFilters,
+  productsPriceRange,
 }: ProductsProps) {
   const searchParams = useSearchParams()
-  const [priceRange, setPriceRange] = React.useState<[number, number]>([0, 500])
+  const [priceRange, setPriceRange] =
+    React.useState<[number, number]>(productsPriceRange)
   const debouncedPrice = useDebounce(priceRange, 500)
   const [filters, setFilters] = React.useState(initialFilters)
   const [isPending, startTransition] = React.useTransition()
@@ -95,12 +98,12 @@ export function Products({
   React.useEffect(() => {
     const [min, max] = debouncedPrice
 
-    if (min === 0 && max === 500) return
+    if (min === productsPriceRange[0] && max === productsPriceRange[1]) return
 
     startTransition(() => {
       router.push(
         `${pathname}?${createQueryString({
-          price_range: `${min}-${max}`,
+          priceRange: `${min}-${max}`,
         })}`,
       )
     })
@@ -138,6 +141,8 @@ export function Products({
                   <Slider
                     variant="range"
                     value={priceRange}
+                    min={productsPriceRange[0]}
+                    max={productsPriceRange[1]}
                     step={1}
                     onValueChange={(value: typeof priceRange) => {
                       setPriceRange(value)
@@ -147,8 +152,8 @@ export function Products({
                     <Input
                       type="number"
                       inputMode="numeric"
-                      min={0}
-                      max={priceRange[1]}
+                      min={productsPriceRange[0]}
+                      max={productsPriceRange[0]}
                       className="h-9"
                       value={priceRange[0]}
                       onChange={(e) => {
@@ -160,8 +165,8 @@ export function Products({
                     <Input
                       type="number"
                       inputMode="numeric"
-                      min={priceRange[0]}
-                      max={500}
+                      min={productsPriceRange[1]}
+                      max={productsPriceRange[1]}
                       className="h-9"
                       value={priceRange[1]}
                       onChange={(e) => {
