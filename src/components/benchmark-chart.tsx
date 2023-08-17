@@ -18,6 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 
 interface BenchmarkChartProps {
   benchmarks: {
@@ -37,12 +38,40 @@ export function BenchmarkChart({ benchmarks }: BenchmarkChartProps) {
   const [selectedBenchark, setSelectedBenchmark] =
     React.useState<(typeof benchmarks)[number]>()
 
+  const pathname = usePathname()
+  const router = useRouter()
+  const searchParams = useSearchParams()
+
+  const queryBenchmark = searchParams.get('benchmark')
+
+  const createQueryString = React.useCallback(
+    (params: Record<string, string | null>) => {
+      const newSearchParams = new URLSearchParams(searchParams?.toString())
+
+      for (const [key, value] of Object.entries(params)) {
+        if (value === null) {
+          newSearchParams.delete(key)
+        } else {
+          newSearchParams.set(key, String(value))
+        }
+      }
+
+      return newSearchParams.toString()
+    },
+    [searchParams],
+  )
+
   return (
     <div className="space-y-5">
       <Select
         onValueChange={(value) => {
-          setSelectedBenchmark(
-            benchmarks.find((benchmark) => benchmark.id === value),
+          // setSelectedBenchmark(
+          //   benchmarks.find((benchmark) => benchmark.id === value),
+          // )
+          router.push(
+            `${pathname}?${createQueryString({
+              benchmark: value,
+            })}`,
           )
         }}
       >

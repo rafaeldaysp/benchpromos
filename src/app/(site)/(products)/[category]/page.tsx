@@ -37,6 +37,14 @@ const GET_PRODUCTS = gql`
           retailer {
             name
           }
+          coupon {
+            code
+            discount
+          }
+          cashback {
+            value
+            provider
+          }
         }
       }
     }

@@ -49,6 +49,8 @@ export function ProductCard({
   className,
   ...props
 }: ProductCardProps) {
+  const bestDeal = product.deals[0]
+  console.log(bestDeal)
   return (
     <Card
       className={cn(
@@ -61,7 +63,7 @@ export function ProductCard({
         aria-label={`Visualizar detalhes de ${product.name}`}
         href={`/${product.category.slug}/${product.slug}`}
       >
-        <CardHeader className="p-0">
+        <CardHeader>
           <AspectRatio>
             <Image
               src={product.imageUrl}
@@ -83,30 +85,48 @@ export function ProductCard({
         </Link>
 
         <CardDescription>
-          Menor preço via <strong>{product.deals[0].retailer.name}</strong>
+          Menor preço via <strong>{bestDeal.retailer.name}</strong>
         </CardDescription>
 
         <div className="flex flex-col">
           <p>
             <strong className="text-xl">
-              {priceFormatter.format(product.deals[0].price / 100)}
+              {priceFormatter.format(bestDeal.price / 100)}
             </strong>{' '}
-            <span className="text-sm text-muted-foreground">à vista</span>
+            {/* <span className="text-sm text-muted-foreground">à vista</span> */}
           </p>
 
-          {!!product.deals[0].installments &&
-            !!product.deals[0].totalInstallmentPrice && (
-              <span className="text-sm text-muted-foreground">
-                ou <strong>{product.deals[0].installments}x</strong> de{' '}
-                <strong>
-                  {priceFormatter.format(
-                    product.deals[0].totalInstallmentPrice /
-                      (100 * product.deals[0].installments),
-                  )}
-                </strong>
-              </span>
-            )}
+          {!!bestDeal.installments && !!bestDeal.totalInstallmentPrice && (
+            <span className="text-sm text-muted-foreground">
+              até <strong>{bestDeal.installments}x</strong> de{' '}
+              <strong>
+                {priceFormatter.format(
+                  bestDeal.totalInstallmentPrice /
+                    (100 * bestDeal.installments),
+                )}
+              </strong>{' '}
+              {bestDeal.price <= bestDeal.totalInstallmentPrice ? (
+                <span>sem juros</span>
+              ) : (
+                <span>com juros</span>
+              )}
+            </span>
+          )}
         </div>
+
+        {bestDeal.coupon && (
+          <p className="flex flex-col">
+            <span className="text-sm text-muted-foreground">Com cupom</span>
+            <strong>{bestDeal.coupon.code}</strong>
+          </p>
+        )}
+
+        {bestDeal.cashback && (
+          <strong className="text-sm">
+            {bestDeal.cashback.value}% de cashback com{' '}
+            <span>{bestDeal.cashback.provider}</span>
+          </strong>
+        )}
 
         {!product.reviewUrl && (
           <span className="flex items-center text-sm text-muted-foreground">
