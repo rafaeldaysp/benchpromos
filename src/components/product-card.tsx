@@ -13,19 +13,32 @@ import {
 } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
 import { priceFormatter } from '@/utils/formatter'
+import { Icons } from './icons'
 
 interface ProductCardProps extends React.HTMLAttributes<HTMLDivElement> {
   product: {
     name: string
     imageUrl: string
     slug: string
+    reviewUrl?: string
     category: {
       slug: string
     }
     deals: {
       price: number
+      availability: boolean
+      installments?: number
+      totalInstallmentPrice?: number
       retailer: {
         name: string
+      }
+      coupon: {
+        discount: string
+        code: string
+      }
+      cashback: {
+        value: number
+        provider: string
       }
     }[]
   }
@@ -70,10 +83,37 @@ export function ProductCard({
         </Link>
 
         <CardDescription>
-          Menor preço via <span>Retailer</span>
+          Menor preço via <strong>{product.deals[0].retailer.name}</strong>
         </CardDescription>
 
-        <strong>{priceFormatter.format(product.deals[0].price / 100)}</strong>
+        <div className="flex flex-col">
+          <p>
+            <strong className="text-xl">
+              {priceFormatter.format(product.deals[0].price / 100)}
+            </strong>{' '}
+            <span className="text-sm text-muted-foreground">à vista</span>
+          </p>
+
+          {!!product.deals[0].installments &&
+            !!product.deals[0].totalInstallmentPrice && (
+              <span className="text-sm text-muted-foreground">
+                ou <strong>{product.deals[0].installments}x</strong> de{' '}
+                <strong>
+                  {priceFormatter.format(
+                    product.deals[0].totalInstallmentPrice /
+                      (100 * product.deals[0].installments),
+                  )}
+                </strong>
+              </span>
+            )}
+        </div>
+
+        {!product.reviewUrl && (
+          <span className="flex items-center text-sm text-muted-foreground">
+            <Icons.Check className="mr-1 h-4 w-4" />
+            Testado no canal
+          </span>
+        )}
       </CardContent>
 
       <CardFooter className="p-0">
