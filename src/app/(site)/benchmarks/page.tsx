@@ -9,6 +9,7 @@ const GET_BENCHMARKS = gql`
     benchmarks {
       id
       name
+      slug
       results {
         result
         description

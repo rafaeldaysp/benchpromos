@@ -110,6 +110,7 @@ export type Comment = {
 export type Benchmark = {
   id: string
   name: string
+  slug: string
 }
 
 export type BenchmarkResult = {

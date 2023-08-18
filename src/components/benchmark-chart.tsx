@@ -23,6 +23,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 interface BenchmarkChartProps {
   benchmarks: {
     id: string
+    slug: string
     name: string
     results: {
       result: number
@@ -42,7 +43,13 @@ export function BenchmarkChart({ benchmarks }: BenchmarkChartProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
 
-  const queryBenchmark = searchParams.get('benchmark')
+  React.useEffect(() => {
+    const queryBenchmark = searchParams.get('benchmark')
+    setSelectedBenchmark(
+      benchmarks.find((benchmark) => benchmark.slug === queryBenchmark),
+    )
+    console.log(queryBenchmark)
+  }, [searchParams, benchmarks])
 
   const createQueryString = React.useCallback(
     (params: Record<string, string | null>) => {
@@ -64,10 +71,11 @@ export function BenchmarkChart({ benchmarks }: BenchmarkChartProps) {
   return (
     <div className="space-y-5">
       <Select
+        value={selectedBenchark?.slug}
         onValueChange={(value) => {
-          // setSelectedBenchmark(
-          //   benchmarks.find((benchmark) => benchmark.id === value),
-          // )
+          setSelectedBenchmark(
+            benchmarks.find((benchmark) => benchmark.slug === value),
+          )
           router.push(
             `${pathname}?${createQueryString({
               benchmark: value,
@@ -80,7 +88,7 @@ export function BenchmarkChart({ benchmarks }: BenchmarkChartProps) {
         </SelectTrigger>
         <SelectContent side="top">
           {benchmarks.map((benchmark) => (
-            <SelectItem key={benchmark.id} value={benchmark.id}>
+            <SelectItem key={benchmark.id} value={benchmark.slug}>
               {benchmark.name}
             </SelectItem>
           ))}
