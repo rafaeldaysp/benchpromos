@@ -12,37 +12,34 @@ export async function SiteHeader() {
 
   return (
     <header className="supports-backdrop-blur:bg-background/60 z-40 border-b bg-background/95 backdrop-blur">
-      <div className="container flex flex-col">
-        {/* MobileNav /> */}
-        <div className="flex h-14 items-center justify-between">
-          <div>
-            <Link href="/" className="font-bold">
-              Bench Promos
-            </Link>
-          </div>
+      {/* MobileNav /> */}
 
-          <div className="flex flex-1 justify-end">
-            <nav className="flex items-center space-x-2">
-              <Combobox />
-
-              <ModeToggle />
-
-              {user ? (
-                <UserAccountNav user={user} />
-              ) : (
-                <Link
-                  href="/sign-in"
-                  className={buttonVariants({ variant: 'secondary' })}
-                >
-                  Entrar
-                </Link>
-              )}
-            </nav>
-          </div>
+      <div className="container flex h-14 items-center justify-between gap-x-4">
+        <div>
+          <Link href="/" className="font-bold">
+            Bench Promos
+          </Link>
         </div>
 
-        <div className="self-center">
+        <div className="flex flex-1 justify-between">
           <MainNav />
+
+          <nav className="flex items-center space-x-2">
+            <Combobox />
+
+            <ModeToggle />
+
+            {user ? (
+              <UserAccountNav user={user} />
+            ) : (
+              <Link
+                href="/sign-in"
+                className={buttonVariants({ variant: 'secondary' })}
+              >
+                Entrar
+              </Link>
+            )}
+          </nav>
         </div>
       </div>
     </header>

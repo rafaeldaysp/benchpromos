@@ -73,7 +73,7 @@ export function ProductCard({
                 <StarFilledIcon className="  mr-1 h-4 w-4" />
               </TooltipTrigger>
               <TooltipContent>
-                <p>Já passou pelo canal!</p>
+                <p>Testado pelo canal!</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
