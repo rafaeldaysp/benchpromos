@@ -66,7 +66,7 @@ export function Products({
   const searchParams = useSearchParams()
   const [priceRange, setPriceRange] =
     React.useState<[number, number]>(productsPriceRange)
-  const debouncedPrice = useDebounce(priceRange, 500)
+  const debouncedPrice = useDebounce(priceRange, 1000)
   const [filters, setFilters] = React.useState(initialFilters)
   const [isPending, startTransition] = React.useTransition()
   const pathname = usePathname()
@@ -98,7 +98,7 @@ export function Products({
   React.useEffect(() => {
     const [min, max] = debouncedPrice
 
-    if (min === productsPriceRange[0] && max === productsPriceRange[1]) return
+    // if (min === productsPriceRange[0] && max === productsPriceRange[1]) return
 
     startTransition(() => {
       router.push(
@@ -153,7 +153,7 @@ export function Products({
                       type="number"
                       inputMode="numeric"
                       min={productsPriceRange[0]}
-                      max={productsPriceRange[0]}
+                      max={productsPriceRange[1]}
                       className="h-9"
                       value={priceRange[0]}
                       onChange={(e) => {
@@ -165,7 +165,7 @@ export function Products({
                     <Input
                       type="number"
                       inputMode="numeric"
-                      min={productsPriceRange[1]}
+                      min={productsPriceRange[0]}
                       max={productsPriceRange[1]}
                       className="h-9"
                       value={priceRange[1]}
