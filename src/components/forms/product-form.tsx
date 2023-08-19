@@ -147,6 +147,7 @@ export function ProductForm({ mode = 'create', product }: ProductFormProps) {
           'api-key': env.NEXT_PUBLIC_API_KEY,
         },
       },
+      refetchQueries: ['GetProducts'],
       onError(error, _clientOptions) {
         toast.error(error.message)
       },

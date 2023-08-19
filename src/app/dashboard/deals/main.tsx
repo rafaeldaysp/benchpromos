@@ -6,6 +6,7 @@ import * as React from 'react'
 import { toast } from 'sonner'
 
 import { DashboardItemCard } from '@/components/dashboard-item-card'
+import { DashboardProducts } from '@/components/dashboard-products'
 import { DealForm } from '@/components/forms/deal-form'
 import DealsLinkForm from '@/components/forms/deals-link-form'
 import { Icons } from '@/components/icons'
@@ -69,24 +70,20 @@ const DELETE_DEAL = gql`
 `
 
 interface DealsMainProps {
-  deals: (Deal & { cashback?: Pick<Cashback, 'value' | 'provider'> } & {
+  deals: (Deal & {
+    cashback?: Pick<Cashback, 'value' | 'provider'>
     coupon?: Pick<Coupon, 'discount' | 'code'>
-  })[]
-  products: (Pick<Product, 'id' | 'name' | 'imageUrl'> & {
-    category: Pick<Category, 'id' | 'name'>
+    product: Pick<Product, 'id' | 'name' | 'imageUrl'> & {
+      category: Pick<Category, 'id' | 'name'>
+    }
   })[]
   retailers: Retailer[]
   categories: Pick<Category, 'id' | 'name'>[]
 }
 
-export function DealsMain({
-  deals,
-  products,
-  retailers,
-  categories,
-}: DealsMainProps) {
+export function DealsMain({ deals, retailers, categories }: DealsMainProps) {
   const [selectedProduct, setSelectedProduct] =
-    React.useState<(typeof products)[number]>()
+    React.useState<(typeof deals)[number]['product']>()
   const [selectedRetailer, setSelectedRetailer] =
     React.useState<(typeof retailers)[number]>()
   const [selectedDealIds, setSelectedDealIds] = React.useState<string[]>([])
@@ -120,17 +117,12 @@ export function DealsMain({
       )
     })
     .map((deal) => {
-      const product = products.find(
-        (product) => product.id === deal.productId,
-      ) as (typeof products)[number]
-
       const retailer = retailers.find(
         (retailer) => retailer.id === deal.retailerId,
       ) as (typeof retailers)[number]
 
       return {
         ...deal,
-        product,
         retailer,
       }
     })
@@ -401,36 +393,27 @@ export function DealsMain({
         </TabsList>
 
         <TabsContent value="products">
-          {products.length > 0 ? (
-            <div className="space-y-4">
-              <Input placeholder="Pesquise por um produto..." />
-              <ScrollArea className="rounded-md border">
-                {products.map((product) => (
-                  <DashboardItemCard.Root
-                    key={product.id}
-                    className="cursor-pointer"
-                    onClick={() => {
-                      setSelectedProduct(product)
-                      setSelectedDealIds([])
-                      setSelectedCategory(undefined)
-                    }}
-                  >
-                    <DashboardItemCard.Image src={product.imageUrl} alt="" />
+          <DashboardProducts>
+            {({ products }) =>
+              products.map((product) => (
+                <DashboardItemCard.Root
+                  key={product.id}
+                  className="cursor-pointer"
+                  onClick={() => {
+                    setSelectedProduct(product)
+                    setSelectedDealIds([])
+                    setSelectedCategory(undefined)
+                  }}
+                >
+                  <DashboardItemCard.Image src={product.imageUrl} alt="" />
 
-                    <DashboardItemCard.Content>
-                      <p className="text-sm leading-7">{product.name}</p>
-                    </DashboardItemCard.Content>
-                  </DashboardItemCard.Root>
-                ))}
-              </ScrollArea>
-            </div>
-          ) : (
-            <div className="flex justify-center">
-              <p className="text-muted-foreground">
-                Nenhum produto encontrado.
-              </p>
-            </div>
-          )}
+                  <DashboardItemCard.Content>
+                    <p className="text-sm leading-7">{product.name}</p>
+                  </DashboardItemCard.Content>
+                </DashboardItemCard.Root>
+              ))
+            }
+          </DashboardProducts>
         </TabsContent>
 
         <TabsContent value="retailers">

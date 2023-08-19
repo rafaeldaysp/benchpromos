@@ -53,7 +53,7 @@ interface SalesProps {
 
 export function Sales({ userId }: SalesProps) {
   const [isPending, startTransition] = React.useTransition()
-  const [page, setPage] = React.useState(1)
+  const [hasMoreSales, setHasMoreSales] = React.useState(true)
 
   const { data, fetchMore } = useSuspenseQuery<{
     sales: (Sale & {
@@ -71,26 +71,33 @@ export function Sales({ userId }: SalesProps) {
     },
   })
 
-  const initialSales = data.sales
-  const [sales, setSales] = React.useState(initialSales)
+  const sales = data.sales
+  const page = Math.ceil(sales.length / SALES_PER_SCROLL)
 
   function onEntry() {
-    startTransition(async () => {
-      const { data } = await fetchMore({
+    startTransition(() => {
+      fetchMore({
         variables: {
           paginationInput: {
             limit: SALES_PER_SCROLL,
             page: page + 1,
           },
         },
-      })
+        updateQuery(previousResult, { fetchMoreResult }) {
+          if (!fetchMoreResult.sales.length) {
+            setHasMoreSales(false)
+          }
 
-      setSales([...sales, ...data.sales])
-      setPage((prev) => prev + 1)
+          const previousSales = previousResult.sales
+          const fetchMoreSales = fetchMoreResult.sales
+
+          fetchMoreResult.sales = [...previousSales, ...fetchMoreSales]
+
+          return { ...fetchMoreResult }
+        },
+      })
     })
   }
-
-  const hasMoreSales = SALES_PER_SCROLL * page <= sales.length
 
   return (
     <div className="my-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">

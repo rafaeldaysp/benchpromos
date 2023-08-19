@@ -69,7 +69,10 @@ function DashboardItemCardActions({
 }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cn('flex flex-col gap-2 self-center sm:flex-row', className)}
+      className={cn(
+        'flex flex-col flex-wrap justify-end gap-2 self-center sm:flex-row',
+        className,
+      )}
       {...props}
     >
       {children}

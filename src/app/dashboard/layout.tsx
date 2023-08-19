@@ -1,6 +1,6 @@
 import * as React from 'react'
 
-import { DashboardSidebarNav } from '@/components/dashboard-sidebar-nav'
+import { DashboardSidebarNav } from '@/components/layouts/dashboard-sidebar-nav'
 
 const sidebarNavItems = [
   {

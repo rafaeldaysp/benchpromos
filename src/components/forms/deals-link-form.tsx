@@ -74,6 +74,7 @@ export default function DealsLinkForm({
     coupons: Pick<Coupon, 'id' | 'code' | 'discount'>[]
     cashbacks: Pick<Cashback, 'id' | 'provider' | 'value'>[]
   }>(GET_COUPONS_AND_CASHBACKS_BY_RETAILER, {
+    fetchPolicy: 'network-only',
     variables: {
       retailerId,
     },

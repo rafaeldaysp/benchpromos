@@ -5,8 +5,8 @@ import { Separator } from '@/components/ui/separator'
 import type { Benchmark, BenchmarkResult, Product } from '@/types'
 import { BenchmarksMain } from './main'
 
-const GET_BENCHMARKS_AND_PRODUCTS = gql`
-  query GetBenchmarksAndProducts {
+const GET_BENCHMARKS = gql`
+  query GetBenchmarks {
     benchmarks {
       id
       name
@@ -19,13 +19,6 @@ const GET_BENCHMARKS_AND_PRODUCTS = gql`
           name
           imageUrl
         }
-      }
-    }
-    productsList: products {
-      products {
-        id
-        name
-        imageUrl
       }
     }
   }
@@ -42,11 +35,10 @@ export default async function BenchmarksDashboardPage() {
       products: Pick<Product, 'id' | 'name' | 'imageUrl'>[]
     }
   }>({
-    query: GET_BENCHMARKS_AND_PRODUCTS,
+    query: GET_BENCHMARKS,
   })
 
   const benchmarks = data.benchmarks
-  const products = data.productsList.products
 
   return (
     <div className="space-y-6">
@@ -57,7 +49,7 @@ export default async function BenchmarksDashboardPage() {
         </p>
       </div>
       <Separator />
-      <BenchmarksMain benchmarks={benchmarks} products={products} />
+      <BenchmarksMain benchmarks={benchmarks} />
     </div>
   )
 }

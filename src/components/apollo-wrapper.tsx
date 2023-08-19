@@ -18,7 +18,13 @@ function makeClient() {
   })
 
   return new NextSSRApolloClient({
-    cache: new NextSSRInMemoryCache(),
+    cache: new NextSSRInMemoryCache({
+      typePolicies: {
+        ProductPagination: {
+          keyFields: ['products'],
+        },
+      },
+    }),
     link:
       typeof window === 'undefined'
         ? ApolloLink.from([

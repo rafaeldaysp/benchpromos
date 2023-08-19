@@ -37,9 +37,7 @@ const GET_DEALS = gql`
         discount
         code
       }
-    }
-    productsList: products {
-      products {
+      product {
         id
         name
         imageUrl
@@ -62,14 +60,13 @@ const GET_DEALS = gql`
 
 export default async function DealsDashboardPage() {
   const { data } = await getClient().query<{
-    deals: (Deal & { cashback?: Pick<Cashback, 'value' | 'provider'> } & {
+    deals: (Deal & {
+      cashback?: Pick<Cashback, 'value' | 'provider'>
       coupon?: Pick<Coupon, 'discount' | 'code'>
-    })[]
-    productsList: {
-      products: (Pick<Product, 'id' | 'name' | 'imageUrl'> & {
+      product: Pick<Product, 'id' | 'name' | 'imageUrl'> & {
         category: Pick<Category, 'id' | 'name'>
-      })[]
-    }
+      }
+    })[]
     retailers: Retailer[]
     categories: Pick<Category, 'id' | 'name'>[]
   }>({
@@ -77,7 +74,6 @@ export default async function DealsDashboardPage() {
   })
 
   const deals = data.deals.map((deal) => removeNullValues(deal))
-  const products = data.productsList.products
   const retailers = data.retailers
   const categories = data.categories
 
@@ -90,12 +86,7 @@ export default async function DealsDashboardPage() {
         </p>
       </div>
       <Separator />
-      <DealsMain
-        deals={deals}
-        products={products}
-        retailers={retailers}
-        categories={categories}
-      />
+      <DealsMain deals={deals} retailers={retailers} categories={categories} />
     </div>
   )
 }

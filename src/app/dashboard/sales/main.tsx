@@ -6,6 +6,7 @@ import * as React from 'react'
 import { toast } from 'sonner'
 
 import { DashboardItemCard } from '@/components/dashboard-item-card'
+import { DashboardProducts } from '@/components/dashboard-products'
 import { SaleForm } from '@/components/forms/sale-form'
 import { Icons } from '@/components/icons'
 import {
@@ -44,17 +45,18 @@ const DELETE_SALE = gql`
 `
 
 interface SalesMainProps {
-  sales: Sale[]
-  products: (Pick<Product, 'slug' | 'name' | 'imageUrl'> & {
-    category: Pick<Category, 'id' | 'name'>
+  sales: (Sale & {
+    product: Pick<Product, 'slug' | 'name' | 'imageUrl'> & {
+      category: Pick<Category, 'id' | 'name'>
+    }
   })[]
 }
 
-export function SalesMain({ sales, products }: SalesMainProps) {
+export function SalesMain({ sales }: SalesMainProps) {
   const [selectedSale, setSelectedSale] =
     React.useState<(typeof sales)[number]>()
   const [selectedProduct, setSelectedProduct] =
-    React.useState<(typeof products)[number]>()
+    React.useState<(typeof sales)[number]['product']>()
   const [openTab, setOpenTab] = React.useState('sales')
   const { openDialogs, setOpenDialog } = useFormStore()
   const router = useRouter()
@@ -161,19 +163,36 @@ export function SalesMain({ sales, products }: SalesMainProps) {
                 />
               </DashboardItemCard.Actions>
             </DashboardItemCard.Root>
-            <div className="text-xs text-muted-foreground">
-              {!selectedSale
-                ? 'Obs: Ao criar uma nova promoção, este produto será automaticamente vinculado'
-                : selectedSale.productSlug === selectedProduct.slug
-                ? 'Obs: Este produto está vinculado à promoção selecionada'
-                : 'Obs: Este produto NÃO está vinculado à promoção selecionada. Para vincular, clique em editar e salve a promoção selecionada'}
-            </div>
           </div>
         )}
 
+        {selectedProduct && !selectedSale && (
+          <div className="text-xs text-muted-foreground">
+            Observação: Ao criar uma nova promoção, este produto será
+            automaticamente vinculado.
+          </div>
+        )}
+
+        {selectedProduct &&
+          selectedSale?.productSlug === selectedProduct?.slug && (
+            <div className="text-xs text-muted-foreground">
+              Observação: Este produto está vinculado à promoção selecionada.
+            </div>
+          )}
+
+        {selectedProduct &&
+          selectedSale &&
+          selectedSale?.productSlug !== selectedProduct?.slug && (
+            <div className="text-xs text-muted-foreground">
+              Observação: Este produto NÃO está vinculado à promoção
+              selecionada. Para vincular, clique em editar e salve a promoção
+              selecionada.
+            </div>
+          )}
+
         {selectedSale?.productSlug && !selectedProduct && (
           <div className="text-xs text-muted-foreground">
-            Observação: O produto vinculado a esta promoção foi removido. Para
+            Observação: O produto vinculado à esta promoção foi removido. Para
             salvar, clique em editar e salve a promoção selecionada.
           </div>
         )}
@@ -198,11 +217,7 @@ export function SalesMain({ sales, products }: SalesMainProps) {
                       className="cursor-pointer"
                       onClick={() => {
                         setSelectedSale(sale)
-                        setSelectedProduct(
-                          products.find(
-                            (product) => product.slug === sale.productSlug,
-                          ),
-                        )
+                        setSelectedProduct(sale.product)
                       }}
                     >
                       <p className="text-sm leading-7">{sale.title}</p>
@@ -282,31 +297,22 @@ export function SalesMain({ sales, products }: SalesMainProps) {
         </TabsContent>
 
         <TabsContent value="products">
-          {products.length > 0 ? (
-            <div className="space-y-4">
-              <Input placeholder="Pesquise por um produto..." />
-              <ScrollArea className="rounded-md border">
-                {products.map((product) => (
-                  <DashboardItemCard.Root
-                    key={product.slug}
-                    className="cursor-pointer"
-                    onClick={() => setSelectedProduct(product)}
-                  >
-                    <DashboardItemCard.Image src={product.imageUrl} alt="" />
-                    <DashboardItemCard.Content>
-                      <p className="text-sm leading-7">{product.name}</p>
-                    </DashboardItemCard.Content>
-                  </DashboardItemCard.Root>
-                ))}
-              </ScrollArea>
-            </div>
-          ) : (
-            <div className="flex justify-center">
-              <p className="text-muted-foreground">
-                Nenhum produto encontrado.
-              </p>
-            </div>
-          )}
+          <DashboardProducts>
+            {({ products }) =>
+              products.map((product) => (
+                <DashboardItemCard.Root
+                  key={product.slug}
+                  className="cursor-pointer"
+                  onClick={() => setSelectedProduct(product)}
+                >
+                  <DashboardItemCard.Image src={product.imageUrl} alt="" />
+                  <DashboardItemCard.Content>
+                    <p className="text-sm leading-7">{product.name}</p>
+                  </DashboardItemCard.Content>
+                </DashboardItemCard.Root>
+              ))
+            }
+          </DashboardProducts>
         </TabsContent>
       </Tabs>
     </div>

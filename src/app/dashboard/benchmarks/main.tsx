@@ -3,8 +3,11 @@
 import { gql, useMutation } from '@apollo/client'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
+import * as React from 'react'
 
 import { DashboardItemCard } from '@/components/dashboard-item-card'
+import { DashboardProducts } from '@/components/dashboard-products'
+import { columns, type BenchmarkData } from '@/components/data-table/columns'
 import { DataTable } from '@/components/data-table/data-table'
 import { BenchmarkForm } from '@/components/forms/benchmark-form'
 import { BenchmarkResultForm } from '@/components/forms/benchmark-result-form'
@@ -34,7 +37,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
 import type { Benchmark, BenchmarkResult, Product } from '@/types'
-import { type BenchmarkData, columns } from '@/components/data-table/columns'
 
 const DELETE_BENCHMARK = gql`
   mutation DeleteBenchmark($benchmarkId: ID!) {
@@ -50,10 +52,10 @@ interface BenchmarksMainProps {
       product: Pick<Product, 'id' | 'name' | 'imageUrl'>
     })[]
   })[]
-  products: Pick<Product, 'id' | 'name' | 'imageUrl'>[]
 }
 
-export function BenchmarksMain({ benchmarks, products }: BenchmarksMainProps) {
+export function BenchmarksMain({ benchmarks }: BenchmarksMainProps) {
+  const [benchmarkQuery, setBenchmarkQuery] = React.useState('')
   const { openDialogs, setOpenDialog } = useFormStore()
   const router = useRouter()
 
@@ -127,72 +129,85 @@ export function BenchmarksMain({ benchmarks, products }: BenchmarksMainProps) {
         <TabsContent value="benchmarks">
           {benchmarks.length > 0 ? (
             <div className="space-y-4">
-              <Input placeholder="Pesquise por um benchmark..." />
+              <Input
+                placeholder="Pesquise por um benchmark..."
+                value={benchmarkQuery}
+                onChange={(e) => setBenchmarkQuery(e.target.value)}
+              />
               <ScrollArea className="rounded-md border">
-                {benchmarks.map((benchmark) => (
-                  <DashboardItemCard.Root key={benchmark.id}>
-                    <DashboardItemCard.Content>
-                      <p className="text-sm leading-7">{benchmark.name}</p>
-                    </DashboardItemCard.Content>
-                    <DashboardItemCard.Actions>
-                      <Sheet
-                        open={
-                          openDialogs[`benchmarkUpdateForm.${benchmark.id}`]
-                        }
-                        onOpenChange={(open) =>
-                          setOpenDialog(
-                            `benchmarkUpdateForm.${benchmark.id}`,
-                            open,
-                          )
-                        }
-                      >
-                        <SheetTrigger asChild>
-                          <DashboardItemCard.Action icon={Icons.Edit} />
-                        </SheetTrigger>
-                        <SheetContent
-                          className="w-full space-y-4 overflow-auto sm:max-w-xl"
-                          side="left"
+                {benchmarks
+                  .filter((benchmark) =>
+                    benchmark.name
+                      .toLowerCase()
+                      .includes(benchmarkQuery.toLowerCase().trim()),
+                  )
+                  .map((benchmark) => (
+                    <DashboardItemCard.Root key={benchmark.id}>
+                      <DashboardItemCard.Content>
+                        <p className="text-sm leading-7">{benchmark.name}</p>
+                      </DashboardItemCard.Content>
+                      <DashboardItemCard.Actions>
+                        <Sheet
+                          open={
+                            openDialogs[`benchmarkUpdateForm.${benchmark.id}`]
+                          }
+                          onOpenChange={(open) =>
+                            setOpenDialog(
+                              `benchmarkUpdateForm.${benchmark.id}`,
+                              open,
+                            )
+                          }
                         >
-                          <SheetHeader>
-                            <SheetTitle>EDITAR BENCHMARK</SheetTitle>
-                          </SheetHeader>
-                          <BenchmarkForm mode="update" benchmark={benchmark} />
-                        </SheetContent>
-                      </Sheet>
+                          <SheetTrigger asChild>
+                            <DashboardItemCard.Action icon={Icons.Edit} />
+                          </SheetTrigger>
+                          <SheetContent
+                            className="w-full space-y-4 overflow-auto sm:max-w-xl"
+                            side="left"
+                          >
+                            <SheetHeader>
+                              <SheetTitle>EDITAR BENCHMARK</SheetTitle>
+                            </SheetHeader>
+                            <BenchmarkForm
+                              mode="update"
+                              benchmark={benchmark}
+                            />
+                          </SheetContent>
+                        </Sheet>
 
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <DashboardItemCard.Action
-                            variant="destructive"
-                            icon={Icons.Trash}
-                          />
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>
-                              Você tem certeza?
-                            </AlertDialogTitle>
-                            <AlertDialogDescription>
-                              Essa ação não pode ser desfeita.
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                            <AlertDialogAction
-                              onClick={() =>
-                                deleteBenchmark({
-                                  variables: { benchmarkId: benchmark.id },
-                                })
-                              }
-                            >
-                              Continuar
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
-                    </DashboardItemCard.Actions>
-                  </DashboardItemCard.Root>
-                ))}
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <DashboardItemCard.Action
+                              variant="destructive"
+                              icon={Icons.Trash}
+                            />
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>
+                                Você tem certeza?
+                              </AlertDialogTitle>
+                              <AlertDialogDescription>
+                                Essa ação não pode ser desfeita.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={() =>
+                                  deleteBenchmark({
+                                    variables: { benchmarkId: benchmark.id },
+                                  })
+                                }
+                              >
+                                Continuar
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </DashboardItemCard.Actions>
+                    </DashboardItemCard.Root>
+                  ))}
               </ScrollArea>
             </div>
           ) : (
@@ -205,54 +220,45 @@ export function BenchmarksMain({ benchmarks, products }: BenchmarksMainProps) {
         </TabsContent>
 
         <TabsContent value="products">
-          {products.length > 0 ? (
-            <div className="space-y-4">
-              <Input placeholder="Pesquise por um produto..." />
-              <ScrollArea className="rounded-md border">
-                {products.map((product) => (
-                  <DashboardItemCard.Root key={product.id}>
-                    <DashboardItemCard.Image src={product.imageUrl} alt="" />
+          <DashboardProducts>
+            {({ products }) =>
+              products.map((product) => (
+                <DashboardItemCard.Root key={product.id}>
+                  <DashboardItemCard.Image src={product.imageUrl} alt="" />
 
-                    <DashboardItemCard.Content>
-                      <p className="text-sm leading-7">{product.name}</p>
-                    </DashboardItemCard.Content>
-                    <DashboardItemCard.Actions>
-                      <Sheet
-                        open={
-                          openDialogs[`benchmarkResultCreateForm.${product.id}`]
-                        }
-                        onOpenChange={(open) =>
-                          setOpenDialog(
-                            `benchmarkResultCreateForm.${product.id}`,
-                            open,
-                          )
-                        }
+                  <DashboardItemCard.Content>
+                    <p className="text-sm leading-7">{product.name}</p>
+                  </DashboardItemCard.Content>
+                  <DashboardItemCard.Actions>
+                    <Sheet
+                      open={
+                        openDialogs[`benchmarkResultCreateForm.${product.id}`]
+                      }
+                      onOpenChange={(open) =>
+                        setOpenDialog(
+                          `benchmarkResultCreateForm.${product.id}`,
+                          open,
+                        )
+                      }
+                    >
+                      <SheetTrigger asChild>
+                        <DashboardItemCard.Action icon={Icons.Plus} />
+                      </SheetTrigger>
+                      <SheetContent
+                        className="w-full space-y-4 overflow-auto sm:max-w-xl"
+                        side="left"
                       >
-                        <SheetTrigger asChild>
-                          <DashboardItemCard.Action icon={Icons.Plus} />
-                        </SheetTrigger>
-                        <SheetContent
-                          className="w-full space-y-4 overflow-auto sm:max-w-xl"
-                          side="left"
-                        >
-                          <SheetHeader>
-                            <SheetTitle>ADICIONAR RESULTADO</SheetTitle>
-                          </SheetHeader>
-                          <BenchmarkResultForm productId={product.id} />
-                        </SheetContent>
-                      </Sheet>
-                    </DashboardItemCard.Actions>
-                  </DashboardItemCard.Root>
-                ))}
-              </ScrollArea>
-            </div>
-          ) : (
-            <div className="flex justify-center">
-              <p className="text-muted-foreground">
-                Nenhum produto encontrado.
-              </p>
-            </div>
-          )}
+                        <SheetHeader>
+                          <SheetTitle>ADICIONAR RESULTADO</SheetTitle>
+                        </SheetHeader>
+                        <BenchmarkResultForm productId={product.id} />
+                      </SheetContent>
+                    </Sheet>
+                  </DashboardItemCard.Actions>
+                </DashboardItemCard.Root>
+              ))
+            }
+          </DashboardProducts>
         </TabsContent>
       </Tabs>
     </div>

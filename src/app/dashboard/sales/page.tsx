@@ -6,8 +6,8 @@ import type { Category, Product, Sale } from '@/types'
 import { removeNullValues } from '@/utils'
 import { SalesMain } from './main'
 
-const GET_SALES_AND_PRODUCTS = gql`
-  query GetSalesAndProducts {
+const GET_SALES_AND_PRODUCT = gql`
+  query GetSalesAndProduct {
     sales {
       id
       title
@@ -24,10 +24,7 @@ const GET_SALES_AND_PRODUCTS = gql`
       createdAt
       categoryId
       productSlug
-    }
-    productsList: products {
-      pages
-      products {
+      product {
         name
         slug
         imageUrl
@@ -42,18 +39,16 @@ const GET_SALES_AND_PRODUCTS = gql`
 
 export default async function SalesDashboardPage() {
   const { data } = await getClient().query<{
-    sales: Sale[]
-    productsList: {
-      products: (Pick<Product, 'slug' | 'name' | 'imageUrl'> & {
+    sales: (Sale & {
+      product: Pick<Product, 'slug' | 'name' | 'imageUrl'> & {
         category: Pick<Category, 'id' | 'name'>
-      })[]
-    }
+      }
+    })[]
   }>({
-    query: GET_SALES_AND_PRODUCTS,
+    query: GET_SALES_AND_PRODUCT,
   })
 
   const sales = data.sales.map((sale) => removeNullValues(sale))
-  const products = data.productsList.products
 
   return (
     <div className="space-y-6">
@@ -64,7 +59,7 @@ export default async function SalesDashboardPage() {
         </p>
       </div>
       <Separator />
-      <SalesMain sales={sales} products={products} />
+      <SalesMain sales={sales} />
     </div>
   )
 }
