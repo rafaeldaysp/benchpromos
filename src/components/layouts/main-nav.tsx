@@ -3,7 +3,6 @@
 import * as React from 'react'
 import Link from 'next/link'
 
-import { siteConfig } from '@/config/site'
 import { cn } from '@/lib/utils'
 import {
   NavigationMenu,
@@ -15,41 +14,55 @@ import {
   navigationMenuTriggerStyle,
 } from '@/components/ui/navigation-menu'
 
-export function MainNav() {
+interface MainNavProps {
+  options: {
+    title: string
+    slug?: string
+    content?: { title: string; slug: string }[]
+  }[]
+}
+
+export function MainNav({ options }: MainNavProps) {
   return (
     <NavigationMenu>
       <NavigationMenuList>
-        <NavigationMenuItem>
-          <NavigationMenuTrigger>Categorias</NavigationMenuTrigger>
-          <NavigationMenuContent>
-            <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-              <li>
-                <div>
-                  <NavigationMenuLink asChild>
-                    <Link
-                      href="/notebooks"
-                      className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                    >
-                      dasdasd
-                    </Link>
-                  </NavigationMenuLink>
-                </div>
-                <ul>
-                  <li>
-                    <NavigationMenuLink asChild>
-                      <Link
-                        href="/notebooks"
-                        className="block select-none space-y-1 rounded-md p-3 text-sm leading-none text-muted-foreground no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                      >
-                        dasdasd
-                      </Link>
-                    </NavigationMenuLink>
-                  </li>
-                </ul>
-              </li>
-            </ul>
-          </NavigationMenuContent>
-        </NavigationMenuItem>
+        {options.map((option) => (
+          <NavigationMenuItem key={option.title}>
+            {option.content ? (
+              <>
+                <NavigationMenuTrigger className="px-3">
+                  {option.title}
+                </NavigationMenuTrigger>
+                <NavigationMenuContent>
+                  <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[500px]">
+                    {option.content.map((suboption) => (
+                      <li key={suboption.slug}>
+                        <NavigationMenuLink asChild>
+                          <Link
+                            href={`/${suboption.slug}`}
+                            className={cn(
+                              navigationMenuTriggerStyle(),
+                              'w-full justify-start',
+                            )}
+                          >
+                            {suboption.title}
+                          </Link>
+                        </NavigationMenuLink>
+                      </li>
+                    ))}
+                  </ul>
+                </NavigationMenuContent>
+              </>
+            ) : (
+              <NavigationMenuLink
+                className={navigationMenuTriggerStyle()}
+                href={option.slug}
+              >
+                {option.title}
+              </NavigationMenuLink>
+            )}
+          </NavigationMenuItem>
+        ))}
       </NavigationMenuList>
     </NavigationMenu>
   )
