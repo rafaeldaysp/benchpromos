@@ -1,5 +1,8 @@
 'use client'
 
+import dayjs from 'dayjs'
+import 'dayjs/locale/pt-br'
+import relativeTime from 'dayjs/plugin/relativeTime'
 import Image from 'next/image'
 import Link from 'next/link'
 import * as React from 'react'
@@ -30,6 +33,9 @@ import {
 import { cn } from '@/lib/utils'
 import { type Reaction } from '@/types'
 import { priceFormatter } from '@/utils/formatter'
+
+dayjs.extend(relativeTime)
+dayjs.locale('pt-br')
 
 interface SaleCardProps extends React.HTMLAttributes<HTMLDivElement> {
   sale: {
@@ -123,19 +129,11 @@ export function SaleCard({ sale, className, userId, ...props }: SaleCardProps) {
           )}
           {...props}
         >
-          <CardHeader className="flex-row items-center text-sm">
+          <CardHeader className="flex-row items-baseline text-sm">
             <span className="flex-1">{sale.category.name}</span>
-            {sale.label && (
-              <Badge
-                variant="outline"
-                className="bg-amber-200 text-black dark:bg-amber-200"
-              >
-                {sale.label}
-              </Badge>
-            )}
+            {sale.label && <Badge variant="outline">{sale.label}</Badge>}
             <span className="flex-1 text-end">
-              {/* {dayjs(sale.createdAt).fromNow()} */}
-              foda-se
+              {dayjs(sale.createdAt).fromNow()}
             </span>
           </CardHeader>
 

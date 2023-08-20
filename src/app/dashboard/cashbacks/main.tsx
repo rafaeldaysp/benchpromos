@@ -31,6 +31,7 @@ import {
 import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
 import { type Retailer, type Cashback } from '@/types'
+import { cn } from '@/lib/utils'
 
 const DELETE_CASHBACK = gql`
   mutation DeleteCashback($cashbackId: ID!) {
@@ -109,7 +110,11 @@ export function CashbacksMain({ cashbacks }: CashbacksMainProps) {
 
       {/* Cashbacks */}
       {cashbacks.length > 0 ? (
-        <ScrollArea className="rounded-md border">
+        <ScrollArea
+          className={cn('rounded-md border', {
+            'h-[600px]': cashbacks.length > 8,
+          })}
+        >
           {cashbacks.map((cashback) => (
             <DashboardItemCard.Root key={cashback.id}>
               <DashboardItemCard.Content

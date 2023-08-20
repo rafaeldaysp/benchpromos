@@ -33,6 +33,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
+import { cn } from '@/lib/utils'
 import type { Category, Product, Sale } from '@/types'
 import { priceFormatter } from '@/utils/formatter'
 
@@ -208,7 +209,11 @@ export function SalesMain({ sales }: SalesMainProps) {
           {sales.length > 0 ? (
             <div className="space-y-4">
               <Input placeholder="Pesquise por uma promoção..." />
-              <ScrollArea className="rounded-md border">
+              <ScrollArea
+                className={cn('rounded-md border', {
+                  'h-[600px]': sales.length > 6,
+                })}
+              >
                 {sales.map((sale) => (
                   <DashboardItemCard.Root key={sale.id}>
                     <DashboardItemCard.Image src={sale.imageUrl} alt="" />

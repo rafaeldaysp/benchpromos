@@ -32,6 +32,7 @@ import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
 import { type Coupon, type Retailer } from '@/types'
 import { couponFormatter } from '@/utils/formatter'
+import { cn } from '@/lib/utils'
 
 const DELETE_COUPON = gql`
   mutation DeleteCoupon($couponId: ID!) {
@@ -110,7 +111,11 @@ export function CouponsMain({ coupons }: CouponsMainProps) {
 
       {/* Coupons */}
       {coupons.length > 0 ? (
-        <ScrollArea className="rounded-md border">
+        <ScrollArea
+          className={cn('rounded-md border', {
+            'h-[600px]': coupons.length > 8,
+          })}
+        >
           {coupons.map((coupon) => (
             <DashboardItemCard.Root key={coupon.id}>
               <DashboardItemCard.Content

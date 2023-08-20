@@ -12,14 +12,14 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { cn } from '@/lib/utils'
-import { priceFormatter } from '@/utils/formatter'
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from './ui/tooltip'
+} from '@/components/ui/tooltip'
+import { cn } from '@/lib/utils'
+import { priceFormatter } from '@/utils/formatter'
 
 interface ProductCardProps extends React.HTMLAttributes<HTMLDivElement> {
   product: {
@@ -56,7 +56,7 @@ export function ProductCard({
   ...props
 }: ProductCardProps) {
   const bestDeal = product.deals[0]
-  console.log(bestDeal)
+
   return (
     <Card
       className={cn(
@@ -66,7 +66,7 @@ export function ProductCard({
       {...props}
     >
       {!product.reviewUrl && (
-        <div className="absolute right-2 top-2">
+        <div className="absolute left-2 top-2">
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger>
@@ -97,12 +97,14 @@ export function ProductCard({
       </Link>
 
       <CardContent className="grid flex-1 gap-2.5 p-4">
-        <Link
-          aria-label={`Visualizar detalhes de ${product.name}`}
-          href={`/${product.category.slug}/${product.slug}`}
-        >
-          <CardTitle>{product.name}</CardTitle>
-        </Link>
+        <CardTitle>
+          <Link
+            aria-label={`Visualizar detalhes de ${product.name}`}
+            href={`/${product.category.slug}/${product.slug}`}
+          >
+            {product.name}
+          </Link>
+        </CardTitle>
 
         <CardDescription>
           Menor preço via <strong>{bestDeal.retailer.name}</strong>

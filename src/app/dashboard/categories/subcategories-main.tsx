@@ -36,6 +36,7 @@ import {
 } from '@/components/ui/sheet'
 import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
+import { cn } from '@/lib/utils'
 import { type Category } from '@/types'
 import { reorder } from '@/utils'
 
@@ -156,7 +157,11 @@ export function SubcategoriesMain({ category }: SubcategoriesMainProps) {
       {/* Subcategories */}
       {subcategories.length > 0 ? (
         <DragDropContext onDragEnd={onDragEnd}>
-          <ScrollArea className="rounded-md border bg-muted-foreground/5 p-2">
+          <ScrollArea
+            className={cn('rounded-md border bg-muted-foreground/5 p-2', {
+              'h-[300px]': subcategories.length > 4,
+            })}
+          >
             <Droppable droppableId="subcategories-droppable">
               {(provided) => (
                 <div ref={provided.innerRef} {...provided.droppableProps}>

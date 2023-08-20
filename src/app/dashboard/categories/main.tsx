@@ -38,9 +38,10 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
+import { cn } from '@/lib/utils'
 import { type Category, type Filter } from '@/types'
 import { reorder } from '@/utils'
-import { FiltersMain } from './filters.main'
+import { FiltersMain } from './filters-main'
 import { SubcategoriesMain } from './subcategories-main'
 
 const UPDATE_CATEGORIES_ORDER = gql`
@@ -202,7 +203,11 @@ export function CategoriesMain({
       {/* Categories */}
       {categories.length > 0 ? (
         <DragDropContext onDragEnd={onDragEnd}>
-          <ScrollArea className="rounded-md border bg-muted-foreground/5 p-2">
+          <ScrollArea
+            className={cn('rounded-md border bg-muted-foreground/5 p-2', {
+              'h-[600px]': categories.length > 8,
+            })}
+          >
             <Droppable droppableId="categories-droppable">
               {(provided) => (
                 <div ref={provided.innerRef} {...provided.droppableProps}>

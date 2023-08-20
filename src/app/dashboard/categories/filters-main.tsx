@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import * as React from 'react'
 import { toast } from 'sonner'
 
+import { DashboardItemCard } from '@/components/dashboard-item-card'
 import { Icons } from '@/components/icons'
 import {
   AlertDialog,
@@ -36,7 +37,8 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet'
 import { env } from '@/env.mjs'
-import { type Category, type Filter } from '@/types'
+import { cn } from '@/lib/utils'
+import type { Category, Filter } from '@/types'
 
 const CREATE_FILTER = gql`
   mutation CreateFilter($input: CreateFilterInput!) {
@@ -111,39 +113,36 @@ export function FiltersMain({ category }: FiltersMainProps) {
       </div>
 
       {category.filters.length > 0 ? (
-        <ScrollArea className="rounded-md border">
+        <ScrollArea
+          className={cn('rounded-md border bg-muted-foreground/5 p-2', {
+            'h-[300px]': category.filters.length > 4,
+          })}
+        >
           {category.filters.map((filter) => (
-            <div
-              key={filter.id}
-              className="flex items-start gap-6 rounded-md px-8 py-4 hover:bg-muted/20"
-            >
-              <div className="flex flex-1 flex-col gap-y-2">
+            <DashboardItemCard.Root key={filter.id}>
+              <DashboardItemCard.Content>
                 <p className="text-sm leading-7">{filter.name}</p>
                 <span className="text-xs text-muted-foreground">
                   {filter.options.map((option) => option.value).join(' • ')}
                 </span>
-              </div>
-
-              <div className="flex gap-2 self-center">
+              </DashboardItemCard.Content>
+              <DashboardItemCard.Actions>
                 <FilterOptionModal filter={filter} />
 
                 <FilterModal categoryId={category.id} filter={filter} />
 
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
-                    <Button variant="destructive" size="icon">
-                      <Icons.Trash className="h-4 w-4" />
-                    </Button>
+                    <DashboardItemCard.Action
+                      variant="destructive"
+                      icon={Icons.Trash}
+                    />
                   </AlertDialogTrigger>
                   <AlertDialogContent>
                     <AlertDialogHeader>
-                      <AlertDialogTitle>
-                        Are you absolutely sure?
-                      </AlertDialogTitle>
+                      <AlertDialogTitle>Você tem certeza?</AlertDialogTitle>
                       <AlertDialogDescription>
-                        This action cannot be undone. This will permanently
-                        delete your account and remove your data from our
-                        servers.
+                        Essa ação não pode ser desfeita.
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
@@ -160,8 +159,8 @@ export function FiltersMain({ category }: FiltersMainProps) {
                     </AlertDialogFooter>
                   </AlertDialogContent>
                 </AlertDialog>
-              </div>
-            </div>
+              </DashboardItemCard.Actions>
+            </DashboardItemCard.Root>
           ))}
         </ScrollArea>
       ) : (
@@ -225,13 +224,14 @@ export function FilterModal({ categoryId, filter }: FilterModalProps) {
           </DialogTitle>
           <DialogDescription></DialogDescription>
         </DialogHeader>
-        <div className="flex gap-x-2">
+        <form className="flex gap-x-2">
           <Input
             placeholder="Processador"
             value={filterInput}
             onChange={(e) => setFilterInput(e.target.value)}
           />
           <Button
+            type="submit"
             disabled={!filterInput || isLoading}
             onClick={() =>
               mutateFilter({
@@ -247,7 +247,7 @@ export function FilterModal({ categoryId, filter }: FilterModalProps) {
           >
             {!filter ? 'Cadastrar' : 'Atualizar'}
           </Button>
-        </div>
+        </form>
       </DialogContent>
     </Dialog>
   )
@@ -309,13 +309,14 @@ export function FilterOptionModal({ filter }: FilterOptionModalProps) {
           <SheetTitle>ATUALIZAR OPÇÕES DO FILTRO</SheetTitle>
         </SheetHeader>
         <div className="space-y-8">
-          <div className="flex gap-x-2">
+          <form className="flex gap-x-2">
             <Input
               placeholder="I5 13450HX"
               value={filterOptionInput}
               onChange={(e) => setFilterOptionInput(e.target.value)}
             />
             <Button
+              type="submit"
               variant="outline"
               disabled={!filterOptionInput}
               onClick={() =>
@@ -331,13 +332,13 @@ export function FilterOptionModal({ filter }: FilterOptionModalProps) {
             >
               Adicionar
             </Button>
-          </div>
+          </form>
           {filter.options.length > 0 ? (
             <div className="rounded-md border">
               {filter.options?.map((option) => (
                 <div
                   key={option.id}
-                  className="flex items-center justify-between rounded-md bg-muted px-4 py-2"
+                  className="flex items-center justify-between rounded-md px-4 py-2"
                 >
                   <p className="text-sm">{option.value}</p>
                   <Button

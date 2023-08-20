@@ -31,6 +31,7 @@ import {
 import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
 import { type Retailer } from '@/types'
+import { cn } from '@/lib/utils'
 
 const DELETE_RETAILER = gql`
   mutation DeleteRetailer($retailerId: ID!) {
@@ -104,7 +105,11 @@ export function RetailersMain({ retailers }: RetailersMainProps) {
 
       {/* Retailers */}
       {retailers.length > 0 ? (
-        <ScrollArea className="rounded-md border">
+        <ScrollArea
+          className={cn('rounded-md border', {
+            'h-[600px]': retailers.length > 8,
+          })}
+        >
           {retailers.map((retailer) => (
             <DashboardItemCard.Root key={retailer.id}>
               <DashboardItemCard.Content

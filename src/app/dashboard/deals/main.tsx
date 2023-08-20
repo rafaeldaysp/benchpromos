@@ -280,7 +280,11 @@ export function DealsMain({ deals, retailers, categories }: DealsMainProps) {
         </div>
 
         {filteredDeals.length > 0 ? (
-          <ScrollArea className="rounded-md border">
+          <ScrollArea
+            className={cn('rounded-md border', {
+              'h-[400px]': filteredDeals.length > 4,
+            })}
+          >
             {filteredDeals.map((deal) => (
               <DashboardItemCard.Root
                 key={deal.id}
@@ -420,7 +424,11 @@ export function DealsMain({ deals, retailers, categories }: DealsMainProps) {
           {retailers.length > 0 ? (
             <div className="space-y-4">
               <Input placeholder="Pesquise por um varejista..." />
-              <ScrollArea className="rounded-md border">
+              <ScrollArea
+                className={cn('rounded-md border', {
+                  'h-[600px]': retailers.length > 8,
+                })}
+              >
                 {retailers.map((retailer) => (
                   <DashboardItemCard.Root
                     key={retailer.id}

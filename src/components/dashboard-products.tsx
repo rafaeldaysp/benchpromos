@@ -9,6 +9,7 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { useDebounce } from '@/hooks/use-debounce'
 import type { Category, Product } from '@/types'
 import { removeNullValues } from '@/utils'
+import { cn } from '@/lib/utils'
 
 const PRODUCTS_PER_PAGE = 12
 
@@ -129,14 +130,18 @@ export function DashboardProducts({ children }: DashboardProductsProps) {
   const hasMoreProducts = page < pageCount
 
   return (
-    <div className="space-y-4">
+    <div className="max-h-[300px] space-y-4">
       <Input
         placeholder="Pesquise por um produto..."
         value={query}
         onChange={(e) => setQuery(e.target.value)}
       />
       {products.length > 0 ? (
-        <ScrollArea className="rounded-md border">
+        <ScrollArea
+          className={cn('rounded-md border', {
+            'h-[600px]': products.length > 6,
+          })}
+        >
           {children({ products })}
           {isPending ? (
             <div className="flex justify-center py-4">
