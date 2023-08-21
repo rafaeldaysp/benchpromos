@@ -13,7 +13,7 @@ export async function SiteHeader() {
   const options = await headerOptions()
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b bg-background">
+    <header className="sticky top-0 z-40 w-full bg-background">
       <div className="container flex h-14 items-center">
         <MainNav options={options} />
         {/* MobileNav /> */}
@@ -37,6 +37,7 @@ export async function SiteHeader() {
           </nav>
         </div>
       </div>
+      <div className="h-1 w-full bg-gradient-to-r from-background via-primary to-background" />
     </header>
   )
 }

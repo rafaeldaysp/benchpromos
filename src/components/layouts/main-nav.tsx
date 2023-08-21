@@ -6,10 +6,12 @@ import Link from 'next/link'
 import {
   NavigationMenu,
   NavigationMenuContent,
+  NavigationMenuIndicator,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
   NavigationMenuTrigger,
+  NavigationMenuViewport,
   navigationMenuTriggerStyle,
 } from '@/components/ui/navigation-menu'
 import { siteConfig } from '@/config/site'
@@ -53,7 +55,7 @@ export function MainNav({ options }: MainNavProps) {
                     {option.title}
                   </NavigationMenuTrigger>
                   <NavigationMenuContent>
-                    <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[500px]">
+                    <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2">
                       {option.content.map((suboption) => (
                         <li key={suboption.slug}>
                           <NavigationMenuLink asChild>
@@ -82,7 +84,11 @@ export function MainNav({ options }: MainNavProps) {
               )}
             </NavigationMenuItem>
           ))}
+          <NavigationMenuIndicator>
+            <div className="relative top-[70%] h-[10px] w-[10px] rotate-[45deg] rounded-tl-[2px]" />
+          </NavigationMenuIndicator>
         </NavigationMenuList>
+        <NavigationMenuViewport />
       </NavigationMenu>
     </div>
   )
