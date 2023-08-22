@@ -6,7 +6,7 @@ export default async function Home() {
 
   return (
     <div className="px-4 sm:container">
-      <Sales userId={user?.id} />
+      <Sales user={user} />
     </div>
   )
 }

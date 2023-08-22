@@ -1,5 +1,6 @@
 'use client'
 
+import { StarFilledIcon } from '@radix-ui/react-icons'
 import dayjs from 'dayjs'
 import 'dayjs/locale/pt-br'
 import relativeTime from 'dayjs/plugin/relativeTime'
@@ -33,6 +34,7 @@ import {
 import { cn } from '@/lib/utils'
 import { type Reaction } from '@/types'
 import { priceFormatter } from '@/utils/formatter'
+import { Highlight } from './sale-highlight'
 
 dayjs.extend(relativeTime)
 dayjs.locale('pt-br')
@@ -45,6 +47,7 @@ interface SaleCardProps extends React.HTMLAttributes<HTMLDivElement> {
     imageUrl: string
     url: string
     price: number
+    highlight: boolean
     installments?: number
     totalInstallmentPrice?: number
     caption?: string
@@ -63,16 +66,16 @@ interface SaleCardProps extends React.HTMLAttributes<HTMLDivElement> {
     }[]
     reactions: Reaction[]
   }
-  userId?: string
+  user?: { id: string; isAdmin: boolean }
 }
 
-export function SaleCard({ sale, className, userId, ...props }: SaleCardProps) {
+export function SaleCard({ sale, className, user, ...props }: SaleCardProps) {
   const [currentReactions, setCurrentReactions] = React.useState<Reaction[]>(
     sale.reactions,
   )
 
   const onReact = (content: string) => {
-    if (!userId) return
+    if (!user) return
 
     const sortedReactions = (reactions: Reaction[]) =>
       reactions
@@ -87,14 +90,14 @@ export function SaleCard({ sale, className, userId, ...props }: SaleCardProps) {
       setCurrentReactions(
         sortedReactions([
           ...currentReactions,
-          { content, users: [{ id: userId }] },
+          { content, users: [{ id: user.id }] },
         ]),
       )
       return
     }
 
     const newCurrentReactions = reaction.users.some(
-      (user) => user.id === userId,
+      (reactionUser) => reactionUser.id === user.id,
     )
       ? [
           ...currentReactions.filter(
@@ -102,14 +105,18 @@ export function SaleCard({ sale, className, userId, ...props }: SaleCardProps) {
           ),
           {
             content,
-            users: [...reaction.users.filter((user) => user.id !== userId)],
+            users: [
+              ...reaction.users.filter(
+                (reactionUser) => reactionUser.id !== user.id,
+              ),
+            ],
           },
         ]
       : [
           ...currentReactions.filter(
             (reaction) => reaction.content !== content,
           ),
-          { content, users: [...reaction.users, { id: userId }] },
+          { content, users: [...reaction.users, { id: user.id }] },
         ]
 
     setCurrentReactions(
@@ -124,21 +131,26 @@ export function SaleCard({ sale, className, userId, ...props }: SaleCardProps) {
       <ContextMenuTrigger asChild>
         <Card
           className={cn(
-            'flex flex-col overflow-hidden transition-colors hover:bg-muted/50',
+            'relative flex flex-col overflow-hidden transition-colors hover:bg-muted/50',
             className,
           )}
           {...props}
         >
+          <Highlight
+            sale={{ highlight: sale.highlight, id: sale.id }}
+            user={user}
+          />
+
           <CardHeader className="flex-row items-baseline text-sm">
             <span className="flex-1">{sale.category.name}</span>
-            {sale.label && <Badge variant="outline">{sale.label}</Badge>}
+
             <span className="flex-1 text-end">
               {dayjs(sale.createdAt).fromNow()}
             </span>
           </CardHeader>
 
           <CardContent className="flex-1 space-y-2.5">
-            <CardTitle>
+            <CardTitle className="space-x-1">
               <Link href={`/promocao/${sale.id}/${sale.slug}`}>
                 {sale.title}
               </Link>
@@ -162,6 +174,12 @@ export function SaleCard({ sale, className, userId, ...props }: SaleCardProps) {
               <CardDescription className="line-clamp-3">
                 {sale.caption}
               </CardDescription>
+            )}
+            {sale.label && (
+              <Badge variant="default">
+                <StarFilledIcon className="mr-1" />
+                {sale.label}
+              </Badge>
             )}
 
             <div className="flex flex-col">
@@ -191,7 +209,7 @@ export function SaleCard({ sale, className, userId, ...props }: SaleCardProps) {
             {sale.coupon && (
               <div>
                 <span className="text-muted-foreground">Com cupom</span>
-                <div className="flex items-center overflow-hidden rounded-full border bg-amber-200 pl-2 text-black dark:bg-amber-200">
+                <div className="flex items-center overflow-hidden rounded-full border pl-2">
                   <Icons.Tag className="mr-2 h-4 w-4" />
                   <span className="flex-1 overflow-hidden text-sm font-medium uppercase tracking-widest">
                     {sale.coupon}
@@ -224,7 +242,7 @@ export function SaleCard({ sale, className, userId, ...props }: SaleCardProps) {
           <CardFooter className="flex items-center justify-between gap-x-2">
             <Reactions
               saleId={sale.id}
-              userId={userId}
+              userId={user?.id}
               reactions={currentReactions}
               onReact={onReact}
             />

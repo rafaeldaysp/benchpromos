@@ -30,6 +30,7 @@ const GET_SALES = gql`
       createdAt
       categoryId
       productSlug
+      highlight
       category {
         name
         slug
@@ -48,10 +49,10 @@ const GET_SALES = gql`
 `
 
 interface SalesProps {
-  userId?: string
+  user?: { id: string; isAdmin: boolean }
 }
 
-export function Sales({ userId }: SalesProps) {
+export function Sales({ user }: SalesProps) {
   const [isPending, startTransition] = React.useTransition()
   const [hasMoreSales, setHasMoreSales] = React.useState(true)
 
@@ -102,7 +103,7 @@ export function Sales({ userId }: SalesProps) {
   return (
     <div className="my-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {sales.map((sale) => (
-        <SaleCard key={sale.id} sale={sale} userId={userId} />
+        <SaleCard key={sale.id} sale={sale} user={user} />
       ))}
       {isPending ? (
         Array.from({ length: SALES_PER_SCROLL }).map((_, i) => (

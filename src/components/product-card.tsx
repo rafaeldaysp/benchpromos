@@ -12,14 +12,9 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip'
 import { cn } from '@/lib/utils'
 import { priceFormatter } from '@/utils/formatter'
+import { Badge } from './ui/badge'
 
 interface ProductCardProps extends React.HTMLAttributes<HTMLDivElement> {
   product: {
@@ -65,7 +60,7 @@ export function ProductCard({
       )}
       {...props}
     >
-      {!product.reviewUrl && (
+      {/* {!product.reviewUrl && (
         <div className="absolute left-2 top-2">
           <TooltipProvider>
             <Tooltip>
@@ -78,7 +73,7 @@ export function ProductCard({
             </Tooltip>
           </TooltipProvider>
         </div>
-      )}
+      )} */}
       <Link
         aria-label={`Visualizar detalhes de ${product.name}`}
         href={`/${product.category.slug}/${product.slug}`}
@@ -105,6 +100,13 @@ export function ProductCard({
             {product.name}
           </Link>
         </CardTitle>
+
+        {!product.reviewUrl && (
+          <Badge variant="default" className="w-fit">
+            <StarFilledIcon className="mr-1" />
+            TESTADO PELO CANAL
+          </Badge>
+        )}
 
         <CardDescription>
           Menor preço via <strong>{bestDeal.retailer.name}</strong>

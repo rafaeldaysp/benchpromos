@@ -90,6 +90,7 @@ export type Sale = {
   url: string
   price: number
   categoryId: string
+  highlight: boolean
   installments?: number
   totalInstallmentPrice?: number
   caption?: string
