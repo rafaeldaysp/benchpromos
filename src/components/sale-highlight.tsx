@@ -1,13 +1,13 @@
 'use client'
 
 import { gql, useMutation } from '@apollo/client'
-import { BookmarkFilledIcon, BookmarkIcon } from '@radix-ui/react-icons'
 import { useRouter } from 'next/navigation'
 
 import { getCurrentUserToken } from '@/app/_actions/user'
-import { cn } from '@/lib/utils'
 import { type Sale } from '@/types'
 import { toast } from 'sonner'
+import { Icons } from './icons'
+import { ContextMenuItem } from './ui/context-menu'
 
 const TOGGLE_HIGHLIGHT = gql`
   mutation ToggleHighlight($id: ID!) {
@@ -38,8 +38,6 @@ export function Highlight({ sale, user }: HighlightProps) {
   async function handleToggleHighlight(id: string, isAdmin?: boolean) {
     if (!isAdmin) return
 
-    console.log('oi')
-
     const token = await getCurrentUserToken()
 
     await toggleHighlight({
@@ -55,21 +53,11 @@ export function Highlight({ sale, user }: HighlightProps) {
   }
 
   return (
-    <div className="absolute right-1.5 top-[-2px]">
-      {sale.highlight ? (
-        <BookmarkFilledIcon
-          className={cn({ 'cursor-pointer': user?.isAdmin })}
-          onClick={() => handleToggleHighlight(sale.id, user?.isAdmin)}
-        />
-      ) : (
-        <BookmarkIcon
-          className={cn({
-            'cursor-pointer': user?.isAdmin,
-            hidden: !user?.isAdmin,
-          })}
-          onClick={() => handleToggleHighlight(sale.id, user?.isAdmin)}
-        />
-      )}
-    </div>
+    <ContextMenuItem
+      onClick={() => handleToggleHighlight(sale.id, user?.isAdmin)}
+    >
+      <Icons.Bookmark className="mr-2 h-4 w-4" />
+      {sale.highlight ? 'Rebaixar' : 'Destacar'}
+    </ContextMenuItem>
   )
 }

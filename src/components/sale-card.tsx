@@ -1,6 +1,6 @@
 'use client'
 
-import { StarFilledIcon } from '@radix-ui/react-icons'
+import { BookmarkFilledIcon, StarFilledIcon } from '@radix-ui/react-icons'
 import dayjs from 'dayjs'
 import 'dayjs/locale/pt-br'
 import relativeTime from 'dayjs/plugin/relativeTime'
@@ -136,10 +136,9 @@ export function SaleCard({ sale, className, user, ...props }: SaleCardProps) {
           )}
           {...props}
         >
-          <Highlight
-            sale={{ highlight: sale.highlight, id: sale.id }}
-            user={user}
-          />
+          {sale.highlight && (
+            <BookmarkFilledIcon className="absolute right-1 top-[-2px]" />
+          )}
 
           <CardHeader className="flex-row items-baseline text-sm">
             <span className="flex-1">{sale.category.name}</span>
@@ -270,6 +269,13 @@ export function SaleCard({ sale, className, user, ...props }: SaleCardProps) {
         </ContextMenuSub>
 
         <ContextMenuSeparator />
+
+        {user?.isAdmin && (
+          <Highlight
+            sale={{ highlight: sale.highlight, id: sale.id }}
+            user={user}
+          />
+        )}
 
         <ContextMenuItem asChild>
           <Link href={`/promocao/${sale.id}/${sale.slug}`}>

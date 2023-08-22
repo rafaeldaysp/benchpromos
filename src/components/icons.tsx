@@ -1,6 +1,7 @@
 import {
   ArrowUpDown,
   Bell,
+  Bookmark,
   Check,
   ChevronLeft,
   ChevronRight,
@@ -71,6 +72,7 @@ export const Icons = {
   Sun,
   Moon,
   Laptop,
+  Bookmark,
   Google: ({ ...props }: LucideProps) => (
     <svg
       aria-hidden="true"
