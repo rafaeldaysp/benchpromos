@@ -53,7 +53,7 @@ export function MainNav({ options }: MainNavProps) {
                 <>
                   <NavigationMenuTrigger>{option.title}</NavigationMenuTrigger>
                   <NavigationMenuContent>
-                    <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2">
+                    <ul className="grid w-[400px] gap-2 p-2 md:w-[500px] md:grid-cols-3">
                       {option.content.map((suboption) => (
                         <li key={suboption.slug}>
                           <NavigationMenuLink asChild>
@@ -73,11 +73,13 @@ export function MainNav({ options }: MainNavProps) {
                   </NavigationMenuContent>
                 </>
               ) : (
-                <NavigationMenuLink
-                  className={navigationMenuTriggerStyle()}
-                  href={option.slug}
-                >
-                  {option.title}
+                <NavigationMenuLink asChild>
+                  <Link
+                    className={navigationMenuTriggerStyle()}
+                    href={option.slug ?? '/'}
+                  >
+                    {option.title}
+                  </Link>
                 </NavigationMenuLink>
               )}
             </NavigationMenuItem>

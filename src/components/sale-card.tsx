@@ -270,13 +270,6 @@ export function SaleCard({ sale, className, user, ...props }: SaleCardProps) {
 
         <ContextMenuSeparator />
 
-        {user?.isAdmin && (
-          <Highlight
-            sale={{ highlight: sale.highlight, id: sale.id }}
-            user={user}
-          />
-        )}
-
         <ContextMenuItem asChild>
           <Link href={`/promocao/${sale.id}/${sale.slug}`}>
             <Icons.GanttChartSquare className="mr-2 h-4 w-4" />
@@ -299,6 +292,16 @@ export function SaleCard({ sale, className, user, ...props }: SaleCardProps) {
             <span>Comentários</span>
           </Link>
         </ContextMenuItem>
+
+        {user?.isAdmin && (
+          <>
+            <ContextMenuSeparator />
+            <Highlight
+              sale={{ highlight: sale.highlight, id: sale.id }}
+              user={user}
+            />
+          </>
+        )}
       </ContextMenuContent>
     </ContextMenu>
   )
