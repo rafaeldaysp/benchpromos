@@ -101,7 +101,7 @@ export function ProductCard({
           </Link>
         </CardTitle>
 
-        {!product.reviewUrl && (
+        {product.reviewUrl && (
           <Badge>
             <Icons.StarFilled className="mr-1" />
             TESTADO PELO CANAL
