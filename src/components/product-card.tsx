@@ -1,8 +1,9 @@
-import { StarFilledIcon } from '@radix-ui/react-icons'
 import Image from 'next/image'
 import Link from 'next/link'
 
+import { Icons } from '@/components/icons'
 import { AspectRatio } from '@/components/ui/aspect-ratio'
+import { Badge } from '@/components/ui/badge'
 import { buttonVariants } from '@/components/ui/button'
 import {
   Card,
@@ -14,7 +15,6 @@ import {
 } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
 import { priceFormatter } from '@/utils/formatter'
-import { Badge } from './ui/badge'
 
 interface ProductCardProps extends React.HTMLAttributes<HTMLDivElement> {
   product: {
@@ -91,7 +91,7 @@ export function ProductCard({
         </CardHeader>
       </Link>
 
-      <CardContent className="grid flex-1 gap-2.5 p-4">
+      <CardContent className="flex-1 space-y-2.5 px-4">
         <CardTitle>
           <Link
             aria-label={`Visualizar detalhes de ${product.name}`}
@@ -102,17 +102,16 @@ export function ProductCard({
         </CardTitle>
 
         {!product.reviewUrl && (
-          <Badge variant="default" className="w-fit">
-            <StarFilledIcon className="mr-1" />
+          <Badge>
+            <Icons.StarFilled className="mr-1" />
             TESTADO PELO CANAL
           </Badge>
         )}
 
-        <CardDescription>
-          Menor preço via <strong>{bestDeal.retailer.name}</strong>
-        </CardDescription>
-
         <div className="flex flex-col">
+          <CardDescription>
+            Menor preço via <strong>{bestDeal.retailer.name}</strong>
+          </CardDescription>
           <p>
             <strong className="text-xl">
               {priceFormatter.format(bestDeal.price / 100)}
@@ -129,7 +128,7 @@ export function ProductCard({
                     (100 * bestDeal.installments),
                 )}
               </strong>{' '}
-              {bestDeal.price <= bestDeal.totalInstallmentPrice ? (
+              {bestDeal.price >= bestDeal.totalInstallmentPrice ? (
                 <span>sem juros</span>
               ) : (
                 <span>com juros</span>

@@ -91,7 +91,7 @@ export default async function ProductsPage({
   searchParams,
 }: ProductsPageProps) {
   const { category } = params
-  const { page, subcategory, priceRange, ...filters } = searchParams
+  const { page, limit, subcategory, priceRange, ...filters } = searchParams
 
   const { data: categoryData } = await getClient().query<{
     category: {
@@ -155,7 +155,7 @@ export default async function ProductsPage({
         category,
         hasDeals: true,
         pagination: {
-          limit: 1,
+          limit: limit ? Number(limit) : 16,
           page: page ? Number(page) : 1,
         },
         filters: filtersInput,

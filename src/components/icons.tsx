@@ -1,3 +1,4 @@
+import { StarFilledIcon } from '@radix-ui/react-icons'
 import {
   ArrowUpDown,
   Bell,
@@ -73,6 +74,7 @@ export const Icons = {
   Moon,
   Laptop,
   Bookmark,
+  StarFilled: StarFilledIcon,
   Google: ({ ...props }: LucideProps) => (
     <svg
       aria-hidden="true"

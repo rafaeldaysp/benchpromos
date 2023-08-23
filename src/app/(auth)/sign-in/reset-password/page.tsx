@@ -33,3 +33,5 @@ export default function ResetPasswordPage() {
     </div>
   )
 }
+
+export const revalidate = 0

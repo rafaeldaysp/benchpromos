@@ -270,25 +270,21 @@ export function Products({
 
         <div className="hidden items-center gap-x-4 lg:flex">
           <div>Produtos por página</div>
-          <Select defaultValue="15">
+          <Select defaultValue="16">
             <SelectTrigger className="w-[90px]">
               <SelectValue placeholder="Theme" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="15">15</SelectItem>
-              <SelectItem value="30">30</SelectItem>
-              <SelectItem value="45">45</SelectItem>
+              <SelectItem value="16">16</SelectItem>
+              <SelectItem value="32">32</SelectItem>
+              <SelectItem value="48">48</SelectItem>
             </SelectContent>
           </Select>
         </div>
       </div>
-      <div className="grid justify-center gap-6 sm:grid-cols-2 sm:justify-normal lg:grid-cols-3 xl:grid-cols-4">
+      <div className="grid justify-center gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {products.map((product) => (
-          <ProductCard
-            key={product.id}
-            product={product}
-            className="max-w-xs"
-          />
+          <ProductCard key={product.id} product={product} />
         ))}
       </div>
       {products.length && (
