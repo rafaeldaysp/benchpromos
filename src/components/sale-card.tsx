@@ -131,13 +131,13 @@ export function SaleCard({ sale, className, user, ...props }: SaleCardProps) {
       <ContextMenuTrigger asChild>
         <Card
           className={cn(
-            'relative flex flex-col overflow-hidden transition-colors hover:bg-muted/50',
+            'relative flex flex-col overflow-hidden transition-colors hover:bg-muted/50 max-sm:select-none',
             className,
           )}
           {...props}
         >
           {sale.highlight && (
-            <BookmarkFilledIcon className="absolute right-1 top-[-2px]" />
+            <BookmarkFilledIcon className="absolute right-1.5 top-[-2px] text-primary" />
           )}
 
           <CardHeader className="flex-row items-baseline text-sm">
@@ -149,7 +149,7 @@ export function SaleCard({ sale, className, user, ...props }: SaleCardProps) {
           </CardHeader>
 
           <CardContent className="flex-1 space-y-2.5">
-            <CardTitle className="space-x-1">
+            <CardTitle className="select-none space-x-1">
               <Link href={`/promocao/${sale.id}/${sale.slug}`}>
                 {sale.title}
               </Link>
