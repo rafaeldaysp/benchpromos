@@ -16,7 +16,7 @@ import {
 } from '@/components/ui/navigation-menu'
 import { siteConfig } from '@/config/site'
 import { cn } from '@/lib/utils'
-import Logo from '@/public/logo.png'
+import Logo from '@/public/logo-transparente-transformed.png'
 
 interface MainNavProps {
   options: {

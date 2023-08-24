@@ -64,6 +64,7 @@ export function Sales({ user }: SalesProps) {
     })[]
   }>(GET_SALES, {
     refetchWritePolicy: 'overwrite',
+    // fetchPolicy: 'network-only',
     variables: {
       paginationInput: {
         limit: SALES_PER_SCROLL,
@@ -76,7 +77,7 @@ export function Sales({ user }: SalesProps) {
   const page = Math.ceil(sales.length / SALES_PER_SCROLL)
 
   function onEntry() {
-    startTransition(() => {
+    React.startTransition(() => {
       fetchMore({
         variables: {
           paginationInput: {

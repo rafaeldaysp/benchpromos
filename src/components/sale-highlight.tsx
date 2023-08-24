@@ -1,7 +1,6 @@
 'use client'
 
 import { gql, useMutation } from '@apollo/client'
-import { useRouter } from 'next/navigation'
 
 import { getCurrentUserToken } from '@/app/_actions/user'
 import { type Sale } from '@/types'
@@ -24,15 +23,11 @@ interface HighlightProps {
 }
 
 export function Highlight({ sale, user }: HighlightProps) {
-  const router = useRouter()
-
   const [toggleHighlight] = useMutation(TOGGLE_HIGHLIGHT, {
     onError(error, _clientOptions) {
       toast.error(error.message)
     },
-    onCompleted(_data, _clientOptions) {
-      router.refresh()
-    },
+    // refetchQueries: ['GetSales'],
   })
 
   async function handleToggleHighlight(id: string, isAdmin?: boolean) {

@@ -137,7 +137,7 @@ export function SaleCard({ sale, className, user, ...props }: SaleCardProps) {
           {...props}
         >
           {sale.highlight && (
-            <BookmarkFilledIcon className="absolute right-1.5 top-[-2px] text-primary" />
+            <BookmarkFilledIcon className="absolute right-1.5 top-[-2px] text-amber-400" />
           )}
 
           <CardHeader className="flex-row items-baseline text-sm">
@@ -149,7 +149,7 @@ export function SaleCard({ sale, className, user, ...props }: SaleCardProps) {
           </CardHeader>
 
           <CardContent className="flex-1 space-y-2.5">
-            <CardTitle className="select-none space-x-1">
+            <CardTitle className="space-x-1">
               <Link href={`/promocao/${sale.id}/${sale.slug}`}>
                 {sale.title}
               </Link>
@@ -209,7 +209,7 @@ export function SaleCard({ sale, className, user, ...props }: SaleCardProps) {
               <div>
                 <span className="text-muted-foreground">Com cupom</span>
                 <div className="flex items-center overflow-hidden rounded-full border pl-2">
-                  <Icons.Tag className="mr-2 h-4 w-4" />
+                  <Icons.Tag className="mr-2 h-4 w-4 fill-amber-400 text-amber-400" />
                   <span className="flex-1 overflow-hidden text-sm font-medium uppercase tracking-widest">
                     {sale.coupon}
                   </span>

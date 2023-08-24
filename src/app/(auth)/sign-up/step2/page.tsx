@@ -68,13 +68,12 @@ export default async function SignUpStep2Page({
             </AlertDescription>
           </Alert>
         ) : (
-          <Alert variant="destructive">
-            <Icons.X className="h-4 w-4" />
+          <Alert variant="warning">
+            <Icons.AlertTriangle className="h-4 w-4" />
             <AlertTitle>Verificação pendente</AlertTitle>
             <AlertDescription>
-              Parece que ainda não verificamos seu e-mail. Por favor, verifique
-              seu e-mail e clique no link de verificação para acessar todos os
-              recursos do nosso aplicativo.
+              Por favor, verifique seu e-mail e clique no link de verificação
+              para acessar todos os recursos do nosso aplicativo.
             </AlertDescription>
           </Alert>
         )}

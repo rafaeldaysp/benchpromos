@@ -18,6 +18,8 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { authSchema } from '@/lib/validations/auth'
+import { useRouter } from 'next/navigation'
+import { signIn } from 'next-auth/react'
 
 const CREATE_USER = gql`
   mutation CreateUserWithCredentials($input: AddUserInput!) {
@@ -46,27 +48,32 @@ export function SignUpForm() {
   })
   const client = useApolloClient()
 
+  const router = useRouter()
+
   const url = window.location.href
 
   const [createUser, { loading: isLoading }] = useMutation(CREATE_USER, {
     onError(error, _clientOptions) {
       toast.error(error.message)
     },
-    async onCompleted(_data, clientOptions) {
-      const email = clientOptions?.variables?.input.email as string
+    async onCompleted(data, clientOptions) {
+      const credentials = clientOptions?.variables?.input as Inputs
 
       await client.query({
         query: SEND_EMAIL_VERIFICATION,
         variables: {
           input: {
-            email,
+            email: credentials.email,
             tokenType: 'EMAIL_CONFIRMATION',
             redirectUrl: `${url}/step2`,
           },
         },
       })
-
-      toast.success('Um link de confirmação será enviado para o seu email.')
+      await signIn('credentials', {
+        ...credentials,
+        callbackUrl: '/sign-up/step2',
+        redirect: true,
+      })
     },
   })
 

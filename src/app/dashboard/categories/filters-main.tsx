@@ -316,7 +316,7 @@ export function FilterOptionModal({ filter }: FilterOptionModalProps) {
               onChange={(e) => setFilterOptionInput(e.target.value)}
             />
             <Button
-              type="submit"
+              type="button"
               variant="outline"
               disabled={!filterOptionInput}
               onClick={() =>
