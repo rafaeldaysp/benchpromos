@@ -44,7 +44,7 @@ export async function headerOptions() {
     {
       title: 'Desktop',
       content: [
-        { title: 'Computadores', slug: 'mouses' },
+        { title: 'Computadores', slug: 'computadores' },
         { title: 'Placas de vídeo', slug: 'placas-de-video' },
         { title: 'Processadores', slug: 'processadores' },
         { title: 'Motherboards', slug: 'motherboards' },

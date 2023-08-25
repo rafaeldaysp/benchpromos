@@ -137,7 +137,7 @@ export function SaleCard({ sale, className, user, ...props }: SaleCardProps) {
           {...props}
         >
           {sale.highlight && (
-            <BookmarkFilledIcon className="absolute right-1.5 top-[-2px] text-amber-400" />
+            <BookmarkFilledIcon className="absolute -top-0.5 right-5 text-auxiliary" />
           )}
 
           <CardHeader className="flex-row items-baseline text-sm">
@@ -209,7 +209,7 @@ export function SaleCard({ sale, className, user, ...props }: SaleCardProps) {
               <div>
                 <span className="text-muted-foreground">Com cupom</span>
                 <div className="flex items-center overflow-hidden rounded-full border pl-2">
-                  <Icons.Tag className="mr-2 h-4 w-4 fill-amber-400 text-amber-400" />
+                  <Icons.Tag className="mr-2 h-4 w-4 fill-auxiliary text-auxiliary" />
                   <span className="flex-1 overflow-hidden text-sm font-medium uppercase tracking-widest">
                     {sale.coupon}
                   </span>
@@ -268,6 +268,13 @@ export function SaleCard({ sale, className, user, ...props }: SaleCardProps) {
           <ReactionMenu saleId={sale.id} onReact={onReact} />
         </ContextMenuSub>
 
+        <ContextMenuItem asChild>
+          <Link href={`/promocao/${sale.id}/${sale.slug}#comments`}>
+            <Icons.MessageCircle className="mr-2 h-4 w-4" />
+            <span>Comentar</span>
+          </Link>
+        </ContextMenuItem>
+
         <ContextMenuSeparator />
 
         <ContextMenuItem asChild>
@@ -285,13 +292,6 @@ export function SaleCard({ sale, className, user, ...props }: SaleCardProps) {
             </Link>
           </ContextMenuItem>
         )}
-
-        <ContextMenuItem asChild>
-          <Link href={`/promocao/${sale.id}/${sale.slug}#comments`}>
-            <Icons.MessageCircle className="mr-2 h-4 w-4" />
-            <span>Comentários</span>
-          </Link>
-        </ContextMenuItem>
 
         {user?.isAdmin && (
           <>

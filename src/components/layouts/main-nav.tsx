@@ -16,7 +16,7 @@ import {
 } from '@/components/ui/navigation-menu'
 import { siteConfig } from '@/config/site'
 import { cn } from '@/lib/utils'
-import Logo from '@/public/logo-transparente-transformed.png'
+import Logo from '@/public/logo.svg'
 
 interface MainNavProps {
   options: {
@@ -30,7 +30,7 @@ export function MainNav({ options }: MainNavProps) {
   return (
     <div className="hidden gap-x-6 lg:flex">
       <Link aria-label="Home" href="/" className="flex items-center">
-        <div className="relative aspect-square h-12">
+        <div className="relative -ml-2 aspect-square h-14 select-none">
           <Image
             src={Logo}
             alt="Logo"
