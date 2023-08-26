@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
 import { priceFormatter } from '@/utils/formatter'
+import { priceCalculator } from '@/utils/price-calculator'
 
 interface ProductCardProps extends React.HTMLAttributes<HTMLDivElement> {
   product: {
@@ -114,9 +115,14 @@ export function ProductCard({
           </CardDescription>
           <p>
             <strong className="text-xl">
-              {priceFormatter.format(bestDeal.price / 100)}
-            </strong>{' '}
-            {/* <span className="text-sm text-muted-foreground">à vista</span> */}
+              {priceFormatter.format(
+                priceCalculator(
+                  bestDeal.price,
+                  bestDeal.coupon?.discount,
+                  bestDeal.cashback?.value,
+                ) / 100,
+              )}
+            </strong>
           </p>
 
           {!!bestDeal.installments && !!bestDeal.totalInstallmentPrice && (

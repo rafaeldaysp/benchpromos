@@ -18,6 +18,7 @@ const GET_USER = gql`
       email
       image
       isAdmin
+      emailVerified
     }
   }
 `
@@ -123,6 +124,7 @@ export const authOptions: NextAuthOptions = {
         email: dbUser.email,
         picture: dbUser.image,
         isAdmin: dbUser.isAdmin,
+        emailVerified: dbUser.emailVerified,
       }
     },
     async session({ token, session }) {
@@ -132,6 +134,7 @@ export const authOptions: NextAuthOptions = {
         session.user.email = token.email
         session.user.image = token.picture
         session.user.isAdmin = token.isAdmin
+        session.user.emailVerified = token.emailVerified
       }
 
       return session

@@ -15,11 +15,13 @@ import {
 import { env } from '@/env.mjs'
 import { getClient } from '@/lib/apollo'
 import { cn } from '@/lib/utils'
+import { signOut } from 'next-auth/react'
 
 const VERIFY_EMAIL = gql`
   mutation VerifyEmail($token: String!) {
     verified: verifyEmail(token: $token) {
       id
+      emailVerified
     }
   }
 `
@@ -51,6 +53,10 @@ export default async function SignUpStep2Page({
   })
 
   const userVerified = data?.verified
+
+  if (userVerified) {
+    await signOut()
+  }
 
   return (
     <Card>

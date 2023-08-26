@@ -91,7 +91,7 @@ export default async function ProductsPage({
   searchParams,
 }: ProductsPageProps) {
   const { category } = params
-  const { page, limit, subcategory, priceRange, ...filters } = searchParams
+  const { page, limit, subcategory, price, sort, ...filters } = searchParams
 
   const { data: categoryData } = await getClient().query<{
     category: {
@@ -128,7 +128,9 @@ export default async function ProductsPage({
       }
     })
 
-  const [min, max] = priceRange?.split('-') ?? []
+  const [min, max] = price?.split('-') ?? []
+
+  console.log(min, max)
 
   const { data } = await getClient().query<{
     productsList: {
@@ -163,18 +165,17 @@ export default async function ProductsPage({
           min: Number(min),
           max: Number(max),
         },
+        sortBy: sort,
       },
     },
   })
   const products = data.productsList.products
   const pageCount = data.productsList.pages
   const productCount = data.productsList._count.products
-  const productsPriceRange = [
+  const serverPriceRange = [
     data.productsList.minPrice,
     data.productsList.maxPrice,
   ] as [number, number]
-
-  console.log(filtersInput)
 
   return (
     <div className="px-4 py-10 sm:container">
@@ -185,7 +186,9 @@ export default async function ProductsPage({
           productCount={productCount}
           categoryFilters={categoryFilters}
           filters={filtersInput}
-          productsPriceRange={productsPriceRange}
+          serverPriceRange={serverPriceRange}
+          sort={sort}
+          limit={limit}
         />
       </div>
     </div>

@@ -52,7 +52,9 @@ interface ProductsProps {
   productCount: number
   categoryFilters: Filter[]
   filters: { slug: string; options: string[] }[]
-  productsPriceRange: [number, number]
+  serverPriceRange: [number, number]
+  sort?: string
+  limit?: string
 }
 
 export function Products({
@@ -61,16 +63,26 @@ export function Products({
   productCount,
   categoryFilters,
   filters: initialFilters,
-  productsPriceRange,
+  serverPriceRange,
+  sort: initialSort,
+  limit: initialLimit,
 }: ProductsProps) {
   const searchParams = useSearchParams()
-  const [priceRange, setPriceRange] =
-    React.useState<[number, number]>(productsPriceRange)
-  const debouncedPrice = useDebounce(priceRange, 1000)
-  const [filters, setFilters] = React.useState(initialFilters)
   const [isPending, startTransition] = React.useTransition()
   const pathname = usePathname()
   const router = useRouter()
+  const [filters, setFilters] = React.useState(initialFilters)
+  const [sort, setSort] = React.useState(initialSort)
+  const [limit, setLimit] = React.useState(initialLimit)
+
+  const clientPriceRange = searchParams
+    .get('price')
+    ?.split('-')
+    .map(Number) as [number, number]
+  const [currentPriceRange, setCurrentPriceRange] = React.useState<
+    [number, number]
+  >(clientPriceRange ?? serverPriceRange)
+  const debouncedPrice = useDebounce(currentPriceRange, 250)
 
   const page = searchParams.get('page') ?? '1'
 
@@ -93,22 +105,55 @@ export function Products({
 
   React.useEffect(() => {
     setFilters(initialFilters)
+    setCurrentPriceRange(clientPriceRange ?? serverPriceRange)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialFilters])
 
   React.useEffect(() => {
     const [min, max] = debouncedPrice
 
-    // if (min === productsPriceRange[0] && max === productsPriceRange[1]) return
+    if (
+      min === serverPriceRange[0] &&
+      max === serverPriceRange[1] &&
+      !clientPriceRange
+    )
+      return
 
     startTransition(() => {
       router.push(
         `${pathname}?${createQueryString({
-          priceRange: `${min}-${max}`,
+          price: `${min}-${max}`,
         })}`,
       )
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedPrice])
+
+  React.useEffect(() => {
+    if (!sort) return
+
+    React.startTransition(() => {
+      router.push(
+        `${pathname}?${createQueryString({
+          sort,
+        })}`,
+      )
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sort])
+
+  React.useEffect(() => {
+    if (!limit) return
+
+    React.startTransition(() => {
+      router.push(
+        `${pathname}?${createQueryString({
+          limit,
+        })}`,
+      )
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [limit])
 
   return (
     <div className="space-y-6">
@@ -134,48 +179,50 @@ export function Products({
             <Separator />
             <ScrollArea className="flex-1">
               <div className="space-y-10 px-4">
-                <div className="space-y-4">
-                  <h3 className="font-medium tracking-wide text-foreground">
-                    Preços (R$)
-                  </h3>
-                  <Slider
-                    variant="range"
-                    value={priceRange}
-                    min={productsPriceRange[0]}
-                    max={productsPriceRange[1]}
-                    step={1}
-                    onValueChange={(value: typeof priceRange) => {
-                      setPriceRange(value)
-                    }}
-                  />
-                  <div className="flex items-center space-x-4">
-                    <Input
-                      type="number"
-                      inputMode="numeric"
-                      min={productsPriceRange[0]}
-                      max={productsPriceRange[1]}
-                      className="h-9"
-                      value={priceRange[0]}
-                      onChange={(e) => {
-                        const value = Number(e.target.value)
-                        setPriceRange([value, priceRange[1]])
+                {serverPriceRange[0] !== serverPriceRange[1] && (
+                  <div className="space-y-4">
+                    <h3 className="font-medium tracking-wide text-foreground">
+                      Preços (R$)
+                    </h3>
+                    <Slider
+                      variant="range"
+                      value={currentPriceRange}
+                      min={serverPriceRange[0]}
+                      max={serverPriceRange[1]}
+                      step={1}
+                      onValueChange={(value: typeof currentPriceRange) => {
+                        setCurrentPriceRange(value)
                       }}
                     />
-                    <span className="text-muted-foreground">até</span>
-                    <Input
-                      type="number"
-                      inputMode="numeric"
-                      min={productsPriceRange[0]}
-                      max={productsPriceRange[1]}
-                      className="h-9"
-                      value={priceRange[1]}
-                      onChange={(e) => {
-                        const value = Number(e.target.value)
-                        setPriceRange([priceRange[0], value])
-                      }}
-                    />
+                    <div className="flex items-center space-x-4">
+                      <Input
+                        type="number"
+                        inputMode="numeric"
+                        min={serverPriceRange[0]}
+                        max={serverPriceRange[1]}
+                        className="h-9"
+                        value={currentPriceRange[0]}
+                        onChange={(e) => {
+                          const value = Number(e.target.value)
+                          setCurrentPriceRange([value, currentPriceRange[1]])
+                        }}
+                      />
+                      <span className="text-muted-foreground">até</span>
+                      <Input
+                        type="number"
+                        inputMode="numeric"
+                        min={serverPriceRange[0]}
+                        max={serverPriceRange[1]}
+                        className="h-9"
+                        value={currentPriceRange[1]}
+                        onChange={(e) => {
+                          const value = Number(e.target.value)
+                          setCurrentPriceRange([currentPriceRange[0], value])
+                        }}
+                      />
+                    </div>
                   </div>
-                </div>
+                )}
                 {categoryFilters
                   .filter((categoryFilter) => categoryFilter.options.length)
                   .map((categoryFilter) => {
@@ -256,21 +303,29 @@ export function Products({
       <div className="flex justify-between">
         <div className="flex flex-1 items-center justify-between gap-x-4 lg:justify-normal">
           <div>{productCount} resultados</div>
-          <Select defaultValue="1">
+          <Select
+            defaultValue="relevance"
+            value={sort}
+            onValueChange={(value) => setSort(value)}
+          >
             <SelectTrigger className="w-[180px]">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="1">Relevância</SelectItem>
-              <SelectItem value="3">Menor Preço</SelectItem>
-              <SelectItem value="2">Maior Preço</SelectItem>
+              <SelectItem value="relevance">Relevância</SelectItem>
+              <SelectItem value="lowest">Menor Preço</SelectItem>
+              <SelectItem value="highest">Maior Preço</SelectItem>
             </SelectContent>
           </Select>
         </div>
 
         <div className="hidden items-center gap-x-4 lg:flex">
           <div>Produtos por página</div>
-          <Select defaultValue="16">
+          <Select
+            defaultValue="16"
+            value={limit}
+            onValueChange={(value) => setLimit(value)}
+          >
             <SelectTrigger className="w-[90px]">
               <SelectValue placeholder="Theme" />
             </SelectTrigger>

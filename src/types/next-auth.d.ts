@@ -5,6 +5,7 @@ declare module 'next-auth' {
     user: User & {
       id: string
       isAdmin: boolean
+      emailVerified?: Date
     }
   }
 }
@@ -13,5 +14,6 @@ declare module 'next-auth/jwt' {
   interface JWT {
     id: string
     isAdmin: boolean
+    emailVerified?: Date
   }
 }
