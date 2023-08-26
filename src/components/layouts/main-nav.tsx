@@ -76,7 +76,7 @@ export function MainNav({ options }: MainNavProps) {
                 <NavigationMenuLink asChild>
                   <Link
                     className={navigationMenuTriggerStyle()}
-                    href={option.slug ?? '/'}
+                    href={`/${option.slug}` ?? '/'}
                   >
                     {option.title}
                   </Link>
