@@ -165,7 +165,7 @@ export default async function ProductsPage({
           min: Number(min),
           max: Number(max),
         },
-        sortBy: sort,
+        sortBy: sort ?? 'relevance',
       },
     },
   })

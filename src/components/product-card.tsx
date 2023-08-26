@@ -79,7 +79,7 @@ export function ProductCard({
         aria-label={`Visualizar detalhes de ${product.name}`}
         href={`/${product.category.slug}/${product.slug}`}
       >
-        <CardHeader>
+        <CardHeader className="p-0">
           <AspectRatio>
             <Image
               src={product.imageUrl}
