@@ -1,10 +1,8 @@
 import { gql } from '@apollo/client'
 import { type Session } from 'next-auth'
-import Link from 'next/link'
 
 import { Icons } from '@/components/icons'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { buttonVariants } from '@/components/ui/button'
 import {
   Card,
   CardContent,
@@ -14,8 +12,8 @@ import {
 } from '@/components/ui/card'
 import { env } from '@/env.mjs'
 import { getClient } from '@/lib/apollo'
-import { cn } from '@/lib/utils'
-import { signOut } from 'next-auth/react'
+import { SendEmail } from '@/components/send-email-confirmation'
+import { getCurrentUser } from '@/app/_actions/user'
 
 const VERIFY_EMAIL = gql`
   mutation VerifyEmail($token: String!) {
@@ -35,6 +33,7 @@ interface SignUpStep2PageProps {
 export default async function SignUpStep2Page({
   searchParams,
 }: SignUpStep2PageProps) {
+  const user = await getCurrentUser()
   const { token } = searchParams
 
   const { data } = await getClient().mutate<{
@@ -52,11 +51,7 @@ export default async function SignUpStep2Page({
     errorPolicy: 'all',
   })
 
-  const userVerified = data?.verified
-
-  if (userVerified) {
-    await signOut()
-  }
+  const userVerified = data?.verified || user?.emailVerified
 
   return (
     <Card>
@@ -65,7 +60,7 @@ export default async function SignUpStep2Page({
       </CardHeader>
       <CardContent>
         {userVerified ? (
-          <Alert>
+          <Alert variant="success">
             <Icons.Check className="h-4 w-4" />
             <AlertTitle>Verificação concluída</AlertTitle>
             <AlertDescription>
@@ -75,7 +70,7 @@ export default async function SignUpStep2Page({
           </Alert>
         ) : (
           <Alert variant="warning">
-            <Icons.AlertTriangle className="h-4 w-4" />
+            <Icons.AlertCircle className="h-4 w-4" />
             <AlertTitle>Verificação pendente</AlertTitle>
             <AlertDescription>
               Por favor, verifique seu e-mail e clique no link de verificação
@@ -84,11 +79,11 @@ export default async function SignUpStep2Page({
           </Alert>
         )}
       </CardContent>
-      <CardFooter>
-        <Link href="/" className={cn(buttonVariants(), 'w-full')}>
-          Início
-        </Link>
-      </CardFooter>
+      {user?.email && !userVerified && (
+        <CardFooter>
+          <SendEmail email={user.email} />
+        </CardFooter>
+      )}
     </Card>
   )
 }

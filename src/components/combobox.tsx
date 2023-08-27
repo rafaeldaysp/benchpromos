@@ -2,9 +2,9 @@
 
 import { useDebounce } from '@/hooks/use-debounce'
 import { gql, useQuery } from '@apollo/client'
-import * as React from 'react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
+import * as React from 'react'
 
 import { Icons } from '@/components/icons'
 import { Button } from '@/components/ui/button'
@@ -103,12 +103,6 @@ export function Combobox() {
     setIsOpen(false)
     callback()
   }, [])
-
-  React.useEffect(() => {
-    if (!isOpen) {
-      setQuery('')
-    }
-  }, [isOpen])
 
   return (
     <>

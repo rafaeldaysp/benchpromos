@@ -1,6 +1,6 @@
 'use client'
 
-import { gql, useApolloClient, useMutation } from '@apollo/client'
+import { gql, useMutation } from '@apollo/client'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -18,7 +18,6 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { authSchema } from '@/lib/validations/auth'
-import { useRouter } from 'next/navigation'
 import { signIn } from 'next-auth/react'
 
 const CREATE_USER = gql`
@@ -26,12 +25,6 @@ const CREATE_USER = gql`
     createUserWithCredentials(input: $input) {
       id
     }
-  }
-`
-
-const SEND_EMAIL_VERIFICATION = gql`
-  query SendConfirmationLink($input: SendTokenToEmailInput!) {
-    sendTokenToEmail(sendTokenToEmailInput: $input)
   }
 `
 
@@ -46,11 +39,6 @@ export function SignUpForm() {
       password: '',
     },
   })
-  const client = useApolloClient()
-
-  const router = useRouter()
-
-  const url = window.location.href
 
   const [createUser, { loading: isLoading }] = useMutation(CREATE_USER, {
     onError(error, _clientOptions) {
@@ -59,16 +47,6 @@ export function SignUpForm() {
     async onCompleted(data, clientOptions) {
       const credentials = clientOptions?.variables?.input as Inputs
 
-      await client.query({
-        query: SEND_EMAIL_VERIFICATION,
-        variables: {
-          input: {
-            email: credentials.email,
-            tokenType: 'EMAIL_CONFIRMATION',
-            redirectUrl: `${url}/step2`,
-          },
-        },
-      })
       await signIn('credentials', {
         ...credentials,
         callbackUrl: '/sign-up/step2',

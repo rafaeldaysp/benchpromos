@@ -5,13 +5,25 @@ import { NextResponse } from 'next/server'
 export default withAuth(
   async function middleware(req) {
     const token = await getToken({ req })
-    const isAdmin = token?.isAdmin
 
-    if (!isAdmin) {
-      return NextResponse.redirect(new URL('/', req.url))
+    if (req.nextUrl.pathname.startsWith('/dashboard')) {
+      const isAdmin = token?.isAdmin
+
+      if (!isAdmin) {
+        return NextResponse.redirect(new URL('/', req.url))
+      }
+
+      return null
     }
 
-    return null
+    if (
+      req.nextUrl.pathname === '/sign-up' ||
+      req.nextUrl.pathname === '/sign-in'
+    ) {
+      if (token) return NextResponse.redirect(new URL('/', req.url))
+
+      return null
+    }
   },
   {
     callbacks: {
@@ -26,5 +38,5 @@ export default withAuth(
 )
 
 export const config = {
-  matcher: ['/dashboard/:path*'],
+  matcher: ['/dashboard/:path*', '/sign-up', '/sign-in'],
 }

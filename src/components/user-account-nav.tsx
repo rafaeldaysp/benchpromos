@@ -22,11 +22,14 @@ interface UserAccountNavProps extends React.HTMLAttributes<HTMLDivElement> {
 export function UserAccountNav({ user }: UserAccountNavProps) {
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger>
+      <DropdownMenuTrigger className="relative">
         <UserAvatar
           user={{ name: user.name || null, image: user.image || null }}
           className="h-8 w-8"
         />
+        {!user.emailVerified && (
+          <Icons.AlertCircle className="absolute right-0.5 top-0.5 h-3 w-3 fill-warning text-warning-foreground" />
+        )}
       </DropdownMenuTrigger>
 
       <DropdownMenuContent align="end">
@@ -42,13 +45,13 @@ export function UserAccountNav({ user }: UserAccountNavProps) {
         </div>
 
         <DropdownMenuSeparator />
+
         <DropdownMenuItem className="cursor-pointer" asChild>
           <Link href="/user/profile">
             <Icons.User className="mr-2 h-4 w-4" />
             <span>Perfil</span>
           </Link>
         </DropdownMenuItem>
-
         <DropdownMenuItem className="cursor-pointer" asChild>
           <Link href="/user/alerts">
             <Icons.Bell className="mr-2 h-4 w-4" />
@@ -68,6 +71,16 @@ export function UserAccountNav({ user }: UserAccountNavProps) {
         )}
 
         <DropdownMenuSeparator />
+
+        {!user.emailVerified && (
+          <DropdownMenuItem className="cursor-pointer" asChild>
+            <Link href={'/sign-up/step2'}>
+              <Icons.AlertCircle className="mr-2 h-4 w-4" />
+              <span>Verificar conta</span>
+            </Link>
+          </DropdownMenuItem>
+        )}
+
         <DropdownMenuItem
           className="cursor-pointer"
           onSelect={(event) => {

@@ -22,6 +22,8 @@
     --destructive-foreground: 0 0% 98%;
     --warning: 26 90.5% 37.1%;
     --warning-foreground: 60 9.1% 97.8%;
+    --success: 142.1 76.2% 36.3%;
+    --success-foreground: 355.7 100% 97.3%;
     --auxiliary: 43.3 96.4% 56.3%;
     --border: 0 0% 89.8%;
     --input: 0 0% 89.8%;
@@ -48,6 +50,8 @@
     --destructive-foreground: 0 0% 98%;
     --warning: 26 90.5% 37.1%;
     --warning-foreground: 60 9.1% 97.8%;
+    --success: 142.1 70.6% 45.3%;
+    --success-foreground: 144.9 80.4% 10%;
     --auxiliary: 43.3 96.4% 56.3%;
     --border: 0 0% 14.9%;
     --input: 0 0% 14.9%;
