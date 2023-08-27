@@ -3,10 +3,10 @@
 import { gql, useQuery } from '@apollo/client'
 import { toast } from 'sonner'
 
+import { Icons } from '@/components/icons'
+import { Button } from '@/components/ui/button'
 import { env } from '@/env.mjs'
 import { useCountdown } from '@/hooks/use-countdown'
-import { Icons } from './icons'
-import { Button } from './ui/button'
 
 const SEND_EMAIL = gql`
   query SendConfirmationLink($input: SendTokenToEmailInput!) {
@@ -17,7 +17,7 @@ const SEND_EMAIL = gql`
   }
 `
 
-const RESENT_EMAIL_TIME_MS = 60 * 1000
+const RESENT_EMAIL_TIME_MS = 60 * 1000 // 1 minute
 
 interface ResendEmailProps {
   email: string
@@ -48,14 +48,14 @@ export function SendEmail({ email }: ResendEmailProps) {
     },
   })
 
-  const [minutes, seconds] = useCountdown(
+  const { minutes, seconds } = useCountdown(
     data ? new Date(data.sendTokenToEmail.lastSent) : new Date(),
     RESENT_EMAIL_TIME_MS,
   )
 
   const hasCountdown = minutes > 0 || seconds > 0
 
-  if (data && minutes * 60 * 1000 < RESENT_EMAIL_TIME_MS)
+  if (minutes * 60 * 1000 + seconds * 1000 < RESENT_EMAIL_TIME_MS) {
     return (
       <Button
         className="w-full"
@@ -73,6 +73,8 @@ export function SendEmail({ email }: ResendEmailProps) {
         )}
       </Button>
     )
+  }
+
   return (
     <div className="flex w-full justify-center">
       <Icons.Spinner className="h-4 w-4 animate-spin" />

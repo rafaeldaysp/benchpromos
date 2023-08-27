@@ -1,33 +1,32 @@
 import * as React from 'react'
 
-function countdownLimit(value: number, min: number, max: number) {
-  if (value > max) return max
-  if (value < min) return min
-  return value
+function calculateTimeLeft(startTime: number, duration: number) {
+  const now = new Date().getTime()
+  const elapsedTime = now - startTime
+  const timeLeft = duration - elapsedTime
+
+  const minutes = Math.floor((timeLeft / 1000 / 60) % 60)
+  const seconds = Math.floor((timeLeft / 1000) % 60)
+
+  return {
+    minutes: Math.max(0, minutes),
+    seconds: Math.max(0, seconds),
+  }
 }
 
-function getReturnValues(countDown: number) {
-  const minutes = Math.floor((countDown % (1000 * 60 * 60)) / (1000 * 60))
-  const seconds = Math.floor((countDown % (1000 * 60)) / 1000)
-
-  return [minutes, seconds]
-}
-
-export function useCountdown(targetDate: Date, interval: number) {
-  const countDownDate = Math.abs(
-    countdownLimit(new Date().getTime() - targetDate.getTime(), 0, interval) -
-      interval,
+export function useCountdown(startTime: Date, duration: number) {
+  const startTimeMs = startTime.getTime()
+  const [timeLeft, setTimeLeft] = React.useState(() =>
+    calculateTimeLeft(startTimeMs, duration),
   )
 
-  const [countDown, setCountDown] = React.useState(countDownDate)
-
   React.useEffect(() => {
-    const interval = setInterval(() => {
-      setCountDown(countDownDate)
+    const intervalId = setInterval(() => {
+      setTimeLeft(calculateTimeLeft(startTimeMs, duration))
     }, 1000)
 
-    return () => clearInterval(interval)
-  }, [countDownDate])
+    return () => clearInterval(intervalId)
+  }, [startTimeMs, duration])
 
-  return getReturnValues(countDown)
+  return timeLeft
 }

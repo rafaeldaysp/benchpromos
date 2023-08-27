@@ -1,52 +1,15 @@
 'use client'
 
-import { gql } from '@apollo/client'
 import { useSuspenseQuery } from '@apollo/experimental-nextjs-app-support/ssr'
 import * as React from 'react'
 import { InView } from 'react-intersection-observer'
 
 import { SaleCard } from '@/components/sale-card'
 import { Skeleton } from '@/components/ui/skeleton'
+import { GET_SALES } from '@/queries'
 import type { Category, Comment, Sale } from '@/types'
 
 const SALES_PER_SCROLL = 1
-
-const GET_SALES = gql`
-  query GetSales($paginationInput: PaginationInput) {
-    sales(paginationInput: $paginationInput) {
-      id
-      title
-      slug
-      imageUrl
-      url
-      price
-      installments
-      totalInstallmentPrice
-      caption
-      review
-      label
-      coupon
-      cashback
-      createdAt
-      categoryId
-      productSlug
-      highlight
-      category {
-        name
-        slug
-      }
-      comments {
-        id
-      }
-      reactions {
-        content
-        users {
-          id
-        }
-      }
-    }
-  }
-`
 
 interface SalesProps {
   user?: { id: string; isAdmin: boolean }
@@ -64,7 +27,7 @@ export function Sales({ user }: SalesProps) {
     })[]
   }>(GET_SALES, {
     refetchWritePolicy: 'overwrite',
-    // fetchPolicy: 'network-only',
+    // fetchPolicy: 'cache-and-network',
     variables: {
       paginationInput: {
         limit: SALES_PER_SCROLL,
@@ -76,8 +39,12 @@ export function Sales({ user }: SalesProps) {
   const sales = data.sales
   const page = Math.ceil(sales.length / SALES_PER_SCROLL)
 
+  React.useEffect(() => {
+    setHasMoreSales(true)
+  }, [page])
+
   function onEntry() {
-    React.startTransition(() => {
+    startTransition(() => {
       fetchMore({
         variables: {
           paginationInput: {

@@ -28,7 +28,11 @@ const GET_PRODUCTS_BY_SEARCH = gql`
         imageUrl
         slug
         category {
+          name
           slug
+        }
+        subcategory {
+          name
         }
       }
     }
@@ -41,7 +45,11 @@ type SearchedProduct = {
   imageUrl: string
   slug: string
   category: {
+    name: string
     slug: string
+  }
+  subcategory: {
+    name: string
   }
 }
 
@@ -87,6 +95,8 @@ export function Combobox() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedQuery])
+
+  console.log(products)
 
   React.useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -150,7 +160,7 @@ export function Combobox() {
                 {products?.map((product) => (
                   <CommandItem
                     key={product.id}
-                    value={product.name}
+                    value={`${product.name} ${product.category.name} ${product.subcategory.name}`}
                     className="h-20 space-x-4"
                     onSelect={() =>
                       handleSelect(() =>

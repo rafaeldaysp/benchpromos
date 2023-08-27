@@ -31,7 +31,17 @@ const CommandDialog = ({ children, ...props }: CommandDialogProps) => {
       <DialogContent className="overflow-hidden p-0">
         <Command
           filter={(value, search) => {
-            if (value.includes(search)) return 1
+            const wordsValue = value.toLowerCase().trim().split(' ')
+            const wordsSearch = search.toLowerCase().trim().split(' ')
+
+            for (const searchWord of wordsSearch) {
+              if (
+                wordsValue.some((valueWord) => valueWord.includes(searchWord))
+              ) {
+                return 1
+              }
+            }
+
             return 0
           }}
           className="[&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-muted-foreground [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-group]]:px-2 [&_[cmdk-input-wrapper]_svg]:h-5 [&_[cmdk-input-wrapper]_svg]:w-5 [&_[cmdk-input]]:h-12 [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3 [&_[cmdk-item]_svg]:h-5 [&_[cmdk-item]_svg]:w-5"

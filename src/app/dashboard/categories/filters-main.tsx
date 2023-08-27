@@ -309,15 +309,14 @@ export function FilterOptionModal({ filter }: FilterOptionModalProps) {
           <SheetTitle>ATUALIZAR OPÇÕES DO FILTRO</SheetTitle>
         </SheetHeader>
         <div className="space-y-8">
-          <form className="flex gap-x-2">
+          <form className="flex gap-x-2" onSubmit={(e) => e.preventDefault()}>
             <Input
               placeholder="I5 13450HX"
               value={filterOptionInput}
               onChange={(e) => setFilterOptionInput(e.target.value)}
             />
             <Button
-              type="button"
-              variant="outline"
+              type="submit"
               disabled={!filterOptionInput}
               onClick={() =>
                 createFilterOption({
