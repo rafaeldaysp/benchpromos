@@ -65,12 +65,12 @@ export function ResetPasswordStep2Form({ token }: ResetPasswordStep2FormProps) {
     },
   })
 
-  async function onSubmit(data: Inputs) {
+  async function onSubmit({ password }: Inputs) {
     await resetPassword({
       variables: {
         input: {
           token,
-          ...data,
+          password,
         },
       },
     })
