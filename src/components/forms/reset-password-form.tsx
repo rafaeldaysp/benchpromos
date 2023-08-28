@@ -1,6 +1,7 @@
 'use client'
 
-import { gql, useApolloClient } from '@apollo/client'
+import { env } from '@/env.mjs'
+import { useApolloClient } from '@apollo/client'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as React from 'react'
 import { useForm } from 'react-hook-form'
@@ -19,12 +20,10 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { checkEmailSchema } from '@/lib/validations/auth'
-
-const SEND_EMAIL_AUTHORIZATION = gql`
-  query SendEmailAuthorization($input: SendTokenToEmailInput!) {
-    sendTokenToEmail(sendTokenToEmailInput: $input)
-  }
-`
+import { SEND_EMAIL } from '@/queries'
+import { useCountdown } from '@/hooks/use-countdown'
+import { RESENT_EMAIL_TIME_MS } from '@/constants'
+import { Alert, AlertDescription } from '../ui/alert'
 
 type Inputs = z.infer<typeof checkEmailSchema>
 
@@ -35,30 +34,45 @@ export function ResetPasswordForm() {
       email: '',
     },
   })
+
   const [isLoading, setIsLoading] = React.useState(false)
+  const [currentData, setCurrentData] = React.useState<{
+    sendTokenToEmail: { lastSent: string; message: string } | null
+  }>({ sendTokenToEmail: null })
   const client = useApolloClient()
 
-  const url = document.location.href
+  const { minutes, seconds } = useCountdown(
+    currentData.sendTokenToEmail
+      ? new Date(currentData.sendTokenToEmail.lastSent)
+      : new Date(0),
+    RESENT_EMAIL_TIME_MS,
+  )
+
+  const hasCountdown = minutes > 0 || seconds > 0
 
   async function onSubmit({ email }: Inputs) {
     setIsLoading(true)
 
-    const { data, errors } = await client.query({
-      query: SEND_EMAIL_AUTHORIZATION,
+    const { data, errors } = await client.query<{
+      sendTokenToEmail: { lastSent: string; message: string }
+    }>({
+      query: SEND_EMAIL,
       variables: {
         input: {
           tokenType: 'RESET_PASSWORD',
           email,
-          redirectUrl: `${url}/step2`,
+          redirectUrl: `${env.NEXT_PUBLIC_APP_URL}/sign-in/reset-password/step2`,
         },
       },
       errorPolicy: 'all',
+      fetchPolicy: 'network-only',
     })
 
+    setCurrentData(data)
     setIsLoading(false)
 
-    data.sendTokenToEmail === true
-      ? toast.success('Um link de redefinição será enviado para o seu email.')
+    data.sendTokenToEmail
+      ? toast.success(data.sendTokenToEmail.message)
       : toast.error(
           errors?.[0].message ?? 'Algo deu errado, tente novamente mais tarde.',
         )
@@ -83,14 +97,32 @@ export function ResetPasswordForm() {
             </FormItem>
           )}
         />
-        <Button disabled={isLoading}>
+
+        {currentData.sendTokenToEmail && hasCountdown && (
+          <Alert>
+            <Icons.AlertCircle className="h-4 w-4" />
+            {/* <AlertTitle>Redefinição pendente</AlertTitle> */}
+            <AlertDescription>
+              {currentData.sendTokenToEmail.message}
+            </AlertDescription>
+          </Alert>
+        )}
+
+        <Button disabled={isLoading || hasCountdown}>
           {isLoading && (
             <Icons.Spinner
               className="mr-2 h-4 w-4 animate-spin"
               aria-hidden="true"
             />
           )}
-          Continuar
+          Enviar email
+          {hasCountdown && (
+            <>
+              {' '}
+              ({minutes.toString().length < 2 ? `0${minutes}` : minutes}:
+              {seconds.toString().length < 2 ? `0${seconds}` : seconds})
+            </>
+          )}
           <span className="sr-only">
             Continuar para verificação de redefinição de senha
           </span>

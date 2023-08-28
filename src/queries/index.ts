@@ -36,3 +36,11 @@ export const GET_SALES = gql`
     }
   }
 `
+export const SEND_EMAIL = gql`
+  query SendConfirmationLink($input: SendTokenToEmailInput!) {
+    sendTokenToEmail(sendTokenToEmailInput: $input) {
+      lastSent
+      message
+    }
+  }
+`

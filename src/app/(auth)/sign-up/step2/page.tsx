@@ -1,7 +1,9 @@
 import { gql } from '@apollo/client'
 import { type Session } from 'next-auth'
 
+import { getCurrentUser } from '@/app/_actions/user'
 import { Icons } from '@/components/icons'
+import { SendEmail } from '@/components/send-email-confirmation'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import {
   Card,
@@ -12,8 +14,6 @@ import {
 } from '@/components/ui/card'
 import { env } from '@/env.mjs'
 import { getClient } from '@/lib/apollo'
-import { SendEmail } from '@/components/send-email-confirmation'
-import { getCurrentUser } from '@/app/_actions/user'
 
 const VERIFY_EMAIL = gql`
   mutation VerifyEmail($token: String!) {
@@ -59,29 +59,48 @@ export default async function SignUpStep2Page({
         <CardTitle className="text-2xl">Verificação de email</CardTitle>
       </CardHeader>
       <CardContent>
-        {userVerified ? (
-          <Alert variant="success">
-            <Icons.Check className="h-4 w-4" />
-            <AlertTitle>Verificação concluída</AlertTitle>
-            <AlertDescription>
-              Parabéns! Seu e-mail foi verificado com sucesso. Você pode agora
-              desfrutar de todos os recursos do nosso aplicativo.
-            </AlertDescription>
-          </Alert>
+        {user ? (
+          <>
+            {userVerified ? (
+              <Alert variant="success">
+                <Icons.Check className="h-4 w-4" />
+                <AlertTitle>Verificação concluída</AlertTitle>
+                <AlertDescription>
+                  Parabéns! Seu e-mail foi verificado com sucesso. Você pode
+                  agora desfrutar de todos os recursos do nosso aplicativo.
+                </AlertDescription>
+              </Alert>
+            ) : (
+              <Alert variant="warning">
+                <Icons.AlertCircle className="h-4 w-4" />
+                <AlertTitle>Verificação pendente</AlertTitle>
+                <AlertDescription>
+                  Por favor, verifique seu e-mail e clique no link de
+                  verificação para acessar todos os recursos do nosso
+                  aplicativo.
+                </AlertDescription>
+              </Alert>
+            )}
+          </>
         ) : (
-          <Alert variant="warning">
-            <Icons.AlertCircle className="h-4 w-4" />
-            <AlertTitle>Verificação pendente</AlertTitle>
+          <Alert variant="destructive">
+            <Icons.X className="h-4 w-4" />
+            <AlertTitle>Login necessário</AlertTitle>
             <AlertDescription>
-              Por favor, verifique seu e-mail e clique no link de verificação
-              para acessar todos os recursos do nosso aplicativo.
+              Efetue o login para realizar a verificação de email. Se o seu
+              email já foi confirmado, faça o login e desconsidere esta
+              mensagem.
             </AlertDescription>
           </Alert>
         )}
       </CardContent>
       {user?.email && !userVerified && (
         <CardFooter>
-          <SendEmail email={user.email} />
+          <SendEmail
+            email={user.email}
+            tokenType="EMAIL_CONFIRMATION"
+            redirectUrl={`${env.NEXT_PUBLIC_APP_URL}/sign-up/step2`}
+          />
         </CardFooter>
       )}
     </Card>

@@ -1,29 +1,21 @@
 'use client'
 
-import { gql, useQuery } from '@apollo/client'
+import { useQuery } from '@apollo/client'
 import { toast } from 'sonner'
 
 import { Icons } from '@/components/icons'
 import { Button } from '@/components/ui/button'
-import { env } from '@/env.mjs'
+import { RESENT_EMAIL_TIME_MS } from '@/constants'
 import { useCountdown } from '@/hooks/use-countdown'
-
-const SEND_EMAIL = gql`
-  query SendConfirmationLink($input: SendTokenToEmailInput!) {
-    sendTokenToEmail(sendTokenToEmailInput: $input) {
-      lastSent
-      message
-    }
-  }
-`
-
-const RESENT_EMAIL_TIME_MS = 60 * 1000 // 1 minute
+import { SEND_EMAIL } from '@/queries'
 
 interface ResendEmailProps {
   email: string
+  redirectUrl: string
+  tokenType: 'EMAIL_CONFIRMATION' | 'RESET_PASSWORD'
 }
 
-export function SendEmail({ email }: ResendEmailProps) {
+export function SendEmail({ email, redirectUrl, tokenType }: ResendEmailProps) {
   const {
     data,
     refetch,
@@ -34,8 +26,8 @@ export function SendEmail({ email }: ResendEmailProps) {
     variables: {
       input: {
         email,
-        redirectUrl: `${env.NEXT_PUBLIC_APP_URL}/sign-up/step2`,
-        tokenType: 'EMAIL_CONFIRMATION',
+        redirectUrl,
+        tokenType,
       },
     },
     fetchPolicy: 'cache-and-network',

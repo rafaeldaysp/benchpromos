@@ -20,3 +20,5 @@ export const emotes = [
     label: 'Coração',
   },
 ]
+
+export const RESENT_EMAIL_TIME_MS = 10 * 60 * 1000 // 10 minutes
