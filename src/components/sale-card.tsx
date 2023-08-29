@@ -143,20 +143,20 @@ export function SaleCard({ sale, className, user, ...props }: SaleCardProps) {
           <CardHeader className="flex-row items-baseline text-sm">
             <span className="flex-1">{sale.category.name}</span>
 
-            <span className="flex-1 text-end">
+            <time className="flex-1 text-end">
               {dayjs(sale.createdAt).fromNow()}
-            </span>
+            </time>
           </CardHeader>
 
           <CardContent className="flex-1 space-y-2.5">
             <CardTitle className="space-x-1">
-              <Link href={`/promocao/${sale.id}/${sale.slug}`}>
+              <Link href={`/promocao/${sale.slug}/${sale.id}`}>
                 {sale.title}
               </Link>
             </CardTitle>
 
             <div>
-              <Link href={`/promocao/${sale.id}/${sale.slug}`}>
+              <Link href={`/sale/${sale.slug}/${sale.id}`}>
                 <div className="relative mx-auto aspect-square w-8/12">
                   <Image
                     src={sale.imageUrl}
@@ -247,7 +247,7 @@ export function SaleCard({ sale, className, user, ...props }: SaleCardProps) {
             />
 
             <Link
-              href={`/promocao/${sale.id}/${sale.slug}#comments`}
+              href={`/sale/${sale.slug}/${sale.id}#comments`}
               className={cn(
                 buttonVariants({ variant: 'ghost', size: 'icon' }),
                 'shrink-0',
@@ -269,7 +269,7 @@ export function SaleCard({ sale, className, user, ...props }: SaleCardProps) {
         </ContextMenuSub>
 
         <ContextMenuItem asChild>
-          <Link href={`/promocao/${sale.id}/${sale.slug}#comments`}>
+          <Link href={`/sale/${sale.id}/${sale.slug}#comments`}>
             <Icons.MessageCircle className="mr-2 h-4 w-4" />
             <span>Comentar</span>
           </Link>
@@ -278,7 +278,7 @@ export function SaleCard({ sale, className, user, ...props }: SaleCardProps) {
         <ContextMenuSeparator />
 
         <ContextMenuItem asChild>
-          <Link href={`/promocao/${sale.id}/${sale.slug}`}>
+          <Link href={`/sale/${sale.slug}/${sale.id}`}>
             <Icons.GanttChartSquare className="mr-2 h-4 w-4" />
             <span>Mais detalhes</span>
           </Link>

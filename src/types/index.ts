@@ -104,8 +104,18 @@ export type Sale = {
 
 export type Comment = {
   id: string
+  saleId: string
   userId: string
   text: string
+  createdAt: string
+  updatedAt: string
+  commentId?: string
+}
+
+export type Like = {
+  id: string
+  commentId: string
+  userId: string
 }
 
 export type Benchmark = {

@@ -5,6 +5,7 @@ import {
   Bell,
   Bookmark,
   Check,
+  ChevronDown,
   ChevronLeft,
   ChevronRight,
   ChevronsLeft,
@@ -77,6 +78,7 @@ export const Icons = {
   Bookmark,
   AlertCircle,
   StarFilled: StarFilledIcon,
+  ChevronDown,
   Google: ({ ...props }: LucideProps) => (
     <svg
       aria-hidden="true"
