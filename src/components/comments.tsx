@@ -336,7 +336,7 @@ function CommentSubmit({
 
         <div className="space-x-2 text-right">
           <Button
-            variant="outline"
+            variant="ghost"
             onClick={() => {
               setCommentInput('')
               if (inputRef.current) inputRef.current.blur()

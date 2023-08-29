@@ -16,7 +16,7 @@ import {
 } from '@/components/ui/navigation-menu'
 import { siteConfig } from '@/config/site'
 import { cn } from '@/lib/utils'
-import Logo from '@/public/logo.svg'
+import Logo from '@/public/LOGO BENCHPROMOS SITE_48.png'
 
 interface MainNavProps {
   options: {
@@ -30,7 +30,7 @@ export function MainNav({ options }: MainNavProps) {
   return (
     <div className="hidden gap-x-6 lg:flex">
       <Link aria-label="Home" href="/" className="flex items-center">
-        {/* <div className="relative -ml-2 aspect-square h-14 select-none">
+        <div className="relative -ml-2 aspect-square h-12 select-none">
           <Image
             src={Logo}
             alt="Logo"
@@ -38,7 +38,7 @@ export function MainNav({ options }: MainNavProps) {
             fill
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
-        </div> */}
+        </div>
 
         {/* <Icons.Logo className="h-6 w-6" aria-hidden="true" /> */}
         <span className="hidden font-bold lg:inline-block">
