@@ -71,7 +71,7 @@ export function Products({
 }: ProductsProps) {
   const searchParams = useSearchParams()
   const [isPending, startTransition] = React.useTransition()
-  const pathname = usePathname().concat(search ? `?search=${search}` : '')
+  const pathname = usePathname()
   const router = useRouter()
   const [filters, setFilters] = React.useState(initialFilters)
   const [sort, setSort] = React.useState(initialSort)
@@ -290,7 +290,9 @@ export function Products({
                 onClick={() => {
                   startTransition(() => {
                     startTransition(() => {
-                      router.push(pathname)
+                      router.push(
+                        pathname.concat(search ? `?search=${search}` : ''),
+                      )
                     })
                   })
                 }}
