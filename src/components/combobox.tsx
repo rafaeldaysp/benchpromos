@@ -96,8 +96,6 @@ export function Combobox() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedQuery])
 
-  console.log(products)
-
   React.useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {

@@ -1,6 +1,6 @@
 'use client'
 
-import { gql, useMutation } from '@apollo/client'
+import { type ApolloClient, gql, useMutation } from '@apollo/client'
 import { useQuery } from '@apollo/experimental-nextjs-app-support/ssr'
 import dayjs from 'dayjs'
 import 'dayjs/locale/pt-br'
@@ -79,6 +79,12 @@ const CREATE_COMMENT = gql`
   mutation CreateSaleComment($input: CreateSaleCommentInput!) {
     createSaleComment(createSaleCommentInput: $input) {
       id
+      text
+      createdAt
+      user {
+        name
+        image
+      }
     }
   }
 `
@@ -91,16 +97,40 @@ const CREATE_REPLY = gql`
   }
 `
 
+const DELETE_COMMENT = gql`
+  mutation RemoveSaleComment($commentId: ID!) {
+    removeSaleComment(id: $commentId) {
+      id
+    }
+  }
+`
+
 export function Comments({ saleId, user }: CommentsProps) {
   const [inViewInputCommentIds, setInViewInputCommentIds] = React.useState<
     string[]
   >([])
 
-  const { data } = useQuery<GetCommentsQuery>(GET_COMMENTS, {
+  const { data, client } = useQuery<GetCommentsQuery>(GET_COMMENTS, {
     variables: { saleId },
   })
 
+  const [deleteComment] = useMutation(DELETE_COMMENT)
+
   const comments = data?.comments
+
+  async function handleDeleteComment(commentId: string) {
+    const token = await getCurrentUserToken()
+    await deleteComment({
+      context: {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+      variables: {
+        commentId,
+      },
+    })
+  }
 
   if (!data) {
     return (
@@ -119,7 +149,7 @@ export function Comments({ saleId, user }: CommentsProps) {
         <span className="text-lg">{comments?.length}</span> comentários
       </div>
 
-      <CommentSubmit saleId={saleId} user={user} />
+      <CommentSubmit saleId={saleId} user={user} apolloClient={client} />
 
       <div className="space-y-4">
         {comments?.map((comment) => (
@@ -132,11 +162,17 @@ export function Comments({ saleId, user }: CommentsProps) {
             />
 
             <div className="flex-1">
-              <header className="flex gap-x-2 text-sm">
-                <div>{comment.user.name}</div>
-                <time className="text-muted-foreground">
-                  {dayjs(comment.createdAt).fromNow()}
-                </time>
+              <header className="flex justify-between">
+                <div className="flex gap-x-2 text-sm">
+                  <div>{comment.user.name}</div>
+                  <time className="text-muted-foreground">
+                    {dayjs(comment.createdAt).fromNow()}
+                  </time>
+                </div>
+
+                <Button onClick={() => handleDeleteComment(comment.id)}>
+                  Deletar
+                </Button>
               </header>
 
               <p>{comment.text}</p>
@@ -156,21 +192,6 @@ export function Comments({ saleId, user }: CommentsProps) {
                   Responder
                 </Button>
               </div>
-
-              {inViewInputCommentIds.includes(comment.id) && (
-                <div className="mt-2">
-                  <CommentSubmit
-                    saleId={saleId}
-                    user={user}
-                    commentId={comment.id}
-                    onCancel={() =>
-                      setInViewInputCommentIds((prev) =>
-                        prev.filter((id) => id !== comment.id),
-                      )
-                    }
-                  />
-                </div>
-              )}
 
               {!!comment.replies.length && (
                 <Accordion type="multiple">
@@ -210,34 +231,35 @@ export function Comments({ saleId, user }: CommentsProps) {
                                 onClick={() =>
                                   setInViewInputCommentIds((prev) => [
                                     ...prev,
-                                    reply.id,
+                                    comment.id,
                                   ])
                                 }
                               >
                                 Responder
                               </Button>
                             </div>
-
-                            {inViewInputCommentIds.includes(reply.id) && (
-                              <div className="mt-2">
-                                <CommentSubmit
-                                  saleId={saleId}
-                                  user={user}
-                                  commentId={comment.id}
-                                  onCancel={() =>
-                                    setInViewInputCommentIds((prev) =>
-                                      prev.filter((id) => id !== reply.id),
-                                    )
-                                  }
-                                />
-                              </div>
-                            )}
                           </div>
                         </div>
                       ))}
                     </AccordionContent>
                   </AccordionItem>
                 </Accordion>
+              )}
+
+              {inViewInputCommentIds.includes(comment.id) && (
+                <div className="mt-2">
+                  <CommentSubmit
+                    saleId={saleId}
+                    user={user}
+                    commentId={comment.id}
+                    apolloClient={client}
+                    onCancel={() =>
+                      setInViewInputCommentIds((prev) =>
+                        prev.filter((id) => id !== comment.id),
+                      )
+                    }
+                  />
+                </div>
               )}
             </div>
           </div>
@@ -251,6 +273,7 @@ interface CommentSubmitProps {
   saleId: string
   user?: Session['user']
   commentId?: string
+  apolloClient: ApolloClient<unknown>
   onCancel?: () => void
 }
 
@@ -258,6 +281,7 @@ function CommentSubmit({
   saleId,
   user,
   commentId,
+  apolloClient,
   onCancel,
 }: CommentSubmitProps) {
   const [commentInput, setCommentInput] = React.useState('')

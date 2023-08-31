@@ -1,44 +1,30 @@
 'use client'
 
-import { gql, useMutation } from '@apollo/client'
-import { toast } from 'sonner'
+import { type ApolloClient } from '@apollo/client'
 
 import { getCurrentUserToken } from '@/app/_actions/user'
 import { Toggle } from '@/components/ui/toggle'
+import { useReactions } from '@/hooks/use-reactions'
 import { type Reaction } from '@/types'
-
-const TOGGLE_REACTION = gql`
-  mutation ToggleReaction($input: ToggleSaleReactionInput!) {
-    toggleSaleReaction(toggleSaleReactionInput: $input) {
-      id
-    }
-  }
-`
 
 interface ReactionsProps {
   saleId: string
   reactions: Reaction[]
   userId?: string
-  onReact: (content: string) => void
+  apolloClient: ApolloClient<unknown>
 }
 
 export function Reactions({
   saleId,
   reactions,
-  userId,
-  onReact,
+  userId = '',
+  apolloClient,
 }: ReactionsProps) {
-  const [toggleReaction] = useMutation(TOGGLE_REACTION, {
-    onError(error, _clientOptions) {
-      toast.error(error.message)
-    },
-    onCompleted(_data, clientOptions) {
-      const emote = clientOptions?.variables?.input.content as string
-      onReact(emote)
-    },
-  })
+  const { toggleReaction } = useReactions({ saleId, userId, apolloClient })
 
   async function handleToggleReaction(emote: string) {
+    if (!userId) return
+
     const token = await getCurrentUserToken()
 
     await toggleReaction({

@@ -1,5 +1,6 @@
 'use client'
 
+import { type ApolloClient } from '@apollo/client'
 import { BookmarkFilledIcon, StarFilledIcon } from '@radix-ui/react-icons'
 import dayjs from 'dayjs'
 import 'dayjs/locale/pt-br'
@@ -12,6 +13,7 @@ import { CopyButton } from '@/components/copy-button'
 import { Icons } from '@/components/icons'
 import { ReactionMenu } from '@/components/reaction-menu'
 import { Reactions } from '@/components/reactions'
+import { Highlight } from '@/components/sale-highlight'
 import { Badge } from '@/components/ui/badge'
 import { buttonVariants } from '@/components/ui/button'
 import {
@@ -34,7 +36,6 @@ import {
 import { cn } from '@/lib/utils'
 import { type Reaction } from '@/types'
 import { priceFormatter } from '@/utils/formatter'
-import { Highlight } from './sale-highlight'
 
 dayjs.extend(relativeTime)
 dayjs.locale('pt-br')
@@ -67,65 +68,16 @@ interface SaleCardProps extends React.HTMLAttributes<HTMLDivElement> {
     reactions: Reaction[]
   }
   user?: { id: string; isAdmin: boolean }
+  apolloClient: ApolloClient<unknown>
 }
 
-export function SaleCard({ sale, className, user, ...props }: SaleCardProps) {
-  const [currentReactions, setCurrentReactions] = React.useState<Reaction[]>(
-    sale.reactions,
-  )
-
-  const onReact = (content: string) => {
-    if (!user) return
-
-    const sortedReactions = (reactions: Reaction[]) =>
-      reactions
-        .sort((a, b) => a.content.codePointAt(1)! - b.content.codePointAt(1)!)
-        .sort((a, b) => b.users.length - a.users.length)
-
-    const reaction = currentReactions.find(
-      (reaction) => reaction.content === content,
-    )
-
-    if (!reaction) {
-      setCurrentReactions(
-        sortedReactions([
-          ...currentReactions,
-          { content, users: [{ id: user.id }] },
-        ]),
-      )
-      return
-    }
-
-    const newCurrentReactions = reaction.users.some(
-      (reactionUser) => reactionUser.id === user.id,
-    )
-      ? [
-          ...currentReactions.filter(
-            (reaction) => reaction.content !== content,
-          ),
-          {
-            content,
-            users: [
-              ...reaction.users.filter(
-                (reactionUser) => reactionUser.id !== user.id,
-              ),
-            ],
-          },
-        ]
-      : [
-          ...currentReactions.filter(
-            (reaction) => reaction.content !== content,
-          ),
-          { content, users: [...reaction.users, { id: user.id }] },
-        ]
-
-    setCurrentReactions(
-      sortedReactions(
-        newCurrentReactions.filter((reaction) => reaction.users.length > 0),
-      ),
-    )
-  }
-
+export function SaleCard({
+  sale,
+  className,
+  user,
+  apolloClient,
+  ...props
+}: SaleCardProps) {
   return (
     <ContextMenu>
       <ContextMenuTrigger asChild>
@@ -150,9 +102,7 @@ export function SaleCard({ sale, className, user, ...props }: SaleCardProps) {
 
           <CardContent className="flex-1 space-y-2.5">
             <CardTitle className="space-x-1">
-              <Link href={`/promocao/${sale.slug}/${sale.id}`}>
-                {sale.title}
-              </Link>
+              <Link href={`/sale/${sale.slug}/${sale.id}`}>{sale.title}</Link>
             </CardTitle>
 
             <div>
@@ -242,8 +192,8 @@ export function SaleCard({ sale, className, user, ...props }: SaleCardProps) {
             <Reactions
               saleId={sale.id}
               userId={user?.id}
-              reactions={currentReactions}
-              onReact={onReact}
+              reactions={sale.reactions}
+              apolloClient={apolloClient}
             />
 
             <Link
@@ -265,7 +215,11 @@ export function SaleCard({ sale, className, user, ...props }: SaleCardProps) {
             <Icons.SmilePlus className="h-4 w-4" />
             <span>Reagir</span>
           </ContextMenuSubTrigger>
-          <ReactionMenu saleId={sale.id} onReact={onReact} />
+          <ReactionMenu
+            saleId={sale.id}
+            userId={user?.id}
+            apolloClient={apolloClient}
+          />
         </ContextMenuSub>
 
         <ContextMenuItem asChild>

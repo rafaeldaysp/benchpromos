@@ -1,5 +1,7 @@
 import { gql } from '@apollo/client'
 
+import type { Category, Comment, Sale } from '@/types'
+
 export const GET_SALES = gql`
   query GetSales($paginationInput: PaginationInput) {
     sales(paginationInput: $paginationInput) {
@@ -36,6 +38,15 @@ export const GET_SALES = gql`
     }
   }
 `
+
+export type GetSalesQuery = {
+  sales: (Sale & {
+    category: Pick<Category, 'name' | 'slug'>
+    comments: Pick<Comment, 'id'>[]
+    reactions: { content: string; users: { id: string }[] }[]
+  })[]
+}
+
 export const SEND_EMAIL = gql`
   query SendConfirmationLink($input: SendTokenToEmailInput!) {
     sendTokenToEmail(sendTokenToEmailInput: $input) {
