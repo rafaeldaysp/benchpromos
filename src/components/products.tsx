@@ -55,6 +55,7 @@ interface ProductsProps {
   serverPriceRange: [number, number]
   sort?: string
   limit?: string
+  search?: string
 }
 
 export function Products({
@@ -66,10 +67,11 @@ export function Products({
   serverPriceRange,
   sort: initialSort,
   limit: initialLimit,
+  search,
 }: ProductsProps) {
   const searchParams = useSearchParams()
   const [isPending, startTransition] = React.useTransition()
-  const pathname = usePathname()
+  const pathname = usePathname().concat(search ? `?search=${search}` : '')
   const router = useRouter()
   const [filters, setFilters] = React.useState(initialFilters)
   const [sort, setSort] = React.useState(initialSort)

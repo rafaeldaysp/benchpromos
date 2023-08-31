@@ -22,6 +22,7 @@ import { cn } from '@/lib/utils'
 const GET_PRODUCTS_BY_SEARCH = gql`
   query GetProductsBySearch($input: GetProductsInput) {
     productsList: products(getProductsInput: $input) {
+      categorySlug: slug
       products {
         id
         name
@@ -58,6 +59,7 @@ export function Combobox() {
   const [query, setQuery] = React.useState('')
   const debouncedQuery = useDebounce(query, 300)
   const [data, setData] = React.useState<{
+    categorySlug: string
     products: SearchedProduct[]
   } | null>(null)
   const [isPending, startTransition] = React.useTransition()
@@ -65,6 +67,7 @@ export function Combobox() {
 
   const { refetch } = useQuery<{
     productsList: {
+      categorySlug: string
       products: SearchedProduct[]
     }
   }>(GET_PRODUCTS_BY_SEARCH, {
@@ -90,7 +93,10 @@ export function Combobox() {
             },
           },
         })
-        setData(data.productsList)
+        setData({
+          categorySlug: data.productsList.categorySlug,
+          products: data.productsList.products,
+        })
       })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -149,11 +155,14 @@ export function Combobox() {
                 <CommandItem
                   value={debouncedQuery}
                   className="hidden"
-                  onSelect={() =>
-                    handleSelect(() =>
-                      router.push(`/search?q=${debouncedQuery}`),
-                    )
-                  }
+                  onSelect={() => {
+                    if (data?.categorySlug)
+                      handleSelect(() =>
+                        router.push(
+                          `/${data.categorySlug}?search=${debouncedQuery}`,
+                        ),
+                      )
+                  }}
                 />
                 {products?.map((product) => (
                   <CommandItem
