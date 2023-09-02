@@ -4,7 +4,7 @@ import { useSuspenseQuery } from '@apollo/experimental-nextjs-app-support/ssr'
 import * as React from 'react'
 import { InView } from 'react-intersection-observer'
 
-import { SaleCard } from '@/components/sale-card'
+import { SaleCard } from '@/components/sales/sale-card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { GET_SALES, type GetSalesQuery } from '@/queries'
 

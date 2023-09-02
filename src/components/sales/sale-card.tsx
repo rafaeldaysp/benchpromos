@@ -11,9 +11,9 @@ import * as React from 'react'
 
 import { CopyButton } from '@/components/copy-button'
 import { Icons } from '@/components/icons'
-import { ReactionMenu } from '@/components/reaction-menu'
-import { Reactions } from '@/components/reactions'
-import { Highlight } from '@/components/sale-highlight'
+import { ReactionMenu } from '@/components/sales/reaction-menu'
+import { Reactions } from '@/components/sales/reactions'
+import { Highlight } from '@/components/sales/sale-highlight'
 import { Badge } from '@/components/ui/badge'
 import { buttonVariants } from '@/components/ui/button'
 import {

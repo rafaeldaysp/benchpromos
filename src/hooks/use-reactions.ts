@@ -11,17 +11,15 @@ const TOGGLE_REACTION = gql`
   }
 `
 
-interface ReactionHookProps {
-  saleId: string
-  userId: string
-  apolloClient: ApolloClient<unknown>
-}
-
 export function useReactions({
   saleId,
   userId,
   apolloClient,
-}: ReactionHookProps) {
+}: {
+  saleId: string
+  userId: string
+  apolloClient: ApolloClient<unknown>
+}) {
   const [toggleReaction] = useMutation<{ reaction: { content: string } }>(
     TOGGLE_REACTION,
     {

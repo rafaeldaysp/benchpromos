@@ -130,7 +130,7 @@ export function DashboardProducts({ children }: DashboardProductsProps) {
   const hasMoreProducts = page < pageCount
 
   return (
-    <div className="max-h-[300px] space-y-4">
+    <div className="space-y-4">
       <Input
         placeholder="Pesquise por um produto..."
         value={query}

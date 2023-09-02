@@ -24,6 +24,8 @@ export function ReactionMenu({
   const { toggleReaction } = useReactions({ saleId, userId, apolloClient })
 
   async function handleToggleReaction(emote: string) {
+    if (!userId) return
+
     const token = await getCurrentUserToken()
 
     await toggleReaction({

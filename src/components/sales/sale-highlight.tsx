@@ -1,12 +1,12 @@
 'use client'
 
 import { gql, useMutation } from '@apollo/client'
+import { toast } from 'sonner'
 
 import { getCurrentUserToken } from '@/app/_actions/user'
-import { type Sale } from '@/types'
-import { toast } from 'sonner'
-import { Icons } from './icons'
-import { ContextMenuItem } from './ui/context-menu'
+import { Icons } from '@/components/icons'
+import { ContextMenuItem } from '@/components/ui/context-menu'
+import type { Sale } from '@/types'
 
 const TOGGLE_HIGHLIGHT = gql`
   mutation ToggleHighlight($id: ID!) {

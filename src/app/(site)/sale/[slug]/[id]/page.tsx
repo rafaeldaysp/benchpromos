@@ -47,7 +47,10 @@ export default async function SalePage({ params }: SalePageProps) {
         <strong>{sale.title}</strong>
       </div>
 
-      <Comments saleId={sale.id} user={user} />
+      <Comments
+        saleId={sale.id}
+        user={{ name: user?.name || null, image: user?.image || null }}
+      />
     </div>
   )
 }

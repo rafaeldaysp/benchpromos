@@ -2,8 +2,8 @@ import { gql } from '@apollo/client'
 import { type Session } from 'next-auth'
 
 import { getCurrentUser } from '@/app/_actions/user'
+import { SendEmail } from '@/components/auth/send-email-confirmation'
 import { Icons } from '@/components/icons'
-import { SendEmail } from '@/components/send-email-confirmation'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import {
   Card,
