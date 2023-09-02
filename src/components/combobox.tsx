@@ -160,7 +160,7 @@ export function Combobox() {
                 <CommandGroup heading="Pesquisar">
                   <CommandItem
                     value={query}
-                    className="h-16 space-x-4"
+                    className="h-16"
                     onSelect={() => {
                       if (data?.categorySlug)
                         handleSelect(() =>
@@ -168,7 +168,7 @@ export function Combobox() {
                         )
                     }}
                   >
-                    <Icons.Search />
+                    <Icons.Search className="mr-2" />
                     <span>
                       Procurar por: <strong>{query}</strong>
                     </span>
