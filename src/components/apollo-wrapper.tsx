@@ -24,7 +24,7 @@ function makeClient() {
           keyFields: ['products'],
         },
         Sale: {
-          keyFields: ['reactions', ['id']],
+          keyFields: ['reactions', ['content']],
         },
       },
     }),

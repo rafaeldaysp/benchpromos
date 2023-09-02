@@ -29,11 +29,14 @@ import {
   Moon,
   MoreHorizontal,
   Plus,
+  Reply,
   Search,
+  Send,
   SlidersHorizontal,
   SmilePlus,
   Sun,
   Tag,
+  ThumbsUp,
   Trash2,
   User2,
   X,
@@ -79,6 +82,9 @@ export const Icons = {
   AlertCircle,
   StarFilled: StarFilledIcon,
   ChevronDown,
+  Reply,
+  Like: ThumbsUp,
+  Send,
   Google: ({ ...props }: LucideProps) => (
     <svg
       aria-hidden="true"

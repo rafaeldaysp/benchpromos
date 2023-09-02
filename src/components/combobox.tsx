@@ -16,9 +16,9 @@ import {
   CommandItem,
   CommandList,
 } from '@/components/ui/command'
+import { Separator } from '@/components/ui/separator'
 import { Skeleton } from '@/components/ui/skeleton'
 import { cn } from '@/lib/utils'
-import { Separator } from './ui/separator'
 
 const GET_PRODUCTS_BY_SEARCH = gql`
   query GetProductsBySearch($input: GetProductsInput) {

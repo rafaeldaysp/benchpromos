@@ -1,16 +1,19 @@
 import { gql, useMutation } from '@apollo/client'
 import { useQuery } from '@apollo/experimental-nextjs-app-support/ssr'
-import { type Session } from 'next-auth'
 import { toast } from 'sonner'
+import { create } from 'zustand'
 
+import { getCurrentUserToken } from '@/app/_actions/user'
 import { type Comment } from '@/types'
 
 const GET_COMMENTS = gql`
-  query GetComments($saleId: ID!, $paginationInput: PaginationInput) {
-    comments(saleId: $saleId, paginationInput: $paginationInput) {
+  query GetComments($input: CommentsInput!) {
+    comments(commentsInput: $input) {
       id
       text
       createdAt
+      saleId
+      replyToId
       user {
         name
         image
@@ -22,17 +25,6 @@ const GET_COMMENTS = gql`
       }
       replies {
         id
-        text
-        createdAt
-        user {
-          name
-          image
-        }
-        likes {
-          user {
-            id
-          }
-        }
       }
     }
   }
@@ -51,154 +43,235 @@ type GetCommentsQuery = {
 }
 
 const CREATE_COMMENT = gql`
-  mutation CreateComment($input: CreateCommentByTargetInput!) {
-    comment: createCommentByTarget(createCommentInput: $input) {
+  mutation CreateComment($input: CreateCommentInput!) {
+    comment: createComment(createCommentInput: $input) {
       id
       text
       createdAt
+      saleId
+      replyToId
+      user {
+        name
+        image
+      }
     }
   }
 `
 
-type CreateCommentVariables = {
-  input: {
-    target: 'sale' | 'comment'
-    id: string
-    text: string
+const UPDATE_COMMENT = gql`
+  mutation UpdateComment($input: UpdateCommentInput!) {
+    comment: updateComment(updateCommentInput: $input) {
+      id
+      text
+    }
   }
-}
-
-type CreateCommentResponse = {
-  comment: Pick<Comment, 'id' | 'text' | 'createdAt'>
-}
+`
 
 const DELETE_COMMENT = gql`
-  mutation DeleteComment($commentId: ID!, $target: CommentTarget!) {
-    removeCommentByTarget(id: $commentId, target: $target) {
+  mutation RemoveComment($commentId: ID!) {
+    comment: removeComment(id: $commentId) {
       id
     }
   }
 `
 
-type DeleteCommentVariables = {
-  target: 'sale' | 'comment'
-  commentId: string
+interface CommentSubmitStore {
+  activeReplyCommentIds: string[]
+  addActiveReplyCommentId: (id: string) => void
+  removeActiveReplyCommentId: (id: string) => void
 }
+
+const useCommentSubmitStore = create<CommentSubmitStore>((set) => ({
+  activeReplyCommentIds: [],
+  addActiveReplyCommentId: (id) =>
+    set((state) => ({
+      activeReplyCommentIds: [...state.activeReplyCommentIds, id],
+    })),
+  removeActiveReplyCommentId: (id) =>
+    set((state) => ({
+      activeReplyCommentIds: state.activeReplyCommentIds.filter(
+        (existingId) => existingId !== id,
+      ),
+    })),
+}))
 
 export function useComments({
   saleId,
-  user,
+  replyToId,
 }: {
   saleId: string
-  user: Pick<Session['user'], 'image' | 'name'>
+  replyToId?: string
 }) {
-  const { data, client } = useQuery<GetCommentsQuery>(GET_COMMENTS, {
-    variables: { saleId },
-  })
+  const commentSubmitStore = useCommentSubmitStore()
 
-  const comments = data?.comments
-
-  const [createComment, { loading: createCommentLoading }] = useMutation<
-    CreateCommentResponse,
-    CreateCommentVariables
-  >(CREATE_COMMENT, {
-    onError(error) {
-      toast.error(error.message)
-    },
-    onCompleted({ comment }, clientOptions) {
-      try {
-        const cachedData = client.cache.readQuery<GetCommentsQuery>({
-          query: GET_COMMENTS,
-          variables: { saleId },
-        })
-
-        if (!cachedData) return
-
-        const {
-          input: { id, target },
-        } = clientOptions?.variables as CreateCommentVariables
-
-        const comments = cachedData.comments
-
-        const newComment = {
-          id: comment.id,
-          text: comment.text,
-          createdAt: comment.createdAt,
-          user,
-          likes: [],
-          replies: [],
-        } as GetCommentsQuery['comments'][number]
-
-        const updatedComments =
-          target === 'sale'
-            ? [...comments, { ...newComment, replies: [] }]
-            : comments.map((comment) => {
-                if (comment.id !== id) {
-                  return comment
-                }
-
-                const existingReplies = comment.replies
-
-                return {
-                  ...comment,
-                  replies: [...existingReplies, newComment],
-                }
-              })
-
-        client.cache.writeQuery<GetCommentsQuery>({
-          query: GET_COMMENTS,
-          variables: { saleId },
-          data: {
-            comments: updatedComments,
-          },
-        })
-      } catch (err) {}
-    },
-  })
-
-  const [deleteComment] = useMutation<null, DeleteCommentVariables>(
-    DELETE_COMMENT,
+  const { data, client, previousData } = useQuery<GetCommentsQuery>(
+    GET_COMMENTS,
     {
-      onError(error) {
-        toast.error(error.message)
-      },
-      onCompleted(_, clientOptions) {
-        const cachedData = client.cache.readQuery<GetCommentsQuery>({
-          query: GET_COMMENTS,
-          variables: { saleId },
-        })
-
-        if (!cachedData) return
-
-        const comments = cachedData.comments
-
-        const { commentId, target } =
-          clientOptions?.variables as DeleteCommentVariables
-
-        const updatedComments =
-          target === 'sale'
-            ? comments.filter((comment) => comment.id !== commentId)
-            : comments.map((comment) => {
-                const replies = comment.replies.filter(
-                  (reply) => reply.id !== commentId,
-                )
-
-                return {
-                  ...comment,
-                  replies,
-                }
-              })
-
-        client.cache.writeQuery<GetCommentsQuery>({
-          query: GET_COMMENTS,
-          variables: { saleId },
-          data: {
-            comments: updatedComments,
-          },
-        })
+      variables: {
+        input: {
+          saleId,
+          replyToId,
+        },
       },
     },
   )
 
-  return { comments, createComment, createCommentLoading, deleteComment }
+  const cache = client.cache
+  const comments = data?.comments
+  const previousComments = previousData?.comments
+
+  const [createCommentMutation, { loading: createCommentLoading }] =
+    useMutation(CREATE_COMMENT, {
+      onError(error) {
+        toast.error(error.message)
+      },
+      update(_, { data }) {
+        const newComment = data.comment
+
+        const existingData = cache.readQuery({
+          query: GET_COMMENTS,
+          variables: {
+            input: {
+              saleId,
+              replyToId,
+            },
+          },
+        })
+
+        const existingComments = existingData?.comments
+
+        cache.writeQuery({
+          query: GET_COMMENTS,
+          variables: {
+            input: {
+              saleId,
+              replyToId,
+            },
+          },
+          data: {
+            comments: [
+              ...existingComments,
+              { ...newComment, likes: [], replies: [] },
+            ],
+          },
+        })
+
+        if (replyToId) {
+          cache.modify({
+            id: cache.identify({ __typename: 'Comment', id: replyToId }),
+            fields: {
+              replies(existingReplies = []) {
+                return [...existingReplies, { id: newComment.id }]
+              },
+            },
+          })
+        }
+      },
+    })
+
+  async function createComment(data) {
+    const token = await getCurrentUserToken()
+
+    createCommentMutation({
+      context: {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+      variables: {
+        input: {
+          saleId,
+          replyToId,
+          ...data,
+        },
+      },
+    })
+  }
+
+  const [deleteCommentMutation] = useMutation(DELETE_COMMENT, {
+    onError(error) {
+      toast.error(error.message)
+    },
+    update(_, { data }) {
+      const deletedCommentId = data.comment.id
+
+      cache.evict({
+        id: cache.identify({ __typename: 'Comment', id: deletedCommentId }),
+      })
+
+      if (replyToId) {
+        cache.modify({
+          id: cache.identify({ __typename: 'Comment', id: replyToId }),
+          fields: {
+            replies(existingReplies = []) {
+              return existingReplies.filter(
+                (existingReply) => existingReply.id !== deletedCommentId,
+              )
+            },
+          },
+        })
+      }
+    },
+  })
+
+  async function deleteComment(commentId: string) {
+    const token = await getCurrentUserToken()
+
+    deleteCommentMutation({
+      context: {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+      variables: {
+        commentId,
+      },
+    })
+  }
+
+  const [updateCommentMutation] = useMutation(UPDATE_COMMENT, {
+    onError(error) {
+      toast.error(error.message)
+    },
+    update(_, { data }) {
+      const updatedComment = data.comment
+
+      cache.modify({
+        id: cache.identify({ __typename: 'Comment', id: updatedComment.id }),
+        fields: {
+          text() {
+            return updatedComment.text
+          },
+        },
+      })
+    },
+  })
+
+  async function updateComment(commentId: string, text: string) {
+    const token = await getCurrentUserToken()
+
+    updateCommentMutation({
+      context: {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+      variables: {
+        input: {
+          commentId,
+          text,
+        },
+      },
+    })
+  }
+
+  return {
+    comments,
+    createComment,
+    previousComments,
+    createCommentLoading,
+    deleteComment,
+    updateComment,
+    ...commentSubmitStore,
+  }
 }
