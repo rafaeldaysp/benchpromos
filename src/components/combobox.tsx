@@ -18,6 +18,7 @@ import {
 } from '@/components/ui/command'
 import { Skeleton } from '@/components/ui/skeleton'
 import { cn } from '@/lib/utils'
+import { Separator } from './ui/separator'
 
 const GET_PRODUCTS_BY_SEARCH = gql`
   query GetProductsBySearch($input: GetProductsInput) {
@@ -57,7 +58,7 @@ type SearchedProduct = {
 export function Combobox() {
   const [isOpen, setIsOpen] = React.useState(false)
   const [query, setQuery] = React.useState('')
-  const debouncedQuery = useDebounce(query, 300)
+  const debouncedQuery = useDebounce(query, 200)
   const [data, setData] = React.useState<{
     categorySlug: string
     products: SearchedProduct[]
@@ -79,14 +80,15 @@ export function Combobox() {
   const products = data?.products ?? []
 
   React.useEffect(() => {
-    if (debouncedQuery.length === 0) setData(null)
+    if (debouncedQuery.trim().length === 0) setData(null)
 
-    if (debouncedQuery.length > 0) {
+    if (debouncedQuery.trim().length > 1) {
       startTransition(async () => {
         const { data } = await refetch({
           input: {
             hasDeals: true,
             search: debouncedQuery,
+            sortBy: 'relevance',
             pagination: {
               limit: 5,
               page: 1,
@@ -107,6 +109,7 @@ export function Combobox() {
       if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
         e.preventDefault()
         setIsOpen((isOpen) => !isOpen)
+        setQuery((prev) => prev.trim())
       }
     }
     window.addEventListener('keydown', handleKeyDown)
@@ -126,7 +129,9 @@ export function Combobox() {
         onClick={() => setIsOpen(true)}
       >
         <Icons.Search className="h-4 w-4 xl:mr-2" aria-hidden="true" />
-        <span className="hidden xl:inline-flex">Procurar produtos...</span>
+        <span className="hidden xl:inline-flex">
+          {query.trim().length > 0 ? query : 'Procurar produtos...'}
+        </span>
         <span className="sr-only">Procurar produtos</span>
         <kbd className="pointer-events-none absolute right-1.5 top-2 hidden h-6 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 xl:flex">
           <span className="text-xs">Ctrl</span>K
@@ -151,46 +156,54 @@ export function Combobox() {
             </div>
           ) : (
             products.length > 0 && (
-              <CommandGroup className="capitalize">
-                <CommandItem
-                  value={debouncedQuery}
-                  className="hidden"
-                  onSelect={() => {
-                    if (data?.categorySlug)
-                      handleSelect(() =>
-                        router.push(
-                          `/${data.categorySlug}?search=${debouncedQuery}`,
-                        ),
-                      )
-                  }}
-                />
-                {products?.map((product) => (
+              <>
+                <CommandGroup heading="Pesquisar">
                   <CommandItem
-                    key={product.id}
-                    value={`${product.name} ${product.category.name} ${product.subcategory.name}`}
-                    className="h-20 space-x-4"
-                    onSelect={() =>
-                      handleSelect(() =>
-                        router.push(
-                          `/${product.category.slug}/${product.slug}`,
-                        ),
-                      )
-                    }
+                    value={query}
+                    className="h-16 space-x-4"
+                    onSelect={() => {
+                      if (data?.categorySlug)
+                        handleSelect(() =>
+                          router.push(`/${data.categorySlug}?search=${query}`),
+                        )
+                    }}
                   >
-                    <div className="relative aspect-square h-full">
-                      <Image
-                        src={product.imageUrl}
-                        alt=""
-                        fill
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                        className="object-contain"
-                      />
-                    </div>
-
-                    <span>{product.name}</span>
+                    <Icons.Search />
+                    <span>
+                      Procurar por: <strong>{query}</strong>
+                    </span>
                   </CommandItem>
-                ))}
-              </CommandGroup>
+                </CommandGroup>
+                <Separator />
+                <CommandGroup heading="Sugestões">
+                  {products?.map((product) => (
+                    <CommandItem
+                      key={product.id}
+                      value={`${product.name} ${product.category.name} ${product.subcategory.name}`}
+                      className="h-16 space-x-4"
+                      onSelect={() =>
+                        handleSelect(() =>
+                          router.push(
+                            `/${product.category.slug}/${product.slug}`,
+                          ),
+                        )
+                      }
+                    >
+                      <div className="relative aspect-square h-full">
+                        <Image
+                          src={product.imageUrl}
+                          alt=""
+                          fill
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                          className="object-contain"
+                        />
+                      </div>
+
+                      <span className="line-clamp-2">{product.name}</span>
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              </>
             )
           )}
         </CommandList>
