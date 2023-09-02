@@ -128,7 +128,7 @@ export function useComments({
       update(_, { data }) {
         const newComment = data.comment
 
-        const existingData = cache.readQuery({
+        const existingData = cache.readQuery<GetCommentsQuery>({
           query: GET_COMMENTS,
           variables: {
             input: {
@@ -139,6 +139,8 @@ export function useComments({
         })
 
         const existingComments = existingData?.comments
+
+        if (!existingComments) return
 
         cache.writeQuery({
           query: GET_COMMENTS,
@@ -169,7 +171,7 @@ export function useComments({
       },
     })
 
-  async function createComment(data) {
+  async function createComment(data: { text: string }) {
     const token = await getCurrentUserToken()
 
     createCommentMutation({
@@ -205,7 +207,8 @@ export function useComments({
           fields: {
             replies(existingReplies = []) {
               return existingReplies.filter(
-                (existingReply) => existingReply.id !== deletedCommentId,
+                (existingReply: GetCommentsQuery['comments'][number]) =>
+                  existingReply.id !== deletedCommentId,
               )
             },
           },
