@@ -131,8 +131,6 @@ export default async function ProductsPage({
 
   const [min, max] = price?.split('-') ?? []
 
-  console.log(min, max)
-
   const { data } = await getClient().query<{
     productsList: {
       pages: number

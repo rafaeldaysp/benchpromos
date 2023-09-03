@@ -1,3 +1,5 @@
+'use client'
+
 import Image from 'next/image'
 import Link from 'next/link'
 
@@ -20,20 +22,18 @@ export function SideBar({ options }: SideBarProps) {
   return (
     <div className="lg:hidden">
       <Sheet>
-        <SheetTrigger>
-          <Button variant={'link'} className="select-none p-0 text-foreground ">
-            <Icons.Menu className="" />
-          </Button>
+        <SheetTrigger className="flex h-max items-center">
+          <Icons.Menu />
         </SheetTrigger>
 
         <SheetContent side={'left'} className="space-y-2.5">
           <SheetHeader>
             <Link aria-label="Home" href="/" className="flex items-center">
-              <div className="relative -ml-2 aspect-square h-12 select-none">
+              <div className="relative aspect-square h-8 select-none">
                 <Image
                   src={Logo}
                   alt="Logo"
-                  className="object-contain py-2"
+                  className="object-contain"
                   fill
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 />

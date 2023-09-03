@@ -28,12 +28,12 @@ export function MainNav({ options }: MainNavProps) {
   return (
     <div className="flex items-center gap-x-1 lg:gap-x-6">
       <SideBar options={options} />
-      <Link aria-label="Home" href="/" className="flex items-center">
-        <div className="relative -ml-2 aspect-square h-12 select-none">
+      <Link aria-label="Home" href="/" className="flex items-center gap-2">
+        <div className="relative aspect-square h-8 select-none">
           <Image
             src={Logo}
             alt="Logo"
-            className="object-contain py-2"
+            className="object-contain"
             fill
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
