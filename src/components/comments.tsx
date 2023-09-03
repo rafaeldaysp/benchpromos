@@ -52,7 +52,7 @@ export function Comments({ saleId, user }: CommentsProps) {
   }
 
   return (
-    <div className="max-w-4xl space-y-8 rounded-lg">
+    <div className="space-y-8">
       {/* Comment Submit */}
       <CommentSubmit saleId={saleId} user={user} />
 
@@ -190,7 +190,7 @@ export function Comment({ saleId, comment, replyToId, user }: CommentProps) {
 
   return (
     <DropdownMenu>
-      <div className="flex space-x-4 space-y-1">
+      <div className="flex space-x-4">
         <div>
           <UserAvatar
             user={{
@@ -201,14 +201,19 @@ export function Comment({ saleId, comment, replyToId, user }: CommentProps) {
           />
         </div>
         <div className="flex-1">
-          <header className="flex items-center space-x-2">
-            <span className="font-semibold">{comment.user.name}</span>
-            {comment.user.isAdmin && (
-              <Badge>
-                {' '}
-                <Icons.Crown className="mr-1 h-4 w-4" /> ADM
-              </Badge>
-            )}
+          <header className="flex flex-col items-start justify-start pb-1 ">
+            <div className="flex items-center space-x-2">
+              <span className="text-xs font-semibold sm:text-sm">
+                {comment.user.name}
+              </span>
+              {comment.user.isAdmin && (
+                <Badge className="px-1 py-0">
+                  {' '}
+                  <Icons.Crown className="mr-1 h-3 w-3 text-xs sm:text-sm" />{' '}
+                  ADM
+                </Badge>
+              )}
+            </div>
 
             <time className="text-xs text-muted-foreground">
               {comment.updatedAt === comment.createdAt
@@ -218,7 +223,7 @@ export function Comment({ saleId, comment, replyToId, user }: CommentProps) {
           </header>
           <div>
             {mode === 'text' ? (
-              <p className="leading-tight">{comment.text}</p>
+              <p className="text-sm leading-tight">{comment.text}</p>
             ) : (
               <div>
                 <div className="flex flex-1 border-b p-2">
@@ -227,7 +232,7 @@ export function Comment({ saleId, comment, replyToId, user }: CommentProps) {
                     maxLength={1000}
                     onChange={(e) => setInput(e.target.value)}
                     placeholder="Editar comentário..."
-                    className="relative w-full resize-none appearance-none overflow-hidden bg-transparent leading-tight focus:outline-none"
+                    className="relative w-full resize-none appearance-none overflow-hidden bg-transparent text-sm leading-tight focus:outline-none"
                   />
                 </div>
 
@@ -329,10 +334,7 @@ function CommentSubmit({ saleId, commentId, user }: CommentSubmitProps) {
             maxLength={1000}
             onChange={(e) => setCommentInput(e.target.value)}
             placeholder="Adicionar um comentário..."
-            className={cn(
-              'w-full resize-none appearance-none overflow-hidden bg-transparent leading-tight focus:outline-none',
-              { 'text-sm': commentId },
-            )}
+            className="w-full resize-none appearance-none overflow-hidden bg-transparent text-sm leading-tight focus:outline-none"
           />
         </div>
 
