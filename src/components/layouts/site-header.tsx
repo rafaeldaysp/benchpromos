@@ -14,9 +14,8 @@ export async function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-40 w-full bg-background">
-      <div className="container flex h-14 items-center">
+      <div className="container flex h-14 items-center max-sm:px-4">
         <MainNav options={options} />
-        {/* MobileNav /> */}
 
         <div className="flex flex-1 justify-end">
           <nav className="flex items-center space-x-2">

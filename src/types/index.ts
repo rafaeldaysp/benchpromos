@@ -138,3 +138,9 @@ export type Reaction = {
     id: string
   }[]
 }
+
+export type headerOption = {
+  title: string
+  slug?: string
+  content?: { title: string; slug: string }[]
+}

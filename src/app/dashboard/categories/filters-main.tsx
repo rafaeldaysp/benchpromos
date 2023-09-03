@@ -298,7 +298,7 @@ export function FilterOptionModal({ filter }: FilterOptionModalProps) {
     <Sheet>
       <SheetTrigger asChild>
         <Button variant="outline" size="icon">
-          <Icons.Menu className="h-4 w-4" />
+          <Icons.MenuSquare className="h-4 w-4" />
         </Button>
       </SheetTrigger>
       <SheetContent

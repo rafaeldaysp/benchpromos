@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client'
 
 import { getClient } from '@/lib/apollo'
-import { type Category } from '@/types'
+import { type headerOption, type Category } from '@/types'
 
 const GET_CATEGORIES = gql`
   query GetCategories {
@@ -21,11 +21,7 @@ export async function headerOptions() {
 
   const categories = data?.categories
 
-  const options: {
-    title: string
-    slug?: string
-    content?: { title: string; slug: string }[]
-  }[] = [
+  const options: headerOption[] = [
     {
       title: 'Notebooks',
       slug: 'notebooks',

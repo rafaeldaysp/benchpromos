@@ -17,18 +17,17 @@ import {
 import { siteConfig } from '@/config/site'
 import { cn } from '@/lib/utils'
 import Logo from '@/public/LOGO BENCHPROMOS SITE_48.png'
+import { SideBar } from './side-bar'
+import { type headerOption } from '@/types'
 
 interface MainNavProps {
-  options: {
-    title: string
-    slug?: string
-    content?: { title: string; slug: string }[]
-  }[]
+  options: headerOption[]
 }
 
 export function MainNav({ options }: MainNavProps) {
   return (
-    <div className="hidden gap-x-6 lg:flex">
+    <div className="flex items-center gap-x-1 lg:gap-x-6">
+      <SideBar options={options} />
       <Link aria-label="Home" href="/" className="flex items-center">
         <div className="relative -ml-2 aspect-square h-12 select-none">
           <Image
@@ -45,7 +44,7 @@ export function MainNav({ options }: MainNavProps) {
           {siteConfig.name}
         </span>
       </Link>
-      <NavigationMenu>
+      <NavigationMenu className="max-lg:hidden">
         <NavigationMenuList>
           {options.map((option) => (
             <NavigationMenuItem key={option.title}>
