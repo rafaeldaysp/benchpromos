@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation'
 import { Comments } from '@/components/comments'
 import { getClient } from '@/lib/apollo'
 import type { Sale } from '@/types'
+import { getCurrentUser } from '@/app/_actions/user'
 
 const GET_SALE = gql`
   query Sale($saleId: ID!) {
@@ -23,6 +24,8 @@ interface SalePageProps {
 
 export default async function SalePage({ params }: SalePageProps) {
   const { slug, id } = params
+
+  const user = await getCurrentUser()
 
   const { data, errors } = await getClient().query<{ sale: Sale }>({
     query: GET_SALE,
@@ -44,7 +47,7 @@ export default async function SalePage({ params }: SalePageProps) {
         <strong>{sale.title}</strong>
       </div>
 
-      <Comments saleId={sale.id} />
+      <Comments saleId={sale.id} user={user} />
     </div>
   )
 }

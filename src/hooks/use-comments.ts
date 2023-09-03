@@ -12,9 +12,12 @@ const GET_COMMENTS = gql`
       id
       text
       createdAt
+      updatedAt
       saleId
       replyToId
       user {
+        id
+        isAdmin
         name
         image
       }
@@ -31,8 +34,8 @@ const GET_COMMENTS = gql`
 `
 
 type GetCommentsQuery = {
-  comments: (Pick<Comment, 'id' | 'text' | 'createdAt'> & {
-    user: { name: string; image: string }
+  comments: (Pick<Comment, 'id' | 'text' | 'createdAt' | 'updatedAt'> & {
+    user: { id: string; isAdmin: boolean; name: string; image: string }
     likes: {
       user: {
         id: string
@@ -48,9 +51,12 @@ const CREATE_COMMENT = gql`
       id
       text
       createdAt
+      updatedAt
       saleId
       replyToId
       user {
+        id
+        isAdmin
         name
         image
       }
@@ -63,6 +69,7 @@ const UPDATE_COMMENT = gql`
     comment: updateComment(updateCommentInput: $input) {
       id
       text
+      updatedAt
     }
   }
 `
@@ -104,17 +111,19 @@ export function useComments({
 }) {
   const commentSubmitStore = useCommentSubmitStore()
 
-  const { data, client, previousData } = useQuery<GetCommentsQuery>(
-    GET_COMMENTS,
-    {
-      variables: {
-        input: {
-          saleId,
-          replyToId,
-        },
+  const {
+    data,
+    client,
+    previousData,
+    loading: isLoading,
+  } = useQuery<GetCommentsQuery>(GET_COMMENTS, {
+    variables: {
+      input: {
+        saleId,
+        replyToId,
       },
     },
-  )
+  })
 
   const cache = client.cache
   const comments = data?.comments
@@ -275,6 +284,7 @@ export function useComments({
     createCommentLoading,
     deleteComment,
     updateComment,
+    isLoading,
     ...commentSubmitStore,
   }
 }

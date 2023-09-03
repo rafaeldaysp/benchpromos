@@ -12,6 +12,7 @@ import {
   ChevronsRight,
   CircleDollarSign,
   Copy,
+  Crown,
   Edit2,
   ExternalLink,
   Eye,
@@ -28,6 +29,7 @@ import {
   Minus,
   Moon,
   MoreHorizontal,
+  MoreVertical,
   Plus,
   Reply,
   Search,
@@ -85,6 +87,8 @@ export const Icons = {
   Reply,
   Like: ThumbsUp,
   Send,
+  MoreVertical,
+  Crown,
   Google: ({ ...props }: LucideProps) => (
     <svg
       aria-hidden="true"
