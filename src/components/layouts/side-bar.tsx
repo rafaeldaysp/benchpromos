@@ -8,7 +8,6 @@ import { externalLinkOptions } from '@/constants/index'
 import Logo from '@/public/LOGO BENCHPROMOS SITE_48.png'
 import { type headerOption } from '@/types'
 import { Icons } from '../icons'
-import { Button } from '../ui/button'
 import { ScrollArea } from '../ui/scroll-area'
 import { Sheet, SheetContent, SheetHeader, SheetTrigger } from '../ui/sheet'
 
@@ -28,7 +27,11 @@ export function SideBar({ options }: SideBarProps) {
 
         <SheetContent side={'left'} className="space-y-2.5">
           <SheetHeader>
-            <Link aria-label="Home" href="/" className="flex items-center">
+            <Link
+              aria-label="Home"
+              href="/"
+              className="flex items-center gap-2"
+            >
               <div className="relative aspect-square h-8 select-none">
                 <Image
                   src={Logo}
