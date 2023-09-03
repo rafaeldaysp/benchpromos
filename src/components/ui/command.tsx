@@ -28,7 +28,7 @@ interface CommandDialogProps extends DialogProps {}
 const CommandDialog = ({ children, ...props }: CommandDialogProps) => {
   return (
     <Dialog {...props}>
-      <DialogContent className="overflow-hidden p-0">
+      <DialogContent className="overflow-hidden p-0 max-sm:top-0.5 max-sm:w-[99vw] max-sm:translate-y-0 max-sm:rounded-lg">
         <Command
           filter={(value, search) => {
             const wordsValue = value.toLowerCase().trim().split(' ')
