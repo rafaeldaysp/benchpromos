@@ -80,8 +80,8 @@ export function Comments({ saleId, user }: CommentsProps) {
                   className="ml-10"
                   collapsible
                 >
-                  <AccordionItem value="replies" className="space-y-2">
-                    <Button variant={'ghost'}>
+                  <AccordionItem value="replies" className="space-y-2 pb-2">
+                    <Button variant={'ghost'} className="px-1" size={'sm'}>
                       <AccordionTrigger className="hover:no-underline">
                         {comment.replies.length} resposta
                         {comment.replies.length > 1 && 's'}
@@ -127,7 +127,7 @@ function Replies({ saleId, replyToId, user }: RepliesProps) {
 
   return (
     <div>
-      <ul className="py-1">
+      <ul>
         {isLoading && (
           <div className="flex w-full items-center justify-center">
             <Icons.Spinner className="h-4 w-4 animate-spin text-center" />
@@ -190,7 +190,7 @@ export function Comment({ saleId, comment, replyToId, user }: CommentProps) {
 
   return (
     <DropdownMenu>
-      <div className="flex space-x-4">
+      <div className="flex space-x-2">
         <div>
           <UserAvatar
             user={{
@@ -200,8 +200,8 @@ export function Comment({ saleId, comment, replyToId, user }: CommentProps) {
             className="h-8 w-8"
           />
         </div>
-        <div className="flex-1">
-          <header className="flex flex-col items-start justify-start pb-1 ">
+        <div className="flex-1 space-y-1 pb-1">
+          <header className="flex flex-col items-start">
             <div className="flex items-center space-x-2">
               <span className="text-xs font-semibold sm:text-sm">
                 {comment.user.name}
@@ -221,7 +221,7 @@ export function Comment({ saleId, comment, replyToId, user }: CommentProps) {
                 : `Editado ${dayjs(comment.updatedAt).fromNow()}`}
             </time>
           </header>
-          <div>
+          <div className="">
             {mode === 'text' ? (
               <p className="text-sm leading-tight">{comment.text}</p>
             ) : (
@@ -251,13 +251,14 @@ export function Comment({ saleId, comment, replyToId, user }: CommentProps) {
               </div>
             )}
           </div>
-          <footer className="space-x-1 py-1">
-            <Toggle size="sm">
-              <Icons.Like className="mr-1.5 h-4 w-4" /> 1
+          <footer className="space-x-1">
+            <Toggle className="px-1" size={'sm'}>
+              <Icons.Like className="mr-1.5 h-4 w-4" /> 100
             </Toggle>
             <Button
               variant="ghost"
               size="sm"
+              className="px-1"
               onClick={() =>
                 addActiveReplyCommentId(replyToId ? replyToId : comment.id)
               }
@@ -319,7 +320,7 @@ function CommentSubmit({ saleId, commentId, user }: CommentSubmitProps) {
   }
 
   return (
-    <div className={cn('flex gap-x-2', { 'ml-10': commentId })}>
+    <div className={cn('flex gap-x-1', { 'ml-10': commentId })}>
       <UserAvatar
         user={{ name: user?.name || null, image: user?.image || null }}
         className="h-8 w-8"
