@@ -11,6 +11,7 @@ const GET_SALE = gql`
     sale(id: $saleId) {
       id
       title
+      commentsCount
     }
   }
 `
@@ -27,7 +28,9 @@ export default async function SalePage({ params }: SalePageProps) {
 
   const user = await getCurrentUser()
 
-  const { data, errors } = await getClient().query<{ sale: Sale }>({
+  const { data, errors } = await getClient().query<{
+    sale: Sale & { commentsCount: number }
+  }>({
     query: GET_SALE,
     errorPolicy: 'all',
     variables: {
@@ -47,7 +50,7 @@ export default async function SalePage({ params }: SalePageProps) {
         <strong>{sale.title}</strong>
       </div>
 
-      <Comments saleId={sale.id} user={user} />
+      <Comments saleId={sale.id} user={user} count={sale.commentsCount} />
     </div>
   )
 }

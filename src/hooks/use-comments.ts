@@ -21,14 +21,16 @@ const GET_COMMENTS = gql`
         name
         image
       }
-      likes {
-        user {
-          id
-        }
-      }
-      replies {
-        id
-      }
+      # likes {
+      #   user {
+      #     id
+      #   }
+      # }
+      # replies {
+      #   id
+      # }
+      likesCount
+      repliesCount
     }
   }
 `
@@ -36,12 +38,14 @@ const GET_COMMENTS = gql`
 type GetCommentsQuery = {
   comments: (Pick<Comment, 'id' | 'text' | 'createdAt' | 'updatedAt'> & {
     user: { id: string; isAdmin: boolean; name: string; image: string }
-    likes: {
-      user: {
-        id: string
-      }
-    }[]
-    replies: Omit<GetCommentsQuery['comments'][number], 'replies'>[]
+    // likes: {
+    //   user: {
+    //     id: string
+    //   }
+    // }[]
+    // replies: Omit<GetCommentsQuery['comments'][number], 'replies'>[]
+    likesCount: number
+    repliesCount: number
   })[]
 }
 

@@ -62,9 +62,10 @@ interface SaleCardProps extends React.HTMLAttributes<HTMLDivElement> {
       name: string
       slug: string
     }
-    comments: {
-      id: string
-    }[]
+    // comments: {
+    //   id: string
+    // }[]
+    commentsCount: number
     reactions: Reaction[]
   }
   user?: { id: string; isAdmin: boolean }
@@ -203,7 +204,7 @@ export function SaleCard({
                 'shrink-0',
               )}
             >
-              <span className="mr-1 text-sm">{sale.comments.length}</span>
+              <span className="mr-1 text-sm">{sale.commentsCount ?? 0}</span>
               <Icons.MessageCircle className="h-4 w-4" />
             </Link>
           </CardFooter>

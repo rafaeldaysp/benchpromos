@@ -26,9 +26,10 @@ export const GET_SALES = gql`
         name
         slug
       }
-      comments {
-        id
-      }
+      # comments {
+      #   id
+      # }
+      commentsCount
       reactions {
         content
         users {
@@ -42,7 +43,8 @@ export const GET_SALES = gql`
 export type GetSalesQuery = {
   sales: (Sale & {
     category: Pick<Category, 'name' | 'slug'>
-    comments: Pick<Comment, 'id'>[]
+    // comments: Pick<Comment, 'id'>[]
+    commentsCount: number
     reactions: { content: string; users: { id: string }[] }[]
   })[]
 }

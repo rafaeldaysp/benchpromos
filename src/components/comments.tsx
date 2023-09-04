@@ -26,89 +26,112 @@ import { useComments } from '@/hooks/use-comments'
 import { cn } from '@/lib/utils'
 import { Toggle } from './ui/toggle'
 import { Badge } from './ui/badge'
+import { Skeleton } from './ui/skeleton'
 
 dayjs.extend(relativeTime)
 dayjs.locale('pt-br')
 
 interface CommentsProps {
   saleId: string
+  count: number
   user?: Pick<Session['user'], 'id' | 'image' | 'name' | 'isAdmin'>
 }
 
-export function Comments({ saleId, user }: CommentsProps) {
+export function Comments({ saleId, user, count }: CommentsProps) {
   const { comments, previousComments, activeReplyCommentIds } = useComments({
     saleId,
   })
 
-  if (!comments) {
-    return (
-      <div className="flex justify-center">
-        <Icons.Spinner
-          className="mr-2 h-4 w-4 animate-spin"
-          aria-hidden="true"
-        />
-      </div>
-    )
-  }
+  // if (!comments) {
+  //   return (
+  //     <div className="space-y-10">
+  //       {Array.from({ length: count }).map((_, i) => (
+  //         <div key={i} className="flex space-x-2">
+  //           <Skeleton className="h-8 w-8 rounded-full" />
+  //           <div className="space-y-1">
+  //             <Skeleton className="h-3 w-32" />
+  //             <Skeleton className="h-3 w-32" />
+  //             <Skeleton className="h-3 w-52 sm:w-80" />
+  //           </div>
+  //         </div>
+  //       ))}
+  //     </div>
+  //   )
+  // }
 
   return (
     <div className="space-y-8">
       {/* Comment Submit */}
       <CommentSubmit saleId={saleId} user={user} />
 
-      {/* Comments */}
-      <ul className="space-y-2">
-        {comments.map((comment) => {
-          const previousComment = previousComments?.find(
-            ({ id }) => id === comment.id,
-          )
+      {comments ? (
+        <ul className="space-y-2">
+          {comments.map((comment) => {
+            const previousComment = previousComments?.find(
+              ({ id }) => id === comment.id,
+            )
 
-          const repliesAmountChanged = previousComment
-            ? previousComment?.replies.length !== comment.replies.length
-            : false
+            const repliesAmountChanged = previousComment
+              ? previousComment.repliesCount !== comment.repliesCount
+              : false
 
-          return (
-            <li key={comment.id} className="space-y-0.5">
-              {/* Commment */}
-              <Comment saleId={saleId} comment={comment} user={user} />
+            return (
+              <li key={comment.id} className="space-y-0.5">
+                {/* Commment */}
+                <Comment saleId={saleId} comment={comment} user={user} />
 
-              {/* Replies */}
-              {comment.replies.length > 0 && (
-                <Accordion
-                  type="single"
-                  value={repliesAmountChanged ? 'replies' : undefined}
-                  className="ml-10"
-                  collapsible
-                >
-                  <AccordionItem value="replies" className="space-y-2 pb-2">
-                    <Button variant={'ghost'} className="px-1" size={'sm'}>
-                      <AccordionTrigger className="hover:no-underline">
-                        {comment.replies.length} resposta
-                        {comment.replies.length > 1 && 's'}
-                      </AccordionTrigger>
-                    </Button>
-                    <AccordionContent>
-                      <Replies
-                        saleId={saleId}
-                        replyToId={comment.id}
-                        user={user}
-                      />
-                    </AccordionContent>
-                  </AccordionItem>
-                </Accordion>
-              )}
+                {/* Replies */}
+                {comment.repliesCount > 0 && (
+                  <Accordion
+                    type="single"
+                    value={repliesAmountChanged ? 'replies' : undefined}
+                    className="ml-10"
+                    collapsible
+                  >
+                    <AccordionItem value="replies" className="space-y-2 pb-2">
+                      <Button variant={'ghost'} className="px-1" size={'sm'}>
+                        <AccordionTrigger className="hover:no-underline">
+                          {comment.repliesCount} resposta
+                          {comment.repliesCount > 1 && 's'}
+                        </AccordionTrigger>
+                      </Button>
+                      <AccordionContent>
+                        <Replies
+                          saleId={saleId}
+                          replyToId={comment.id}
+                          user={user}
+                          count={comment.repliesCount}
+                        />
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
+                )}
 
-              {activeReplyCommentIds.includes(comment.id) && (
-                <CommentSubmit
-                  saleId={saleId}
-                  commentId={comment.id}
-                  user={user}
-                />
-              )}
-            </li>
-          )
-        })}
-      </ul>
+                {activeReplyCommentIds.includes(comment.id) && (
+                  <CommentSubmit
+                    saleId={saleId}
+                    commentId={comment.id}
+                    user={user}
+                  />
+                )}
+              </li>
+            )
+          })}
+        </ul>
+      ) : (
+        <div className="space-y-10">
+          {Array.from({ length: count }).map((_, i) => (
+            <div key={i} className="flex space-x-2">
+              <Skeleton className="h-8 w-8 rounded-full" />
+              <div className="space-y-1">
+                <Skeleton className="h-3 w-32" />
+                <Skeleton className="h-3 w-32" />
+                <Skeleton className="h-3 w-52 sm:w-80" />
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
@@ -116,10 +139,11 @@ export function Comments({ saleId, user }: CommentsProps) {
 interface RepliesProps {
   saleId: string
   replyToId: string
+  count: number
   user?: Pick<Session['user'], 'id' | 'image' | 'name' | 'isAdmin'>
 }
 
-function Replies({ saleId, replyToId, user }: RepliesProps) {
+function Replies({ saleId, replyToId, user, count }: RepliesProps) {
   const { comments, isLoading } = useComments({
     saleId,
     replyToId,
@@ -129,8 +153,17 @@ function Replies({ saleId, replyToId, user }: RepliesProps) {
     <div>
       <ul>
         {isLoading && (
-          <div className="flex w-full items-center justify-center">
-            <Icons.Spinner className="h-4 w-4 animate-spin text-center" />
+          <div className="space-y-10">
+            {Array.from({ length: count }).map((_, i) => (
+              <div key={i} className="flex space-x-2">
+                <Skeleton className="h-8 w-8 rounded-full" />
+                <div className="space-y-1">
+                  <Skeleton className="h-3 w-32" />
+                  <Skeleton className="h-3 w-32" />
+                  <Skeleton className="h-3 w-52 sm:w-80" />
+                </div>
+              </div>
+            ))}
           </div>
         )}
         {comments?.map((comment) => (
