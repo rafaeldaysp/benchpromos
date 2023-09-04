@@ -158,7 +158,7 @@ export function SaleCard({
 
             {sale.coupon && (
               <div>
-                <span className="text-muted-foreground">Com cupom</span>
+                <span className="text-sm text-muted-foreground">Com cupom</span>
                 <div className="flex items-center overflow-hidden rounded-full border pl-2">
                   <Icons.Tag className="mr-2 h-4 w-4 fill-auxiliary text-auxiliary" />
                   <span className="flex-1 overflow-hidden text-sm font-medium uppercase tracking-widest">
