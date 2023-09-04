@@ -14,7 +14,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion'
-import { Button } from '@/components/ui/button'
+import { Button, buttonVariants } from '@/components/ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -89,12 +89,20 @@ export function Comments({ saleId, user, count }: CommentsProps) {
                     collapsible
                   >
                     <AccordionItem value="replies" className="space-y-2 pb-2">
-                      <Button variant={'ghost'} className="px-1" size={'sm'}>
-                        <AccordionTrigger className="hover:no-underline">
-                          {comment.repliesCount} resposta
-                          {comment.repliesCount > 1 && 's'}
-                        </AccordionTrigger>
-                      </Button>
+                      {/* <Button variant={'ghost'} className="px-1" size={'sm'}> */}
+                      <AccordionTrigger
+                        className={cn(
+                          buttonVariants({
+                            variant: 'ghost',
+                            size: 'sm',
+                            className: 'hover:no-underline flex-none  px-1',
+                          }),
+                        )}
+                      >
+                        {comment.repliesCount} resposta
+                        {comment.repliesCount > 1 && 's'}
+                      </AccordionTrigger>
+                      {/* </Button> */}
                       <AccordionContent>
                         <Replies
                           saleId={saleId}
