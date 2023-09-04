@@ -106,13 +106,19 @@ export function SmallSaleCard({
 
         <CardContent className="flex-1 space-y-0.5 p-3 py-0">
           <CardTitle className="line-clamp-2 space-x-1 pb-2.5 text-sm">
-            <Link href={`/sale/${sale.slug}/${sale.id}`}>{sale.title}</Link>
+            <Link
+              onTouchStart={(e) => e.preventDefault()}
+              href={`/sale/${sale.slug}/${sale.id}`}
+            >
+              {sale.title}
+            </Link>
           </CardTitle>
 
           <div className="grid grid-cols-3 gap-x-5">
             <div>
               <Link
                 className="flex h-full items-center"
+                onTouchStart={(e) => e.preventDefault()}
                 href={`/sale/${sale.slug}/${sale.id}`}
               >
                 <div className="relative mx-auto aspect-square w-full sm:w-8/12">
@@ -204,6 +210,7 @@ export function SmallSaleCard({
 
           <Link
             href={`/sale/${sale.slug}/${sale.id}#comments`}
+            onTouchStart={(e) => e.preventDefault()}
             className={cn(
               buttonVariants({ variant: 'ghost', size: 'icon' }),
               'shrink-0',
