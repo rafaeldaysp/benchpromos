@@ -9,7 +9,13 @@ import Logo from '@/public/LOGO BENCHPROMOS SITE_48.png'
 import { type headerOption } from '@/types'
 import { Icons } from '../icons'
 import { ScrollArea } from '../ui/scroll-area'
-import { Sheet, SheetContent, SheetHeader, SheetTrigger } from '../ui/sheet'
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetHeader,
+  SheetTrigger,
+} from '../ui/sheet'
 
 interface SideBarProps {
   options: headerOption[]
@@ -27,35 +33,35 @@ export function SideBar({ options }: SideBarProps) {
 
         <SheetContent side={'left'} className="space-y-2.5">
           <SheetHeader>
-            <Link
-              aria-label="Home"
-              href="/"
-              className="flex items-center gap-2"
-            >
-              <div className="relative aspect-square h-8 select-none">
-                <Image
-                  src={Logo}
-                  alt="Logo"
-                  className="object-contain"
-                  fill
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                />
-              </div>
+            <SheetClose asChild>
+              <Link
+                aria-label="Home"
+                href="/"
+                className="flex items-center gap-2"
+              >
+                <div className="relative aspect-square h-8 select-none">
+                  <Image
+                    src={Logo}
+                    alt="Logo"
+                    className="object-contain"
+                    fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  />
+                </div>
 
-              <span className="font-bold">{siteConfig.name}</span>
-            </Link>
+                <span className="font-bold">{siteConfig.name}</span>
+              </Link>
+            </SheetClose>
           </SheetHeader>
           <ScrollArea className="-mr-6 h-full pb-10">
             <div className="flex flex-1 flex-col px-10 max-sm:overflow-y-auto">
               <div className="flex flex-col space-y-2.5">
                 {optionsWithoutContent.map((option) => (
-                  <Link
-                    key={option.title}
-                    className="font-medium"
-                    href={`/${option.slug}`}
-                  >
-                    {option.title}
-                  </Link>
+                  <SheetClose key={option.title} asChild>
+                    <Link className="font-medium" href={`/${option.slug}`}>
+                      {option.title}
+                    </Link>
+                  </SheetClose>
                 ))}
                 {externalLinkOptions.map((option) => (
                   <a
@@ -75,13 +81,14 @@ export function SideBar({ options }: SideBarProps) {
                     <>
                       <span className="pt-5 font-medium"> {option.title}</span>
                       {option.content.map((content) => (
-                        <Link
-                          key={content.slug}
-                          href={`/${content.slug}`}
-                          className="text-muted-foreground"
-                        >
-                          {content.title}
-                        </Link>
+                        <SheetClose key={content.slug} asChild>
+                          <Link
+                            href={`/${content.slug}`}
+                            className="text-muted-foreground"
+                          >
+                            {content.title}
+                          </Link>
+                        </SheetClose>
                       ))}
                     </>
                   )}
