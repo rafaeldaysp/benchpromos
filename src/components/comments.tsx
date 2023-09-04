@@ -14,6 +14,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion'
+import { Badge } from '@/components/ui/badge'
 import { Button, buttonVariants } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -21,12 +22,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { Skeleton } from '@/components/ui/skeleton'
+import { Toggle } from '@/components/ui/toggle'
 import { UserAvatar } from '@/components/user-avatar'
 import { useComments } from '@/hooks/use-comments'
 import { cn } from '@/lib/utils'
-import { Toggle } from './ui/toggle'
-import { Badge } from './ui/badge'
-import { Skeleton } from './ui/skeleton'
 
 dayjs.extend(relativeTime)
 dayjs.locale('pt-br')
@@ -41,23 +41,6 @@ export function Comments({ saleId, user, count }: CommentsProps) {
   const { comments, previousComments, activeReplyCommentIds } = useComments({
     saleId,
   })
-
-  // if (!comments) {
-  //   return (
-  //     <div className="space-y-10">
-  //       {Array.from({ length: count }).map((_, i) => (
-  //         <div key={i} className="flex space-x-2">
-  //           <Skeleton className="h-8 w-8 rounded-full" />
-  //           <div className="space-y-1">
-  //             <Skeleton className="h-3 w-32" />
-  //             <Skeleton className="h-3 w-32" />
-  //             <Skeleton className="h-3 w-52 sm:w-80" />
-  //           </div>
-  //         </div>
-  //       ))}
-  //     </div>
-  //   )
-  // }
 
   return (
     <div className="space-y-8">
@@ -89,20 +72,18 @@ export function Comments({ saleId, user, count }: CommentsProps) {
                     collapsible
                   >
                     <AccordionItem value="replies" className="space-y-2 pb-2">
-                      {/* <Button variant={'ghost'} className="px-1" size={'sm'}> */}
                       <AccordionTrigger
                         className={cn(
                           buttonVariants({
                             variant: 'ghost',
                             size: 'sm',
-                            className: 'hover:no-underline flex-none  px-1',
                           }),
+                          'flex-none px-1 hover:no-underline',
                         )}
                       >
                         {comment.repliesCount} resposta
                         {comment.repliesCount > 1 && 's'}
                       </AccordionTrigger>
-                      {/* </Button> */}
                       <AccordionContent>
                         <Replies
                           saleId={saleId}
@@ -202,8 +183,14 @@ interface CommentProps {
       name: string
       image: string
     }
+    likes: {
+      user: {
+        id: string
+      }
+    }[]
     createdAt: string
     updatedAt: string
+    likesCount: number
   }
   replyToId?: string
   user?: Pick<Session['user'], 'id' | 'image' | 'name' | 'isAdmin'>
@@ -212,12 +199,15 @@ interface CommentProps {
 export function Comment({ saleId, comment, replyToId, user }: CommentProps) {
   const [input, setInput] = React.useState(comment.text)
   const [mode, setMode] = React.useState<'text' | 'input'>('text')
-  const { deleteComment, updateComment, addActiveReplyCommentId } = useComments(
-    {
-      saleId,
-      replyToId,
-    },
-  )
+  const {
+    deleteComment,
+    updateComment,
+    addActiveReplyCommentId,
+    toggleCommentLike,
+  } = useComments({
+    saleId,
+    replyToId,
+  })
 
   async function handleDeleteComment() {
     await deleteComment(comment.id)
@@ -228,6 +218,10 @@ export function Comment({ saleId, comment, replyToId, user }: CommentProps) {
 
     setMode('text')
   }
+
+  const currentUserLiked = comment.likes.some(
+    (like) => like.user.id === user?.id,
+  )
 
   return (
     <DropdownMenu>
@@ -293,8 +287,14 @@ export function Comment({ saleId, comment, replyToId, user }: CommentProps) {
             )}
           </div>
           <footer className="space-x-1">
-            <Toggle className="px-1" size={'sm'}>
-              <Icons.Like className="mr-1.5 h-4 w-4" /> 100
+            <Toggle
+              className="px-1"
+              size={'sm'}
+              pressed={currentUserLiked}
+              onPressedChange={() => toggleCommentLike(comment.id)}
+            >
+              <Icons.Like className="mr-1.5 h-4 w-4" />{' '}
+              {comment.likesCount ? comment.likesCount : ''}
             </Toggle>
             <Button
               variant="ghost"
@@ -357,7 +357,13 @@ function CommentSubmit({ saleId, commentId, user }: CommentSubmitProps) {
     })
 
   async function handleCreateComment() {
-    await createComment({ text: commentInput })
+    const { errors } = await createComment({ text: commentInput })
+
+    if (!errors) {
+      setCommentInput('')
+
+      if (commentId) removeActiveReplyCommentId(commentId)
+    }
   }
 
   return (
@@ -372,7 +378,6 @@ function CommentSubmit({ saleId, commentId, user }: CommentSubmitProps) {
             ref={inputRef}
             value={commentInput}
             autoFocus={commentId ? true : false}
-            // onBlur={() => commentId && removeActiveReplyCommentId(commentId)}
             maxLength={1000}
             onChange={(e) => setCommentInput(e.target.value)}
             placeholder="Adicionar um comentário..."
@@ -383,7 +388,7 @@ function CommentSubmit({ saleId, commentId, user }: CommentSubmitProps) {
         <div className="space-x-1 text-end">
           {commentId && (
             <Button
-              variant={'ghost'}
+              variant="ghost"
               onClick={() => removeActiveReplyCommentId(commentId)}
             >
               <Icons.X className="h-4 w-4" />
@@ -392,7 +397,7 @@ function CommentSubmit({ saleId, commentId, user }: CommentSubmitProps) {
 
           <Button
             disabled={!commentInput || createCommentLoading}
-            variant={'ghost'}
+            variant="ghost"
             onClick={() => handleCreateComment()}
           >
             {createCommentLoading ? (

@@ -4,7 +4,7 @@ import { toast } from 'sonner'
 import { create } from 'zustand'
 
 import { getCurrentUserToken } from '@/app/_actions/user'
-import { type Comment } from '@/types'
+import type { Comment } from '@/types'
 
 const GET_COMMENTS = gql`
   query GetComments($input: CommentsInput!) {
@@ -21,14 +21,11 @@ const GET_COMMENTS = gql`
         name
         image
       }
-      # likes {
-      #   user {
-      #     id
-      #   }
-      # }
-      # replies {
-      #   id
-      # }
+      likes {
+        user {
+          id
+        }
+      }
       likesCount
       repliesCount
     }
@@ -38,12 +35,11 @@ const GET_COMMENTS = gql`
 type GetCommentsQuery = {
   comments: (Pick<Comment, 'id' | 'text' | 'createdAt' | 'updatedAt'> & {
     user: { id: string; isAdmin: boolean; name: string; image: string }
-    // likes: {
-    //   user: {
-    //     id: string
-    //   }
-    // }[]
-    // replies: Omit<GetCommentsQuery['comments'][number], 'replies'>[]
+    likes: {
+      user: {
+        id: string
+      }
+    }[]
     likesCount: number
     repliesCount: number
   })[]
@@ -82,6 +78,15 @@ const DELETE_COMMENT = gql`
   mutation RemoveComment($commentId: ID!) {
     comment: removeComment(id: $commentId) {
       id
+    }
+  }
+`
+
+const TOGGLE_COMMENT_LIKE = gql`
+  mutation ToggleCommentLike($commentId: String!) {
+    like: toggleCommentLike(commentId: $commentId) {
+      commentId
+      userId
     }
   }
 `
@@ -165,8 +170,14 @@ export function useComments({
           },
           data: {
             comments: [
+              {
+                ...newComment,
+                likes: [],
+                replies: [],
+                likesCount: 0,
+                repliesCount: 0,
+              },
               ...existingComments,
-              { ...newComment, likes: [], replies: [] },
             ],
           },
         })
@@ -178,6 +189,9 @@ export function useComments({
               replies(existingReplies = []) {
                 return [...existingReplies, { id: newComment.id }]
               },
+              repliesCount(existingRepliesCount = 0) {
+                return existingRepliesCount + 1
+              },
             },
           })
         }
@@ -187,7 +201,7 @@ export function useComments({
   async function createComment(data: { text: string }) {
     const token = await getCurrentUserToken()
 
-    createCommentMutation({
+    return createCommentMutation({
       context: {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -223,6 +237,9 @@ export function useComments({
                 (existingReply: GetCommentsQuery['comments'][number]) =>
                   existingReply.id !== deletedCommentId,
               )
+            },
+            repliesCount(existingRepliesCount = 0) {
+              return existingRepliesCount - 1
             },
           },
         })
@@ -281,6 +298,68 @@ export function useComments({
     })
   }
 
+  const [toggleCommentLikeMutation] = useMutation(TOGGLE_COMMENT_LIKE, {
+    onError(error) {
+      toast.error(error.message)
+    },
+    update(cache, { data }) {
+      const like = data.like
+
+      const commentId = cache.identify({
+        __typename: 'Comment',
+        id: like.commentId,
+      })
+
+      cache.modify({
+        id: commentId,
+        fields: {
+          likes(existingLikes = []) {
+            const userLiked = existingLikes.some(
+              (existingLike: { user: { id: string } }) =>
+                existingLike.user.id === like.userId,
+            )
+
+            const updatedLikes = userLiked
+              ? existingLikes.filter(
+                  (existingLike: { user: { id: string } }) =>
+                    existingLike.user.id !== like.userId,
+                )
+              : [...existingLikes, { user: { id: like.userId } }]
+
+            cache.writeFragment({
+              id: commentId,
+              fragment: gql`
+                fragment LikesCount on Comment {
+                  likesCount
+                }
+              `,
+              data: {
+                likesCount: updatedLikes.length,
+              },
+            })
+
+            return updatedLikes
+          },
+        },
+      })
+    },
+  })
+
+  async function toggleCommentLike(commentId: string) {
+    const token = await getCurrentUserToken()
+
+    toggleCommentLikeMutation({
+      context: {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+      variables: {
+        commentId,
+      },
+    })
+  }
+
   return {
     comments,
     createComment,
@@ -288,6 +367,7 @@ export function useComments({
     createCommentLoading,
     deleteComment,
     updateComment,
+    toggleCommentLike,
     isLoading,
     ...commentSubmitStore,
   }
