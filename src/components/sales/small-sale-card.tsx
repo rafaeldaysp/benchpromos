@@ -21,10 +21,11 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
+import useTouch from '@/hooks/use-touch'
 import { cn } from '@/lib/utils'
 import { type Reaction } from '@/types'
 import { priceFormatter } from '@/utils/formatter'
-import useTouch from '@/hooks/use-touch'
+import { ContextMenu, ContextMenuTrigger } from '../ui/context-menu'
 import { Drawer, DrawerContent } from '../ui/drawer'
 
 dayjs.extend(relativeTime)
@@ -80,165 +81,166 @@ export function SmallSaleCard({
 
   return (
     <>
-      <Card
-        ref={cardRef}
-        onPointerDown={(_event) => undefined}
-        onPointerMove={(_event) => undefined}
-        onPointerCancel={(_event) => undefined}
-        onPointerUp={(_event) => undefined}
-        className={cn(
-          'relative flex select-none flex-col overflow-hidden transition-colors hover:bg-muted/50',
-          className,
-        )}
-        {...props}
-      >
-        {sale.highlight && (
-          <BookmarkFilledIcon className="absolute -top-1 right-2 text-auxiliary" />
-        )}
+      <ContextMenu>
+        <ContextMenuTrigger>
+          <Card
+            ref={cardRef}
+            className={cn(
+              'relative flex select-none flex-col overflow-hidden transition-colors hover:bg-muted/50',
+              className,
+            )}
+            {...props}
+          >
+            {sale.highlight && (
+              <BookmarkFilledIcon className="absolute -top-1 right-2 text-auxiliary" />
+            )}
 
-        <CardHeader className="flex-row items-baseline p-3 text-xs">
-          <span className="flex-1">{sale.category.name}</span>
+            <CardHeader className="flex-row items-baseline p-3 text-xs">
+              <span className="flex-1">{sale.category.name}</span>
 
-          {sale.label && (
-            <Badge className="px-0.5 py-[1px] text-xs ">{sale.label}</Badge>
-          )}
-
-          <time className="flex-1 text-end">
-            {dayjs(sale.createdAt).fromNow()}
-          </time>
-        </CardHeader>
-
-        <CardContent className="flex-1 space-y-0.5 p-3 py-0">
-          <CardTitle className="line-clamp-2 space-x-1 pb-2.5 text-sm">
-            <Link
-              onTouchStart={(e) => e.preventDefault()}
-              href={`/sale/${sale.slug}/${sale.id}`}
-            >
-              {sale.title}
-            </Link>
-          </CardTitle>
-
-          <div className="grid grid-cols-3 gap-x-5">
-            <div>
-              <Link
-                className="flex h-full items-center"
-                href={`/sale/${sale.slug}/${sale.id}`}
-              >
-                <div className="relative mx-auto aspect-square w-full sm:w-8/12">
-                  <Image
-                    src={sale.imageUrl}
-                    alt={sale.title}
-                    className="rounded-lg object-contain"
-                    fill
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                  />
-                </div>
-              </Link>
-            </div>
-            <div className="col-span-2 flex flex-col justify-center space-y-1.5">
-              <div className="flex flex-col">
-                <p>
-                  <strong className="text-lg sm:text-2xl">
-                    {priceFormatter.format(sale.price / 100)}
-                  </strong>{' '}
-                  <span className="text-sm text-muted-foreground">
-                    à vista{' '}
-                  </span>
-                </p>
-
-                {!!sale.installments && !!sale.totalInstallmentPrice && (
-                  <span className="text-sm text-muted-foreground">
-                    <strong>
-                      {priceFormatter.format(sale.totalInstallmentPrice / 100)}
-                    </strong>{' '}
-                    em <strong>{sale.installments}x</strong>{' '}
-                    <p className="hidden sm:inline">
-                      {' '}
-                      de{' '}
-                      <strong>
-                        {priceFormatter.format(
-                          sale.totalInstallmentPrice /
-                            (100 * sale.installments),
-                        )}
-                      </strong>
-                    </p>
-                  </span>
-                )}
-              </div>
-
-              {sale.coupon && (
-                <div>
-                  <span className="text-sm text-muted-foreground">
-                    Com cupom
-                  </span>
-                  <div className="flex items-center overflow-hidden rounded-full border pl-2 max-sm:max-w-fit">
-                    <Icons.Tag className="mr-2 hidden h-4 w-4 fill-auxiliary text-auxiliary sm:inline" />
-                    <span className="flex-1 overflow-hidden text-xs font-medium uppercase tracking-widest sm:text-sm">
-                      {/* {sale.coupon} */}PCFACTSMONITOR
-                    </span>
-                    <CopyButton
-                      value={'sale.coupon'}
-                      variant="ghost"
-                      className="h-7 hover:bg-inherit hover:text-inherit max-sm:px-2 sm:h-8"
-                    />
-                  </div>
-                </div>
+              {sale.label && (
+                <Badge className="px-0.5 py-[1px] text-xs ">{sale.label}</Badge>
               )}
 
-              <div>
-                <a
-                  href={sale.url}
-                  target="_blank"
-                  rel="noreferrer"
-                  className={cn(
-                    buttonVariants({ size: 'lg' }),
-                    'hidden w-full rounded-full sm:inline-flex',
-                  )}
+              <time className="flex-1 text-end">
+                {dayjs(sale.createdAt).fromNow()}
+              </time>
+            </CardHeader>
+
+            <CardContent className="flex-1 space-y-0.5 p-3 py-0">
+              <CardTitle className="line-clamp-2 space-x-1 pb-2.5 text-sm">
+                <Link
+                  onTouchStart={(e) => e.preventDefault()}
+                  href={`/sale/${sale.slug}/${sale.id}`}
                 >
-                  <span className="mr-2">ACESSAR</span>
-                  <Icons.ExternalLink className="h-4 w-4" />
-                </a>
+                  {sale.title}
+                </Link>
+              </CardTitle>
+
+              <div className="grid grid-cols-3 gap-x-5">
+                <div>
+                  <Link
+                    className="flex h-full items-center"
+                    href={`/sale/${sale.slug}/${sale.id}`}
+                  >
+                    <div className="relative mx-auto aspect-square w-full sm:w-8/12">
+                      <Image
+                        src={sale.imageUrl}
+                        alt={sale.title}
+                        className="rounded-lg object-contain"
+                        fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      />
+                    </div>
+                  </Link>
+                </div>
+                <div className="col-span-2 flex flex-col justify-center space-y-1.5">
+                  <div className="flex flex-col">
+                    <p>
+                      <strong className="text-lg sm:text-2xl">
+                        {priceFormatter.format(sale.price / 100)}
+                      </strong>{' '}
+                      <span className="text-sm text-muted-foreground">
+                        à vista{' '}
+                      </span>
+                    </p>
+
+                    {!!sale.installments && !!sale.totalInstallmentPrice && (
+                      <span className="text-sm text-muted-foreground">
+                        <strong>
+                          {priceFormatter.format(
+                            sale.totalInstallmentPrice / 100,
+                          )}
+                        </strong>{' '}
+                        em <strong>{sale.installments}x</strong>{' '}
+                        <p className="hidden sm:inline">
+                          {' '}
+                          de{' '}
+                          <strong>
+                            {priceFormatter.format(
+                              sale.totalInstallmentPrice /
+                                (100 * sale.installments),
+                            )}
+                          </strong>
+                        </p>
+                      </span>
+                    )}
+                  </div>
+
+                  {sale.coupon && (
+                    <div>
+                      <span className="text-sm text-muted-foreground">
+                        Com cupom
+                      </span>
+                      <div className="flex items-center overflow-hidden rounded-full border pl-2 max-sm:max-w-fit">
+                        <Icons.Tag className="mr-2 hidden h-4 w-4 fill-auxiliary text-auxiliary sm:inline" />
+                        <span className="flex-1 overflow-hidden text-xs font-medium uppercase tracking-widest sm:text-sm">
+                          {/* {sale.coupon} */}PCFACTSMONITOR
+                        </span>
+                        <CopyButton
+                          value={'sale.coupon'}
+                          variant="ghost"
+                          className="h-7 hover:bg-inherit hover:text-inherit max-sm:px-2 sm:h-8"
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  <div>
+                    <a
+                      href={sale.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className={cn(
+                        buttonVariants({ size: 'lg' }),
+                        'hidden w-full rounded-full sm:inline-flex',
+                      )}
+                    >
+                      <span className="mr-2">ACESSAR</span>
+                      <Icons.ExternalLink className="h-4 w-4" />
+                    </a>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-        </CardContent>
+            </CardContent>
 
-        <CardFooter className="flex items-center justify-between gap-x-2 p-3 pt-0 sm:p-6 sm:pt-0">
-          <Reactions
-            saleId={sale.id}
-            userId={user?.id}
-            reactions={sale.reactions}
-            apolloClient={apolloClient}
-          />
+            <CardFooter className="flex items-center justify-between gap-x-2 p-3 pt-0 sm:p-6 sm:pt-0">
+              <Reactions
+                saleId={sale.id}
+                userId={user?.id}
+                reactions={sale.reactions}
+                apolloClient={apolloClient}
+              />
 
-          <Link
-            href={`/sale/${sale.slug}/${sale.id}#comments`}
-            className={cn(
-              buttonVariants({ variant: 'ghost', size: 'icon' }),
-              'shrink-0',
-            )}
-          >
-            <span className="mr-1 text-sm">{sale.commentsCount ?? 0}</span>
-            <Icons.MessageCircle className="h-4 w-4" />
-          </Link>
-        </CardFooter>
+              <Link
+                href={`/sale/${sale.slug}/${sale.id}#comments`}
+                className={cn(
+                  buttonVariants({ variant: 'ghost', size: 'icon' }),
+                  'shrink-0',
+                )}
+              >
+                <span className="mr-1 text-sm">{sale.commentsCount ?? 0}</span>
+                <Icons.MessageCircle className="h-4 w-4" />
+              </Link>
+            </CardFooter>
 
-        <CardFooter className="flex justify-center p-0 sm:hidden">
-          <a
-            href={sale.url}
-            target="_blank"
-            rel="noreferrer"
-            className={cn(
-              buttonVariants({ variant: 'secondary' }),
-              'h-8 w-full rounded-none sm:inline-flex',
-            )}
-          >
-            <span className="mr-2 text-xs">ACESSAR</span>
-            <Icons.ExternalLink className="h-4 w-4" />
-          </a>
-        </CardFooter>
-      </Card>
-
+            <CardFooter className="flex justify-center p-0 sm:hidden">
+              <a
+                href={sale.url}
+                target="_blank"
+                rel="noreferrer"
+                className={cn(
+                  buttonVariants({ variant: 'secondary' }),
+                  'h-8 w-full rounded-none sm:inline-flex',
+                )}
+              >
+                <span className="mr-2 text-xs">ACESSAR</span>
+                <Icons.ExternalLink className="h-4 w-4" />
+              </a>
+            </CardFooter>
+          </Card>
+        </ContextMenuTrigger>
+      </ContextMenu>
       <MobileMenu open={openDrawer} setOpen={setOpenDrawer} />
     </>
   )
