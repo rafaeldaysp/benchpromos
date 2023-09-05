@@ -3,7 +3,6 @@
 import { Drawer as DrawerPrimitive } from 'vaul'
 
 import * as React from 'react'
-// import { Cross2Icon } from '@radix-ui/react-icons'
 
 import { cn } from '@/lib/utils'
 
@@ -19,7 +18,7 @@ const DrawerOverlay = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <DrawerPrimitive.Overlay
     ref={ref}
-    className={cn('fixed inset-0 z-40 bg-black/40', className)}
+    className={cn('fixed inset-0 z-40 bg-background/30', className)}
     {...props}
   />
 ))
@@ -34,7 +33,7 @@ const DrawerContent = React.forwardRef<
     <DrawerPrimitive.Content
       ref={ref}
       className={cn(
-        'fixed inset-x-0 bottom-0 z-50 mt-24 flex h-[50%] flex-col rounded-t-[10px] bg-zinc-100',
+        'fixed inset-x-0 bottom-0 z-50 gap-4 border-t bg-background p-6 shadow-lg transition ease-in-out data-[state=closed]:duration-300 data-[state=open]:duration-500 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom',
         className,
       )}
       {...props}

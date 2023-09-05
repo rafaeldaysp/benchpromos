@@ -99,7 +99,7 @@ export function SmallSaleCard({
               <span className="flex-1">{sale.category.name}</span>
 
               {sale.label && (
-                <Badge className="px-0.5 py-[1px] text-xs ">{sale.label}</Badge>
+                <Badge className="px-0.5 py-[1px] text-xs">{sale.label}</Badge>
               )}
 
               <time className="flex-1 text-end">
@@ -109,12 +109,7 @@ export function SmallSaleCard({
 
             <CardContent className="flex-1 space-y-0.5 p-3 py-0">
               <CardTitle className="line-clamp-2 space-x-1 pb-2.5 text-sm">
-                <Link
-                  onTouchStart={(e) => e.preventDefault()}
-                  href={`/sale/${sale.slug}/${sale.id}`}
-                >
-                  {sale.title}
-                </Link>
+                <Link href={`/sale/${sale.slug}/${sale.id}`}>{sale.title}</Link>
               </CardTitle>
 
               <div className="grid grid-cols-3 gap-x-5">
@@ -185,21 +180,6 @@ export function SmallSaleCard({
                       </div>
                     </div>
                   )}
-
-                  <div>
-                    <a
-                      href={sale.url}
-                      target="_blank"
-                      rel="noreferrer"
-                      className={cn(
-                        buttonVariants({ size: 'lg' }),
-                        'hidden w-full rounded-full sm:inline-flex',
-                      )}
-                    >
-                      <span className="mr-2">ACESSAR</span>
-                      <Icons.ExternalLink className="h-4 w-4" />
-                    </a>
-                  </div>
                 </div>
               </div>
             </CardContent>
@@ -231,7 +211,7 @@ export function SmallSaleCard({
                 rel="noreferrer"
                 className={cn(
                   buttonVariants({ variant: 'secondary' }),
-                  'h-8 w-full rounded-none sm:inline-flex',
+                  'h-8 w-full rounded-none',
                 )}
               >
                 <span className="mr-2 text-xs">ACESSAR</span>
@@ -254,10 +234,8 @@ interface MobileMenuProps {
 function MobileMenu({ open, setOpen }: MobileMenuProps) {
   return (
     <Drawer open={open} onClose={() => setOpen(false)}>
-      <DrawerContent>
-        <div className="flex-1 rounded-t-[10px] bg-white p-4">
-          <div className="mx-auto mb-8 h-1.5 w-12 shrink-0 rounded-full bg-zinc-300" />
-        </div>
+      <DrawerContent className="h-[50%] rounded-t-xl">
+        <div className="mx-auto mb-8 h-1.5 w-12 shrink-0 rounded-full bg-accent" />
       </DrawerContent>
     </Drawer>
   )
