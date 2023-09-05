@@ -5,8 +5,8 @@ import { toast } from 'sonner'
 
 import { getCurrentUserToken } from '@/app/_actions/user'
 import { Icons } from '@/components/icons'
-import { ContextMenuItem } from '@/components/ui/context-menu'
 import type { Sale } from '@/types'
+import { Button } from '../ui/button'
 
 const TOGGLE_HIGHLIGHT = gql`
   mutation ToggleHighlight($id: ID!) {
@@ -22,7 +22,7 @@ interface HighlightProps {
   user?: { id: string; isAdmin: boolean }
 }
 
-export function Highlight({ sale, user }: HighlightProps) {
+export function HighlightSaleToggle({ sale, user }: HighlightProps) {
   const [toggleHighlight] = useMutation(TOGGLE_HIGHLIGHT, {
     onError(error, _clientOptions) {
       toast.error(error.message)
@@ -48,11 +48,13 @@ export function Highlight({ sale, user }: HighlightProps) {
   }
 
   return (
-    <ContextMenuItem
+    <Button
+      variant={'ghost'}
+      className="flex h-fit w-full cursor-default select-none items-center justify-start rounded-sm px-2 py-1.5 text-sm outline-none"
       onClick={() => handleToggleHighlight(sale.id, user?.isAdmin)}
     >
       <Icons.Bookmark className="mr-2 h-4 w-4" />
       {sale.highlight ? 'Rebaixar' : 'Destacar'}
-    </ContextMenuItem>
+    </Button>
   )
 }

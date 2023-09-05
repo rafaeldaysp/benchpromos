@@ -13,7 +13,7 @@ import { CopyButton } from '@/components/copy-button'
 import { Icons } from '@/components/icons'
 import { ReactionMenu } from '@/components/sales/reaction-menu'
 import { Reactions } from '@/components/sales/reactions'
-import { Highlight } from '@/components/sales/sale-highlight'
+import { HighlightSaleToggle } from '@/components/sales/sale-highlight'
 import { Badge } from '@/components/ui/badge'
 import { buttonVariants } from '@/components/ui/button'
 import {
@@ -251,10 +251,12 @@ export function SaleCard({
         {user?.isAdmin && (
           <>
             <ContextMenuSeparator />
-            <Highlight
-              sale={{ highlight: sale.highlight, id: sale.id }}
-              user={user}
-            />
+            <ContextMenuItem asChild>
+              <HighlightSaleToggle
+                sale={{ highlight: sale.highlight, id: sale.id }}
+                user={user}
+              />
+            </ContextMenuItem>
           </>
         )}
       </ContextMenuContent>

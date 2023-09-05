@@ -72,7 +72,7 @@ export function SmallSaleCard({
 }: SaleCardProps) {
   const cardRef = React.useRef<HTMLDivElement>(null)
 
-  const isTouched = useTouch(500, cardRef)
+  const isTouched = useTouch(400, cardRef)
   const [openDrawer, setOpenDrawer] = React.useState(false)
 
   React.useEffect(() => {
