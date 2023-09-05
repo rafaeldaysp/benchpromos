@@ -251,7 +251,7 @@ export function SaleCard({
         {user?.isAdmin && (
           <>
             <ContextMenuSeparator />
-            <ContextMenuItem asChild>
+            <ContextMenuItem className="p-0">
               <HighlightSaleToggle
                 sale={{ highlight: sale.highlight, id: sale.id }}
                 user={user}
