@@ -71,7 +71,7 @@ export function SmallSaleCard({
 }: SaleCardProps) {
   const cardRef = React.useRef<HTMLDivElement>(null)
 
-  const isTouched = useTouch(1000, cardRef)
+  const isTouched = useTouch(500, cardRef)
   const [openDrawer, setOpenDrawer] = React.useState(false)
 
   React.useEffect(() => {
@@ -82,8 +82,12 @@ export function SmallSaleCard({
     <>
       <Card
         ref={cardRef}
+        onPointerDown={(_event) => undefined}
+        onPointerMove={(_event) => undefined}
+        onPointerCancel={(_event) => undefined}
+        onPointerUp={(_event) => undefined}
         className={cn(
-          'relative flex flex-col overflow-hidden transition-colors hover:bg-muted/50 max-sm:select-none',
+          'relative flex select-none flex-col overflow-hidden transition-colors hover:bg-muted/50',
           className,
         )}
         {...props}
@@ -118,7 +122,6 @@ export function SmallSaleCard({
             <div>
               <Link
                 className="flex h-full items-center"
-                onTouchStart={(e) => e.preventDefault()}
                 href={`/sale/${sale.slug}/${sale.id}`}
               >
                 <div className="relative mx-auto aspect-square w-full sm:w-8/12">
@@ -210,7 +213,6 @@ export function SmallSaleCard({
 
           <Link
             href={`/sale/${sale.slug}/${sale.id}#comments`}
-            onTouchStart={(e) => e.preventDefault()}
             className={cn(
               buttonVariants({ variant: 'ghost', size: 'icon' }),
               'shrink-0',
