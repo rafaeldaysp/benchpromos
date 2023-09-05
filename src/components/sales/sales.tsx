@@ -5,18 +5,19 @@ import * as React from 'react'
 import { InView } from 'react-intersection-observer'
 
 import { SaleCard } from '@/components/sales/sale-card'
+import { SmallSaleCard } from '@/components/sales/small-sale-card'
 import { Skeleton } from '@/components/ui/skeleton'
-import { GET_SALES, type GetSalesQuery } from '@/queries'
-import { SmallSaleCard } from './small-sale-card'
 import { useMediaQuery } from '@/hooks/use-media-query'
+import { GET_SALES, type GetSalesQuery } from '@/queries'
 
 const SALES_PER_SCROLL = 1
 
 interface SalesProps {
   user?: { id: string; isAdmin: boolean }
+  viewport: 'mobile' | 'desktop'
 }
 
-export function Sales({ user }: SalesProps) {
+export function Sales({ user, viewport }: SalesProps) {
   const isSm = useMediaQuery('(max-width: 640px)')
   const [isPending, startTransition] = React.useTransition()
   const [hasMoreSales, setHasMoreSales] = React.useState(true)
@@ -70,7 +71,7 @@ export function Sales({ user }: SalesProps) {
   return (
     <div className="my-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {sales.map((sale) => {
-        if (isSm)
+        if (isSm || viewport === 'mobile')
           return (
             <SmallSaleCard
               key={sale.id}
