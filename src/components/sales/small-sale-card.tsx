@@ -9,7 +9,6 @@ import Image from 'next/image'
 import Link from 'next/link'
 import * as React from 'react'
 
-import { CopyButton } from '@/components/copy-button'
 import { Icons } from '@/components/icons'
 import { Reactions } from '@/components/sales/reactions'
 import { Badge } from '@/components/ui/badge'
@@ -102,12 +101,12 @@ export function SmallSaleCard({
               </time>
             </CardHeader>
 
-            <CardContent className="flex-1 space-y-0.5 p-3 py-0">
-              <CardTitle className="line-clamp-2 space-x-1 pb-2.5 text-sm">
+            <CardContent className="flex-1 space-y-1.5 p-3 py-0">
+              <CardTitle className="line-clamp-2 space-x-1 text-sm">
                 <Link href={`/sale/${sale.slug}/${sale.id}`}>{sale.title}</Link>
               </CardTitle>
 
-              <div className="grid grid-cols-3 gap-x-5">
+              <div className="grid grid-cols-3 gap-x-3">
                 <div>
                   <Link
                     className="flex h-full items-center"
@@ -127,22 +126,26 @@ export function SmallSaleCard({
                 <div className="col-span-2 flex flex-col justify-center space-y-1.5">
                   <div className="flex flex-col">
                     <p>
-                      <strong className="text-lg sm:text-2xl">
+                      <strong className="text-xl sm:text-2xl">
                         {priceFormatter.format(sale.price / 100)}
                       </strong>{' '}
-                      <span className="text-sm text-muted-foreground">
+                      <span className="text-xs text-muted-foreground">
                         à vista{' '}
                       </span>
                     </p>
 
                     {!!sale.installments && !!sale.totalInstallmentPrice && (
-                      <span className="text-sm text-muted-foreground">
-                        <strong>
+                      <span className="text-xs text-muted-foreground">
+                        ou{' '}
+                        <strong className="text-sm">
                           {priceFormatter.format(
                             sale.totalInstallmentPrice / 100,
                           )}
                         </strong>{' '}
-                        em <strong>{sale.installments}x</strong>{' '}
+                        em{' '}
+                        <strong className="text-sm">
+                          {sale.installments}x
+                        </strong>{' '}
                         <p className="hidden sm:inline">
                           {' '}
                           de{' '}
@@ -158,28 +161,25 @@ export function SmallSaleCard({
                   </div>
 
                   {sale.coupon && (
-                    <div>
-                      <span className="text-sm text-muted-foreground">
-                        Com cupom
+                    <p className="flex flex-col text-xs">
+                      <span className="text-muted-foreground">Com cupom</span>
+                      <span className="text-sm font-bold">{sale.coupon}</span>
+                    </p>
+                  )}
+
+                  {sale.cashback && (
+                    <p className="flex flex-col text-xs">
+                      <span className="text-muted-foreground">
+                        Com cashback
                       </span>
-                      <div className="flex items-center overflow-hidden rounded-full border pl-2 max-sm:max-w-fit">
-                        <Icons.Tag className="mr-2 hidden h-4 w-4 fill-auxiliary text-auxiliary sm:inline" />
-                        <span className="flex-1 overflow-hidden text-xs font-medium uppercase tracking-widest sm:text-sm">
-                          {/* {sale.coupon} */}PCFACTSMONITOR
-                        </span>
-                        <CopyButton
-                          value={'sale.coupon'}
-                          variant="ghost"
-                          className="h-7 hover:bg-inherit hover:text-inherit max-sm:px-2 sm:h-8"
-                        />
-                      </div>
-                    </div>
+                      <span className="text-sm font-bold">{sale.cashback}</span>
+                    </p>
                   )}
                 </div>
               </div>
             </CardContent>
 
-            <CardFooter className="flex items-center justify-between gap-x-2 p-3 pt-0 sm:p-6 sm:pt-0">
+            <CardFooter className="flex items-center justify-between gap-x-2 p-3 py-0 pb-1">
               <Reactions
                 saleId={sale.id}
                 userId={user?.id}
@@ -199,20 +199,16 @@ export function SmallSaleCard({
               </Link>
             </CardFooter>
 
-            <CardFooter className="flex justify-center p-0 sm:hidden">
-              <a
-                href={sale.url}
-                target="_blank"
-                rel="noreferrer"
-                className={cn(
-                  buttonVariants({ variant: 'secondary' }),
-                  'h-8 w-full rounded-none',
-                )}
-              >
-                <span className="mr-2 text-xs">ACESSAR</span>
-                <Icons.ExternalLink className="h-4 w-4" />
-              </a>
-            </CardFooter>
+            <Link
+              href={`/sale/${sale.slug}/${sale.id}`}
+              className={cn(
+                buttonVariants({ variant: 'secondary' }),
+                'w-full rounded-none',
+              )}
+            >
+              Visualizar
+              <Icons.ChevronRight className="ml-1 h-4 w-4" />
+            </Link>
           </Card>
         </ContextMenuTrigger>
       </ContextMenu>

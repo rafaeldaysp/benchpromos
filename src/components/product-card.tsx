@@ -61,20 +61,6 @@ export function ProductCard({
       )}
       {...props}
     >
-      {/* {!product.reviewUrl && (
-        <div className="absolute left-2 top-2">
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger>
-                <StarFilledIcon className="  mr-1 h-4 w-4" />
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Testado pelo canal!</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </div>
-      )} */}
       <Link
         aria-label={`Visualizar detalhes de ${product.name}`}
         href={`/${product.category.slug}/${product.slug}`}
@@ -142,7 +128,6 @@ export function ProductCard({
             </span>
           )}
         </div>
-
         {bestDeal.coupon && (
           <p className="flex flex-col">
             <span className="text-sm text-muted-foreground">Com cupom</span>
@@ -151,10 +136,10 @@ export function ProductCard({
         )}
 
         {bestDeal.cashback && (
-          <strong className="text-sm">
+          <p className="text-sm font-bold">
             {bestDeal.cashback.value}% de cashback com{' '}
-            <span>{bestDeal.cashback.provider}</span>
-          </strong>
+            {bestDeal.cashback.provider}
+          </p>
         )}
       </CardContent>
 
