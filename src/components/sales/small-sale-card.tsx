@@ -21,7 +21,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import useTouch from '@/hooks/use-touch'
 import { cn } from '@/lib/utils'
 import { type Reaction } from '@/types'
 import { priceFormatter } from '@/utils/formatter'
@@ -53,9 +52,6 @@ interface SaleCardProps extends React.HTMLAttributes<HTMLDivElement> {
       name: string
       slug: string
     }
-    // comments: {
-    //   id: string
-    // }[]
     commentsCount: number
     reactions: Reaction[]
   }
@@ -70,21 +66,20 @@ export function SmallSaleCard({
   apolloClient,
   ...props
 }: SaleCardProps) {
-  const cardRef = React.useRef<HTMLDivElement>(null)
-
-  const isTouched = useTouch(400, cardRef)
   const [openDrawer, setOpenDrawer] = React.useState(false)
 
-  React.useEffect(() => {
-    if (isTouched) setOpenDrawer(true)
-  }, [isTouched])
+  // const cardRef = React.useRef<HTMLDivElement>(null)
+  // const isTouched = useTouch(400, cardRef)
+  // React.useEffect(() => {
+  //   if (isTouched) setOpenDrawer(true)
+  // }, [isTouched])
 
   return (
     <>
-      <ContextMenu>
+      <ContextMenu onOpenChange={(value) => setOpenDrawer(value)}>
         <ContextMenuTrigger>
           <Card
-            ref={cardRef}
+            // ref={cardRef}
             className={cn(
               'relative flex select-none flex-col overflow-hidden transition-colors hover:bg-muted/50',
               className,
