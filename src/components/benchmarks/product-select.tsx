@@ -184,7 +184,10 @@ export function ProductSelect({ products }: ProductSelectProps) {
               handleSelect(() => {
                 router.push(
                   `${pathname}?${createQueryString({
-                    products: selectedProducts.map((s) => s.slug).join('.'),
+                    products:
+                      selectedProducts.length > 0
+                        ? selectedProducts.map((s) => s.slug).join('.')
+                        : null,
                   })}`,
                 )
               })
