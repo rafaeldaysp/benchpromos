@@ -1,6 +1,6 @@
 'use client'
 
-import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import * as React from 'react'
 
 import { cn } from '@/lib/utils'
@@ -14,6 +14,7 @@ import {
   CommandItem,
 } from '../ui/command'
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
+import { useQueryString } from '@/hooks/use-query-string'
 
 interface BenchmarkSelectProps {
   benchmarks: {
@@ -30,36 +31,17 @@ export function BenchmarkSelect({
   selectedIndex,
 }: BenchmarkSelectProps) {
   const [isPending, startTransition] = React.useTransition()
-
   const [open, setOpen] = React.useState(false)
-
   const pathname = usePathname()
   const router = useRouter()
-  const searchParams = useSearchParams()
-
-  const createQueryString = React.useCallback(
-    (params: Record<string, string | null>) => {
-      const newSearchParams = new URLSearchParams(searchParams?.toString())
-
-      for (const [key, value] of Object.entries(params)) {
-        if (value === null) {
-          newSearchParams.delete(key)
-        } else {
-          newSearchParams.set(key, String(value))
-        }
-      }
-
-      return newSearchParams.toString()
-    },
-    [searchParams],
-  )
+  const { createQueryString } = useQueryString()
 
   return (
     <div className="space-y-5">
       <div className="flex w-full space-x-2">
         <Button
           variant={'outline'}
-          disabled={selectedIndex < 1}
+          disabled={selectedIndex < 1 || isPending}
           onClick={() =>
             startTransition(() => {
               router.push(
@@ -75,7 +57,7 @@ export function BenchmarkSelect({
 
         <Button
           variant={'outline'}
-          disabled={selectedIndex === benchmarks.length - 1}
+          disabled={selectedIndex === benchmarks.length - 1 || isPending}
           onClick={() =>
             startTransition(() => {
               router.push(

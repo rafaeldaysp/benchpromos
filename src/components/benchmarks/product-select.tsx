@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import * as React from 'react'
 
 import { Icons } from '@/components/icons'
@@ -20,6 +20,7 @@ import { useDebounce } from '@/hooks/use-debounce'
 import { cn } from '@/lib/utils'
 import { Checkbox } from '../ui/checkbox'
 import { ScrollArea } from '../ui/scroll-area'
+import { useQueryString } from '@/hooks/use-query-string'
 
 type SearchedProduct = {
   name: string
@@ -53,11 +54,8 @@ export function ProductSelect({ products }: ProductSelectProps) {
   const [displayedProducts, setDisplayedProducts] = React.useState<
     SearchedProduct[]
   >([])
-  const searchParams = useSearchParams()
   const router = useRouter()
-  const benchmark = searchParams.get('benchmark')
-
-  const benchmarkQueryString = benchmark ? `benchmark=${benchmark}` : ''
+  const { createQueryString } = useQueryString()
 
   React.useEffect(() => {
     if (debouncedQuery.trim().length === 0) setDisplayedProducts(products)
@@ -82,7 +80,7 @@ export function ProductSelect({ products }: ProductSelectProps) {
     setIsOpen(false)
     callback()
   }, [])
-
+  const pathname = usePathname()
   return (
     <>
       <Button
@@ -184,14 +182,11 @@ export function ProductSelect({ products }: ProductSelectProps) {
             variant={'ghost'}
             onClick={() =>
               handleSelect(() => {
-                const productsQueryString =
-                  selectedProducts.length > 0
-                    ? `${benchmark ? '&' : ''}products=${selectedProducts
-                        .map((s) => s.slug)
-                        .join('.')}`
-                    : ''
-
-                router.push(`?${benchmarkQueryString}${productsQueryString}`)
+                router.push(
+                  `${pathname}?${createQueryString({
+                    products: products.map((s) => s.slug).join('.'),
+                  })}`,
+                )
               })
             }
           >

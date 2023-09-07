@@ -28,6 +28,7 @@ import {
 import { Slider } from '@/components/ui/slider'
 import { Toggle } from '@/components/ui/toggle'
 import { useDebounce } from '@/hooks/use-debounce'
+import { useQueryString } from '@/hooks/use-query-string'
 import type {
   Cashback,
   Category,
@@ -76,6 +77,7 @@ export function Products({
   const [filters, setFilters] = React.useState(initialFilters)
   const [sort, setSort] = React.useState(initialSort)
   const [limit, setLimit] = React.useState(initialLimit)
+  const { createQueryString } = useQueryString()
 
   const clientPriceRange = searchParams
     .get('price')
@@ -87,23 +89,6 @@ export function Products({
   const debouncedPrice = useDebounce(currentPriceRange, 250)
 
   const page = searchParams.get('page') ?? '1'
-
-  const createQueryString = React.useCallback(
-    (params: Record<string, string | number | null>) => {
-      const newSearchParams = new URLSearchParams(searchParams?.toString())
-
-      for (const [key, value] of Object.entries(params)) {
-        if (value === null) {
-          newSearchParams.delete(key)
-        } else {
-          newSearchParams.set(key, String(value))
-        }
-      }
-
-      return newSearchParams.toString()
-    },
-    [searchParams],
-  )
 
   React.useEffect(() => {
     setFilters(initialFilters)
@@ -249,6 +234,7 @@ export function Products({
                                 variant="outline"
                                 size="sm"
                                 pressed={setted}
+                                disabled={isPending}
                                 className="rounded-full"
                                 onClick={() => {
                                   startTransition(() => {
