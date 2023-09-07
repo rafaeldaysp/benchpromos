@@ -1,7 +1,7 @@
 'use client'
 
 import { gql, useQuery } from '@apollo/client'
-import * as React from 'react'
+import { useSearchParams } from 'next/navigation'
 import {
   Bar,
   BarChart,
@@ -11,11 +11,15 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
+
 import { Skeleton } from '../ui/skeleton'
 
 const GET_BENCHMARK_RESULTS = gql`
-  query GetBenchmarks($benchmarkSlug: ID) {
-    benchmarkResults(benchmarkSlug: $benchmarkSlug) {
+  query GetBenchmarks($benchmarkSlug: ID, $productsSlugs: [String]) {
+    benchmarkResults(
+      benchmarkSlug: $benchmarkSlug
+      productsSlugs: $productsSlugs
+    ) {
       result
       description
       product {
@@ -25,11 +29,12 @@ const GET_BENCHMARK_RESULTS = gql`
   }
 `
 
-interface BenchmarkChartProps {
-  benchmarkSlug: string
-}
+export function BenchmarkChart() {
+  const searchParams = useSearchParams()
+  const benchmarkSlug = searchParams.get('benchmark')
+  const productsString = searchParams.get('products')
+  const productsSlugs = productsString?.split('.')
 
-export function BenchmarkChart({ benchmarkSlug }: BenchmarkChartProps) {
   const { data, loading: isLoading } = useQuery<{
     benchmarkResults: {
       result: number
@@ -41,6 +46,7 @@ export function BenchmarkChart({ benchmarkSlug }: BenchmarkChartProps) {
   }>(GET_BENCHMARK_RESULTS, {
     variables: {
       benchmarkSlug,
+      productsSlugs,
     },
   })
 

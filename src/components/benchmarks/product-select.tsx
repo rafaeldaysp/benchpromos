@@ -1,6 +1,5 @@
 'use client'
 
-import { gql, useQuery } from '@apollo/client'
 import Image from 'next/image'
 import { useRouter, useSearchParams } from 'next/navigation'
 import * as React from 'react'
@@ -22,24 +21,6 @@ import { cn } from '@/lib/utils'
 import { Checkbox } from '../ui/checkbox'
 import { ScrollArea } from '../ui/scroll-area'
 
-const GET_PRODUCTS_BY_SEARCH = gql`
-  query GetProductsBySearch($input: GetProductsInput) {
-    productsList: products(getProductsInput: $input) {
-      products {
-        name
-        imageUrl
-        slug
-        category {
-          name
-        }
-        subcategory {
-          name
-        }
-      }
-    }
-  }
-`
-
 type SearchedProduct = {
   name: string
   imageUrl: string
@@ -52,7 +33,17 @@ type SearchedProduct = {
   }
 }
 
-export function ProductSelect() {
+interface ProductSelectProps {
+  products: {
+    name: string
+    slug: string
+    imageUrl: string
+    category: { name: string }
+    subcategory: { name: string }
+  }[]
+}
+
+export function ProductSelect({ products }: ProductSelectProps) {
   const [isOpen, setIsOpen] = React.useState(false)
   const [query, setQuery] = React.useState('')
   const debouncedQuery = useDebounce(query, 200)
@@ -67,21 +58,6 @@ export function ProductSelect() {
   const benchmark = searchParams.get('benchmark')
 
   const benchmarkQueryString = benchmark ? `benchmark=${benchmark}` : ''
-
-  const { data, loading: isLoading } = useQuery<{
-    productsList: {
-      products: SearchedProduct[]
-    }
-  }>(GET_PRODUCTS_BY_SEARCH, {
-    variables: {
-      input: {
-        hasBenchmark: true,
-        sortBy: 'relevance',
-      },
-    },
-  })
-
-  const products = data?.productsList.products ?? []
 
   React.useEffect(() => {
     if (debouncedQuery.trim().length === 0) setDisplayedProducts(products)
@@ -100,7 +76,7 @@ export function ProductSelect() {
       )
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedQuery, data])
+  }, [debouncedQuery])
 
   const handleSelect = React.useCallback((callback: () => unknown) => {
     setIsOpen(false)
@@ -127,13 +103,11 @@ export function ProductSelect() {
           onValueChange={setQuery}
         />
         <CommandList>
-          <CommandEmpty
-            className={cn(isLoading ? 'hidden' : 'py-6 text-center text-sm')}
-          >
+          <CommandEmpty className="py-6 text-center text-sm">
             Nenhum produto encontrado.
           </CommandEmpty>
 
-          {isLoading && products.length === 0 ? (
+          {products.length === 0 ? (
             <div className="space-y-1 overflow-hidden px-1 py-2">
               <Skeleton className="h-20 rounded-sm" />
               <Skeleton className="h-20 rounded-sm" />
