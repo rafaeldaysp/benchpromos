@@ -1,0 +1,150 @@
+'use client'
+
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import * as React from 'react'
+
+import { cn } from '@/lib/utils'
+import { Icons } from '../icons'
+import { Button } from '../ui/button'
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+} from '../ui/command'
+import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
+
+interface BenchmarkSelectProps {
+  benchmarks: {
+    slug: string
+    name: string
+  }[]
+  selectedBenchmark?: { slug: string; name: string }
+  selectedIndex: number
+}
+
+export function BenchmarkSelect({
+  benchmarks,
+  selectedBenchmark,
+  selectedIndex,
+}: BenchmarkSelectProps) {
+  const [isPending, startTransition] = React.useTransition()
+
+  const [open, setOpen] = React.useState(false)
+
+  const pathname = usePathname()
+  const router = useRouter()
+  const searchParams = useSearchParams()
+
+  const createQueryString = React.useCallback(
+    (params: Record<string, string | null>) => {
+      const newSearchParams = new URLSearchParams(searchParams?.toString())
+
+      for (const [key, value] of Object.entries(params)) {
+        if (value === null) {
+          newSearchParams.delete(key)
+        } else {
+          newSearchParams.set(key, String(value))
+        }
+      }
+
+      return newSearchParams.toString()
+    },
+    [searchParams],
+  )
+
+  return (
+    <div className="space-y-5">
+      <div className="flex w-full space-x-2">
+        <Button
+          variant={'outline'}
+          disabled={selectedIndex < 1}
+          onClick={() =>
+            startTransition(() => {
+              router.push(
+                `${pathname}?${createQueryString({
+                  benchmark: benchmarks[selectedIndex - 1].slug,
+                })}`,
+              )
+            })
+          }
+        >
+          <Icons.ChevronLeft className="h-4 w-4" />
+        </Button>
+
+        <Button
+          variant={'outline'}
+          disabled={selectedIndex === benchmarks.length - 1}
+          onClick={() =>
+            startTransition(() => {
+              router.push(
+                `${pathname}?${createQueryString({
+                  benchmark: benchmarks[selectedIndex + 1].slug,
+                })}`,
+              )
+            })
+          }
+        >
+          <Icons.ChevronRight className="h-4 w-4" />
+        </Button>
+        <Popover open={open} onOpenChange={setOpen}>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              role="combobox"
+              disabled={isPending}
+              aria-expanded={open}
+              className="w-[400px] justify-between"
+            >
+              {selectedBenchmark
+                ? benchmarks.find(
+                    (benchmark) => benchmark.slug === selectedBenchmark.slug,
+                  )?.name
+                : 'Selecione um benchmark...'}
+              {isPending ? (
+                <Icons.Spinner className="mr-2 h-4 w-4 shrink-0 animate-spin opacity-50" />
+              ) : (
+                <Icons.ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+              )}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-[300px] p-0">
+            <Command>
+              <CommandInput placeholder="Procurar benchmark..." />
+              <CommandEmpty>Nenhum benchmark encontrado.</CommandEmpty>
+              <CommandGroup>
+                {benchmarks.map((benchmark) => (
+                  <CommandItem
+                    key={benchmark.slug}
+                    value={benchmark.name}
+                    onSelect={() =>
+                      startTransition(() => {
+                        setOpen(false)
+                        router.push(
+                          `${pathname}?${createQueryString({
+                            benchmark: benchmark.slug,
+                          })}`,
+                        )
+                      })
+                    }
+                  >
+                    <Icons.Check
+                      className={cn(
+                        'mr-2 h-4 w-4',
+                        selectedBenchmark?.slug === benchmark.slug
+                          ? 'opacity-100'
+                          : 'opacity-0',
+                      )}
+                    />
+                    {benchmark.name}
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            </Command>
+          </PopoverContent>
+        </Popover>
+      </div>
+    </div>
+  )
+}

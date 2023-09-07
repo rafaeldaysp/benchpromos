@@ -31,9 +31,6 @@ export default async function BenchmarksDashboardPage() {
         product: Pick<Product, 'id' | 'name' | 'imageUrl'>
       })[]
     })[]
-    productsList: {
-      products: Pick<Product, 'id' | 'name' | 'imageUrl'>[]
-    }
   }>({
     query: GET_BENCHMARKS,
   })
