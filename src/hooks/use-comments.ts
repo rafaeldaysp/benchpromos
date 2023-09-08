@@ -331,14 +331,14 @@ export function useComments({
               fragment: gql`
                 fragment LikesCount on Comment {
                   likesCount
+                  likes
                 }
               `,
               data: {
                 likesCount: updatedLikes.length,
+                likes: updatedLikes,
               },
             })
-
-            return updatedLikes
           },
         },
       })
