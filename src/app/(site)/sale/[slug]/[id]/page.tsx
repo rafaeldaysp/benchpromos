@@ -1,10 +1,10 @@
 import { gql } from '@apollo/client'
 import { notFound } from 'next/navigation'
 
-import { Comments } from '@/components/comments'
+import { getCurrentUser } from '@/app/_actions/user'
+import { Comments } from '@/components/sales/comments'
 import { getClient } from '@/lib/apollo'
 import type { Sale } from '@/types'
-import { getCurrentUser } from '@/app/_actions/user'
 
 const GET_SALE = gql`
   query Sale($saleId: ID!) {

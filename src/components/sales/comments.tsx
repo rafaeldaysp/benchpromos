@@ -288,12 +288,12 @@ export function Comment({ saleId, comment, replyToId, user }: CommentProps) {
           </div>
           <footer className="space-x-1">
             <Toggle
-              className="px-1"
-              size={'sm'}
+              className="group px-1"
+              size="sm"
               pressed={currentUserLiked}
               onPressedChange={() => toggleCommentLike(comment.id)}
             >
-              <Icons.Like className="mr-1.5 h-4 w-4" />{' '}
+              <Icons.Like className="mr-1.5 h-4 w-4 group-data-[state=on]:text-primary" />{' '}
               {comment.likesCount ? comment.likesCount : ''}
             </Toggle>
             <Button
