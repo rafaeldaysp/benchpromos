@@ -143,4 +143,5 @@ export type headerOption = {
   title: string
   slug?: string
   content?: { title: string; slug: string }[]
+  icon?: React.ComponentType<{ className?: string }>
 }

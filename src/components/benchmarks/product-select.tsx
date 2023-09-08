@@ -21,6 +21,7 @@ import { cn } from '@/lib/utils'
 import { Checkbox } from '../ui/checkbox'
 import { ScrollArea } from '../ui/scroll-area'
 import { useQueryString } from '@/hooks/use-query-string'
+import { Badge } from '../ui/badge'
 
 type SearchedProduct = {
   name: string
@@ -84,17 +85,61 @@ export function ProductSelect({ products }: ProductSelectProps) {
   return (
     <>
       <Button
-        variant="outline"
-        className="relative h-9 w-9 p-0 xl:h-10 xl:w-96 xl:justify-start xl:px-3 xl:py-2"
         onClick={() => setIsOpen(true)}
+        variant="outline"
+        className="border-dashed"
       >
-        <Icons.Plus className="h-4 w-4 xl:mr-2" aria-hidden="true" />
-        <span className="hidden xl:inline-flex">
-          {query.trim().length > 0 ? query : 'Selecionar produtos...'}
-        </span>
-        <span className="sr-only">Procurar produtos</span>
+        <Icons.PlusCircle className="mr-2 h-4 w-4" />
+        Produtos
+        {selectedProducts.length > 0 && (
+          <>
+            <Separator orientation="vertical" className="mx-2 h-4" />
+            <Badge
+              variant="secondary"
+              className="rounded-sm px-1 font-normal xl:hidden"
+            >
+              {selectedProducts.length}
+            </Badge>
+            <div className="hidden space-x-1 xl:flex">
+              {selectedProducts.length > 1 ? (
+                <Badge
+                  variant="secondary"
+                  className="rounded-sm px-1 font-normal"
+                >
+                  {selectedProducts.length} selecionado(s)
+                </Badge>
+              ) : (
+                selectedProducts.map((product) => (
+                  <Badge
+                    variant="secondary"
+                    key={product.slug}
+                    className="max-w-[300px] truncate rounded-sm px-1 font-normal"
+                  >
+                    {product.name}
+                  </Badge>
+                ))
+              )}
+            </div>
+          </>
+        )}
       </Button>
-      <CommandDialog open={isOpen} onOpenChange={setIsOpen}>
+
+      <CommandDialog
+        open={isOpen}
+        onOpenChange={(value) => {
+          setIsOpen(value)
+          handleSelect(() => {
+            router.push(
+              `${pathname}?${createQueryString({
+                products:
+                  selectedProducts.length > 0
+                    ? selectedProducts.map((s) => s.slug).join('.')
+                    : null,
+              })}`,
+            )
+          })
+        }}
+      >
         <CommandInput
           placeholder="Selecionar produtos..."
           value={query}
@@ -121,7 +166,7 @@ export function ProductSelect({ products }: ProductSelectProps) {
                         key={product.slug}
                         value={`${product.name} ${product.category.name} ${product.subcategory.name}`}
                         className={cn(
-                          'h-16 space-x-4 aria-selected:bg-accent/50',
+                          'h-16 space-x-4 transition-colors aria-selected:bg-accent/50',
                           {
                             'bg-accent aria-selected:bg-accent/80':
                               selectedProducts.some(
@@ -137,13 +182,15 @@ export function ProductSelect({ products }: ProductSelectProps) {
                           )
                         }}
                       >
-                        <Checkbox
-                          checked={selectedProducts?.some(
-                            (p) => p.slug === product.slug,
-                          )}
-                          aria-label="Selecionar"
-                          className="border-black data-[state=checked]:bg-black data-[state=checked]:text-white dark:border-white dark:data-[state=checked]:bg-white dark:data-[state=checked]:text-black"
-                        />
+                        <div>
+                          <Checkbox
+                            checked={selectedProducts?.some(
+                              (p) => p.slug === product.slug,
+                            )}
+                            aria-label="Selecionar"
+                            className="flex translate-y-[2px] items-center justify-center border-black data-[state=checked]:translate-y-0 data-[state=checked]:bg-black data-[state=checked]:text-white dark:border-white dark:data-[state=checked]:bg-white dark:data-[state=checked]:text-black"
+                          />
+                        </div>
                         <div className="relative aspect-square h-full">
                           <Image
                             src={product.imageUrl}
@@ -165,20 +212,19 @@ export function ProductSelect({ products }: ProductSelectProps) {
           <Separator />
         </CommandList>
         <div className="flex items-center justify-between p-1">
-          <div>
-            <Button
-              variant={'ghost'}
-              onClick={() => setSelectedProducts(products)}
-            >
-              <Icons.Plus className="mr-1 h-4 w-4" />
-              Todos
-            </Button>
-            <Button variant={'ghost'} onClick={() => setSelectedProducts([])}>
-              <Icons.Minus className="mr-1 h-4 w-4" />
-              Nenhum
-            </Button>
-          </div>
           <Button
+            variant={'ghost'}
+            onClick={() => setSelectedProducts(products)}
+          >
+            <Icons.PlusCircle className="mr-2 h-4 w-4" />
+            Todos
+          </Button>
+          <Button variant={'ghost'} onClick={() => setSelectedProducts([])}>
+            <Icons.MinusCircle className="mr-2 h-4 w-4" />
+            Nenhum
+          </Button>
+
+          {/* <Button
             variant={'ghost'}
             onClick={() =>
               handleSelect(() => {
@@ -195,7 +241,7 @@ export function ProductSelect({ products }: ProductSelectProps) {
           >
             <Icons.Check className="mr-1 h-4 w-4" />
             Confirmar
-          </Button>
+          </Button> */}
         </div>
       </CommandDialog>
     </>

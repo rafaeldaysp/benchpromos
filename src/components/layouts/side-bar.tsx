@@ -4,7 +4,8 @@ import Image from 'next/image'
 import Link from 'next/link'
 
 import { siteConfig } from '@/config/site'
-import { externalLinkOptions } from '@/constants/index'
+// import { externalLinkOptions } from '@/constants/header'
+import { cn } from '@/lib/utils'
 import Logo from '@/public/logo-benchpromos.svg'
 import { type headerOption } from '@/types'
 import { Icons } from '../icons'
@@ -31,7 +32,7 @@ export function SideBar({ options }: SideBarProps) {
           <Icons.Menu />
         </SheetTrigger>
 
-        <SheetContent side={'left'} className="space-y-2.5">
+        <SheetContent side={'left'} className="w-3/4 space-y-3">
           <SheetHeader>
             <SheetClose asChild>
               <Link
@@ -54,37 +55,37 @@ export function SideBar({ options }: SideBarProps) {
             </SheetClose>
           </SheetHeader>
           <ScrollArea className="-mr-6 h-full pb-10">
-            <div className="flex flex-1 flex-col px-10 max-sm:overflow-y-auto">
-              <div className="flex flex-col space-y-2.5">
+            <div className="flex flex-1 flex-col px-5">
+              <div className="flex flex-col space-y-3">
                 {optionsWithoutContent.map((option) => (
                   <SheetClose key={option.title} asChild>
-                    <Link className="font-medium" href={`/${option.slug}`}>
+                    <Link
+                      className="flex items-center gap-1 font-medium hover:text-primary"
+                      href={`/${option.slug}`}
+                    >
+                      {option.icon && <option.icon className="h-4 w-4" />}
                       {option.title}
                     </Link>
                   </SheetClose>
                 ))}
-                {externalLinkOptions.map((option) => (
-                  <a
-                    key={option.title}
-                    className="font-medium"
-                    href={option.slug}
-                    target="_blank"
-                  >
-                    {option.title}
-                  </a>
-                ))}
               </div>
 
               {options.map((option) => (
-                <div key={option.title} className="flex flex-col space-y-2.5">
+                <div key={option.title} className="flex flex-col space-y-2">
                   {option.content && (
                     <>
-                      <span className="pt-5 font-medium"> {option.title}</span>
+                      <span className="flex items-center gap-1 pt-3 font-medium">
+                        {option.icon && <option.icon className="h-4 w-4" />}
+                        {option.title}
+                      </span>
                       {option.content.map((content) => (
                         <SheetClose key={content.slug} asChild>
                           <Link
                             href={`/${content.slug}`}
-                            className="text-muted-foreground"
+                            className={cn(
+                              'flex items-center gap-1 text-muted-foreground hover:text-primary',
+                              { 'ml-5': option.icon },
+                            )}
                           >
                             {content.title}
                           </Link>
@@ -94,6 +95,19 @@ export function SideBar({ options }: SideBarProps) {
                   )}
                 </div>
               ))}
+              {/* <div className="space-y-2.5 pt-2.5">
+                {externalLinkOptions.map((option) => (
+                  <a
+                    key={option.title}
+                    className="flex items-center gap-1 font-medium hover:text-primary"
+                    href={option.slug}
+                    target="_blank"
+                  >
+                    {option.icon && <option.icon className="h-4 w-4" />}
+                    {option.title}
+                  </a>
+                ))}
+              </div> */}
             </div>
           </ScrollArea>
         </SheetContent>

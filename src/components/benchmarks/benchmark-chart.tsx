@@ -7,6 +7,7 @@ import {
   BarChart,
   CartesianGrid,
   Legend,
+  ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
@@ -55,33 +56,48 @@ export function BenchmarkChart() {
   if (isLoading) return <Skeleton className="h-4 w-full" />
 
   return (
-    <BarChart
-      width={500}
-      height={400}
-      data={results}
-      margin={{
-        top: 5,
-        right: 30,
-        left: 20,
-        bottom: 5,
-      }}
-      barSize={40}
-      layout="vertical"
+    <ResponsiveContainer
+      height={50 + 60 * (results ? results.length : 0)}
+      className={'w-full select-none text-sm'}
     >
-      <XAxis scale="linear" tickCount={5} axisLine={false} type="number" />
-      <YAxis type="category" width={100} dataKey="product['name']" />
-      <Tooltip labelStyle={{ color: 'black' }} />
-      <Legend />
-      <CartesianGrid strokeDasharray="3 3" color="#ffffff" />
-      <Bar
-        dataKey="result"
-        className="fill-primary"
-        radius={2}
-        label={RenderCustomBarLabel}
+      <BarChart
+        data={results}
+        // height={50 + 70 * (results ? results.length : 0)}
+        barSize={30}
+        layout="vertical"
+        // margin={{
+        //   left: 100,
+        // }}
       >
-        {/* <LabelList dataKey="result" /> */}
-      </Bar>
-    </BarChart>
+        <XAxis
+          allowDataOverflow
+          dataKey="result"
+          interval="preserveEnd"
+          // padding={{
+          //   left: 5,
+          // }}
+          tickLine={false}
+          tickCount={5}
+          type="number"
+          axisLine={false}
+        />
+        <YAxis dataKey="product['name']" width={100} type="category" />
+        <Legend iconType="rect" />
+        <Tooltip
+          labelStyle={{ color: '--primary' }}
+          contentStyle={{ backgroundColor: '#262626' }}
+          cursor={false}
+        />
+        <CartesianGrid horizontal={false} />
+        <Bar
+          dataKey="result"
+          fill="#6d28d9"
+          // className="bg-primary fill-primary text-primary"
+          label={RenderCustomBarLabel}
+          name="Resultado"
+        />
+      </BarChart>
+    </ResponsiveContainer>
   )
 }
 
@@ -89,9 +105,9 @@ export function BenchmarkChart() {
 const RenderCustomBarLabel = ({ x, y, width, height, value }) => {
   return (
     <text
-      x={x + width - 15}
+      x={x + width - 20}
       y={y + height / 2 + 5}
-      className="fill-primary-foreground"
+      className="fill-primary-foreground font-semibold"
       textAnchor="middle"
     >
       {value}

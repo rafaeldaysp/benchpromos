@@ -18,15 +18,17 @@ import { siteConfig } from '@/config/site'
 import { cn } from '@/lib/utils'
 import Logo from '@/public/logo-benchpromos.svg'
 import { SideBar } from './side-bar'
-import { type headerOption } from '@/types'
+import { type Category } from '@/types'
+import { headerOptions } from '@/constants/header'
 
 interface MainNavProps {
-  options: headerOption[]
+  categories: Pick<Category, 'name' | 'slug'>[]
 }
 
-export function MainNav({ options }: MainNavProps) {
+export function MainNav({ categories }: MainNavProps) {
+  const options = headerOptions({ categories })
   return (
-    <div className="flex items-center gap-x-1 lg:gap-x-6">
+    <div className="flex items-center gap-x-1 lg:gap-x-4">
       <SideBar options={options} />
       <Link aria-label="Home" href="/" className="flex items-center gap-2">
         <div className="relative aspect-square h-8 select-none">
@@ -50,7 +52,10 @@ export function MainNav({ options }: MainNavProps) {
             <NavigationMenuItem key={option.title}>
               {option.content ? (
                 <>
-                  <NavigationMenuTrigger>{option.title}</NavigationMenuTrigger>
+                  <NavigationMenuTrigger>
+                    {option.icon && <option.icon className="mr-1 h-4 w-4" />}
+                    {option.title}
+                  </NavigationMenuTrigger>
                   <NavigationMenuContent>
                     <ul className="grid w-[400px] gap-2 p-2 md:w-[500px] md:grid-cols-3">
                       {option.content.map((suboption) => (
@@ -77,6 +82,7 @@ export function MainNav({ options }: MainNavProps) {
                     className={navigationMenuTriggerStyle()}
                     href={`/${option.slug}` ?? '/'}
                   >
+                    {option.icon && <option.icon className="mr-1 h-4 w-4" />}
                     {option.title}
                   </Link>
                 </NavigationMenuLink>

@@ -1,7 +1,9 @@
 import { StarFilledIcon } from '@radix-ui/react-icons'
 import {
   AlertCircle,
+  AlignLeft,
   ArrowUpDown,
+  BarChart4,
   Bell,
   Bookmark,
   Check,
@@ -18,6 +20,7 @@ import {
   Eye,
   GanttChartSquare,
   GitPullRequestDraft,
+  Headphones,
   Heart,
   Image,
   Laptop,
@@ -28,10 +31,13 @@ import {
   MenuSquare,
   MessageCircle,
   Minus,
+  MinusCircle,
   Moon,
   MoreHorizontal,
   MoreVertical,
+  PcCase,
   Plus,
+  PlusCircle,
   Reply,
   Search,
   Send,
@@ -81,7 +87,6 @@ export const Icons = {
   Bell,
   Sun,
   Moon,
-  Laptop,
   Bookmark,
   AlertCircle,
   StarFilled: StarFilledIcon,
@@ -91,6 +96,13 @@ export const Icons = {
   Send,
   MoreVertical,
   Crown,
+  PlusCircle,
+  MinusCircle,
+  Laptop,
+  Headphones,
+  PcCase,
+  BarChart4,
+  AlignLeft,
   Google: ({ ...props }: LucideProps) => (
     <svg
       aria-hidden="true"

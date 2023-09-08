@@ -1,33 +1,20 @@
-import { gql } from '@apollo/client'
+import { Icons } from '@/components/icons'
+import { type Category, type headerOption } from '@/types'
 
-import { getClient } from '@/lib/apollo'
-import { type headerOption, type Category } from '@/types'
+interface HeaderOptionsProps {
+  categories: Pick<Category, 'name' | 'slug'>[]
+}
 
-const GET_CATEGORIES = gql`
-  query GetCategories {
-    categories {
-      name
-      slug
-    }
-  }
-`
-
-export async function headerOptions() {
-  const { data } = await getClient().query<{
-    categories: Pick<Category, 'name' | 'slug'>[]
-  }>({
-    query: GET_CATEGORIES,
-  })
-
-  const categories = data?.categories
-
+export function headerOptions({ categories }: HeaderOptionsProps) {
   const options: headerOption[] = [
     {
       title: 'Notebooks',
       slug: 'notebooks',
+      icon: Icons.Laptop,
     },
     {
       title: 'Periféricos',
+      icon: Icons.Headphones,
       content: [
         { title: 'Mouses', slug: 'mouses' },
         { title: 'Teclados', slug: 'teclados' },
@@ -39,6 +26,7 @@ export async function headerOptions() {
     },
     {
       title: 'Desktop',
+      icon: Icons.PcCase,
       content: [
         { title: 'Computadores', slug: 'computadores' },
         { title: 'Placas de vídeo', slug: 'placas-de-video' },
@@ -59,6 +47,7 @@ export async function headerOptions() {
 
   const more = {
     title: 'Mais',
+    icon: Icons.AlignLeft,
     content: othersCategories
       .map((category) => {
         return {
@@ -71,12 +60,28 @@ export async function headerOptions() {
 
   if (more.content.length > 0) options.push(more)
 
-  const benchmarks = {
+  const benchmarks: headerOption = {
     title: 'Benchmarks',
     slug: 'benchmarks',
+    icon: Icons.BarChart4,
   }
 
   options.push(benchmarks)
 
   return options
 }
+
+export const externalLinkOptions: headerOption[] = [
+  {
+    title: 'YouTube',
+    slug: 'https://www.youtube.com/@lucasishii',
+  },
+  {
+    title: 'Telegram',
+    slug: 'https://t.me/BenchPromos',
+  },
+  {
+    title: 'Discord',
+    slug: 'https://discord.gg/cCD5PEjyjg',
+  },
+]

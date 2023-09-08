@@ -79,11 +79,14 @@ export function BenchmarkSelect({
               aria-expanded={open}
               className="w-[400px] justify-between"
             >
-              {selectedBenchmark
-                ? benchmarks.find(
-                    (benchmark) => benchmark.slug === selectedBenchmark.slug,
-                  )?.name
-                : 'Selecione um benchmark...'}
+              <span className="line-clamp-1">
+                {selectedBenchmark
+                  ? benchmarks.find(
+                      (benchmark) => benchmark.slug === selectedBenchmark.slug,
+                    )?.name
+                  : 'Selecione um benchmark...'}
+              </span>
+
               {isPending ? (
                 <Icons.Spinner className="mr-2 h-4 w-4 shrink-0 animate-spin opacity-50" />
               ) : (
