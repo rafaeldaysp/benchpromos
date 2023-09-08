@@ -125,7 +125,7 @@ export function Combobox() {
     <>
       <Button
         variant="outline"
-        className="relative h-9 w-9 p-0 xl:h-10 xl:w-96 xl:justify-start xl:px-3 xl:py-2"
+        className="relative h-9 w-9 p-0 xl:h-10 xl:w-[380px] xl:justify-start xl:px-3 xl:py-2"
         onClick={() => setIsOpen(true)}
       >
         <Icons.Search className="h-4 w-4 xl:mr-2" aria-hidden="true" />

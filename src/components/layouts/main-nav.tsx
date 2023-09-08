@@ -28,9 +28,9 @@ interface MainNavProps {
 export function MainNav({ categories }: MainNavProps) {
   const options = headerOptions({ categories })
   return (
-    <div className="flex items-center gap-x-1 lg:gap-x-4">
+    <div className="flex items-center gap-x-1 lg:gap-x-2.5">
       <SideBar options={options} />
-      <Link aria-label="Home" href="/" className="flex items-center gap-2">
+      <Link aria-label="Home" href="/" className="flex items-center gap-2.5">
         <div className="relative aspect-square h-8 select-none">
           <Image
             src={Logo}
