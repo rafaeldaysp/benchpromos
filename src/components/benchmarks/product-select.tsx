@@ -247,16 +247,14 @@ export function ProductSelect({ products }: ProductSelectProps) {
             variant={'ghost'}
             className="px-2"
             size={'sm'}
-            onClick={() => setIsOpen(false)}
-          >
-            <Icons.Check className="mr-2 h-4 w-4" />
-            Ok
-          </Button>
-
-          {/* <Button
-            variant={'ghost'}
             onClick={() =>
               handleSelect(() => {
+                if (selectedProducts.length === products.length) {
+                  router.push(
+                    `${pathname}?${createQueryString({ products: null })}`,
+                  )
+                  return
+                }
                 router.push(
                   `${pathname}?${createQueryString({
                     products:
@@ -268,9 +266,9 @@ export function ProductSelect({ products }: ProductSelectProps) {
               })
             }
           >
-            <Icons.Check className="mr-1 h-4 w-4" />
-            Confirmar
-          </Button> */}
+            <Icons.Check className="mr-2 h-4 w-4" />
+            Ok
+          </Button>
         </div>
       </CommandDialog>
     </>
