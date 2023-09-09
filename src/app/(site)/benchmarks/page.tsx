@@ -5,6 +5,7 @@ import { BenchmarkSelect } from '@/components/benchmarks/benchmark-select'
 import { ProductSelect } from '@/components/benchmarks/product-select'
 import { getClient } from '@/lib/apollo'
 import { type Product } from '@/types'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 const GET_BENCHMARKS = gql`
   query GetBenchmarks(
@@ -76,9 +77,16 @@ export default async function BenchmarksPage({
         selectedBenchmark={selectedBenchmark}
         selectedIndex={selectedIndex}
       />
-      <div className="w-full text-center">
-        <BenchmarkChart />
-      </div>
+      <Card className="col-span-4">
+        <CardHeader>
+          <CardTitle>
+            <p className="text-center">{selectedBenchmark.name}</p>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="px-2">
+          <BenchmarkChart />
+        </CardContent>
+      </Card>
     </div>
   )
 }
