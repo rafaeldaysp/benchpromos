@@ -79,8 +79,8 @@ export default async function BenchmarksPage({
         </p>
       </div>
       <Separator />
-      <div className="space-y-4 lg:grid lg:grid-cols-4 lg:space-x-12 lg:space-y-0">
-        <aside className="space-y-4 sm:max-w-5xl ">
+      <div className="space-y-4 lg:grid lg:grid-cols-5 lg:space-x-12 lg:space-y-0">
+        <aside className="space-y-4 sm:max-w-5xl">
           <ProductSelect products={products} />
           <Separator className="hidden lg:block" />
           <BenchmarkSelect
@@ -89,7 +89,7 @@ export default async function BenchmarksPage({
             selectedIndex={selectedIndex}
           />
         </aside>
-        <Card className="lg:col-span-3">
+        <Card className="lg:col-span-4">
           <CardHeader>
             <CardTitle>
               <p className="text-center text-sm sm:text-base">
