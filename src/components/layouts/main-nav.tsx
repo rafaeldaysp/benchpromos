@@ -17,7 +17,7 @@ import {
 import { siteConfig } from '@/config/site'
 import { cn } from '@/lib/utils'
 import Logo from '@/public/logo-benchpromos.svg'
-import { SideBar } from './side-bar'
+import { SideBar } from './sidebar-nav'
 import { type Category } from '@/types'
 import { headerOptions } from '@/constants/header'
 
@@ -30,8 +30,12 @@ export function MainNav({ categories }: MainNavProps) {
   return (
     <div className="flex items-center gap-x-1 lg:gap-x-2.5">
       <SideBar options={options} />
-      <Link aria-label="Home" href="/" className="flex items-center gap-2.5">
-        <div className="relative aspect-square h-8 select-none">
+      <Link
+        aria-label="Home"
+        href="/"
+        className="flex items-center gap-x-1.5 sm:gap-x-2"
+      >
+        <div className="relative aspect-square h-[30px] select-none">
           <Image
             src={Logo}
             alt="Logo"
@@ -42,9 +46,7 @@ export function MainNav({ categories }: MainNavProps) {
         </div>
 
         {/* <Icons.Logo className="h-6 w-6" aria-hidden="true" /> */}
-        <span className="hidden font-bold lg:inline-block">
-          {siteConfig.name}
-        </span>
+        <strong className="text-sm sm:text-base">{siteConfig.name}</strong>
       </Link>
       <NavigationMenu className="max-lg:hidden">
         <NavigationMenuList>

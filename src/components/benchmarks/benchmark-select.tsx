@@ -89,7 +89,7 @@ export function BenchmarkSelect({
               </span>
 
               {isPending ? (
-                <Icons.Spinner className="mr-2 h-4 w-4 shrink-0 animate-spin opacity-50" />
+                <Icons.Spinner className="ml-2 h-4 w-4 shrink-0 animate-spin opacity-50" />
               ) : (
                 <Icons.ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
               )}

@@ -40,7 +40,7 @@ export function SideBar({ options }: SideBarProps) {
                 href="/"
                 className="flex items-center gap-2"
               >
-                <div className="relative aspect-square h-8 select-none">
+                <div className="relative aspect-square h-[30px] select-none">
                   <Image
                     src={Logo}
                     alt="Logo"
@@ -50,12 +50,14 @@ export function SideBar({ options }: SideBarProps) {
                   />
                 </div>
 
-                <span className="font-bold">{siteConfig.name}</span>
+                <strong className="text-sm sm:text-base">
+                  {siteConfig.name}
+                </strong>
               </Link>
             </SheetClose>
           </SheetHeader>
           <ScrollArea className="-mr-6 h-full pb-10">
-            <div className="flex flex-1 flex-col px-5">
+            <div className="flex flex-1 flex-col px-[18px]">
               <div className="flex flex-col space-y-3">
                 {optionsWithoutContent.map((option) => (
                   <SheetClose key={option.title} asChild>

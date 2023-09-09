@@ -42,7 +42,7 @@ export function BenchmarkChart({ targetProduct }: { targetProduct?: string }) {
   const productsSlugs = productsString?.split('.')
 
   const isSm = useMediaQuery('(max-width: 640px)')
-  const { theme } = useTheme()
+  const { theme, systemTheme } = useTheme()
 
   const { data, loading: isLoading } = useQuery<{
     benchmarkResults: {
@@ -115,14 +115,22 @@ export function BenchmarkChart({ targetProduct }: { targetProduct?: string }) {
           axisLine={false}
           fontSize={isSm ? 10 : 14}
           fontWeight={500}
-          stroke={theme === 'dark' ? '#fafafa' : '#0a0a0a'}
+          stroke={
+            theme === 'dark' || (theme === 'system' && systemTheme === 'dark')
+              ? '#fafafa'
+              : '#0a0a0a'
+          }
         />
         <YAxis
           dataKey={createYAxisString}
           tickLine={false}
           width={isSm ? 200 : 350}
           type="category"
-          stroke={theme === 'dark' ? '#fafafa' : '#0a0a0a'}
+          stroke={
+            theme === 'dark' || (theme === 'system' && systemTheme === 'dark')
+              ? '#fafafa'
+              : '#0a0a0a'
+          }
           fontSize={isSm ? 10 : 14}
           fontWeight={500}
           axisLine={false}
@@ -133,7 +141,11 @@ export function BenchmarkChart({ targetProduct }: { targetProduct?: string }) {
           content={<RenderCustomTooltip targetProduct={targetProduct} />}
         />
         <CartesianGrid
-          stroke={theme === 'dark' ? '#fafafa' : '#0a0a0a'}
+          stroke={
+            theme === 'dark' || (theme === 'system' && systemTheme === 'dark')
+              ? '#fafafa'
+              : '#0a0a0a'
+          }
           strokeDasharray="3 3"
           horizontal={false}
         />
