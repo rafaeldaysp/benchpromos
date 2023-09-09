@@ -15,10 +15,10 @@ import {
 } from 'recharts'
 
 import { useMediaQuery } from '@/hooks/use-media-query'
+import { cn } from '@/lib/utils'
 import { useTheme } from 'next-themes'
 import { Icons } from '../icons'
 import { Card, CardContent, CardHeader } from '../ui/card'
-import { cn } from '@/lib/utils'
 
 const GET_BENCHMARK_RESULTS = gql`
   query GetBenchmarks($benchmarkSlug: ID, $productsSlugs: [String]) {
@@ -94,7 +94,9 @@ export function BenchmarkChart({ targetProduct }: { targetProduct?: string }) {
 
   return (
     <ResponsiveContainer
-      height={50 + 50 * (results ? results.length : 0)}
+      height={
+        (isSm ? 40 : 50) + (isSm ? 40 : 50) * (results ? results.length : 0)
+      }
       width={'100%'}
     >
       <BarChart

@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import * as React from 'react'
 
 import { Icons } from '@/components/icons'
@@ -17,11 +17,11 @@ import {
 import { Separator } from '@/components/ui/separator'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useDebounce } from '@/hooks/use-debounce'
+import { useQueryString } from '@/hooks/use-query-string'
 import { cn } from '@/lib/utils'
+import { Badge } from '../ui/badge'
 import { Checkbox } from '../ui/checkbox'
 import { ScrollArea } from '../ui/scroll-area'
-import { useQueryString } from '@/hooks/use-query-string'
-import { Badge } from '../ui/badge'
 
 type SearchedProduct = {
   name: string
@@ -49,9 +49,12 @@ export function ProductSelect({ products }: ProductSelectProps) {
   const [isOpen, setIsOpen] = React.useState(false)
   const [query, setQuery] = React.useState('')
   const debouncedQuery = useDebounce(query, 200)
+  const searchParams = useSearchParams()
+  const searchParamsProductsSlugs =
+    searchParams.get('products')?.split('.') ?? []
   const [selectedProducts, setSelectedProducts] = React.useState<
     SearchedProduct[]
-  >([])
+  >(products.filter((p) => searchParamsProductsSlugs.includes(p.slug)))
   const [displayedProducts, setDisplayedProducts] = React.useState<
     SearchedProduct[]
   >([])
@@ -87,7 +90,7 @@ export function ProductSelect({ products }: ProductSelectProps) {
       <Button
         onClick={() => setIsOpen(true)}
         variant="outline"
-        className="w-full border-dashed sm:w-full"
+        className="w-full border-dashed lg:px-2"
       >
         <Icons.PlusCircle className="mr-2 h-4 w-4" />
         Produtos
@@ -96,17 +99,18 @@ export function ProductSelect({ products }: ProductSelectProps) {
             <Separator orientation="vertical" className="mx-2 h-4" />
             <Badge
               variant="secondary"
-              className="rounded-sm px-1 font-normal xl:hidden"
+              className="rounded-sm px-1 font-normal sm:hidden"
             >
               {selectedProducts.length}
             </Badge>
-            <div className="hidden space-x-1 xl:flex">
-              {selectedProducts.length > 1 ? (
+            <div className="hidden space-x-1 sm:flex">
+              {selectedProducts.length > 0 ? (
                 <Badge
                   variant="secondary"
                   className="rounded-sm px-1 font-normal"
                 >
-                  {selectedProducts.length} selecionado(s)
+                  {selectedProducts.length} selecionado
+                  {selectedProducts.length > 1 && 's'}
                 </Badge>
               ) : (
                 selectedProducts.map((product) => (
@@ -217,17 +221,36 @@ export function ProductSelect({ products }: ProductSelectProps) {
           )}
           <Separator />
         </CommandList>
-        <div className="flex items-center justify-between p-1">
+        <div className="flex items-center justify-between p-2">
+          <div className="flex items-center space-x-3">
+            <Button
+              variant={'ghost'}
+              className="px-2"
+              size={'sm'}
+              onClick={() => setSelectedProducts(products)}
+            >
+              <Icons.PlusCircle className="mr-2 h-4 w-4" />
+              Todos
+            </Button>
+            <Separator orientation="vertical" className="h-4" />
+            <Button
+              variant={'ghost'}
+              size={'sm'}
+              className="px-2"
+              onClick={() => setSelectedProducts([])}
+            >
+              <Icons.MinusCircle className="mr-2 h-4 w-4" />
+              Nenhum
+            </Button>
+          </div>
           <Button
             variant={'ghost'}
-            onClick={() => setSelectedProducts(products)}
+            className="px-2"
+            size={'sm'}
+            onClick={() => setIsOpen(false)}
           >
-            <Icons.PlusCircle className="mr-2 h-4 w-4" />
-            Todos
-          </Button>
-          <Button variant={'ghost'} onClick={() => setSelectedProducts([])}>
-            <Icons.MinusCircle className="mr-2 h-4 w-4" />
-            Nenhum
+            <Icons.Check className="mr-2 h-4 w-4" />
+            Ok
           </Button>
 
           {/* <Button
