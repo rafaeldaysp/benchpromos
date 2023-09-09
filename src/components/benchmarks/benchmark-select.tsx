@@ -58,6 +58,7 @@ export function BenchmarkSelect({
         <Button
           variant={'outline'}
           disabled={selectedIndex === benchmarks.length - 1 || isPending}
+          className="order-3"
           onClick={() =>
             startTransition(() => {
               router.push(
@@ -77,7 +78,7 @@ export function BenchmarkSelect({
               role="combobox"
               disabled={isPending}
               aria-expanded={open}
-              className="w-[400px] justify-between"
+              className="w-full px-1 text-sm sm:px-4"
             >
               <span className="line-clamp-1">
                 {selectedBenchmark
@@ -94,7 +95,7 @@ export function BenchmarkSelect({
               )}
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-[300px] p-0">
+          <PopoverContent className="w-full p-0 sm:w-[300px]">
             <Command>
               <CommandInput placeholder="Procurar benchmark..." />
               <CommandEmpty>Nenhum benchmark encontrado.</CommandEmpty>

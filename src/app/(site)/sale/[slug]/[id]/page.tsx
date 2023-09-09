@@ -24,7 +24,7 @@ interface SalePageProps {
 }
 
 export default async function SalePage({ params }: SalePageProps) {
-  const { slug, id } = params
+  const { id } = params
 
   const user = await getCurrentUser()
 

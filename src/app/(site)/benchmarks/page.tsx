@@ -6,6 +6,7 @@ import { ProductSelect } from '@/components/benchmarks/product-select'
 import { getClient } from '@/lib/apollo'
 import { type Product } from '@/types'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Separator } from '@/components/ui/separator'
 
 const GET_BENCHMARKS = gql`
   query GetBenchmarks(
@@ -71,20 +72,31 @@ export default async function BenchmarksPage({
 
   return (
     <div className="mx-auto space-y-4 px-4 py-10 sm:container">
-      <ProductSelect products={products} />
-      <BenchmarkSelect
-        benchmarks={benchmarks}
-        selectedBenchmark={selectedBenchmark}
-        selectedIndex={selectedIndex}
-      />
+      <div>
+        <h3 className="font-medium">Benchmarks</h3>
+        <p className="text-sm text-muted-foreground">
+          Selecione produtos e confira os benchmarks realizados pelo canal.
+        </p>
+      </div>
+      <Separator />
+      <div className="space-y-4 sm:max-w-lg">
+        <ProductSelect products={products} />
+        <BenchmarkSelect
+          benchmarks={benchmarks}
+          selectedBenchmark={selectedBenchmark}
+          selectedIndex={selectedIndex}
+        />
+      </div>
       <Card className="col-span-4">
         <CardHeader>
           <CardTitle>
-            <p className="text-center">{selectedBenchmark.name}</p>
+            <p className="text-center text-sm sm:text-base">
+              {selectedBenchmark.name}
+            </p>
           </CardTitle>
         </CardHeader>
-        <CardContent className="px-2">
-          <BenchmarkChart />
+        <CardContent className="p-3 pl-0 pt-0 sm:p-6 sm:px-8 sm:pt-0 lg:px-12">
+          <BenchmarkChart targetProduct="Acer Nitro 5 Ryzen 7 6800H RTX 3070 Ti" />
         </CardContent>
       </Card>
     </div>

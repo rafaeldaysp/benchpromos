@@ -87,7 +87,7 @@ export function ProductSelect({ products }: ProductSelectProps) {
       <Button
         onClick={() => setIsOpen(true)}
         variant="outline"
-        className="border-dashed"
+        className="w-full border-dashed sm:w-full"
       >
         <Icons.PlusCircle className="mr-2 h-4 w-4" />
         Produtos
@@ -129,6 +129,12 @@ export function ProductSelect({ products }: ProductSelectProps) {
         onOpenChange={(value) => {
           setIsOpen(value)
           handleSelect(() => {
+            if (selectedProducts.length === products.length) {
+              router.push(
+                `${pathname}?${createQueryString({ products: null })}`,
+              )
+              return
+            }
             router.push(
               `${pathname}?${createQueryString({
                 products:
