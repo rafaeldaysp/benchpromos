@@ -23,9 +23,6 @@ function makeClient() {
         ProductPagination: {
           keyFields: ['products'],
         },
-        Sale: {
-          keyFields: ['reactions', ['content']],
-        },
       },
     }),
     link:

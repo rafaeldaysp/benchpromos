@@ -310,35 +310,37 @@ export function useComments({
         id: like.commentId,
       })
 
+      const userId = cache.identify({
+        __typename: 'User',
+        id: like.userId,
+      })
+
+      let liked = false
+
       cache.modify({
         id: commentId,
         fields: {
           likes(existingLikes = []) {
+            console.log(existingLikes)
+
             const userLiked = existingLikes.some(
-              (existingLike: { user: { id: string } }) =>
-                existingLike.user.id === like.userId,
+              (existingLike: { user: { __ref: string } }) =>
+                existingLike.user.__ref === userId,
             )
+
+            liked = userLiked
 
             const updatedLikes = userLiked
               ? existingLikes.filter(
-                  (existingLike: { user: { id: string } }) =>
-                    existingLike.user.id !== like.userId,
+                  (existingLike: { user: { __ref: string } }) =>
+                    existingLike.user.__ref !== userId,
                 )
-              : [...existingLikes, { user: { id: like.userId } }]
+              : [...existingLikes, { user: { __ref: userId } }]
 
-            cache.writeFragment({
-              id: commentId,
-              fragment: gql`
-                fragment LikesCount on Comment {
-                  likesCount
-                  likes
-                }
-              `,
-              data: {
-                likesCount: updatedLikes.length,
-                likes: updatedLikes,
-              },
-            })
+            return updatedLikes
+          },
+          likesCount(existingLikesCount = 0) {
+            return existingLikesCount + (liked ? -1 : 1)
           },
         },
       })

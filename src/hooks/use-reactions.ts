@@ -98,6 +98,7 @@ export function useReactions({
                 page: 1,
               },
             },
+            overwrite: true,
             data: { sales: updatedSales },
           })
         } catch (error) {
