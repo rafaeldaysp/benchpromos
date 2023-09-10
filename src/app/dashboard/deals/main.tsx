@@ -252,7 +252,7 @@ export function DealsMain({ deals, retailers, categories }: DealsMainProps) {
                   <SelectTrigger className="w-[200px]">
                     <SelectValue placeholder="Selecione uma categoria" />
                   </SelectTrigger>
-                  <SelectContent side="top">
+                  <SelectContent className="max-h-[300px]">
                     <SelectItem value="">Todas</SelectItem>
                     {categories.map((category) => (
                       <SelectItem key={category.id} value={category.id}>

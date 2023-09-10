@@ -99,11 +99,11 @@ export function ProductSelect({ products }: ProductSelectProps) {
             <Separator orientation="vertical" className="mx-2 h-4" />
             <Badge
               variant="secondary"
-              className="rounded-sm px-1 font-normal sm:hidden"
+              className="rounded-sm px-1 font-normal sm:hidden lg:flex xl:hidden"
             >
               {selectedProducts.length}
             </Badge>
-            <div className="hidden space-x-1 sm:flex">
+            <div className="hidden space-x-1 sm:flex lg:hidden xl:flex">
               {selectedProducts.length > 0 ? (
                 <Badge
                   variant="secondary"

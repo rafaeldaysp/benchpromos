@@ -65,14 +65,26 @@ export function BenchmarkSelect({
                 })
               }
             >
-              <Icons.Check
-                className={cn(
-                  'mr-2 h-4 w-4',
-                  selectedBenchmark?.slug === benchmark.slug
-                    ? 'opacity-100'
-                    : 'opacity-0',
-                )}
-              />
+              {isPending ? (
+                <Icons.Spinner
+                  className={cn(
+                    'mr-2 h-4 w-4 animate-spin',
+                    selectedBenchmark?.slug === benchmark.slug
+                      ? 'opacity-100'
+                      : 'opacity-0',
+                  )}
+                />
+              ) : (
+                <Icons.Check
+                  className={cn(
+                    'mr-2 h-4 w-4',
+                    selectedBenchmark?.slug === benchmark.slug
+                      ? 'opacity-100'
+                      : 'opacity-0',
+                  )}
+                />
+              )}
+
               {benchmark.name}
             </CommandItem>
           ))}

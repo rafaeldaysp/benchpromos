@@ -71,7 +71,7 @@ export default async function BenchmarksPage({
   const selectedIndex = benchmarks.indexOf(selectedBenchmark)
 
   return (
-    <div className="mx-auto space-y-6 px-4 py-8 sm:container">
+    <div className="space-y-6 px-4 py-8 sm:container">
       <div className="space-y-0.5">
         <h3 className="font-medium">Benchmarks</h3>
         <p className="text-sm text-muted-foreground">
@@ -89,7 +89,7 @@ export default async function BenchmarksPage({
             selectedIndex={selectedIndex}
           />
         </aside>
-        <Card className="lg:col-span-4">
+        <Card className="lg:col-span-4 lg:h-fit">
           <CardHeader>
             <CardTitle>
               <p className="text-center text-sm sm:text-base">

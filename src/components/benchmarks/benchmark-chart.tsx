@@ -98,6 +98,7 @@ export function BenchmarkChart({ targetProduct }: { targetProduct?: string }) {
         (isSm ? 40 : 50) + (isSm ? 40 : 50) * (results ? results.length : 0)
       }
       width={'100%'}
+      className={'select-none sm:select-auto'}
     >
       <BarChart
         margin={{
