@@ -9,28 +9,30 @@ import { SalesMain } from './main'
 const GET_SALES_AND_PRODUCT = gql`
   query GetSalesAndProduct {
     sales {
-      id
-      title
-      imageUrl
-      url
-      price
-      installments
-      totalInstallmentPrice
-      caption
-      review
-      label
-      coupon
-      cashback
-      createdAt
-      categoryId
-      productSlug
-      product {
-        name
-        slug
+      list {
+        id
+        title
         imageUrl
-        category {
-          id
+        url
+        price
+        installments
+        totalInstallmentPrice
+        caption
+        review
+        label
+        coupon
+        cashback
+        createdAt
+        categoryId
+        productSlug
+        product {
           name
+          slug
+          imageUrl
+          category {
+            id
+            name
+          }
         }
       }
     }
@@ -39,16 +41,18 @@ const GET_SALES_AND_PRODUCT = gql`
 
 export default async function SalesDashboardPage() {
   const { data } = await getClient().query<{
-    sales: (Sale & {
-      product: Pick<Product, 'slug' | 'name' | 'imageUrl'> & {
-        category: Pick<Category, 'id' | 'name'>
-      }
-    })[]
+    sales: {
+      list: (Sale & {
+        product: Pick<Product, 'slug' | 'name' | 'imageUrl'> & {
+          category: Pick<Category, 'id' | 'name'>
+        }
+      })[]
+    }
   }>({
     query: GET_SALES_AND_PRODUCT,
   })
 
-  const sales = data.sales.map((sale) => removeNullValues(sale))
+  const sales = data.sales.list.map((sale) => removeNullValues(sale))
 
   return (
     <div className="space-y-6">

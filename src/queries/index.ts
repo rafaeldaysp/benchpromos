@@ -1,39 +1,40 @@
 import { gql } from '@apollo/client'
 
-import type { Category, Comment, Sale } from '@/types'
+import type { Category, Sale } from '@/types'
 
 export const GET_SALES = gql`
   query GetSales($paginationInput: PaginationInput) {
     sales(paginationInput: $paginationInput) {
-      id
-      title
-      slug
-      imageUrl
-      url
-      price
-      installments
-      totalInstallmentPrice
-      caption
-      review
-      label
-      coupon
-      cashback
-      createdAt
-      categoryId
-      productSlug
-      highlight
-      category {
-        name
+      pages
+      count
+      list {
+        id
+        title
         slug
-      }
-      # comments {
-      #   id
-      # }
-      commentsCount
-      reactions {
-        content
-        users {
-          id
+        imageUrl
+        url
+        price
+        installments
+        totalInstallmentPrice
+        caption
+        review
+        label
+        coupon
+        cashback
+        createdAt
+        categoryId
+        productSlug
+        highlight
+        category {
+          name
+          slug
+        }
+        commentsCount
+        reactions {
+          content
+          users {
+            id
+          }
         }
       }
     }
@@ -41,12 +42,15 @@ export const GET_SALES = gql`
 `
 
 export type GetSalesQuery = {
-  sales: (Sale & {
-    category: Pick<Category, 'name' | 'slug'>
-    // comments: Pick<Comment, 'id'>[]
-    commentsCount: number
-    reactions: { content: string; users: { id: string }[] }[]
-  })[]
+  sales: {
+    pages: number
+    count: number
+    list: (Sale & {
+      category: Pick<Category, 'name' | 'slug'>
+      commentsCount: number
+      reactions: { content: string; users: { id: string }[] }[]
+    })[]
+  }
 }
 
 export const SEND_EMAIL = gql`

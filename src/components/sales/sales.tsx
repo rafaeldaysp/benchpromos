@@ -36,7 +36,7 @@ export function Sales({ user, viewport }: SalesProps) {
     },
   )
 
-  const sales = data.sales
+  const sales = data.sales.list
   const page = Math.ceil(sales.length / SALES_PER_SCROLL)
 
   React.useEffect(() => {
@@ -53,14 +53,17 @@ export function Sales({ user, viewport }: SalesProps) {
           },
         },
         updateQuery(previousResult, { fetchMoreResult }) {
-          if (!fetchMoreResult.sales.length) {
+          if (!fetchMoreResult.sales.list.length) {
             setHasMoreSales(false)
           }
 
           const previousSales = previousResult.sales
           const fetchMoreSales = fetchMoreResult.sales
 
-          fetchMoreResult.sales = [...previousSales, ...fetchMoreSales]
+          fetchMoreResult.sales.list = [
+            ...previousSales.list,
+            ...fetchMoreSales.list,
+          ]
 
           return { ...fetchMoreResult }
         },
