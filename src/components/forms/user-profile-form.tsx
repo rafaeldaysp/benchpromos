@@ -89,7 +89,7 @@ export function UserProfileForm({ user }: UserProfileFormProps) {
           name="image"
           render={() => (
             <FormItem>
-              <FormLabel>Foto de perfil</FormLabel>
+              <FormLabel className="text-base">Foto de perfil</FormLabel>
               <div className="flex items-center space-x-4">
                 <UserAvatar
                   user={{
@@ -119,7 +119,7 @@ export function UserProfileForm({ user }: UserProfileFormProps) {
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Nome</FormLabel>
+              <FormLabel className="text-base">Nome</FormLabel>
               <FormControl>
                 <Input placeholder="Seu nome" {...field} />
               </FormControl>

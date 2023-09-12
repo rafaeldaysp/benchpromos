@@ -1,11 +1,12 @@
+import { getClient } from '@/lib/apollo'
+import { gql } from '@apollo/client'
 import { notFound } from 'next/navigation'
 
 import { getCurrentUser } from '@/app/_actions/user'
 import { AlertsForm } from '@/components/forms/user-alerts-form'
 import { Separator } from '@/components/ui/separator'
-import { getClient } from '@/lib/apollo'
+import { AlertsPermission } from '@/components/user/user-alerts-permission'
 import { type Category } from '@/types'
-import { gql } from '@apollo/client'
 
 const GET_CATEGORIES_AND_USER_ALERTS = gql`
   query GetCategoriesAndUserAlerts($userId: String!) {
@@ -16,10 +17,15 @@ const GET_CATEGORIES_AND_USER_ALERTS = gql`
     userAlerts(id: $userId) {
       selectedCategories
       subscribedProducts {
-        id
-        imageUrl
-        deals {
-          price
+        subscribedPrice
+        product {
+          id
+          name
+          slug
+          imageUrl
+          deals {
+            price
+          }
         }
       }
     }
@@ -36,9 +42,14 @@ export default async function AlertsPage() {
     userAlerts: {
       selectedCategories: string[]
       subscribedProducts: {
-        id: string
-        imageUrl: number
-        deals: { price: number }[]
+        subscribedPrice: number
+        product: {
+          id: string
+          imageUrl: string
+          slug: string
+          name: string
+          deals: { price: number }[]
+        }
       }[]
     }
   }>({
@@ -61,6 +72,7 @@ export default async function AlertsPage() {
         </p>
       </div>
       <Separator />
+      <AlertsPermission />
       <AlertsForm categories={categories} initialAlerts={initialAlerts} />
     </div>
   )

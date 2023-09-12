@@ -1,9 +1,11 @@
 'use client'
 
+import { gql, useMutation } from '@apollo/client'
 import { zodResolver } from '@hookform/resolvers/zod'
-import * as React from 'react'
+import Image from 'next/image'
+import { useRouter } from 'next/navigation'
+import { useFieldArray, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
-import { useForm } from 'react-hook-form'
 import type * as z from 'zod'
 
 import { getCurrentUserToken } from '@/app/_actions/user'
@@ -20,9 +22,11 @@ import {
 } from '@/components/ui/form'
 import { userAlertsSchema } from '@/lib/validations/user-alerts'
 import { type Category } from '@/types'
-import { gql, useMutation } from '@apollo/client'
-import { useRouter } from 'next/navigation'
+import { priceFormatter } from '@/utils/formatter'
 import { Icons } from '../icons'
+import { PriceInput } from '../price-input'
+import { Card, CardContent, CardFooter, CardTitle } from '../ui/card'
+import { Dialog, DialogContent, DialogTrigger } from '../ui/dialog'
 
 const UPDATE_USER_ALERTS = gql`
   mutation UpdateUserAlerts($input: UpdateUserAlertsInput!) {
@@ -39,9 +43,14 @@ interface AlertsFormProps {
   initialAlerts: {
     selectedCategories: string[]
     subscribedProducts: {
-      id: string
-      imageUrl: number
-      deals: { price: number }[]
+      subscribedPrice: number
+      product: {
+        id: string
+        imageUrl: string
+        slug: string
+        name: string
+        deals: { price: number }[]
+      }
     }[]
   }
 }
@@ -49,21 +58,16 @@ interface AlertsFormProps {
 export function AlertsForm({ categories, initialAlerts }: AlertsFormProps) {
   const router = useRouter()
 
-  const initialProductsInput = React.useMemo(
-    () =>
-      initialAlerts.subscribedProducts.map((product) => ({
-        productId: product.id,
-        price: product.deals[0].price,
-      })),
-    [initialAlerts.subscribedProducts],
-  )
-
   const form = useForm<Inputs>({
     resolver: zodResolver(userAlertsSchema),
     defaultValues: {
-      selectedCategories: initialAlerts.selectedCategories,
-      subscribedProducts: initialProductsInput,
+      ...initialAlerts,
     },
+  })
+
+  const { fields, remove } = useFieldArray({
+    name: 'subscribedProducts',
+    control: form.control,
   })
 
   const [updateUserAlerts, { loading: isLoading }] = useMutation(
@@ -79,8 +83,7 @@ export function AlertsForm({ categories, initialAlerts }: AlertsFormProps) {
     },
   )
 
-  async function onSubmit(data: Inputs) {
-    console.log(data)
+  async function onSubmit({ selectedCategories, subscribedProducts }: Inputs) {
     const token = await getCurrentUserToken()
     updateUserAlerts({
       context: {
@@ -90,7 +93,11 @@ export function AlertsForm({ categories, initialAlerts }: AlertsFormProps) {
       },
       variables: {
         input: {
-          ...data,
+          selectedCategories,
+          subscribedProducts: subscribedProducts.map((product) => ({
+            productId: product.product.id,
+            price: product.subscribedPrice,
+          })),
         },
       },
     })
@@ -106,7 +113,7 @@ export function AlertsForm({ categories, initialAlerts }: AlertsFormProps) {
             <FormItem>
               <div className="mb-4">
                 <FormLabel className="text-base">
-                  Notificações por categoria
+                  Alertas por categoria
                 </FormLabel>
                 <FormDescription>
                   Você será notificado quando houver promoções desta(s)
@@ -155,6 +162,102 @@ export function AlertsForm({ categories, initialAlerts }: AlertsFormProps) {
             </FormItem>
           )}
         />
+
+        <fieldset className="space-y-2">
+          <div className="mb-4">
+            <FormLabel className="text-base">Alertas por produto</FormLabel>
+            <FormDescription>
+              Receba notificações quando o(s) produto(s) alcançar(em) o preço
+              desejado.
+            </FormDescription>
+          </div>
+          <div className="space-y-2 sm:grid sm:grid-cols-2">
+            {fields.map((subscription, index) => (
+              <FormField
+                key={subscription.product.id}
+                control={form.control}
+                name={`subscribedProducts.${index}.subscribedPrice`}
+                render={({ field }) => {
+                  return (
+                    <FormItem key={subscription.product.id}>
+                      <Dialog>
+                        <Card className="relative flex select-none flex-col overflow-hidden transition-colors hover:bg-muted/50">
+                          <CardContent className="space-y-3 p-3">
+                            <CardTitle className="line-clamp-2 space-x-1 text-sm font-semibold">
+                              {subscription.product.name}
+                            </CardTitle>
+                            <div className="grid grid-cols-2 gap-x-3 text-sm text-muted-foreground">
+                              <div className="flex h-full items-center">
+                                <div className="relative mx-auto aspect-square w-full sm:w-8/12">
+                                  <Image
+                                    src={subscription.product.imageUrl}
+                                    alt={subscription.product.name}
+                                    className="rounded-lg object-contain"
+                                    fill
+                                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                  />
+                                </div>
+                              </div>
+
+                              <div className="col-span-1 flex flex-col justify-center space-y-1">
+                                <div className="flex flex-col">
+                                  <span>Preço atual</span>
+                                  <strong className="text-lg text-foreground">
+                                    {priceFormatter.format(
+                                      subscription.product.deals[0].price / 100,
+                                    )}
+                                  </strong>
+                                </div>
+
+                                <div className="flex flex-col">
+                                  <span>Preço desejado</span>
+
+                                  <strong className="text-lg text-foreground">
+                                    {priceFormatter.format(field.value / 100)}
+                                  </strong>
+                                </div>
+                              </div>
+                            </div>
+                          </CardContent>
+
+                          <CardFooter className="flex items-center justify-between p-3 pt-0">
+                            <Button
+                              type="button"
+                              variant={'ghost'}
+                              onClick={() => remove(index)}
+                            >
+                              Excluir
+                            </Button>
+                            <DialogTrigger asChild>
+                              <Button type="button" variant={'ghost'}>
+                                Editar
+                              </Button>
+                            </DialogTrigger>
+                          </CardFooter>
+                        </Card>
+                        <DialogContent>
+                          <FormControl>
+                            <PriceInput
+                              className="text-lg font-semibold text-foreground"
+                              value={
+                                field.value ? field.value / 100 : undefined
+                              }
+                              onValueChange={({ floatValue }) =>
+                                field.onChange(~~((floatValue ?? 0) * 100))
+                              }
+                            />
+                          </FormControl>
+                        </DialogContent>
+                      </Dialog>
+                      <FormMessage />
+                    </FormItem>
+                  )
+                }}
+              />
+            ))}
+          </div>
+        </fieldset>
+
         <Button disabled={isLoading} type="submit">
           {isLoading && <Icons.Spinner className="mr-2 h-4 w-4 animate-spin" />}
           Atualizar alertas
