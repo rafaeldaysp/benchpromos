@@ -1,6 +1,17 @@
-import { Separator } from '@/components/ui/separator'
+import { notFound } from 'next/navigation'
 
-export default function ProfilePage() {
+import { getCurrentUser } from '@/app/_actions/user'
+import { UserProfileForm } from '@/components/forms/user-profile-form'
+import { Separator } from '@/components/ui/separator'
+import { removeNullValues } from '@/utils'
+
+export default async function ProfilePage() {
+  const user = removeNullValues(await getCurrentUser()) as {
+    name: string
+    image?: string
+  }
+  if (!user) return notFound()
+
   return (
     <div className="space-y-6">
       <div>
@@ -11,7 +22,7 @@ export default function ProfilePage() {
         </p>
       </div>
       <Separator />
-      {/* <AccountForm /> */}
+      <UserProfileForm user={user} />
     </div>
   )
 }

@@ -46,7 +46,9 @@ export function MainNav({ categories }: MainNavProps) {
         </div>
 
         {/* <Icons.Logo className="h-6 w-6" aria-hidden="true" /> */}
-        <strong className="text-sm sm:text-base">{siteConfig.name}</strong>
+        <strong className="hidden text-sm sm:inline-flex sm:text-base">
+          {siteConfig.name}
+        </strong>
       </Link>
       <NavigationMenu className="max-lg:hidden">
         <NavigationMenuList>
