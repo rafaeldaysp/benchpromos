@@ -40,8 +40,10 @@ export function useReactions({
 
           if (!cachedData) return
 
-          const { sales } = cachedData
-          const updatedSales = sales.map((sale) => {
+          const {
+            sales: { list, count, pages },
+          } = cachedData
+          const updatedSales = list.map((sale) => {
             if (sale.id !== saleId) {
               return sale
             }
@@ -99,7 +101,7 @@ export function useReactions({
               },
             },
             overwrite: true,
-            data: { sales: updatedSales },
+            data: { sales: { list: updatedSales, count, pages } },
           })
         } catch (error) {
           console.error('Error updating cache:', error)
