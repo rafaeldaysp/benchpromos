@@ -16,6 +16,7 @@ const GET_BENCHMARK_RESULTS = gql`
         name
       }
       benchmark {
+        slug
         name
       }
     }
@@ -23,15 +24,20 @@ const GET_BENCHMARK_RESULTS = gql`
 `
 
 interface BenchmarkPageProps {
+  params: {
+    slug: string
+  }
   searchParams: {
     products: string
   }
 }
 
-export default async function BenchmarksPage({
+export default async function BenchmarkPage({
+  params: { slug },
   searchParams,
 }: BenchmarkPageProps) {
   const { products: productsString } = searchParams
+
   const productsArray = productsString?.split('.')
 
   const { data } = await getClient().query<{
@@ -43,19 +49,23 @@ export default async function BenchmarksPage({
       }
       benchmark: {
         name: string
+        slug: string
       }
     }[]
   }>({
     query: GET_BENCHMARK_RESULTS,
     variables: {
       productsSlugs: productsArray,
-      benchmarkSlug: null,
+      benchmarkSlug: slug,
     },
     errorPolicy: 'ignore',
   })
 
-  const results = data?.benchmarkResults
-  const benchmarkName = results[0]?.benchmark.name ?? 'Sem resultados'
+  const results = data?.benchmarkResults ?? []
+
+  const benchmarkName =
+    results.find((result) => result.benchmark.slug === slug)?.benchmark.name ??
+    'Sem resultados'
 
   return (
     <Card className="lg:col-span-4 lg:h-fit">

@@ -1,6 +1,6 @@
 'use client'
 
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import * as React from 'react'
 
 import { useQueryString } from '@/hooks/use-query-string'
@@ -21,20 +21,24 @@ interface BenchmarkSelectProps {
     slug: string
     name: string
   }[]
-  selectedBenchmark?: { slug: string; name: string }
-  selectedIndex: number
 }
 
-export function BenchmarkSelect({
-  benchmarks,
-  selectedBenchmark,
-  selectedIndex,
-}: BenchmarkSelectProps) {
+export function BenchmarkSelect({ benchmarks }: BenchmarkSelectProps) {
   const [isPending, startTransition] = React.useTransition()
   const [open, setOpen] = React.useState(false)
   const pathname = usePathname()
   const router = useRouter()
   const { createQueryString } = useQueryString()
+
+  const searchParams = useSearchParams()
+  const productsString = searchParams.get('products')
+
+  const currentBenchmark =
+    pathname.split('/').filter((b) => b.length > 0)[1] ?? benchmarks[0].slug
+
+  const currentBenchmarkIndex = benchmarks.indexOf(
+    benchmarks.find((b) => b.slug === currentBenchmark) ?? benchmarks[0],
+  )
 
   function BenchmarkCommand({ className }: { className?: string }) {
     return (
@@ -51,15 +55,15 @@ export function BenchmarkSelect({
                 'hover:bg-muted/50 hover:underline aria-selected:bg-background',
                 {
                   'bg-muted aria-selected:bg-muted hover:bg-muted':
-                    selectedBenchmark?.slug === benchmark.slug,
+                    currentBenchmark === benchmark.slug,
                 },
               )}
               onSelect={() =>
                 startTransition(() => {
                   setOpen(false)
                   router.push(
-                    `${pathname}?${createQueryString({
-                      benchmark: benchmark.slug,
+                    `/benchmarks/${benchmark.slug}?${createQueryString({
+                      products: productsString,
                     })}`,
                   )
                 })
@@ -69,7 +73,7 @@ export function BenchmarkSelect({
                 <Icons.Spinner
                   className={cn(
                     'mr-2 h-4 w-4 animate-spin',
-                    selectedBenchmark?.slug === benchmark.slug
+                    currentBenchmark === benchmark.slug
                       ? 'opacity-100'
                       : 'opacity-0',
                   )}
@@ -78,7 +82,7 @@ export function BenchmarkSelect({
                 <Icons.Check
                   className={cn(
                     'mr-2 h-4 w-4',
-                    selectedBenchmark?.slug === benchmark.slug
+                    currentBenchmark === benchmark.slug
                       ? 'opacity-100'
                       : 'opacity-0',
                   )}
@@ -99,13 +103,15 @@ export function BenchmarkSelect({
       <div className="flex w-full space-x-2 lg:hidden lg:space-x-0">
         <Button
           variant={'outline'}
-          disabled={selectedIndex < 1 || isPending}
+          disabled={currentBenchmarkIndex < 1 || isPending}
           className="lg:hidden"
           onClick={() =>
             startTransition(() => {
               router.push(
-                `${pathname}?${createQueryString({
-                  benchmark: benchmarks[selectedIndex - 1].slug,
+                `/benchmarks/${
+                  benchmarks[currentBenchmarkIndex - 1].slug
+                }?${createQueryString({
+                  products: productsString,
                 })}`,
               )
             })
@@ -116,13 +122,17 @@ export function BenchmarkSelect({
 
         <Button
           variant={'outline'}
-          disabled={selectedIndex === benchmarks.length - 1 || isPending}
+          disabled={
+            currentBenchmarkIndex === benchmarks.length - 1 || isPending
+          }
           className="order-3 lg:hidden"
           onClick={() =>
             startTransition(() => {
               router.push(
-                `${pathname}?${createQueryString({
-                  benchmark: benchmarks[selectedIndex + 1].slug,
+                `/benchmarks/${
+                  benchmarks[currentBenchmarkIndex + 1].slug
+                }?${createQueryString({
+                  products: productsString,
                 })}`,
               )
             })
@@ -140,9 +150,9 @@ export function BenchmarkSelect({
               className="w-full px-1 text-sm sm:px-4"
             >
               <span className="line-clamp-1">
-                {selectedBenchmark
+                {currentBenchmark
                   ? benchmarks.find(
-                      (benchmark) => benchmark.slug === selectedBenchmark.slug,
+                      (benchmark) => benchmark.slug === currentBenchmark,
                     )?.name
                   : 'Selecione um benchmark...'}
               </span>

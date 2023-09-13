@@ -1,7 +1,9 @@
 'use client'
 
-import { gql, useQuery } from '@apollo/client'
-import { useSearchParams } from 'next/navigation'
+import { useTheme } from 'next-themes'
+
+import { useMediaQuery } from '@/hooks/use-media-query'
+import { cn } from '@/lib/utils'
 import {
   Bar,
   BarChart,
@@ -13,53 +15,25 @@ import {
   YAxis,
   type LabelProps,
 } from 'recharts'
-
-import { useMediaQuery } from '@/hooks/use-media-query'
-import { cn } from '@/lib/utils'
-import { useTheme } from 'next-themes'
-import { Icons } from '../icons'
 import { Card, CardContent, CardHeader } from '../ui/card'
 
-const GET_BENCHMARK_RESULTS = gql`
-  query GetBenchmarks($benchmarkSlug: ID, $productsSlugs: [String]) {
-    benchmarkResults(
-      benchmarkSlug: $benchmarkSlug
-      productsSlugs: $productsSlugs
-    ) {
-      result
-      description
-      product {
-        name
-      }
+interface BenchmarkChartProps {
+  results: {
+    result: number
+    description?: string
+    product: {
+      name: string
     }
-  }
-`
+  }[]
+  targetProductName?: string
+}
 
-export function BenchmarkChart({ targetProduct }: { targetProduct?: string }) {
-  const searchParams = useSearchParams()
-  const benchmarkSlug = searchParams.get('benchmark')
-  const productsString = searchParams.get('products')
-  const productsSlugs = productsString?.split('.')
-
+export function BenchmarkChart({
+  results,
+  targetProductName,
+}: BenchmarkChartProps) {
   const isSm = useMediaQuery('(max-width: 640px)')
   const { theme, systemTheme } = useTheme()
-
-  const { data, loading: isLoading } = useQuery<{
-    benchmarkResults: {
-      result: number
-      description?: string
-      product: {
-        name: string
-      }
-    }[]
-  }>(GET_BENCHMARK_RESULTS, {
-    variables: {
-      benchmarkSlug,
-      productsSlugs,
-    },
-  })
-
-  const results = data?.benchmarkResults ?? []
 
   const createYAxisString = (result: (typeof results)[number]) => {
     const MAX_STRING_LENGTH = isSm ? 65 : 100
@@ -74,13 +48,6 @@ export function BenchmarkChart({ targetProduct }: { targetProduct?: string }) {
       .concat('...')
       .concat(descriptionString)
   }
-
-  if (isLoading)
-    return (
-      <div className="flex flex-1 justify-center">
-        <Icons.Spinner className="h-4 w-4 animate-spin" />
-      </div>
-    )
 
   if (results.length === 0)
     return (
@@ -141,7 +108,7 @@ export function BenchmarkChart({ targetProduct }: { targetProduct?: string }) {
 
         <Tooltip
           cursor={false}
-          content={<RenderCustomTooltip targetProduct={targetProduct} />}
+          content={<RenderCustomTooltip targetProduct={targetProductName} />}
         />
         <CartesianGrid
           stroke={
@@ -160,16 +127,15 @@ export function BenchmarkChart({ targetProduct }: { targetProduct?: string }) {
           fill="#6d28d9"
         >
           {results?.map((result, index) => (
-            <>
-              <Cell
-                fill={
-                  targetProduct && result.product.name.includes(targetProduct)
-                    ? '#d97706'
-                    : '#6d28d9'
-                }
-                key={`cell-${index}`}
-              />
-            </>
+            <Cell
+              fill={
+                targetProductName &&
+                result.product.name.includes(targetProductName)
+                  ? '#d97706'
+                  : '#6d28d9'
+              }
+              key={`cell-${index}`}
+            />
           ))}
         </Bar>
       </BarChart>

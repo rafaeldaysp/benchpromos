@@ -50,16 +50,24 @@ export function ProductSelect({ products }: ProductSelectProps) {
   const [query, setQuery] = React.useState('')
   const debouncedQuery = useDebounce(query, 200)
   const searchParams = useSearchParams()
+  const pathname = usePathname()
   const searchParamsProductsSlugs =
     searchParams.get('products')?.split('.') ?? []
   const [selectedProducts, setSelectedProducts] = React.useState<
     SearchedProduct[]
-  >(products.filter((p) => searchParamsProductsSlugs.includes(p.slug)))
+  >([])
   const [displayedProducts, setDisplayedProducts] = React.useState<
     SearchedProduct[]
   >([])
   const router = useRouter()
   const { createQueryString } = useQueryString()
+
+  React.useEffect(() => {
+    setSelectedProducts(
+      products.filter((p) => searchParamsProductsSlugs.includes(p.slug)),
+    )
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname])
 
   React.useEffect(() => {
     if (debouncedQuery.trim().length === 0) setDisplayedProducts(products)
@@ -84,7 +92,6 @@ export function ProductSelect({ products }: ProductSelectProps) {
     setIsOpen(false)
     callback()
   }, [])
-  const pathname = usePathname()
   return (
     <>
       <Button
