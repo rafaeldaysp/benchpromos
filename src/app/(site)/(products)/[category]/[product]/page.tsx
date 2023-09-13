@@ -3,10 +3,21 @@ import { gql } from '@apollo/client'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
 
+import { AlertPrice } from '@/components/alert-price'
 import { CopyButton } from '@/components/copy-button'
 import { Icons } from '@/components/icons'
-import { buttonVariants } from '@/components/ui/button'
-import { Card, CardHeader } from '@/components/ui/card'
+import { Button, buttonVariants } from '@/components/ui/button'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+import { Dialog, DialogTrigger } from '@/components/ui/dialog'
+import { Label } from '@/components/ui/label'
+import { Switch } from '@/components/ui/switch'
 import { cn } from '@/lib/utils'
 import {
   type Cashback,
@@ -21,6 +32,7 @@ import { priceCalculator } from '@/utils/price-calculator'
 const GET_PRODUCT = gql`
   query GetProduct($input: GetProductInput!) {
     product(getProductInput: $input) {
+      id
       name
       imageUrl
       deals {
@@ -159,9 +171,37 @@ export default async function ProductPage({ params }: ProductPageProps) {
             </div>
           </div>
         </div>
-        <Card>
-          <CardHeader>features</CardHeader>
-        </Card>
+        <div>
+          <Dialog>
+            <Card>
+              <CardHeader></CardHeader>
+              <CardContent>
+                <div className="flex items-start space-x-2">
+                  <Icons.BellRing className="h-4 w-4" />
+                  <Label
+                    htmlFor="alert"
+                    className="flex flex-1 flex-col space-y-1"
+                  >
+                    <CardTitle>Quer pagar mais barato?</CardTitle>
+                    <CardDescription>
+                      Avisamos quando o preço baixar
+                    </CardDescription>
+                  </Label>
+                  <DialogTrigger>
+                    <Switch id="alert" />
+                  </DialogTrigger>
+                </div>
+              </CardContent>
+              <CardFooter>
+                <DialogTrigger asChild>
+                  <Button variant="outline">Editar Alerta</Button>
+                </DialogTrigger>
+              </CardFooter>
+            </Card>
+
+            <AlertPrice productId={product.id} />
+          </Dialog>
+        </div>
       </div>
     </div>
   )

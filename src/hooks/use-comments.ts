@@ -321,8 +321,6 @@ export function useComments({
         id: commentId,
         fields: {
           likes(existingLikes = []) {
-            console.log(existingLikes)
-
             const userLiked = existingLikes.some(
               (existingLike: { user: { __ref: string } }) =>
                 existingLike.user.__ref === userId,

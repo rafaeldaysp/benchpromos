@@ -5,6 +5,7 @@ import {
   ArrowUpDown,
   BarChart4,
   Bell,
+  BellRing,
   Bookmark,
   Check,
   ChevronDown,
@@ -103,6 +104,7 @@ export const Icons = {
   PcCase,
   BarChart4,
   AlignLeft,
+  BellRing,
   Google: ({ ...props }: LucideProps) => (
     <svg
       aria-hidden="true"

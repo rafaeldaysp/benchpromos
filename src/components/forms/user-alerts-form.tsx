@@ -9,8 +9,12 @@ import { toast } from 'sonner'
 import type * as z from 'zod'
 
 import { getCurrentUserToken } from '@/app/_actions/user'
+import { AlertPrice } from '@/components/alert-price'
+import { Icons } from '@/components/icons'
 import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardFooter, CardTitle } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
+import { Dialog, DialogTrigger } from '@/components/ui/dialog'
 import {
   Form,
   FormControl,
@@ -23,10 +27,6 @@ import {
 import { userAlertsSchema } from '@/lib/validations/user-alerts'
 import { type Category } from '@/types'
 import { priceFormatter } from '@/utils/formatter'
-import { Icons } from '../icons'
-import { PriceInput } from '../price-input'
-import { Card, CardContent, CardFooter, CardTitle } from '../ui/card'
-import { Dialog, DialogContent, DialogTrigger } from '../ui/dialog'
 
 const UPDATE_USER_ALERTS = gql`
   mutation UpdateUserAlerts($input: UpdateUserAlertsInput!) {
@@ -235,19 +235,11 @@ export function AlertsForm({ categories, initialAlerts }: AlertsFormProps) {
                             </DialogTrigger>
                           </CardFooter>
                         </Card>
-                        <DialogContent>
-                          <FormControl>
-                            <PriceInput
-                              className="text-lg font-semibold text-foreground"
-                              value={
-                                field.value ? field.value / 100 : undefined
-                              }
-                              onValueChange={({ floatValue }) =>
-                                field.onChange(~~((floatValue ?? 0) * 100))
-                              }
-                            />
-                          </FormControl>
-                        </DialogContent>
+
+                        <AlertPrice
+                          mode="update"
+                          productId={subscription.product.id}
+                        />
                       </Dialog>
                       <FormMessage />
                     </FormItem>
