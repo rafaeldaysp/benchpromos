@@ -29,8 +29,8 @@ import { type Category } from '@/types'
 import { priceFormatter } from '@/utils/formatter'
 
 const UPDATE_USER_ALERTS = gql`
-  mutation UpdateUserAlerts($input: UpdateUserAlertsInput!) {
-    updateUserAlerts(updateUserAlertsInput: $input) {
+  mutation UpdateUserAlerts($input: UpdateAllAlertsInput!) {
+    updateAllAlerts(updateAllAlertsInput: $input) {
       email
     }
   }

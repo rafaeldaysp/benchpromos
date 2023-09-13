@@ -61,7 +61,7 @@ export default async function AlertsPage() {
   })
 
   const categories = data?.categories ?? []
-  const initialAlerts = data?.userAlerts
+  const initialAlerts = data?.userAlerts ?? []
 
   return (
     <div className="space-y-6">
