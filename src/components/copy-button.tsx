@@ -16,7 +16,9 @@ export function CopyButton({
     <Button
       variant={variant}
       size="sm"
-      onClick={() => {
+      onClick={(e) => {
+        e.preventDefault()
+        e.stopPropagation()
         if (typeof window === 'undefined') return
         setIsCopied(true)
         void window.navigator.clipboard.writeText(value?.toString() ?? '')

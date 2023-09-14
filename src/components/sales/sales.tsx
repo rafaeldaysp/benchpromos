@@ -74,15 +74,14 @@ export function Sales({ user, viewport }: SalesProps) {
   return (
     <div className="my-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {sales.map((sale) => {
-        if (isSm || viewport === 'mobile')
-          return (
-            <SmallSaleCard
-              key={sale.id}
-              sale={sale}
-              user={user}
-              apolloClient={client}
-            />
-          )
+        return (
+          <SmallSaleCard
+            key={sale.id}
+            sale={sale}
+            user={user}
+            apolloClient={client}
+          />
+        )
         return (
           <SaleCard
             key={sale.id}

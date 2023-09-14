@@ -50,11 +50,11 @@ export function HighlightSaleToggle({ sale, user }: HighlightProps) {
   return (
     <Button
       variant={'ghost'}
-      className="flex h-fit w-full cursor-default select-none items-center justify-start rounded-sm px-2 py-1.5 text-sm outline-none"
+      className="flex h-fit w-full cursor-default select-none items-center justify-start rounded-sm px-2 py-1.5 text-sm font-normal outline-none"
       onClick={() => handleToggleHighlight(sale.id, user?.isAdmin)}
     >
       <Icons.Bookmark className="mr-2 h-4 w-4" />
-      {sale.highlight ? 'Rebaixar' : 'Destacar'}
+      {sale.highlight ? 'Desmarcar' : 'Marcar'}
     </Button>
   )
 }

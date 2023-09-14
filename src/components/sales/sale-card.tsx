@@ -102,7 +102,7 @@ export function SaleCard({
           </CardHeader>
 
           <CardContent className="flex-1 space-y-2.5">
-            <CardTitle className="line-clamp-3 space-x-1">
+            <CardTitle className="line-clamp-3">
               <Link href={`/sale/${sale.slug}/${sale.id}`}>{sale.title}</Link>
             </CardTitle>
 
