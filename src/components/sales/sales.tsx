@@ -5,20 +5,16 @@ import * as React from 'react'
 import { InView } from 'react-intersection-observer'
 
 import { SaleCard } from '@/components/sales/sale-card'
-import { SmallSaleCard } from '@/components/sales/small-sale-card'
 import { Skeleton } from '@/components/ui/skeleton'
-import { useMediaQuery } from '@/hooks/use-media-query'
 import { GET_SALES, type GetSalesQuery } from '@/queries'
 
 const SALES_PER_SCROLL = 1
 
 interface SalesProps {
   user?: { id: string; isAdmin: boolean }
-  viewport: 'mobile' | 'desktop'
 }
 
-export function Sales({ user, viewport }: SalesProps) {
-  const isSm = useMediaQuery('(max-width: 640px)')
+export function Sales({ user }: SalesProps) {
   const [isPending, startTransition] = React.useTransition()
   const [hasMoreSales, setHasMoreSales] = React.useState(true)
 
@@ -73,24 +69,9 @@ export function Sales({ user, viewport }: SalesProps) {
 
   return (
     <div className="my-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-      {sales.map((sale) => {
-        return (
-          <SmallSaleCard
-            key={sale.id}
-            sale={sale}
-            user={user}
-            apolloClient={client}
-          />
-        )
-        return (
-          <SaleCard
-            key={sale.id}
-            sale={sale}
-            user={user}
-            apolloClient={client}
-          />
-        )
-      })}
+      {sales.map((sale) => (
+        <SaleCard key={sale.id} sale={sale} user={user} apolloClient={client} />
+      ))}
       {isPending ? (
         Array.from({ length: SALES_PER_SCROLL }).map((_, i) => (
           <Skeleton key={i} className="h-full w-full" />
