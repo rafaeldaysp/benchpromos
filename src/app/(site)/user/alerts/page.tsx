@@ -3,7 +3,8 @@ import { gql } from '@apollo/client'
 import { notFound } from 'next/navigation'
 
 import { getCurrentUser } from '@/app/_actions/user'
-import { AlertsForm } from '@/components/forms/user-alerts-form'
+import { UserCategoryAlertsForm } from '@/components/forms/user-category-alerts-form'
+import { UserProductAlertCard } from '@/components/forms/user-product-alert-card'
 import { Separator } from '@/components/ui/separator'
 import { AlertsPermission } from '@/components/user/user-alerts-permission'
 import { type Category } from '@/types'
@@ -61,7 +62,8 @@ export default async function AlertsPage() {
   })
 
   const categories = data?.categories ?? []
-  const initialAlerts = data?.userAlerts ?? []
+  const categoriesAlerts = data?.userAlerts.selectedCategories ?? []
+  const productsAlerts = data?.userAlerts.subscribedProducts ?? []
 
   return (
     <div className="space-y-6">
@@ -73,7 +75,30 @@ export default async function AlertsPage() {
       </div>
       <Separator />
       <AlertsPermission />
-      <AlertsForm categories={categories} initialAlerts={initialAlerts} />
+      <UserCategoryAlertsForm
+        selectedCategories={categoriesAlerts}
+        categories={categories}
+      />
+      <fieldset className="space-y-2">
+        <div className="mb-4">
+          <h3 className="text-base font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+            Alertas por produto
+          </h3>
+          <h6 className="text-[0.8rem] text-muted-foreground">
+            Receba notificações quando o(s) produto(s) alcançar(em) o preço
+            desejado.
+          </h6>
+        </div>
+        <div className="grid flex-1 grid-cols-1 gap-2 sm:grid-cols-2 ">
+          {productsAlerts.map((productAlert) => (
+            <UserProductAlertCard
+              key={productAlert.product.id}
+              product={productAlert.product}
+              subscribedPrice={productAlert.subscribedPrice}
+            />
+          ))}
+        </div>
+      </fieldset>
     </div>
   )
 }

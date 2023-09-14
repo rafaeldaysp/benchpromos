@@ -28,10 +28,14 @@ import {
 } from '@/types'
 import { priceFormatter } from '@/utils/formatter'
 import { priceCalculator } from '@/utils/price-calculator'
+import { getCurrentUser } from '@/app/_actions/user'
 
 const GET_PRODUCT = gql`
-  query GetProduct($input: GetProductInput!) {
-    product(getProductInput: $input) {
+  query GetProduct(
+    $productInput: GetProductInput!
+    $userAlertInput: UserProductAlertInput!
+  ) {
+    product(getProductInput: $productInput) {
       id
       name
       imageUrl
@@ -53,6 +57,9 @@ const GET_PRODUCT = gql`
         }
       }
     }
+    userProductAlert(userProductAlertInput: $userAlertInput) {
+      price
+    }
   }
 `
 
@@ -65,6 +72,8 @@ interface ProductPageProps {
 export default async function ProductPage({ params }: ProductPageProps) {
   const { product: slug } = params
 
+  const user = await getCurrentUser()
+
   const { data, errors } = await getClient().query<{
     product: Product & {
       deals: (Deal & {
@@ -73,12 +82,19 @@ export default async function ProductPage({ params }: ProductPageProps) {
         cashback: Cashback
       })[]
     }
+    userProductAlert: {
+      price: number
+    } | null
   }>({
     query: GET_PRODUCT,
     variables: {
-      input: {
+      productInput: {
         identifier: slug,
         hasDeals: true,
+      },
+      userAlertInput: {
+        identifier: slug,
+        userId: user?.id,
       },
     },
     errorPolicy: 'all',
@@ -88,6 +104,9 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   const product = data.product
   const bestDeal = product.deals[0]
+  const userAlert = data.userProductAlert?.price
+
+  console.log(userAlert)
 
   return (
     <div className="mx-auto px-4 py-10 sm:container">
