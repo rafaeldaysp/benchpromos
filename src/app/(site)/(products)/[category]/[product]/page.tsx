@@ -1,10 +1,11 @@
 import { getClient } from '@/lib/apollo'
 import { gql } from '@apollo/client'
 import Image from 'next/image'
+import Link from 'next/link'
 import { notFound } from 'next/navigation'
 
+import { getCurrentUser } from '@/app/_actions/user'
 import { AlertPrice } from '@/components/alert-price'
-import { CopyButton } from '@/components/copy-button'
 import { Icons } from '@/components/icons'
 import { Button, buttonVariants } from '@/components/ui/button'
 import {
@@ -12,7 +13,6 @@ import {
   CardContent,
   CardDescription,
   CardFooter,
-  CardHeader,
   CardTitle,
 } from '@/components/ui/card'
 import { Dialog, DialogTrigger } from '@/components/ui/dialog'
@@ -26,9 +26,8 @@ import {
   type Product,
   type Retailer,
 } from '@/types'
-import { priceFormatter } from '@/utils/formatter'
+import { couponFormatter, priceFormatter } from '@/utils/formatter'
 import { priceCalculator } from '@/utils/price-calculator'
-import { getCurrentUser } from '@/app/_actions/user'
 
 const GET_PRODUCT = gql`
   query GetProduct(
@@ -48,6 +47,7 @@ const GET_PRODUCT = gql`
           name
         }
         coupon {
+          availability
           discount
           code
         }
@@ -106,79 +106,118 @@ export default async function ProductPage({ params }: ProductPageProps) {
   const bestDeal = product.deals[0]
   const userAlert = data.userProductAlert?.price
 
-  console.log(userAlert)
-
   return (
     <div className="mx-auto px-4 py-10 sm:container">
-      <div className="grid grid-cols-3">
-        <div className="col-span-2 space-y-4">
-          <strong className="text-lg">{product.name}</strong>
-          <div className="mx-auto flex gap-4">
-            <div className="relative aspect-square w-5/12">
-              <Image
-                src={product.imageUrl}
-                alt={product.name}
-                className="rounded-lg object-contain"
-                fill
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              />
+      <main className="w-full space-y-4 md:gap-x-8 lg:grid lg:grid-cols-3 lg:space-y-0">
+        <div className="space-y-4 md:col-span-2">
+          <strong className="line-clamp-2 leading-none md:text-lg">
+            {product.name}
+          </strong>
+          <div className="flex flex-col md:flex-row lg:gap-8 xl:gap-0">
+            <div className="flex w-full justify-center md:w-1/2 md:justify-center">
+              <div className="relative aspect-square w-1/2 md:w-3/4 lg:w-full xl:w-3/4">
+                <Image
+                  src={product.imageUrl}
+                  alt={product.name}
+                  className="rounded-lg object-contain"
+                  fill
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                />
+              </div>
             </div>
-            <div className="flex flex-col justify-center space-y-2">
-              <div className="flex flex-col">
-                <p className="text-muted-foreground">
-                  menor preço via{' '}
-                  <span className="text-primary">
-                    {' '}
-                    {bestDeal.retailer.name}
-                  </span>
-                </p>
-                <strong className="text-3xl">
-                  {priceFormatter.format(
-                    priceCalculator(
-                      bestDeal.price,
-                      bestDeal.coupon?.discount,
-                      bestDeal.cashback?.value,
-                    ) / 100,
-                  )}
-                </strong>
-                {bestDeal.installments && bestDeal.totalInstallmentPrice && (
-                  <span className="text-muted-foreground">
-                    ou{' '}
-                    <strong>
+            <div className="flex flex-col justify-start space-y-2 md:flex-1 md:items-center">
+              <div className="flex w-full flex-col gap-y-2 text-sm">
+                <div className="flex flex-col gap-y-1">
+                  <p className="text-muted-foreground">
+                    menor preço via{' '}
+                    <strong className="text-primary">
+                      {bestDeal.retailer.name}
+                    </strong>
+                  </p>
+
+                  <p>
+                    <strong className="text-3xl">
                       {priceFormatter.format(
-                        bestDeal.totalInstallmentPrice / 100,
+                        priceCalculator(
+                          bestDeal.price,
+                          bestDeal.coupon?.availability
+                            ? bestDeal.coupon.discount
+                            : undefined,
+                          bestDeal.cashback?.value,
+                        ) / 100,
                       )}
                     </strong>{' '}
-                    em até <strong>{bestDeal.installments}x</strong> de{' '}
-                    <strong>
-                      {priceFormatter.format(
-                        bestDeal.totalInstallmentPrice /
-                          (100 * bestDeal.installments),
-                      )}
-                    </strong>
-                  </span>
-                )}
-                {bestDeal.coupon && (
-                  <div>
-                    <span className="text-muted-foreground">Com cupom</span>
-                    <div className="flex items-center overflow-hidden rounded-full border bg-amber-200 pl-2 text-black dark:bg-amber-200">
-                      <Icons.Tag className="mr-2 h-4 w-4" />
-                      <span className="flex-1 overflow-hidden text-sm font-medium uppercase tracking-widest">
-                        {bestDeal.coupon.code}
+                    <span className="text-muted-foreground">à vista </span>
+                  </p>
+
+                  {!!bestDeal.installments &&
+                    !!bestDeal.totalInstallmentPrice && (
+                      <span className="text-muted-foreground">
+                        ou{' '}
+                        <strong className="text-base">
+                          {priceFormatter.format(
+                            bestDeal.totalInstallmentPrice / 100,
+                          )}
+                        </strong>{' '}
+                        em{' '}
+                        <strong className="text-base">
+                          {bestDeal.installments}x
+                        </strong>{' '}
+                        <p className="hidden sm:inline">
+                          {' '}
+                          de{' '}
+                          <strong className="text-base">
+                            {priceFormatter.format(
+                              bestDeal.totalInstallmentPrice /
+                                (100 * bestDeal.installments),
+                            )}
+                          </strong>
+                        </p>
                       </span>
-                      <CopyButton
-                        value={bestDeal.coupon.code}
-                        variant="ghost"
-                        className="hover:bg-inherit hover:text-inherit"
-                      />
+                    )}
+                </div>
+                {bestDeal.coupon?.availability && (
+                  <Button
+                    variant={'outline'}
+                    className="flex h-fit w-full items-center justify-between gap-2 px-4"
+                  >
+                    <div className="flex flex-col items-start">
+                      <strong className="flex items-center">
+                        <Icons.Tag className="mr-1 h-4 w-4 fill-auxiliary text-auxiliary" />
+                        Cupom disponível
+                      </strong>
+                      <span className="text-muted-foreground">
+                        {couponFormatter(bestDeal.coupon.discount)} de desconto
+                        na loja
+                      </span>
                     </div>
-                  </div>
+                    <Icons.ChevronRight className="h-4 w-4" />
+                  </Button>
+                )}
+
+                {bestDeal.cashback && (
+                  <Button
+                    variant={'outline'}
+                    className="flex h-fit w-full items-center justify-between gap-2 px-4"
+                  >
+                    <div className="flex flex-col items-start">
+                      <strong className="flex items-center">
+                        <Icons.StarFilled className="mr-1 h-4 w-4 text-auxiliary" />
+                        Cashback
+                      </strong>
+                      <span className="text-muted-foreground">
+                        {bestDeal.cashback.value}% de volta com{' '}
+                        {bestDeal.cashback.provider}
+                      </span>
+                    </div>
+                    <Icons.ChevronRight className="h-4 w-4" />
+                  </Button>
                 )}
               </div>
               <a
                 className={cn(
                   buttonVariants(),
-                  'flex w-full cursor-pointer rounded-full',
+                  'flex h-10 w-full cursor-pointer',
                 )}
                 href={bestDeal.url}
                 target="_blank"
@@ -190,11 +229,10 @@ export default async function ProductPage({ params }: ProductPageProps) {
             </div>
           </div>
         </div>
-        <div>
+        <section className="flex w-full flex-col gap-y-2">
           <Dialog>
             <Card>
-              <CardHeader></CardHeader>
-              <CardContent>
+              <CardContent className="pb-4 pt-6">
                 <div className="flex items-start space-x-2">
                   <Icons.BellRing className="h-4 w-4" />
                   <Label
@@ -206,22 +244,50 @@ export default async function ProductPage({ params }: ProductPageProps) {
                       Avisamos quando o preço baixar
                     </CardDescription>
                   </Label>
-                  <DialogTrigger>
-                    <Switch id="alert" />
+                  <DialogTrigger asChild>
+                    <div>
+                      <Switch id="alert" />
+                    </div>
                   </DialogTrigger>
                 </div>
               </CardContent>
               <CardFooter>
                 <DialogTrigger asChild>
-                  <Button variant="outline">Editar Alerta</Button>
+                  <Button variant="outline">Editar alerta</Button>
                 </DialogTrigger>
               </CardFooter>
             </Card>
 
             <AlertPrice productId={product.id} />
           </Dialog>
-        </div>
-      </div>
+
+          <Card>
+            <CardContent className="pb-4 pt-6">
+              <div className="flex items-start space-x-2">
+                <Icons.BellRing className="h-4 w-4" />
+                <Label
+                  htmlFor="alert"
+                  className="flex flex-1 flex-col space-y-1"
+                >
+                  <CardTitle>O preço está muito bom</CardTitle>
+                  <CardDescription>
+                    Com base no histórico dos últimos 30 dias, o preço está
+                    muito bom
+                  </CardDescription>
+                </Label>
+              </div>
+            </CardContent>
+            <CardFooter>
+              <Link
+                href={'#historico'}
+                className={cn(buttonVariants({ variant: 'outline' }))}
+              >
+                Ver histórico
+              </Link>
+            </CardFooter>
+          </Card>
+        </section>
+      </main>
     </div>
   )
 }
