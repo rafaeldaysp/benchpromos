@@ -129,10 +129,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
               <div className="flex w-full flex-col gap-y-2 text-sm">
                 <div className="flex flex-col gap-y-1">
                   <p className="text-muted-foreground">
-                    menor preço via{' '}
-                    <strong className="text-primary">
-                      {bestDeal.retailer.name}
-                    </strong>
+                    menor preço via <strong>{bestDeal.retailer.name}</strong>
                   </p>
 
                   <p>
@@ -182,13 +179,13 @@ export default async function ProductPage({ params }: ProductPageProps) {
                     className="flex h-fit w-full items-center justify-between gap-2 px-4"
                   >
                     <div className="flex flex-col items-start">
-                      <strong className="flex items-center">
+                      <span className="flex items-center font-semibold">
                         <Icons.Tag className="mr-1 h-4 w-4 fill-auxiliary text-auxiliary" />
                         Cupom disponível
-                      </strong>
+                      </span>
                       <span className="text-muted-foreground">
                         {couponFormatter(bestDeal.coupon.discount)} de desconto
-                        na loja
+                        neste produto
                       </span>
                     </div>
                     <Icons.ChevronRight className="h-4 w-4" />
@@ -201,10 +198,10 @@ export default async function ProductPage({ params }: ProductPageProps) {
                     className="flex h-fit w-full items-center justify-between gap-2 px-4"
                   >
                     <div className="flex flex-col items-start">
-                      <strong className="flex items-center">
+                      <span className="flex items-center font-semibold">
                         <Icons.StarFilled className="mr-1 h-4 w-4 text-auxiliary" />
                         Cashback
-                      </strong>
+                      </span>
                       <span className="text-muted-foreground">
                         {bestDeal.cashback.value}% de volta com{' '}
                         {bestDeal.cashback.provider}
@@ -264,7 +261,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
           <Card>
             <CardContent className="pb-4 pt-6">
               <div className="flex items-start space-x-2">
-                <Icons.BellRing className="h-4 w-4" />
+                <Icons.Check className="h-4 w-4" />
                 <Label
                   htmlFor="alert"
                   className="flex flex-1 flex-col space-y-1"
