@@ -16,6 +16,7 @@ import {
   CircleDollarSign,
   Copy,
   Crown,
+  DollarSign,
   Edit2,
   ExternalLink,
   Eye,
@@ -25,6 +26,7 @@ import {
   Heart,
   Image,
   Laptop,
+  LineChart,
   Loader2,
   Lock,
   LogOut,
@@ -39,7 +41,9 @@ import {
   PcCase,
   Plus,
   PlusCircle,
+  Receipt,
   Reply,
+  ScrollText,
   Search,
   Send,
   SlidersHorizontal,
@@ -50,6 +54,7 @@ import {
   Trash2,
   User2,
   X,
+  YoutubeIcon,
   type LucideProps,
 } from 'lucide-react'
 
@@ -105,6 +110,11 @@ export const Icons = {
   BarChart4,
   AlignLeft,
   BellRing,
+  DollarSign,
+  LineChart,
+  ScrollText,
+  Receipt,
+  YoutubeIcon,
   Google: ({ ...props }: LucideProps) => (
     <svg
       aria-hidden="true"
