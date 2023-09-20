@@ -49,25 +49,28 @@ const options: {
 export function ProductNavbar() {
   return (
     <ScrollArea className="w-full">
-      <div className="w-max space-x-12 font-medium">
+      <div className="w-max space-x-4 rounded-lg border-none bg-muted p-1 font-medium sm:space-x-4">
         {options.map((option) => (
           <Link
             key={option.value}
             className={cn(
-              buttonVariants({ variant: 'link' }),
-              'px-0 text-foreground',
+              buttonVariants({ variant: 'ghost' }),
+              'h-fit px-2 py-1 font-medium text-muted-foreground',
+              {
+                'bg-background text-foreground shadow':
+                  option.value === 'precos',
+              },
             )}
             href={`#${option.value}`}
           >
-            {option.icon && (
-              <option.icon className="mr-2 h-4 w-4 text-auxiliary" />
-            )}
+            {/* {option.icon && (
+              <option.icon className="mr-1 h-3.5 w-3.5 text-auxiliary" />
+            )} */}
             {option.label}
           </Link>
         ))}
       </div>
-      <ScrollBar orientation="horizontal" />
-      <Separator className="" />
+      <ScrollBar orientation="horizontal" className="fill-primary" />
     </ScrollArea>
   )
 }
