@@ -239,16 +239,13 @@ export default async function ProductPage({ params }: ProductPageProps) {
           </div>
         </div>
         <aside className="flex w-full flex-col gap-y-2 xl:col-span-2">
-          <AlertCard productId={product.id} />
+          <AlertCard productId={product.id} switchId="alert-top" />
 
           <Card>
             <CardContent className="py-4">
               <div className="flex items-start space-x-2">
                 <Icons.Check className="h-4 w-4 text-auxiliary" />
-                <Label
-                  htmlFor="alert"
-                  className="flex flex-1 flex-col space-y-1"
-                >
+                <Label className="flex flex-1 flex-col space-y-1">
                   <CardTitle>O preço está muito bom</CardTitle>
                   <CardDescription>
                     Com base no histórico dos últimos 30 dias, o preço está
@@ -310,7 +307,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
         <Separator className="my-4" />
 
         <ScrollArea
-          className={cn('rounded-md border', {
+          className={cn('rounded-xl border', {
             'h-[600px]': product.deals.length > 2,
           })}
         >
@@ -457,15 +454,12 @@ export default async function ProductPage({ params }: ProductPageProps) {
             <PriceChart data={product.history} />
           </div>
           <aside className="flex flex-col gap-y-2 xl:col-span-2">
-            <AlertCard productId={product.id} />
+            <AlertCard productId={product.id} switchId="alert-middle" />
             <Card>
               <CardContent className="py-4">
                 <div className="flex items-start space-x-2">
                   <Icons.Check className="h-4 w-4 text-auxiliary" />
-                  <Label
-                    htmlFor="alert"
-                    className="flex flex-1 flex-col space-y-1"
-                  >
+                  <Label className="flex flex-1 flex-col space-y-1">
                     <CardTitle>O preço está muito bom</CardTitle>
                     <CardDescription>
                       Com base no histórico dos últimos 30 dias, o preço está
@@ -494,20 +488,29 @@ export default async function ProductPage({ params }: ProductPageProps) {
   )
 }
 
-function AlertCard({ productId }: { productId: string }) {
+function AlertCard({
+  productId,
+  switchId,
+}: {
+  productId: string
+  switchId: string
+}) {
   return (
     <Dialog>
       <Card id="alert-card">
         <CardContent className="py-4">
           <div className="flex items-start space-x-2">
             <Icons.BellRing className="h-4 w-4 text-auxiliary" />
-            <Label htmlFor="alert" className="flex flex-1 flex-col space-y-1">
+            <Label
+              htmlFor={switchId}
+              className="flex flex-1 flex-col space-y-1"
+            >
               <CardTitle>Quer pagar mais barato?</CardTitle>
               <CardDescription>Avisamos quando o preço baixar</CardDescription>
             </Label>
             <DialogTrigger asChild>
               <div>
-                <Switch id="alert" />
+                <Switch id={switchId} />
               </div>
             </DialogTrigger>
           </div>
