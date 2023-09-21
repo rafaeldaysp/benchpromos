@@ -3,7 +3,6 @@
 import { type LucideIcon } from 'lucide-react'
 import Link from 'next/link'
 
-import { Separator } from '@/components/ui/separator'
 import { cn } from '@/lib/utils'
 import { Icons } from './icons'
 import { buttonVariants } from './ui/button'
@@ -40,6 +39,11 @@ const options: {
     icon: Icons.Receipt,
   },
   {
+    label: 'Benchmarks',
+    value: 'benchmarks',
+    icon: Icons.BarChart4,
+  },
+  {
     label: 'Review',
     value: 'review',
     icon: Icons.YoutubeIcon,
@@ -48,14 +52,14 @@ const options: {
 
 export function ProductNavbar() {
   return (
-    <ScrollArea className="w-full">
-      <div className="w-max space-x-4 rounded-lg border-none bg-muted p-1 font-medium sm:space-x-4">
+    <ScrollArea className="w-full bg-background">
+      <div className="w-max space-x-2 p-1 font-medium">
         {options.map((option) => (
           <Link
             key={option.value}
             className={cn(
               buttonVariants({ variant: 'ghost' }),
-              'h-fit px-2 py-1 font-medium text-muted-foreground',
+              'h-fit font-medium text-muted-foreground',
               {
                 'bg-background text-foreground shadow':
                   option.value === 'precos',
@@ -63,14 +67,12 @@ export function ProductNavbar() {
             )}
             href={`#${option.value}`}
           >
-            {/* {option.icon && (
-              <option.icon className="mr-1 h-3.5 w-3.5 text-auxiliary" />
-            )} */}
+            {option.icon && <option.icon className="mr-1.5 h-3.5 w-3.5" />}
             {option.label}
           </Link>
         ))}
       </div>
-      <ScrollBar orientation="horizontal" className="fill-primary" />
+      <ScrollBar orientation="horizontal" />
     </ScrollArea>
   )
 }

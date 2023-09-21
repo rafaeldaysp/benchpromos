@@ -1,6 +1,7 @@
 'use client'
 
 import { useTheme } from 'next-themes'
+import * as React from 'react'
 
 import { useMediaQuery } from '@/hooks/use-media-query'
 import { cn } from '@/lib/utils'
@@ -34,6 +35,14 @@ export function BenchmarkChart({
 }: BenchmarkChartProps) {
   const isSm = useMediaQuery('(max-width: 640px)')
   const { theme, systemTheme } = useTheme()
+  const [selected, setSelected] = React.useState(
+    targetProductName ? [targetProductName] : [],
+  )
+
+  const accentColor =
+    theme === 'dark' || (theme === 'system' && systemTheme === 'dark')
+      ? '#a3a3a3'
+      : '#737373'
 
   const createYAxisString = (result: (typeof results)[number]) => {
     const MAX_STRING_LENGTH = isSm ? 65 : 100
@@ -75,6 +84,17 @@ export function BenchmarkChart({
         barSize={isSm ? 25 : 30}
         layout="vertical"
       >
+        <defs>
+          <linearGradient id="primaryColor" x1="1" y1="0" x2="0" y2="0">
+            <stop offset="0%" stopColor="#6d28d9" stopOpacity={1} />
+            <stop offset="75%" stopColor="#6d28d9" stopOpacity={1} />
+          </linearGradient>
+          <linearGradient id="auxiliaryColor" x1="1" y1="0" x2="0" y2="0">
+            <stop offset="0%" stopColor="#d97706" stopOpacity={1} />
+            <stop offset="75%" stopColor="#d97706" stopOpacity={1} />
+          </linearGradient>
+        </defs>
+
         <XAxis
           allowDataOverflow
           dataKey="result"
@@ -85,54 +105,49 @@ export function BenchmarkChart({
           axisLine={false}
           fontSize={isSm ? 10 : 14}
           fontWeight={500}
-          stroke={
-            theme === 'dark' || (theme === 'system' && systemTheme === 'dark')
-              ? '#fafafa'
-              : '#0a0a0a'
-          }
+          stroke={accentColor}
         />
         <YAxis
           dataKey={createYAxisString}
           tickLine={false}
           width={isSm ? 200 : 350}
           type="category"
-          stroke={
-            theme === 'dark' || (theme === 'system' && systemTheme === 'dark')
-              ? '#fafafa'
-              : '#0a0a0a'
-          }
+          stroke={accentColor}
           fontSize={isSm ? 10 : 14}
           fontWeight={500}
           axisLine={false}
         />
 
-        <Tooltip
+        {/* <Tooltip
           cursor={false}
           content={<RenderCustomTooltip targetProduct={targetProductName} />}
-        />
+        /> */}
         <CartesianGrid
-          stroke={
-            theme === 'dark' || (theme === 'system' && systemTheme === 'dark')
-              ? '#fafafa'
-              : '#0a0a0a'
-          }
+          stroke={accentColor}
           strokeDasharray="3 3"
           horizontal={false}
         />
         <Bar
           dataKey="result"
+          className="cursor-pointer"
           label={RenderCustomBarLabel}
           name="Resultado"
           radius={[0, 4, 4, 0]}
-          fill="#6d28d9"
+          onClick={(data) => {
+            const productName = data.product.name as string
+            selected?.includes(productName)
+              ? setSelected((prev) =>
+                  prev.filter((name) => name !== productName),
+                )
+              : setSelected((prev) => [...prev, productName])
+          }}
         >
           {results?.map((result, index) => (
             <Cell
               fill={
-                targetProductName &&
-                result.product.name.includes(targetProductName)
-                  ? '#d97706'
-                  : '#6d28d9'
+                selected.includes(result.product.name)
+                  ? 'url(#auxiliaryColor)'
+                  : 'url(#primaryColor)'
               }
               key={`cell-${index}`}
             />
@@ -148,7 +163,7 @@ const RenderCustomBarLabel = ({ x, y, width, height, value }: LabelProps) => {
     <text
       x={Number(x) + Number(width) - 20}
       y={Number(y) + Number(height) / 2 + 5}
-      className="fill-primary-foreground text-xs font-bold sm:text-base"
+      className="select-none fill-primary-foreground text-xs font-bold sm:text-base"
       textAnchor="middle"
     >
       {value}

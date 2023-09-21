@@ -8,6 +8,7 @@ import { getCurrentUser } from '@/app/_actions/user'
 import { AlertPrice } from '@/components/alert-price'
 import { Icons } from '@/components/icons'
 import { ProductNavbar } from '@/components/product-navbar'
+import PriceChart from '@/components/product-price-chart'
 import { Badge } from '@/components/ui/badge'
 import { Button, buttonVariants } from '@/components/ui/button'
 import {
@@ -43,6 +44,7 @@ const GET_PRODUCT = gql`
       id
       name
       imageUrl
+      reviewUrl
       deals {
         id
         installments
@@ -61,6 +63,10 @@ const GET_PRODUCT = gql`
           value
           provider
         }
+      }
+      history {
+        date
+        lowestPrice
       }
     }
     userProductAlert(userProductAlertInput: $userAlertInput) {
@@ -87,6 +93,10 @@ export default async function ProductPage({ params }: ProductPageProps) {
         coupon: Coupon
         cashback: Cashback
       })[]
+      history: {
+        date: string
+        lowestPrice: number
+      }[]
     }
     userProductAlert: {
       price: number
@@ -113,7 +123,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
   const userAlert = data.userProductAlert?.price
 
   return (
-    <main className="mx-auto space-y-8 px-4 py-10 sm:container">
+    <main className="relative mx-auto space-y-8 px-4 py-10 sm:container">
       <section className="space-y-4 md:gap-x-8 lg:grid lg:grid-cols-3 lg:space-y-0 xl:grid-cols-5">
         <div className="space-y-4 lg:col-span-2 xl:col-span-3">
           <strong className="line-clamp-3 leading-none tracking-tight md:text-xl">
@@ -229,41 +239,12 @@ export default async function ProductPage({ params }: ProductPageProps) {
           </div>
         </div>
         <aside className="flex w-full flex-col gap-y-2 xl:col-span-2">
-          <Dialog>
-            <Card>
-              <CardContent className="pb-4 pt-6">
-                <div className="flex items-start space-x-2">
-                  <Icons.BellRing className="h-4 w-4" />
-                  <Label
-                    htmlFor="alert"
-                    className="flex flex-1 flex-col space-y-1"
-                  >
-                    <CardTitle>Quer pagar mais barato?</CardTitle>
-                    <CardDescription>
-                      Avisamos quando o preço baixar
-                    </CardDescription>
-                  </Label>
-                  <DialogTrigger asChild>
-                    <div>
-                      <Switch id="alert" />
-                    </div>
-                  </DialogTrigger>
-                </div>
-              </CardContent>
-              <CardFooter>
-                <DialogTrigger asChild>
-                  <Button variant="outline">Editar alerta</Button>
-                </DialogTrigger>
-              </CardFooter>
-            </Card>
-
-            <AlertPrice productId={product.id} />
-          </Dialog>
+          <AlertCard productId={product.id} />
 
           <Card>
-            <CardContent className="pb-4 pt-6">
+            <CardContent className="py-4">
               <div className="flex items-start space-x-2">
-                <Icons.Check className="h-4 w-4" />
+                <Icons.Check className="h-4 w-4 text-auxiliary" />
                 <Label
                   htmlFor="alert"
                   className="flex flex-1 flex-col space-y-1"
@@ -276,7 +257,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 </Label>
               </div>
             </CardContent>
-            <CardFooter>
+            <CardFooter className="pb-4">
               <Link
                 href={'#historico'}
                 className={cn(buttonVariants({ variant: 'outline' }))}
@@ -285,10 +266,35 @@ export default async function ProductPage({ params }: ProductPageProps) {
               </Link>
             </CardFooter>
           </Card>
+          {product.reviewUrl && (
+            <Link
+              href={'#'}
+              className={cn(
+                buttonVariants({ variant: 'secondary' }),
+                'flex h-fit justify-between rounded-xl px-6 py-4',
+              )}
+            >
+              <p className="flex flex-1 flex-col">
+                <span className="flex items-center gap-x-2 font-semibold">
+                  <Icons.StarFilled className="h-4 w-4 text-auxiliary" />
+                  Testado pelo canal
+                </span>
+                <span className="text-muted-foreground">
+                  Veja o vídeo sobre este produto em nosso canal
+                </span>
+              </p>
+              <Icons.ChevronRight className="h-4 w-4" />
+            </Link>
+          )}
         </aside>
       </section>
 
-      <ProductNavbar />
+      <section className="sticky top-[60px] z-40">
+        <ProductNavbar />
+        {/* <div className="absolute left-1/2 w-screen -translate-x-1/2"> */}
+        <Separator />
+        {/* </div> */}
+      </section>
 
       <section id="precos">
         <div className="flex items-center justify-between">
@@ -297,7 +303,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
               Comparação de preços
             </h2>
             <p className="text-sm text-muted-foreground">
-              Veja os preços deste produto em outras lojas.
+              Veja os preços deste produto em outras lojas
             </p>
           </div>
         </div>
@@ -312,7 +318,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
             <Card
               key={deal.id}
               className={cn(
-                'border-transparent transition-colors hover:bg-muted/50',
+                'border-transparent shadow-none transition-colors hover:bg-muted/50',
                 {
                   'border-primary': deal.id === bestDeal.id,
                 },
@@ -328,7 +334,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
                   </Badge>
                 )}
               </CardHeader>
-              {/* <CardHeader>{deal.retailer.name}</CardHeader> */}
               <div className="lg:flex">
                 <CardContent className="flex-1 space-y-2 px-4 py-0 lg:pb-4">
                   <main className="flex items-center gap-x-2 ">
@@ -438,6 +443,83 @@ export default async function ProductPage({ params }: ProductPageProps) {
           ))}
         </ScrollArea>
       </section>
+
+      <section id="historico">
+        <div className="space-y-1">
+          <h2 className="font-semibold tracking-tight md:text-xl">Histórico</h2>
+          <p className="text-sm text-muted-foreground">
+            Acompanhe o preço deste produto ao longo do tempo
+          </p>
+        </div>
+        <Separator className="my-4" />
+        <article className="space-y-4 md:gap-x-8 lg:grid lg:grid-cols-3 lg:space-y-0 xl:grid-cols-5">
+          <div className="lg:col-span-2 xl:col-span-3">
+            <PriceChart data={product.history} />
+          </div>
+          <aside className="flex flex-col gap-y-2 xl:col-span-2">
+            <AlertCard productId={product.id} />
+            <Card>
+              <CardContent className="py-4">
+                <div className="flex items-start space-x-2">
+                  <Icons.Check className="h-4 w-4 text-auxiliary" />
+                  <Label
+                    htmlFor="alert"
+                    className="flex flex-1 flex-col space-y-1"
+                  >
+                    <CardTitle>O preço está muito bom</CardTitle>
+                    <CardDescription>
+                      Com base no histórico dos últimos 30 dias, o preço está
+                      muito bom
+                    </CardDescription>
+                  </Label>
+                </div>
+              </CardContent>
+            </Card>
+          </aside>
+        </article>
+      </section>
+
+      <section id="ficha-tecnica">
+        <header className="space-y-1">
+          <h2 className="font-semibold tracking-tight md:text-xl">
+            Ficha técnica
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            Analise as especificações técnicas do produto
+          </p>
+        </header>
+        <Separator className="my-4" />
+      </section>
     </main>
+  )
+}
+
+function AlertCard({ productId }: { productId: string }) {
+  return (
+    <Dialog>
+      <Card id="alert-card">
+        <CardContent className="py-4">
+          <div className="flex items-start space-x-2">
+            <Icons.BellRing className="h-4 w-4 text-auxiliary" />
+            <Label htmlFor="alert" className="flex flex-1 flex-col space-y-1">
+              <CardTitle>Quer pagar mais barato?</CardTitle>
+              <CardDescription>Avisamos quando o preço baixar</CardDescription>
+            </Label>
+            <DialogTrigger asChild>
+              <div>
+                <Switch id="alert" />
+              </div>
+            </DialogTrigger>
+          </div>
+        </CardContent>
+        <CardFooter className="pb-4">
+          <DialogTrigger asChild>
+            <Button variant="outline">Editar alerta</Button>
+          </DialogTrigger>
+        </CardFooter>
+      </Card>
+
+      <AlertPrice productId={productId} />
+    </Dialog>
   )
 }
