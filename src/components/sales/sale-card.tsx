@@ -244,8 +244,8 @@ export function SaleCard({
                 </div>
               </CardContent>
             </Link>
-            <CardFooter className="flex items-center justify-between gap-x-1 p-3 pt-1.5 sm:p-6 sm:pt-0">
-              <div className="flex items-center gap-x-0.5">
+            <CardFooter className="flex items-center justify-between gap-x-1.5 p-3 pt-1.5 sm:p-6 sm:pt-0">
+              <div className="flex items-center gap-x-1.5">
                 <Button
                   size={'icon'}
                   variant={'ghost'}
