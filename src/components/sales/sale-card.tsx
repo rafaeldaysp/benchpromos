@@ -113,12 +113,12 @@ export function SaleCard({
                   {dayjs(sale.createdAt).fromNow()}
                 </time>
               </CardHeader>
-              <CardContent className="flex-1 space-y-1.5 p-3 py-0 sm:space-y-2.5 sm:p-6 sm:pt-0">
+              <CardContent className="flex-1 space-y-1.5 p-3 py-0 sm:space-y-2 sm:p-6 sm:pt-0">
                 <CardTitle className="line-clamp-2 space-x-1 font-semibold leading-none tracking-tight max-sm:text-sm sm:line-clamp-3">
                   {sale.title}
                 </CardTitle>
 
-                <div className="grid grid-cols-3 gap-x-3 sm:block sm:gap-x-0 sm:space-y-2.5">
+                <div className="grid grid-cols-3 gap-x-3 sm:block sm:gap-x-0 sm:space-y-2">
                   <div className="flex h-full items-center">
                     <div className="relative mx-auto aspect-square w-full select-none sm:w-8/12">
                       <Image
@@ -143,7 +143,7 @@ export function SaleCard({
                       {sale.label}
                     </Badge>
                   )}
-                  <div className="col-span-2 flex flex-col justify-center space-y-1.5 text-[14px] sm:space-y-2.5">
+                  <div className="col-span-2 flex flex-col justify-center space-y-1.5 text-[14px] sm:space-y-2">
                     <div className="flex flex-col">
                       <p>
                         <strong className="text-xl sm:text-2xl">
@@ -180,53 +180,66 @@ export function SaleCard({
                       )}
                     </div>
 
-                    {sale.coupon && (
-                      <div className="flex flex-col text-xs sm:text-sm">
-                        <span className="text-muted-foreground">Com cupom</span>
-                        <span className="text-sm font-bold sm:hidden">
-                          {sale.coupon}
-                        </span>
-                        <div
-                          className="hidden cursor-default items-center overflow-hidden rounded-full border pl-2 sm:flex"
-                          onClick={(e) => e.preventDefault()}
+                    <footer className="space-y-1.5">
+                      {sale.coupon && (
+                        <section className="text-xs sm:text-sm">
+                          <p className="flex flex-col text-muted-foreground sm:hidden">
+                            Com cupom
+                            <span className="text-sm font-bold text-foreground sm:hidden">
+                              {sale.coupon}
+                            </span>
+                          </p>
+                          <Button
+                            variant={'secondary'}
+                            onClick={(e) => e.preventDefault()}
+                            className="hidden h-fit w-fit items-center justify-between gap-2 rounded-xl px-2 sm:flex sm:w-full sm:px-4"
+                          >
+                            <h3 className="flex items-center font-semibold ">
+                              <Icons.Tag className="mr-2 h-3 w-3 text-auxiliary sm:h-4 sm:w-4" />
+                              Cupom disponível
+                            </h3>
+
+                            <Icons.ChevronRight className="h-4 w-4" />
+                          </Button>
+                        </section>
+                      )}
+
+                      {sale.cashback && (
+                        <section className="text-xs sm:text-sm">
+                          <p className="flex flex-col text-muted-foreground sm:hidden">
+                            Com cashback
+                            <span className="text-sm font-bold text-foreground sm:hidden">
+                              {sale.cashback}
+                            </span>
+                          </p>
+                          <Button
+                            variant={'secondary'}
+                            onClick={(e) => e.preventDefault()}
+                            className="hidden h-fit w-fit items-center justify-between gap-2 rounded-xl px-2 sm:flex sm:w-full sm:px-4"
+                          >
+                            <h3 className="flex items-center font-semibold ">
+                              <Icons.RotateCcw className="mr-2 h-3 w-3 text-auxiliary sm:h-4 sm:w-4" />
+                              Cashback
+                            </h3>
+
+                            <Icons.ChevronRight className="h-4 w-4" />
+                          </Button>
+                        </section>
+                      )}
+
+                      <div>
+                        <Button
+                          onClick={(e) => {
+                            e.preventDefault()
+                            window.open(sale.url, '_blank')
+                          }}
+                          className="hidden h-fit w-full rounded-xl sm:inline-flex"
                         >
-                          <Icons.Tag className="mr-2 h-4 w-4 fill-auxiliary text-auxiliary" />
-                          <span className="flex-1 select-text overflow-hidden text-sm font-medium uppercase tracking-widest">
-                            {sale.coupon}
-                          </span>
-                          <CopyButton
-                            value={sale.coupon}
-                            variant="ghost"
-                            className="hover:bg-inherit hover:text-inherit"
-                          />
-                        </div>
+                          <span className="mr-2">ACESSAR</span>
+                          <Icons.ExternalLink className="h-4 w-4" />
+                        </Button>
                       </div>
-                    )}
-
-                    {sale.cashback && (
-                      <div className="flex flex-col text-xs sm:hidden">
-                        <span className="text-muted-foreground">
-                          Com cashback
-                        </span>
-                        <span className="text-sm font-bold">
-                          {sale.cashback}
-                        </span>
-                      </div>
-                    )}
-
-                    <div>
-                      <Button
-                        onClick={(e) => {
-                          e.preventDefault()
-                          window.open(sale.url, '_blank')
-                        }}
-                        size={'lg'}
-                        className="hidden w-full rounded-full sm:inline-flex"
-                      >
-                        <span className="mr-2">ACESSAR</span>
-                        <Icons.ExternalLink className="h-4 w-4" />
-                      </Button>
-                    </div>
+                    </footer>
                   </div>
                 </div>
               </CardContent>

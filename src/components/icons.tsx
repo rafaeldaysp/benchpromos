@@ -24,6 +24,7 @@ import {
   GitPullRequestDraft,
   Headphones,
   Heart,
+  HelpCircle,
   Image,
   Laptop,
   LineChart,
@@ -43,6 +44,7 @@ import {
   PlusCircle,
   Receipt,
   Reply,
+  RotateCcw,
   ScrollText,
   Search,
   Send,
@@ -115,6 +117,8 @@ export const Icons = {
   ScrollText,
   Receipt,
   YoutubeIcon,
+  HelpCircle,
+  RotateCcw,
   Google: ({ ...props }: LucideProps) => (
     <svg
       aria-hidden="true"

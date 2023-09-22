@@ -193,7 +193,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                   >
                     <div className="flex flex-col items-start">
                       <span className="flex items-center font-semibold">
-                        <Icons.Tag className="mr-2 h-4 w-4 fill-auxiliary text-auxiliary" />
+                        <Icons.Tag className="mr-2 h-4 w-4 text-auxiliary" />
                         Cupom disponível
                       </span>
                       <span className="text-muted-foreground">
@@ -212,7 +212,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                   >
                     <div className="flex flex-col items-start">
                       <span className="flex items-center font-semibold">
-                        <Icons.StarFilled className="mr-2 h-4 w-4 text-auxiliary" />
+                        <Icons.RotateCcw className="mr-2 h-4 w-4 text-auxiliary" />
                         Cashback
                       </span>
                       <span className="text-muted-foreground">
@@ -265,7 +265,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
           </Card>
           {product.reviewUrl && (
             <Link
-              href={'#'}
+              href={'#review'}
               className={cn(
                 buttonVariants({ variant: 'secondary' }),
                 'flex h-fit justify-between rounded-xl px-6 py-4',
@@ -277,7 +277,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                   Testado pelo canal
                 </span>
                 <span className="text-muted-foreground">
-                  Veja o vídeo sobre este produto em nosso canal
+                  Assista ao vídeo sobre este produto em nosso canal
                 </span>
               </p>
               <Icons.ChevronRight className="h-4 w-4" />
@@ -286,7 +286,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
         </aside>
       </section>
 
-      <section className="sticky top-[60px] z-40">
+      <section id="navbar" className="sticky top-[58px] z-30 sm:top-[60px]">
         <ProductNavbar />
         {/* <div className="absolute left-1/2 w-screen -translate-x-1/2"> */}
         <Separator />
@@ -389,7 +389,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                       >
                         <div className="flex flex-col items-start">
                           <span className="flex items-center font-semibold">
-                            <Icons.Tag className="mr-2 h-4 w-4 fill-auxiliary text-auxiliary" />
+                            <Icons.Tag className="mr-2 h-4 w-4 text-auxiliary" />
                             Cupom disponível
                           </span>
                           <span className="text-muted-foreground">
@@ -407,7 +407,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                       >
                         <div className="flex flex-col items-start">
                           <span className="flex items-center font-semibold">
-                            <Icons.StarFilled className="mr-2 h-4 w-4 text-auxiliary" />
+                            <Icons.RotateCcw className="mr-2 h-4 w-4 text-auxiliary" />
                             Cashback
                           </span>
                           <span className="text-muted-foreground">

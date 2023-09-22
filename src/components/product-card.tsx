@@ -54,18 +54,19 @@ export function ProductCard({
   const bestDeal = product.deals[0]
 
   return (
-    <Card
-      className={cn(
-        'relative flex flex-col overflow-hidden transition-colors hover:bg-muted/50',
-        className,
-      )}
-      {...props}
+    <Link
+      href={`/${product.category.slug}/${product.slug}`}
+      aria-label={`Visualizar detalhes de ${product.name}`}
+      className="flex"
     >
-      <Link
-        aria-label={`Visualizar detalhes de ${product.name}`}
-        href={`/${product.category.slug}/${product.slug}`}
+      <Card
+        className={cn(
+          'relative flex flex-1 flex-col overflow-hidden transition-colors hover:bg-muted/50',
+          className,
+        )}
+        {...props}
       >
-        <CardHeader className="p-0">
+        <CardHeader className="p-4">
           <AspectRatio>
             <Image
               src={product.imageUrl}
@@ -76,74 +77,66 @@ export function ProductCard({
             />
           </AspectRatio>
         </CardHeader>
-      </Link>
 
-      <CardContent className="flex-1 space-y-2.5 px-4">
-        <CardTitle>
-          <Link
-            aria-label={`Visualizar detalhes de ${product.name}`}
-            href={`/${product.category.slug}/${product.slug}`}
-          >
-            {product.name}
-          </Link>
-        </CardTitle>
+        <CardContent className="flex-1 space-y-2.5 p-4 pt-0">
+          <CardTitle>{product.name}</CardTitle>
 
-        {product.reviewUrl && (
-          <Badge>
-            <Icons.StarFilled className="mr-1" />
-            TESTADO PELO CANAL
-          </Badge>
-        )}
-
-        <div className="flex flex-col">
-          <CardDescription>
-            Menor preço via <strong>{bestDeal.retailer.name}</strong>
-          </CardDescription>
-          <p>
-            <strong className="text-xl">
-              {priceFormatter.format(
-                priceCalculator(
-                  bestDeal.price,
-                  bestDeal.coupon?.discount,
-                  bestDeal.cashback?.value,
-                ) / 100,
-              )}
-            </strong>
-          </p>
-
-          {!!bestDeal.installments && !!bestDeal.totalInstallmentPrice && (
-            <span className="text-sm text-muted-foreground">
-              até <strong>{bestDeal.installments}x</strong> de{' '}
-              <strong>
-                {priceFormatter.format(
-                  bestDeal.totalInstallmentPrice /
-                    (100 * bestDeal.installments),
-                )}
-              </strong>{' '}
-              {bestDeal.price >= bestDeal.totalInstallmentPrice ? (
-                <span>sem juros</span>
-              ) : (
-                <span>com juros</span>
-              )}
-            </span>
+          {product.reviewUrl && (
+            <Badge>
+              <Icons.StarFilled className="mr-1" />
+              TESTADO PELO CANAL
+            </Badge>
           )}
-        </div>
-        {bestDeal.coupon && (
-          <p className="flex flex-col">
-            <span className="text-sm text-muted-foreground">Com cupom</span>
-            <strong>{bestDeal.coupon.code}</strong>
-          </p>
-        )}
 
-        {bestDeal.cashback && (
-          <p className="text-sm font-bold">
-            {bestDeal.cashback.value}% de cashback com{' '}
-            {bestDeal.cashback.provider}
-          </p>
-        )}
-      </CardContent>
+          <div className="flex flex-col">
+            <CardDescription>
+              Menor preço via <strong>{bestDeal.retailer.name}</strong>
+            </CardDescription>
+            <p>
+              <strong className="text-xl">
+                {priceFormatter.format(
+                  priceCalculator(
+                    bestDeal.price,
+                    bestDeal.coupon?.discount,
+                    bestDeal.cashback?.value,
+                  ) / 100,
+                )}
+              </strong>
+            </p>
 
-      <CardFooter className="p-0">
+            {!!bestDeal.installments && !!bestDeal.totalInstallmentPrice && (
+              <span className="text-sm text-muted-foreground">
+                até <strong>{bestDeal.installments}x</strong> de{' '}
+                <strong>
+                  {priceFormatter.format(
+                    bestDeal.totalInstallmentPrice /
+                      (100 * bestDeal.installments),
+                  )}
+                </strong>{' '}
+                {bestDeal.price >= bestDeal.totalInstallmentPrice ? (
+                  <span>sem juros</span>
+                ) : (
+                  <span>com juros</span>
+                )}
+              </span>
+            )}
+          </div>
+          {bestDeal.coupon && (
+            <p className="flex flex-col">
+              <span className="text-sm text-muted-foreground">Com cupom</span>
+              <strong>{bestDeal.coupon.code}</strong>
+            </p>
+          )}
+
+          {bestDeal.cashback && (
+            <p className="text-sm font-bold">
+              {bestDeal.cashback.value}% de cashback com{' '}
+              {bestDeal.cashback.provider}
+            </p>
+          )}
+        </CardContent>
+
+        {/* <CardFooter className="p-0">
         <a
           href="#"
           target="_blank"
@@ -155,7 +148,8 @@ export function ProductCard({
         >
           Acessar
         </a>
-      </CardFooter>
-    </Card>
+      </CardFooter> */}
+      </Card>
+    </Link>
   )
 }
