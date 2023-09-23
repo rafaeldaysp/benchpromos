@@ -6,7 +6,7 @@ import { notFound } from 'next/navigation'
 
 import { getCurrentUser } from '@/app/_actions/user'
 import { AlertPrice } from '@/components/alert-price'
-import { Icons, Icons } from '@/components/icons'
+import { Icons } from '@/components/icons'
 import { ProductNavbar } from '@/components/product-navbar'
 import PriceChart from '@/components/product-price-chart'
 import { Badge } from '@/components/ui/badge'
