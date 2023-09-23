@@ -256,12 +256,11 @@ export default async function ProductPage({ params }: ProductPageProps) {
           <Card>
             <CardContent className="py-4">
               <div className="flex items-start space-x-2">
-                <Icons.Check className="h-4 w-4 text-auxiliary" />
+                <Icons.LineChart className="h-4 w-4 text-auxiliary" />
                 <Label className="flex flex-1 flex-col space-y-1">
-                  <CardTitle>O preço está muito bom</CardTitle>
+                  <CardTitle>O preço está bom?</CardTitle>
                   <CardDescription>
-                    Com base no histórico dos últimos 30 dias, o preço está
-                    muito bom
+                    Utilize nosso histórico para analisar o preço do produto
                   </CardDescription>
                 </Label>
               </div>
@@ -517,17 +516,17 @@ export default async function ProductPage({ params }: ProductPageProps) {
           </p>
         </header>
         <Separator className="my-4" />
-        <div className="space-y-4 rounded-xl border shadow md:gap-x-8">
+        <div className="rounded-xl border shadow md:gap-x-8">
           <Card className="border-none shadow-none">
-            <CardHeader className="space-y-1">
+            <CardHeader className="space-y-1 p-4">
               <CardTitle>Prós e contras</CardTitle>
               <CardDescription>
                 Conheça os pontos positivos e negativos do produto
               </CardDescription>
             </CardHeader>
 
-            <CardContent className="grid grid-cols-1 gap-x-8 gap-y-4 text-sm md:grid-cols-2">
-              <Card className="border-success shadow-success/50">
+            <CardContent className="grid grid-cols-1 gap-x-8 gap-y-4 p-4 pt-0 text-sm md:grid-cols-2">
+              <Card className="border-success transition-colors hover:bg-muted/50">
                 <CardHeader className="flex items-center p-4">
                   <Badge variant={'success'} className="flex w-fit gap-x-1">
                     <Icons.Check className="h-4 w-4 " />
@@ -545,7 +544,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                   </ul>
                 </CardContent>
               </Card>
-              <Card className="border-destructive shadow-destructive/50">
+              <Card className="border-destructive transition-colors hover:bg-muted/50">
                 <CardHeader className="flex items-center p-4">
                   <Badge variant={'destructive'} className="flex w-fit gap-x-1">
                     <Icons.X className="h-4 w-4 " />
@@ -566,17 +565,17 @@ export default async function ProductPage({ params }: ProductPageProps) {
             </CardContent>
           </Card>
           <Card className="border-none shadow-none">
-            <CardHeader className="space-y-1 pt-0">
+            <CardHeader className="space-y-1 p-4 pt-0">
               <CardTitle>Comentários</CardTitle>
               <CardDescription>
                 Entenda a análise de nossos especialistas
               </CardDescription>
             </CardHeader>
-            <CardContent>
-              <Card className="relative h-fit">
+            <CardContent className="p-4 pt-0">
+              <Card className="relative h-fit transition-colors hover:bg-muted/50">
                 <Icons.Quote className="absolute left-4 top-0 h-4 w-4 -translate-y-1/2 rotate-180 bg-background " />
                 <Icons.Quote className="absolute bottom-0 right-4 h-4 w-4 translate-y-1/2 bg-background" />
-                <CardContent className="h-full p-6 text-sm font-medium">
+                <CardContent className="h-full p-4 text-sm font-medium">
                   {product.description}
                 </CardContent>
               </Card>
@@ -615,6 +614,16 @@ export default async function ProductPage({ params }: ProductPageProps) {
           </p>
         </header>
         <Separator className="my-4" />
+        <div className="aspect-video">
+          <iframe
+            width="100%"
+            height="100%"
+            src={product.reviewUrl}
+            className="rounded-xl border shadow"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowFullScreen
+          />
+        </div>
       </section>
     </main>
   )
@@ -637,8 +646,10 @@ function AlertCard({
               htmlFor={switchId}
               className="flex flex-1 flex-col space-y-1"
             >
-              <CardTitle>Quer pagar mais barato?</CardTitle>
-              <CardDescription>Avisamos quando o preço baixar</CardDescription>
+              <CardTitle>Quer economizar?</CardTitle>
+              <CardDescription>
+                Nós alertamos você quando o preço baixar
+              </CardDescription>
             </Label>
             <DialogTrigger asChild>
               <div>
