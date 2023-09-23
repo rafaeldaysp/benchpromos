@@ -31,6 +31,7 @@ const GET_PRODUCTS = gql`
         cons {
           value
         }
+        description
         reviewUrl
         referencePrice
         categoryId

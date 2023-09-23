@@ -25,7 +25,6 @@ import { useMediaQuery } from '@/hooks/use-media-query'
 import { cn } from '@/lib/utils'
 import { type Reaction } from '@/types'
 import { priceFormatter } from '@/utils/formatter'
-import { CopyButton } from '../copy-button'
 import {
   ContextMenu,
   ContextMenuContent,

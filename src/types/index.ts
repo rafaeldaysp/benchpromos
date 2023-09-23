@@ -25,6 +25,7 @@ export type Product = {
   cons: {
     value: string
   }[]
+  description?: string
   reviewUrl?: string
   referencePrice?: number
   categoryId: string

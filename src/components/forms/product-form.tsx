@@ -33,6 +33,7 @@ import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
 import { productSchema } from '@/lib/validations/product'
 import type { Category } from '@/types'
+import { Textarea } from '@/components/ui/textarea'
 
 const CREATE_PRODUCT = gql`
   mutation CreateProduct($input: CreateProductInput!) {
@@ -66,6 +67,7 @@ const GET_CATEGORIES = gql`
 type Inputs = z.infer<typeof productSchema>
 
 const defaultValues: Partial<Inputs> = {
+  description: '',
   imageUrl: '',
   name: '',
   reviewUrl: '',
@@ -375,95 +377,118 @@ export function ProductForm({ mode = 'create', product }: ProductFormProps) {
           </div>
         </div>
 
-        <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <label className={labelVariants()}>Prós (opcional)</label>
-            <div className="space-x-2">
-              <Button
-                type="button"
-                size="icon"
-                variant="secondary"
-                onClick={() => prosAppend({ value: '' })}
-              >
-                <Icons.Plus className="h-4 w-4" />
-              </Button>
-              <Button
-                type="button"
-                size="icon"
-                variant="secondary"
-                onClick={() => prosRemove(-1)}
-              >
-                <Icons.Minus className="h-4 w-4" />
-              </Button>
+        <fieldset className="space-y-2">
+          <label className={labelVariants()}>Análise (opcional)</label>
+
+          <div className="space-y-2 rounded-xl border p-4 shadow">
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <label className={labelVariants()}>Prós</label>
+                <div className="space-x-2">
+                  <Button
+                    type="button"
+                    size="icon"
+                    variant="secondary"
+                    onClick={() => prosAppend({ value: '' })}
+                  >
+                    <Icons.Plus className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    type="button"
+                    size="icon"
+                    variant="secondary"
+                    onClick={() => prosRemove(-1)}
+                  >
+                    <Icons.Minus className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                {prosFields.map((field, index) => (
+                  <FormField
+                    key={field.id}
+                    control={form.control}
+                    name={`pros.${index}.value`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Input
+                            placeholder="Apresentou boas temperaturas"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                ))}
+              </div>
             </div>
-          </div>
 
-          <div className="space-y-2">
-            {prosFields.map((field, index) => (
-              <FormField
-                key={field.id}
-                control={form.control}
-                name={`pros.${index}.value`}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input
-                        placeholder="Apresentou boas temperaturas"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            ))}
-          </div>
-        </div>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <label className={labelVariants()}>Contras</label>
+                <div className="space-x-2">
+                  <Button
+                    type="button"
+                    size="icon"
+                    variant="secondary"
+                    onClick={() => consAppend({ value: '' })}
+                  >
+                    <Icons.Plus className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    type="button"
+                    size="icon"
+                    variant="secondary"
+                    onClick={() => consRemove(-1)}
+                  >
+                    <Icons.Minus className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
 
-        <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <label className={labelVariants()}>Contras (opcional)</label>
-            <div className="space-x-2">
-              <Button
-                type="button"
-                size="icon"
-                variant="secondary"
-                onClick={() => consAppend({ value: '' })}
-              >
-                <Icons.Plus className="h-4 w-4" />
-              </Button>
-              <Button
-                type="button"
-                size="icon"
-                variant="secondary"
-                onClick={() => consRemove(-1)}
-              >
-                <Icons.Minus className="h-4 w-4" />
-              </Button>
+              <div className="space-y-2">
+                {consFields.map((field, index) => (
+                  <FormField
+                    key={field.id}
+                    control={form.control}
+                    name={`cons.${index}.value`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Input
+                            placeholder="Botão de ligar/desligar junto ao teclado"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                ))}
+              </div>
             </div>
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Descrição</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      rows={6}
+                      placeholder="Excelente produto pela faixa de preço, porém deixa a desejar em alguns pontos..."
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </div>
-
-          <div className="space-y-2">
-            {consFields.map((field, index) => (
-              <FormField
-                key={field.id}
-                control={form.control}
-                name={`cons.${index}.value`}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input
-                        placeholder="Botão de ligar/desligar junto ao teclado"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            ))}
-          </div>
-        </div>
+        </fieldset>
 
         <Button type="submit" disabled={isLoading}>
           {isLoading && (

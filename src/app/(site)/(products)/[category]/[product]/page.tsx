@@ -6,7 +6,7 @@ import { notFound } from 'next/navigation'
 
 import { getCurrentUser } from '@/app/_actions/user'
 import { AlertPrice } from '@/components/alert-price'
-import { Icons } from '@/components/icons'
+import { Icons, Icons } from '@/components/icons'
 import { ProductNavbar } from '@/components/product-navbar'
 import PriceChart from '@/components/product-price-chart'
 import { Badge } from '@/components/ui/badge'
@@ -24,6 +24,7 @@ import { Label } from '@/components/ui/label'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
 import { Switch } from '@/components/ui/switch'
+import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table'
 import { cn } from '@/lib/utils'
 import {
   type Cashback,
@@ -45,6 +46,17 @@ const GET_PRODUCT = gql`
       name
       imageUrl
       reviewUrl
+      specs {
+        title
+        value
+      }
+      pros {
+        value
+      }
+      cons {
+        value
+      }
+      description
       deals {
         id
         installments
@@ -480,6 +492,126 @@ export default async function ProductPage({ params }: ProductPageProps) {
           </h2>
           <p className="text-sm text-muted-foreground">
             Analise as especificações técnicas do produto
+          </p>
+        </header>
+        <Separator className="my-4" />
+        <div className="rounded-xl border shadow">
+          <Table className="w-full">
+            <TableBody className="text-sm font-medium">
+              {product.specs.map((spec, index) => (
+                <TableRow key={index} className="even:bg-muted">
+                  <TableCell className="border-r">{spec.title}</TableCell>
+                  <TableCell>{spec.value}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      </section>
+
+      <section id="analise">
+        <header className="space-y-1">
+          <h2 className="font-semibold tracking-tight md:text-xl">Análise</h2>
+          <p className="text-sm text-muted-foreground">
+            Veja o que nossos especialistas têm a dizer sobre o produto
+          </p>
+        </header>
+        <Separator className="my-4" />
+        <div className="space-y-4 rounded-xl border shadow md:gap-x-8">
+          <Card className="border-none shadow-none">
+            <CardHeader className="space-y-1">
+              <CardTitle>Prós e contras</CardTitle>
+              <CardDescription>
+                Conheça os pontos positivos e negativos do produto
+              </CardDescription>
+            </CardHeader>
+
+            <CardContent className="grid grid-cols-1 gap-x-8 gap-y-4 text-sm md:grid-cols-2">
+              <Card className="border-success shadow-success/50">
+                <CardHeader className="flex items-center p-4">
+                  <Badge variant={'success'} className="flex w-fit gap-x-1">
+                    <Icons.Check className="h-4 w-4 " />
+                    Prós
+                  </Badge>
+                </CardHeader>
+                <CardContent className="p-4 pt-0">
+                  <ul className="flex flex-col space-y-1 font-medium leading-tight">
+                    {product.pros.map((pros, index) => (
+                      <li key={index} className="flex gap-x-1">
+                        <Icons.Check className="h-4 w-4 text-success" />
+                        {pros.value}
+                      </li>
+                    ))}
+                  </ul>
+                </CardContent>
+              </Card>
+              <Card className="border-destructive shadow-destructive/50">
+                <CardHeader className="flex items-center p-4">
+                  <Badge variant={'destructive'} className="flex w-fit gap-x-1">
+                    <Icons.X className="h-4 w-4 " />
+                    Contras
+                  </Badge>
+                </CardHeader>
+                <CardContent className="p-4 pt-0">
+                  <ul className="flex flex-col space-y-1 font-medium leading-tight">
+                    {product.cons.map((con, index) => (
+                      <li key={index} className="flex items-center gap-x-1">
+                        <Icons.X className="h-4 w-4 text-destructive" />
+                        {con.value}
+                      </li>
+                    ))}
+                  </ul>
+                </CardContent>
+              </Card>
+            </CardContent>
+          </Card>
+          <Card className="border-none shadow-none">
+            <CardHeader className="space-y-1 pt-0">
+              <CardTitle>Comentários</CardTitle>
+              <CardDescription>
+                Entenda a análise de nossos especialistas
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Card className="relative h-fit">
+                <Icons.Quote className="absolute left-4 top-0 h-4 w-4 -translate-y-1/2 rotate-180 bg-background " />
+                <Icons.Quote className="absolute bottom-0 right-4 h-4 w-4 translate-y-1/2 bg-background" />
+                <CardContent className="h-full p-6 text-sm font-medium">
+                  {product.description}
+                </CardContent>
+              </Card>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
+
+      <section id="promocoes">
+        <header className="space-y-1">
+          <h2 className="font-semibold tracking-tight md:text-xl">Promoções</h2>
+          <p className="text-sm text-muted-foreground">
+            Acompanhe as últimas promoções deste produto
+          </p>
+        </header>
+        <Separator className="my-4" />
+      </section>
+
+      <section id="benchmarks">
+        <header className="space-y-1">
+          <h2 className="font-semibold tracking-tight md:text-xl">
+            Benchmarks
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            Saiba como este produto performa em nossos testes
+          </p>
+        </header>
+        <Separator className="my-4" />
+      </section>
+
+      <section id="review">
+        <header className="space-y-1">
+          <h2 className="font-semibold tracking-tight md:text-xl">Review</h2>
+          <p className="text-sm text-muted-foreground">
+            Assista ao vídeo sobre este produto em nosso canal
           </p>
         </header>
         <Separator className="my-4" />

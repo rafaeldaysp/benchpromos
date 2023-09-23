@@ -42,6 +42,7 @@ import {
   PcCase,
   Plus,
   PlusCircle,
+  Quote,
   Receipt,
   Reply,
   RotateCcw,
@@ -119,6 +120,7 @@ export const Icons = {
   YoutubeIcon,
   HelpCircle,
   RotateCcw,
+  Quote,
   Google: ({ ...props }: LucideProps) => (
     <svg
       aria-hidden="true"

@@ -64,7 +64,7 @@ export default function PriceChart({ data }: PriceChartProps) {
           {fromNowOptions.map((option) => (
             <Toggle
               variant={'primary'}
-              className="h-fit px-2 py-1 text-muted-foreground"
+              className="h-fit px-2 py-1 text-muted-foreground data-[state=on]:shadow"
               key={option.value}
             >
               {option.label}

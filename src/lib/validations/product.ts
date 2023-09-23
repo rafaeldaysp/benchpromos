@@ -23,6 +23,7 @@ export const productSchema = z.object({
       value: z.string(),
     }),
   ),
+  description: z.string().optional(),
   reviewUrl: z.string().optional(),
   referencePrice: z.coerce.number().int().optional(),
   subcategoryId: z.string().optional(),
