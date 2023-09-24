@@ -78,7 +78,6 @@ export function UserProfileForm({ user }: UserProfileFormProps) {
         },
       },
     })
-    console.log(name, image)
   }
 
   return (

@@ -3,8 +3,8 @@ import { gql } from '@apollo/client'
 import type { Category, Sale } from '@/types'
 
 export const GET_SALES = gql`
-  query GetSales($paginationInput: PaginationInput) {
-    sales(paginationInput: $paginationInput) {
+  query GetSales($productSlug: ID, $paginationInput: PaginationInput) {
+    sales(productSlug: $productSlug, paginationInput: $paginationInput) {
       pages
       count
       list {

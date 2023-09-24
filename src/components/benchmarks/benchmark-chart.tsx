@@ -1,6 +1,7 @@
 'use client'
 
 import { useTheme } from 'next-themes'
+import { useSearchParams } from 'next/navigation'
 import * as React from 'react'
 
 import { useMediaQuery } from '@/hooks/use-media-query'
@@ -11,7 +12,6 @@ import {
   CartesianGrid,
   Cell,
   ResponsiveContainer,
-  Tooltip,
   XAxis,
   YAxis,
   type LabelProps,
@@ -24,19 +24,18 @@ interface BenchmarkChartProps {
     description?: string
     product: {
       name: string
+      slug: string
     }
   }[]
-  targetProductName?: string
 }
 
-export function BenchmarkChart({
-  results,
-  targetProductName,
-}: BenchmarkChartProps) {
+export function BenchmarkChart({ results }: BenchmarkChartProps) {
   const isSm = useMediaQuery('(max-width: 640px)')
   const { theme, systemTheme } = useTheme()
+  const searchParams = useSearchParams()
+  const targetProductSlug = searchParams.get('product')
   const [selected, setSelected] = React.useState(
-    targetProductName ? [targetProductName] : [],
+    targetProductSlug ? [targetProductSlug] : [],
   )
 
   const accentColor =
@@ -50,7 +49,7 @@ export function BenchmarkChart({
       ? ` [${result.description}]`
       : ''
     if (result.product.name.length <= MAX_STRING_LENGTH)
-      return `${result.product.name}`.concat(descriptionString) // No need to truncate
+      return `${result.product.name}`.concat(descriptionString)
 
     return result.product.name
       .substring(0, MAX_STRING_LENGTH - 3)
@@ -67,7 +66,6 @@ export function BenchmarkChart({
         </span>
       </div>
     )
-
   return (
     <ResponsiveContainer
       height={
@@ -134,24 +132,26 @@ export function BenchmarkChart({
           name="Resultado"
           radius={[0, 4, 4, 0]}
           onClick={(data) => {
-            const productName = data.product.name as string
-            selected?.includes(productName)
+            const productSlug = data.product.slug as string
+            selected?.includes(productSlug)
               ? setSelected((prev) =>
-                  prev.filter((name) => name !== productName),
+                  prev.filter((slug) => slug !== productSlug),
                 )
-              : setSelected((prev) => [...prev, productName])
+              : setSelected((prev) => [...prev, productSlug])
           }}
         >
-          {results?.map((result, index) => (
-            <Cell
-              fill={
-                selected.includes(result.product.name)
-                  ? 'url(#auxiliaryColor)'
-                  : 'url(#primaryColor)'
-              }
-              key={`cell-${index}`}
-            />
-          ))}
+          {results?.map((result, index) => {
+            return (
+              <Cell
+                fill={
+                  selected.includes(result.product.slug)
+                    ? 'url(#auxiliaryColor)'
+                    : 'url(#primaryColor)'
+                }
+                key={`cell-${index}`}
+              />
+            )
+          })}
         </Bar>
       </BarChart>
     </ResponsiveContainer>

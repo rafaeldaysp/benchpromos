@@ -12,9 +12,10 @@ const SALES_PER_SCROLL = 1
 
 interface SalesProps {
   user?: { id: string; isAdmin: boolean }
+  productSlug?: string
 }
 
-export function Sales({ user }: SalesProps) {
+export function Sales({ user, productSlug }: SalesProps) {
   const [isPending, startTransition] = React.useTransition()
   const [hasMoreSales, setHasMoreSales] = React.useState(true)
 
@@ -28,6 +29,7 @@ export function Sales({ user }: SalesProps) {
           limit: SALES_PER_SCROLL,
           page: 1,
         },
+        productSlug,
       },
     },
   )
@@ -47,6 +49,7 @@ export function Sales({ user }: SalesProps) {
             limit: SALES_PER_SCROLL,
             page: page + 1,
           },
+          productSlug,
         },
         updateQuery(previousResult, { fetchMoreResult }) {
           if (!fetchMoreResult.sales.list.length) {
@@ -67,8 +70,16 @@ export function Sales({ user }: SalesProps) {
     })
   }
 
+  if (sales.length === 0)
+    return (
+      <h3 className="text-sm text-muted-foreground">
+        Estamos constantemente atualizando nossas ofertas, por isso, fique de
+        olho para futuras promoções que podem estar a caminho
+      </h3>
+    )
+
   return (
-    <div className="my-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {sales.map((sale) => (
         <SaleCard key={sale.id} sale={sale} user={user} apolloClient={client} />
       ))}

@@ -14,6 +14,7 @@ const GET_BENCHMARK_RESULTS = gql`
       description
       product {
         name
+        slug
       }
       benchmark {
         slug
@@ -46,6 +47,7 @@ export default async function BenchmarkPage({
       description?: string
       product: {
         name: string
+        slug: string
       }
       benchmark: {
         name: string

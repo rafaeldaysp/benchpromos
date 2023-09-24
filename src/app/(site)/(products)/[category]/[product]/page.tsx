@@ -7,8 +7,10 @@ import { notFound } from 'next/navigation'
 import { getCurrentUser } from '@/app/_actions/user'
 import { AlertPrice } from '@/components/alert-price'
 import { Icons } from '@/components/icons'
+import { ProductBenchmarks } from '@/components/product-benchmarks'
 import { ProductNavbar } from '@/components/product-navbar'
 import PriceChart from '@/components/product-price-chart'
+import { Sales } from '@/components/sales/sales'
 import { Badge } from '@/components/ui/badge'
 import { Button, buttonVariants } from '@/components/ui/button'
 import {
@@ -27,6 +29,8 @@ import { Switch } from '@/components/ui/switch'
 import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table'
 import { cn } from '@/lib/utils'
 import {
+  type Benchmark,
+  type BenchmarkResult,
   type Cashback,
   type Coupon,
   type Deal,
@@ -80,6 +84,15 @@ const GET_PRODUCT = gql`
         date
         lowestPrice
       }
+      benchmarksResults: benchmarks {
+        id
+        result
+        description
+        benchmark {
+          name
+          slug
+        }
+      }
     }
     userProductAlert(userProductAlertInput: $userAlertInput) {
       price
@@ -109,6 +122,9 @@ export default async function ProductPage({ params }: ProductPageProps) {
         date: string
         lowestPrice: number
       }[]
+      benchmarksResults: (Omit<BenchmarkResult, 'productId' | 'benchmarkId'> & {
+        benchmark: Omit<Benchmark, 'id'>
+      })[]
     }
     userProductAlert: {
       price: number
@@ -133,6 +149,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
   const product = data.product
   const bestDeal = product.deals[0]
   const userAlert = data.userProductAlert?.price
+  const benchmarksResults = data.product.benchmarksResults
 
   return (
     <main className="relative mx-auto space-y-8 px-4 py-10 sm:container">
@@ -299,9 +316,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
       <section id="navbar" className="sticky top-[58px] z-30 sm:top-[60px]">
         <ProductNavbar />
-        {/* <div className="absolute left-1/2 w-screen -translate-x-1/2"> */}
         <Separator />
-        {/* </div> */}
       </section>
 
       <section id="precos">
@@ -490,22 +505,29 @@ export default async function ProductPage({ params }: ProductPageProps) {
             Ficha técnica
           </h2>
           <p className="text-sm text-muted-foreground">
-            Analise as especificações técnicas do produto
+            Conheça as especificações técnicas do produto
           </p>
         </header>
         <Separator className="my-4" />
-        <div className="rounded-xl border shadow">
-          <Table className="w-full">
-            <TableBody className="text-sm font-medium">
-              {product.specs.map((spec, index) => (
-                <TableRow key={index} className="even:bg-muted">
-                  <TableCell className="border-r">{spec.title}</TableCell>
-                  <TableCell>{spec.value}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
+        {product.specs.length > 0 ? (
+          <div className="rounded-xl border shadow">
+            <Table className="w-full">
+              <TableBody className="text-sm font-medium">
+                {product.specs.map((spec, index) => (
+                  <TableRow key={index} className="even:bg-muted">
+                    <TableCell className="border-r">{spec.title}</TableCell>
+                    <TableCell>{spec.value}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        ) : (
+          <h3 className="text-sm text-muted-foreground">
+            Estamos trabalhando para trazer todas as informações necessárias em
+            breve. Agradecemos sua paciência e interesse pelo produto.
+          </h3>
+        )}
       </section>
 
       <section id="analise">
@@ -516,72 +538,83 @@ export default async function ProductPage({ params }: ProductPageProps) {
           </p>
         </header>
         <Separator className="my-4" />
-        <div className="rounded-xl border shadow md:gap-x-8">
-          <Card className="border-none shadow-none">
-            <CardHeader className="space-y-1 p-4">
-              <CardTitle>Prós e contras</CardTitle>
-              <CardDescription>
-                Conheça os pontos positivos e negativos do produto
-              </CardDescription>
-            </CardHeader>
+        {product.pros && product.cons && product.description ? (
+          <div className="rounded-xl border shadow md:gap-x-8">
+            <Card className="border-none shadow-none">
+              <CardHeader className="space-y-1 p-4">
+                <CardTitle>Prós e contras</CardTitle>
+                <CardDescription>
+                  Conheça os pontos positivos e negativos do produto
+                </CardDescription>
+              </CardHeader>
 
-            <CardContent className="grid grid-cols-1 gap-x-8 gap-y-4 p-4 pt-0 text-sm md:grid-cols-2">
-              <Card className="border-success transition-colors hover:bg-muted/50">
-                <CardHeader className="flex items-center p-4">
-                  <Badge variant={'success'} className="flex w-fit gap-x-1">
-                    <Icons.Check className="h-4 w-4 " />
-                    Prós
-                  </Badge>
-                </CardHeader>
-                <CardContent className="p-4 pt-0">
-                  <ul className="flex flex-col space-y-1 font-medium leading-tight">
-                    {product.pros.map((pros, index) => (
-                      <li key={index} className="flex gap-x-1">
-                        <Icons.Check className="h-4 w-4 text-success" />
-                        {pros.value}
-                      </li>
-                    ))}
-                  </ul>
-                </CardContent>
-              </Card>
-              <Card className="border-destructive transition-colors hover:bg-muted/50">
-                <CardHeader className="flex items-center p-4">
-                  <Badge variant={'destructive'} className="flex w-fit gap-x-1">
-                    <Icons.X className="h-4 w-4 " />
-                    Contras
-                  </Badge>
-                </CardHeader>
-                <CardContent className="p-4 pt-0">
-                  <ul className="flex flex-col space-y-1 font-medium leading-tight">
-                    {product.cons.map((con, index) => (
-                      <li key={index} className="flex items-center gap-x-1">
-                        <Icons.X className="h-4 w-4 text-destructive" />
-                        {con.value}
-                      </li>
-                    ))}
-                  </ul>
-                </CardContent>
-              </Card>
-            </CardContent>
-          </Card>
-          <Card className="border-none shadow-none">
-            <CardHeader className="space-y-1 p-4 pt-0">
-              <CardTitle>Comentários</CardTitle>
-              <CardDescription>
-                Entenda a análise de nossos especialistas
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="p-4 pt-0">
-              <Card className="relative h-fit transition-colors hover:bg-muted/50">
-                <Icons.Quote className="absolute left-4 top-0 h-4 w-4 -translate-y-1/2 rotate-180 bg-background " />
-                <Icons.Quote className="absolute bottom-0 right-4 h-4 w-4 translate-y-1/2 bg-background" />
-                <CardContent className="h-full p-4 text-sm font-medium">
-                  {product.description}
-                </CardContent>
-              </Card>
-            </CardContent>
-          </Card>
-        </div>
+              <CardContent className="grid grid-cols-1 gap-x-8 gap-y-4 p-4 pt-0 text-sm md:grid-cols-2">
+                <Card className="border-success transition-colors hover:bg-muted/50">
+                  <CardHeader className="flex items-center p-4">
+                    <Badge variant={'success'} className="flex w-fit gap-x-1">
+                      <Icons.Check className="h-4 w-4 " />
+                      Prós
+                    </Badge>
+                  </CardHeader>
+                  <CardContent className="p-4 pt-0">
+                    <ul className="flex flex-col space-y-1 font-medium leading-tight">
+                      {product.pros.map((pros, index) => (
+                        <li key={index} className="flex gap-x-1">
+                          <Icons.Check className="h-4 w-4 text-success" />
+                          {pros.value}
+                        </li>
+                      ))}
+                    </ul>
+                  </CardContent>
+                </Card>
+                <Card className="border-destructive transition-colors hover:bg-muted/50">
+                  <CardHeader className="flex items-center p-4">
+                    <Badge
+                      variant={'destructive'}
+                      className="flex w-fit gap-x-1"
+                    >
+                      <Icons.X className="h-4 w-4 " />
+                      Contras
+                    </Badge>
+                  </CardHeader>
+                  <CardContent className="p-4 pt-0">
+                    <ul className="flex flex-col space-y-1 font-medium leading-tight">
+                      {product.cons.map((con, index) => (
+                        <li key={index} className="flex items-center gap-x-1">
+                          <Icons.X className="h-4 w-4 text-destructive" />
+                          {con.value}
+                        </li>
+                      ))}
+                    </ul>
+                  </CardContent>
+                </Card>
+              </CardContent>
+            </Card>
+            <Card className="border-none shadow-none">
+              <CardHeader className="space-y-1 p-4 pt-0">
+                <CardTitle>Comentários</CardTitle>
+                <CardDescription>
+                  Entenda a análise de nossos especialistas
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="p-4 pt-0">
+                <Card className="relative h-fit transition-colors hover:bg-muted/50">
+                  <Icons.Quote className="absolute left-4 top-0 h-4 w-4 -translate-y-1/2 rotate-180 bg-background " />
+                  <Icons.Quote className="absolute bottom-0 right-4 h-4 w-4 translate-y-1/2 bg-background" />
+                  <CardContent className="h-full p-4 text-sm font-medium">
+                    {product.description}
+                  </CardContent>
+                </Card>
+              </CardContent>
+            </Card>
+          </div>
+        ) : (
+          <h3 className="text-sm text-muted-foreground">
+            Estamos trabalhando diligentemente para trazer análises detalhadas e
+            precisas em breve. Agradecemos sua compreensão e interesse em nossa
+            análise.
+          </h3>
+        )}
       </section>
 
       <section id="promocoes">
@@ -592,6 +625,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
           </p>
         </header>
         <Separator className="my-4" />
+        <Sales productSlug={slug} user={user} />
       </section>
 
       <section id="benchmarks">
@@ -604,6 +638,18 @@ export default async function ProductPage({ params }: ProductPageProps) {
           </p>
         </header>
         <Separator className="my-4" />
+        {product.benchmarksResults.length > 0 ? (
+          <ProductBenchmarks
+            benchmarksResults={benchmarksResults}
+            productSlug={slug}
+          />
+        ) : (
+          <h3 className="text-sm text-muted-foreground">
+            Não temos avaliações ou benchmarks disponíveis para este produto em
+            nosso site no momento. Estamos trabalhando para fornecer informações
+            detalhadas em breve. Agradecemos sua compreensão.
+          </h3>
+        )}
       </section>
 
       <section id="review">
@@ -614,16 +660,23 @@ export default async function ProductPage({ params }: ProductPageProps) {
           </p>
         </header>
         <Separator className="my-4" />
-        <div className="aspect-video">
-          <iframe
-            width="100%"
-            height="100%"
-            src={product.reviewUrl}
-            className="rounded-xl border shadow"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            allowFullScreen
-          />
-        </div>
+        {product.reviewUrl ? (
+          <div className="aspect-video">
+            <iframe
+              width="100%"
+              height="100%"
+              src={product.reviewUrl}
+              className="rounded-xl border bg-background shadow"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowFullScreen
+            />
+          </div>
+        ) : (
+          <h3 className="text-sm text-muted-foreground">
+            Este produto ainda não foi avaliado em nosso canal, mas fique
+            atento! Assim que tivermos avaliações, você será o primeiro a saber.
+          </h3>
+        )}
       </section>
     </main>
   )
