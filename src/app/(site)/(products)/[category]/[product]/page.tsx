@@ -10,7 +10,7 @@ import { Icons } from '@/components/icons'
 import { ProductBenchmarks } from '@/components/product-benchmarks'
 import { ProductNavbar } from '@/components/product-navbar'
 import PriceChart from '@/components/product-price-chart'
-import { Sales } from '@/components/sales/sales'
+import { ProductSales } from '@/components/product-sales'
 import { Badge } from '@/components/ui/badge'
 import { Button, buttonVariants } from '@/components/ui/button'
 import {
@@ -48,6 +48,7 @@ const GET_PRODUCT = gql`
     product(getProductInput: $productInput) {
       id
       name
+      slug
       imageUrl
       reviewUrl
       specs {
@@ -481,7 +482,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
           </div>
           <aside className="flex flex-col gap-y-2 xl:col-span-2">
             <AlertCard productId={product.id} switchId="alert-middle" />
-            <Card>
+            {/* <Card>
               <CardContent className="py-4">
                 <div className="flex items-start space-x-2">
                   <Icons.Check className="h-4 w-4 text-auxiliary" />
@@ -494,7 +495,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                   </Label>
                 </div>
               </CardContent>
-            </Card>
+            </Card> */}
           </aside>
         </article>
       </section>
@@ -512,11 +513,25 @@ export default async function ProductPage({ params }: ProductPageProps) {
         {product.specs.length > 0 ? (
           <div className="rounded-xl border shadow">
             <Table className="w-full">
-              <TableBody className="text-sm font-medium">
+              <TableBody className="rounded-xl text-sm font-medium">
                 {product.specs.map((spec, index) => (
                   <TableRow key={index} className="even:bg-muted">
-                    <TableCell className="border-r">{spec.title}</TableCell>
-                    <TableCell>{spec.value}</TableCell>
+                    <TableCell
+                      className={cn('border-r', {
+                        'rounded-tl-xl': index === 0,
+                        'rounded-bl-xl': index === product.specs.length - 1,
+                      })}
+                    >
+                      {spec.title}
+                    </TableCell>
+                    <TableCell
+                      className={cn({
+                        'rounded-tr-xl': index === 0,
+                        'rounded-br-xl': index === product.specs.length - 1,
+                      })}
+                    >
+                      {spec.value}
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -625,7 +640,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
           </p>
         </header>
         <Separator className="my-4" />
-        <Sales productSlug={slug} user={user} />
+        {/* <Sales productSlug={slug} user={user} /> */}
+        <ProductSales product={product} />
       </section>
 
       <section id="benchmarks">
