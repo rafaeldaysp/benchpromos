@@ -559,7 +559,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
         <header className="space-y-1">
           <h2 className="font-semibold tracking-tight md:text-xl">Análise</h2>
           <p className="text-sm text-muted-foreground">
-            Veja o que nossos especialistas têm a dizer sobre o produto
+            Veja o que nossa equipe tem a dizer sobre o produto
           </p>
         </header>
         <Separator className="my-4" />
@@ -619,7 +619,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
               <CardHeader className="space-y-1 p-4 pt-0">
                 <CardTitle>Comentários</CardTitle>
                 <CardDescription>
-                  Entenda a análise de nossos especialistas
+                  Entenda a análise de nossa equipe
                 </CardDescription>
               </CardHeader>
               <CardContent className="p-4 pt-0">

@@ -71,7 +71,11 @@ export function ProductAlertCard({
         </CardFooter>
       </Card>
 
-      <AlertPrice mode="update" productId={product.id} />
+      <AlertPrice
+        productPrice={subscribedPrice}
+        userAlertPrice={subscribedPrice}
+        productId={product.id}
+      />
     </Dialog>
   )
 }

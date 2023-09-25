@@ -42,16 +42,13 @@ export function ProductBenchmarks({
           <TableHead>Resultado</TableHead>
           <TableHead className="max-sm:hidden">Descrição</TableHead>
           <TableHead />
-          {/* <TableHead className="text-right">Amount</TableHead> */}
         </TableRow>
       </TableHeader>
       <TableBody>
         {benchmarksResults.map((benchmarkResult) => (
           <DropdownMenu key={benchmarkResult.id}>
-            <TableRow className="even:bg-muted">
-              <TableCell className="font-medium">
-                {benchmarkResult.benchmark.name}
-              </TableCell>
+            <TableRow className="font-medium even:bg-muted">
+              <TableCell>{benchmarkResult.benchmark.name}</TableCell>
               <TableCell>{benchmarkResult.result} [FPS]</TableCell>
               <TableCell className="max-sm:hidden">
                 {benchmarkResult.description ?? ''}
