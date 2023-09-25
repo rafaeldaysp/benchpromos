@@ -4,10 +4,10 @@ import { notFound } from 'next/navigation'
 
 import { getCurrentUser } from '@/app/_actions/user'
 import { UserCategoryAlertsForm } from '@/components/forms/user-category-alerts-form'
-import { UserProductAlertCard } from '@/components/forms/user-product-alert-card'
+import { ProductAlertCard } from '@/components/product-alert-card'
 import { Separator } from '@/components/ui/separator'
 import { AlertsPermission } from '@/components/user/user-alerts-permission'
-import { type Category } from '@/types'
+import type { Category } from '@/types'
 
 const GET_CATEGORIES_AND_USER_ALERTS = gql`
   query GetCategoriesAndUserAlerts($userId: String!) {
@@ -91,7 +91,7 @@ export default async function AlertsPage() {
         </div>
         <div className="grid flex-1 grid-cols-1 gap-2 sm:grid-cols-2 ">
           {productsAlerts.map((productAlert) => (
-            <UserProductAlertCard
+            <ProductAlertCard
               key={productAlert.product.id}
               product={productAlert.product}
               subscribedPrice={productAlert.subscribedPrice}

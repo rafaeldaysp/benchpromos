@@ -120,18 +120,18 @@ export function AlertPrice({ mode = 'create', productId }: AlertPriceProps) {
             <Icons.Plus />
           </Button>
         </div>
-        <DialogFooter>
+        <DialogFooter className="gap-y-4">
           {mode === 'create' ? (
             <Button size="lg" className="w-full" onClick={handleCreateAlert}>
               Criar
             </Button>
           ) : (
             <>
-              <Button size="lg" className="w-full">
-                Editar
-              </Button>
               <Button variant="destructive" size="lg" className="w-full">
                 Remover
+              </Button>
+              <Button size="lg" className="w-full">
+                Editar
               </Button>
             </>
           )}

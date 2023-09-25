@@ -5,18 +5,18 @@ import Link from 'next/link'
 
 import { siteConfig } from '@/config/site'
 // import { externalLinkOptions } from '@/constants/header'
-import { cn } from '@/lib/utils'
-import Logo from '@/public/logo-benchpromos.svg'
-import { type headerOption } from '@/types'
-import { Icons } from '../icons'
-import { ScrollArea } from '../ui/scroll-area'
+import Logo from '@/assets/logo-benchpromos.svg'
+import { Icons } from '@/components/icons'
+import { ScrollArea } from '@/components/ui/scroll-area'
 import {
   Sheet,
   SheetClose,
   SheetContent,
   SheetHeader,
   SheetTrigger,
-} from '../ui/sheet'
+} from '@/components/ui/sheet'
+import { cn } from '@/lib/utils'
+import { type headerOption } from '@/types'
 
 interface SideBarProps {
   options: headerOption[]

@@ -2,11 +2,11 @@
 
 import Image from 'next/image'
 
+import { AlertPrice } from '@/components/alert-price'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardFooter, CardTitle } from '@/components/ui/card'
+import { Dialog, DialogTrigger } from '@/components/ui/dialog'
 import { priceFormatter } from '@/utils/formatter'
-import { AlertPrice } from '../alert-price'
-import { Button } from '../ui/button'
-import { Card, CardContent, CardFooter, CardTitle } from '../ui/card'
-import { Dialog, DialogTrigger } from '../ui/dialog'
 
 interface UserProductAlertCard {
   subscribedPrice: number
@@ -19,7 +19,7 @@ interface UserProductAlertCard {
   }
 }
 
-export function UserProductAlertCard({
+export function ProductAlertCard({
   subscribedPrice,
   product,
 }: UserProductAlertCard) {

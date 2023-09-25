@@ -3,6 +3,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 
+import Logo from '@/assets/logo-benchpromos.svg'
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -15,11 +16,10 @@ import {
   navigationMenuTriggerStyle,
 } from '@/components/ui/navigation-menu'
 import { siteConfig } from '@/config/site'
-import { cn } from '@/lib/utils'
-import Logo from '@/public/logo-benchpromos.svg'
-import { SideBar } from './sidebar-nav'
-import { type Category } from '@/types'
 import { headerOptions } from '@/constants/header'
+import { cn } from '@/lib/utils'
+import { type Category } from '@/types'
+import { SideBar } from './sidebar-nav'
 
 interface MainNavProps {
   categories: Pick<Category, 'name' | 'slug'>[]

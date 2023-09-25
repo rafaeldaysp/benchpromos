@@ -1,6 +1,15 @@
+'use client'
+
+import { useNotifications } from '@/hooks/use-notifications'
 import { Switch } from '../ui/switch'
 
 export function AlertsPermission() {
+  const { permission, requestPermission } = useNotifications()
+
+  function handleCheckedChange(checked: boolean) {
+    requestPermission()
+  }
+
   return (
     <div className="space-y-2">
       <h3 className="text-base font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
@@ -17,7 +26,10 @@ export function AlertsPermission() {
             </h6>
           </div>
 
-          <Switch />
+          <Switch
+            checked={permission === 'granted'}
+            onCheckedChange={(checked) => handleCheckedChange(checked)}
+          />
         </fieldset>
       </div>
     </div>

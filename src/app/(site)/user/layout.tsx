@@ -1,6 +1,7 @@
-import { Separator } from '@/components/ui/separator'
-import { UserSidebarNav } from '@/components/user/user-sidebar-nav'
 import { type Metadata } from 'next'
+
+import { UserSidebarNav } from '@/components/layouts/user-sidebar-nav'
+import { Separator } from '@/components/ui/separator'
 
 export const metadata: Metadata = {
   title: 'Configuirações',
