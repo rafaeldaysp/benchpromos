@@ -28,14 +28,14 @@ import { Separator } from '@/components/ui/separator'
 import { Switch } from '@/components/ui/switch'
 import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table'
 import { cn } from '@/lib/utils'
-import {
-  type Benchmark,
-  type BenchmarkResult,
-  type Cashback,
-  type Coupon,
-  type Deal,
-  type Product,
-  type Retailer,
+import type {
+  Benchmark,
+  BenchmarkResult,
+  Cashback,
+  Coupon,
+  Deal,
+  Product,
+  Retailer,
 } from '@/types'
 import { couponFormatter, priceFormatter } from '@/utils/formatter'
 import { priceCalculator } from '@/utils/price-calculator'
@@ -149,7 +149,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   const product = data.product
   const bestDeal = product.deals[0]
-  const userAlert = data.userProductAlert?.price
+  const userAlertPrice = data.userProductAlert?.price
   const benchmarksResults = data.product.benchmarksResults
 
   return (
@@ -269,7 +269,12 @@ export default async function ProductPage({ params }: ProductPageProps) {
           </div>
         </div>
         <aside className="flex w-full flex-col gap-y-2 xl:col-span-2">
-          <AlertCard productId={product.id} switchId="alert-top" />
+          <AlertCard
+            productId={product.id}
+            switchId="alert-top"
+            userAlertPrice={userAlertPrice}
+            productPrice={bestDeal.price}
+          />
 
           <Card>
             <CardContent className="py-4">
@@ -481,7 +486,12 @@ export default async function ProductPage({ params }: ProductPageProps) {
             <PriceChart data={product.history} />
           </div>
           <aside className="flex flex-col gap-y-2 xl:col-span-2">
-            <AlertCard productId={product.id} switchId="alert-middle" />
+            <AlertCard
+              productId={product.id}
+              switchId="alert-middle"
+              userAlertPrice={userAlertPrice}
+              productPrice={bestDeal.price}
+            />
             {/* <Card>
               <CardContent className="py-4">
                 <div className="flex items-start space-x-2">
@@ -701,13 +711,23 @@ export default async function ProductPage({ params }: ProductPageProps) {
 function AlertCard({
   productId,
   switchId,
+  userAlertPrice,
+  productPrice,
 }: {
   productId: string
   switchId: string
+  userAlertPrice?: number
+  productPrice: number
 }) {
   return (
     <Dialog>
-      <Card id="alert-card">
+      <Card id="alert-card" className="overflow-hidden">
+        {userAlertPrice && (
+          <CardHeader className="block bg-primary px-6 py-1 text-sm text-primary-foreground">
+            Alerta em{' '}
+            <strong>{priceFormatter.format(userAlertPrice / 100)}</strong>
+          </CardHeader>
+        )}
         <CardContent className="py-4">
           <div className="flex items-start space-x-2">
             <Icons.BellRing className="h-4 w-4 text-auxiliary" />
@@ -722,19 +742,25 @@ function AlertCard({
             </Label>
             <DialogTrigger asChild>
               <div>
-                <Switch id={switchId} />
+                <Switch checked={!!userAlertPrice} id={switchId} />
               </div>
             </DialogTrigger>
           </div>
         </CardContent>
-        <CardFooter className="pb-4">
-          <DialogTrigger asChild>
-            <Button variant="outline">Editar alerta</Button>
-          </DialogTrigger>
-        </CardFooter>
+        {userAlertPrice && (
+          <CardFooter className="pb-4">
+            <DialogTrigger asChild>
+              <Button variant="outline">Editar alerta</Button>
+            </DialogTrigger>
+          </CardFooter>
+        )}
       </Card>
 
-      <AlertPrice productId={productId} />
+      <AlertPrice
+        productId={productId}
+        userAlertPrice={userAlertPrice}
+        productPrice={productPrice}
+      />
     </Dialog>
   )
 }

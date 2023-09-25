@@ -15,30 +15,34 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import { priceFormatter } from '@/utils/formatter'
 
-const UPDATE_USER_ALERTS = gql`
-  mutation UpdateUserAlerts($input: UpdateUserAlertsInput!) {
-    updateUserAlerts(updateUserAlertsInput: $input) {
+const UPDATE_PRODUCT_ALERT = gql`
+  mutation UpdateProductAlert($productId: ID!, $price: Int) {
+    updateProductAlert(productId: $productId, price: $price) {
       id
     }
   }
 `
 
 interface AlertPriceProps {
-  mode?: 'create' | 'update'
   productId: string
+  productPrice: number
+  userAlertPrice?: number
 }
 
-export function AlertPrice({ mode = 'create', productId }: AlertPriceProps) {
-  const [price, setPrice] = React.useState(200345)
+export function AlertPrice({
+  productId,
+  productPrice,
+  userAlertPrice,
+}: AlertPriceProps) {
+  const [price, setPrice] = React.useState(userAlertPrice ?? productPrice)
 
-  const [updateUserAlerts] = useMutation(UPDATE_USER_ALERTS, {
+  const [mutateProductAlert] = useMutation(UPDATE_PRODUCT_ALERT, {
     onError(error) {
       toast.error(error.message)
     },
-    onCompleted(data) {
-      toast.success('Seu alerta foi criado!')
-    },
+    refetchQueries: ['GetProduct'],
   })
 
   function incrementPrice() {
@@ -49,30 +53,27 @@ export function AlertPrice({ mode = 'create', productId }: AlertPriceProps) {
     setPrice((prev) => prev - 5000)
   }
 
-  async function handleCreateAlert() {
+  async function handleMutateAlert(price: number | null) {
     const token = await getCurrentUserToken()
 
-    updateUserAlerts({
+    mutateProductAlert({
       context: {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       },
       variables: {
-        input: {
-          subscribedProducts: [
-            {
-              price,
-              productId,
-            },
-          ],
-        },
+        productId,
+        price,
+      },
+      onCompleted() {
+        if (!price) return toast.success('Alerta removido com sucesso.')
+
+        if (userAlertPrice) return toast.success('Alerta editado com sucesso.')
+
+        return toast.success('Alerta criado com sucesso.')
       },
     })
-  }
-
-  async function handleDeleteAlert() {
-    const token = await getCurrentUserToken()
   }
 
   return (
@@ -82,16 +83,18 @@ export function AlertPrice({ mode = 'create', productId }: AlertPriceProps) {
           Alerta de Preço
         </DialogTitle>
         <DialogDescription className="text-center">
-          {mode === 'create'
-            ? 'Você ainda não possui um alerta para esse produto'
-            : 'Você tem um alerta de preço para R$ 1.136,00'}
+          {!!userAlertPrice
+            ? `Você tem um alerta de preço para ${priceFormatter.format(
+                userAlertPrice / 100,
+              )}`
+            : 'Você ainda não possui um alerta para esse produto'}
         </DialogDescription>
       </DialogHeader>
       <div className="space-y-8 text-center">
         <span>
-          {mode === 'create'
-            ? 'Para criar um alerta, indique um valor:'
-            : 'Para alterar o alerta, indique um novo valor:'}
+          {!!userAlertPrice
+            ? 'Para alterar o alerta, indique um novo valor:'
+            : 'Para criar um alerta, indique um valor:'}
         </span>
         <div className="flex justify-center gap-x-2">
           <Button
@@ -121,19 +124,23 @@ export function AlertPrice({ mode = 'create', productId }: AlertPriceProps) {
           </Button>
         </div>
         <DialogFooter className="gap-y-4">
-          {mode === 'create' ? (
-            <Button size="lg" className="w-full" onClick={handleCreateAlert}>
-              Criar
+          <Button
+            size="lg"
+            className="w-full"
+            onClick={() => handleMutateAlert(price)}
+          >
+            {!!userAlertPrice ? 'Editar' : 'Criar'}
+          </Button>
+
+          {!!userAlertPrice && (
+            <Button
+              variant="destructive"
+              size="lg"
+              className="w-full"
+              onClick={() => handleMutateAlert(null)}
+            >
+              Remover
             </Button>
-          ) : (
-            <>
-              <Button variant="destructive" size="lg" className="w-full">
-                Remover
-              </Button>
-              <Button size="lg" className="w-full">
-                Editar
-              </Button>
-            </>
           )}
         </DialogFooter>
       </div>
