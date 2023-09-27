@@ -15,12 +15,12 @@ import {
   DialogTitle,
 } from './ui/dialog'
 import {
-  Drawer,
-  DrawerContent,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
-} from './ui/drawer'
+  Sheet,
+  SheetContent,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+} from './ui/sheet'
 
 interface CouponDialogProps {
   open: boolean
@@ -67,7 +67,7 @@ export function CouponModal({
       </Button>
 
       {isSm ? (
-        <CouponDrawer open={open} setOpen={setOpen} coupon={coupon} />
+        <CouponSheet open={open} setOpen={setOpen} coupon={coupon} />
       ) : (
         <CouponDialog coupon={coupon} setOpen={setOpen} />
       )}
@@ -105,26 +105,27 @@ export function CouponDialog({
   )
 }
 
-export function CouponDrawer({ open, setOpen, coupon }: CouponDialogProps) {
+export function CouponSheet({ open, setOpen, coupon }: CouponDialogProps) {
   // const [snap, setSnap] = React.useState<number | string | null>(0.7)
   return (
-    <Drawer
+    <Sheet
       // snapPoints={[0.7, 1]}
       // activeSnapPoint={snap}
       // setActiveSnapPoint={setSnap}
       open={open}
-      onClose={() => setOpen(false)}
+      onOpenChange={setOpen}
     >
-      <DrawerContent
+      <SheetContent
+        side={'bottom'}
         className={cn(
-          'fixed inset-x-0 bottom-0 flex h-[35%] flex-col rounded-t-2xl sm:hidden',
+          'fixed inset-x-0 bottom-0 flex h-fit flex-col rounded-t-2xl sm:hidden',
         )}
         onClick={(e) => e.preventDefault()}
       >
-        <div className="relative -top-4 left-1/2 h-1.5 w-12 shrink-0 -translate-x-1/2 rounded-full bg-accent" />
-        <DrawerHeader>
-          <DrawerTitle className="text-center">Cupom disponível</DrawerTitle>
-        </DrawerHeader>
+        {/* <div className="relative -top-4 left-1/2 h-1.5 w-12 shrink-0 -translate-x-1/2 rounded-full bg-accent" /> */}
+        <SheetHeader>
+          <SheetTitle className="text-center">Cupom disponível</SheetTitle>
+        </SheetHeader>
         <div className="flex-1 space-y-4">
           <CopyButton value={coupon.code} />
           <p className="inline-flex items-center text-xs">
@@ -138,12 +139,12 @@ export function CouponDrawer({ open, setOpen, coupon }: CouponDialogProps) {
             checkout.
           </article>
         </div>
-        <DrawerFooter>
+        <SheetFooter>
           <Button className="w-full" onClick={() => setOpen(false)}>
             Entendi
           </Button>
-        </DrawerFooter>
-      </DrawerContent>
-    </Drawer>
+        </SheetFooter>
+      </SheetContent>
+    </Sheet>
   )
 }

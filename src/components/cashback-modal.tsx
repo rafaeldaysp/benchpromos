@@ -23,12 +23,12 @@ import {
   DialogTitle,
 } from './ui/dialog'
 import {
-  Drawer,
-  DrawerContent,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
-} from './ui/drawer'
+  Sheet,
+  SheetContent,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+} from './ui/sheet'
 
 interface CashbackDialogProps {
   open: boolean
@@ -82,7 +82,7 @@ export function CashbackModal({
         <Icons.ChevronRight className="h-4 w-4" />
       </Button>
       {isSm ? (
-        <CashbackDrawer
+        <CashbackSheet
           open={open}
           setOpen={setOpen}
           openVideo={openVideo}
@@ -213,7 +213,7 @@ export function CashbackDialog({
   )
 }
 
-export function CashbackDrawer({
+export function CashbackSheet({
   open,
   setOpen,
   setOpenVideo,
@@ -221,22 +221,23 @@ export function CashbackDrawer({
 }: CashbackDialogProps) {
   // const [snap, setSnap] = React.useState<number | string | null>(0.7)
   return (
-    <Drawer
+    <Sheet
       // snapPoints={[0.7, 1]}
       // activeSnapPoint={snap}
       // setActiveSnapPoint={setSnap}
       open={open}
-      onClose={() => setOpen(false)}
+      onOpenChange={setOpen}
     >
-      <DrawerContent
+      <SheetContent
         className={cn(
           'fixed inset-x-0 bottom-0 flex h-fit flex-col space-y-2 rounded-t-2xl py-4 sm:hidden',
         )}
+        side={'bottom'}
       >
-        <div className="relative left-1/2 h-1.5 w-12 shrink-0 -translate-x-1/2 rounded-full bg-accent" />
-        <DrawerHeader>
-          <DrawerTitle className="text-center">Cashback</DrawerTitle>
-        </DrawerHeader>
+        {/* <div className="relative left-1/2 h-1.5 w-12 shrink-0 -translate-x-1/2 rounded-full bg-accent" /> */}
+        <SheetHeader>
+          <SheetTitle className="text-center">Cashback</SheetTitle>
+        </SheetHeader>
         <div className="flex w-full flex-col items-center gap-4">
           <div className="flex w-full cursor-default items-center justify-center gap-2 rounded-xl bg-muted p-4 font-semibold transition-colors hover:bg-muted/80">
             <Icons.RotateCcw
@@ -319,13 +320,13 @@ export function CashbackDrawer({
             )}
           </Card>
         </div>
-        <DrawerFooter>
+        <SheetFooter>
           <Button className="w-full" onClick={() => setOpen(false)}>
             Entendi
           </Button>
-        </DrawerFooter>
-      </DrawerContent>
-    </Drawer>
+        </SheetFooter>
+      </SheetContent>
+    </Sheet>
   )
 }
 
