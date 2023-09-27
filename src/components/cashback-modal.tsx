@@ -106,21 +106,6 @@ export function CashbackDialog({
   setOpen,
   setOpenVideo,
 }: Omit<CashbackDialogProps, 'open'>) {
-  // if (cashback.video && openVideo)
-  //   return (
-  //     <DialogContent className="w-full sm:max-w-[1280px]">
-  //       <div className="aspect-video p-4">
-  //         <iframe
-  //           width="100%"
-  //           height="100%"
-  //           src={cashback.video}
-  //           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-  //           allowFullScreen
-  //           className="rounded-lg"
-  //         />
-  //       </div>
-  //     </DialogContent>
-  //   )
   return (
     <DialogContent>
       <DialogHeader>
@@ -219,15 +204,8 @@ export function CashbackSheet({
   setOpenVideo,
   cashback,
 }: CashbackDialogProps) {
-  // const [snap, setSnap] = React.useState<number | string | null>(0.7)
   return (
-    <Sheet
-      // snapPoints={[0.7, 1]}
-      // activeSnapPoint={snap}
-      // setActiveSnapPoint={setSnap}
-      open={open}
-      onOpenChange={setOpen}
-    >
+    <Sheet open={open} onOpenChange={setOpen}>
       <SheetContent
         className={cn(
           'fixed inset-x-0 bottom-0 flex h-fit flex-col space-y-2 rounded-t-2xl py-4 sm:hidden',
@@ -345,7 +323,7 @@ export function VideoDialog({
       }}
     >
       <DialogContent className="w-full sm:max-w-[1280px]">
-        <div className="aspect-video">
+        <div className="aspect-video p-2">
           <iframe
             width="100%"
             height="100%"

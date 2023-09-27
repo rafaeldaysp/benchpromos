@@ -344,11 +344,11 @@ export default async function ProductPage({ params }: ProductPageProps) {
               )}
             >
               <CardHeader className="relative p-4">
-                <span className="text-sm font-semibold text-muted-foreground">
+                <span className="h-fit w-20 break-words text-sm font-semibold text-muted-foreground">
                   {deal.retailer.name}
                 </span>
                 {deal.id === bestDeal.id && (
-                  <Badge className="absolute left-1/2 top-2.5 w-fit -translate-x-1/2">
+                  <Badge className="absolute left-1/2 top-2.5 w-fit -translate-x-1/2 px-1">
                     MELHOR PREÇO
                   </Badge>
                 )}

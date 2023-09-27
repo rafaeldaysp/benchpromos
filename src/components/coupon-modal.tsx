@@ -87,7 +87,7 @@ export function CouponDialog({
       <div className="space-y-4">
         <CopyButton value={coupon.code} />
         <p className="inline-flex items-center text-xs">
-          <Icons.AlertCircle className="mr-2 h-6 w-6" />
+          <Icons.AlertCircle className="mr-2 h-6 w-6 text-auxiliary" />
           Copie o código e cole no carrinho de compras antes de finalizar seu
           pedido na loja.
         </p>
@@ -129,7 +129,7 @@ export function CouponSheet({ open, setOpen, coupon }: CouponDialogProps) {
         <div className="flex-1 space-y-4">
           <CopyButton value={coupon.code} />
           <p className="inline-flex items-center text-xs">
-            <Icons.AlertCircle className="mr-2 h-6 w-6" />
+            <Icons.AlertCircle className="mr-2 h-6 w-6 text-auxiliary" />
             Copie o código e cole no carrinho de compras antes de finalizar seu
             pedido na loja.
           </p>

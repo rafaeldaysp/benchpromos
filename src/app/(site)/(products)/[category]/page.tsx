@@ -168,6 +168,7 @@ export default async function ProductsPage({
         sortBy: sort ?? 'relevance',
       },
     },
+    errorPolicy: 'ignore',
   })
   const products = data.productsList.products
   const pageCount = data.productsList.pages

@@ -29,6 +29,7 @@ import { Slider } from '@/components/ui/slider'
 import { Toggle } from '@/components/ui/toggle'
 import { useDebounce } from '@/hooks/use-debounce'
 import { useQueryString } from '@/hooks/use-query-string'
+import { cn } from '@/lib/utils'
 import type {
   Cashback,
   Category,
@@ -74,9 +75,12 @@ export function Products({
   const [isPending, startTransition] = React.useTransition()
   const pathname = usePathname()
   const router = useRouter()
+
   const [filters, setFilters] = React.useState(initialFilters)
   const [sort, setSort] = React.useState(initialSort)
   const [limit, setLimit] = React.useState(initialLimit)
+  const [selectIsOpen, setSelectIsOpen] = React.useState(false)
+
   const { createQueryString } = useQueryString()
 
   const clientPriceRange = searchParams
@@ -141,7 +145,6 @@ export function Products({
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [limit])
-
   return (
     <div className="space-y-6">
       <div>
@@ -297,6 +300,11 @@ export function Products({
             defaultValue="relevance"
             value={sort}
             onValueChange={(value) => setSort(value)}
+            onOpenChange={(open) => {
+              setTimeout(() => {
+                setSelectIsOpen(open)
+              }, 100)
+            }}
           >
             <SelectTrigger className="w-[180px]">
               <SelectValue />
@@ -315,6 +323,11 @@ export function Products({
             defaultValue="16"
             value={limit}
             onValueChange={(value) => setLimit(value)}
+            onOpenChange={(open) => {
+              setTimeout(() => {
+                setSelectIsOpen(open)
+              }, 100)
+            }}
           >
             <SelectTrigger className="w-[90px]">
               <SelectValue placeholder="Theme" />
@@ -327,7 +340,14 @@ export function Products({
           </Select>
         </div>
       </div>
-      <div className="grid justify-center gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <div
+        className={cn(
+          'grid justify-center gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 xl:grid-cols-4',
+          {
+            'pointer-events-none': selectIsOpen,
+          },
+        )}
+      >
         {products.map((product) => (
           <ProductCard key={product.id} product={product} />
         ))}

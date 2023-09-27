@@ -27,9 +27,9 @@ export function CopyButton({
       {...props}
     >
       {isCopied ? (
-        <Icons.Check className="h-4 w-4" aria-hidden="true" />
+        <Icons.Check className="h-4 w-4 text-auxiliary" aria-hidden="true" />
       ) : (
-        <Icons.Copy className="h-4 w-4" aria-hidden="true" />
+        <Icons.Copy className="h-4 w-4 text-auxiliary" aria-hidden="true" />
       )}
       <span className="ml-2 font-semibold uppercase tracking-widest">
         {value}

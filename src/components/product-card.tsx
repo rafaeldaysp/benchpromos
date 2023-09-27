@@ -2,14 +2,11 @@ import Image from 'next/image'
 import Link from 'next/link'
 
 import { Icons } from '@/components/icons'
-import { AspectRatio } from '@/components/ui/aspect-ratio'
 import { Badge } from '@/components/ui/badge'
-import { buttonVariants } from '@/components/ui/button'
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
@@ -61,13 +58,25 @@ export function ProductCard({
     >
       <Card
         className={cn(
-          'relative flex flex-1 flex-col overflow-hidden transition-colors hover:bg-muted/50',
+          'flex flex-1 flex-col overflow-hidden transition-colors hover:bg-muted/50',
           className,
         )}
         {...props}
       >
-        <CardHeader className="p-4">
-          <AspectRatio>
+        <CardHeader className="relative flex flex-col justify-center p-3 pb-1.5 sm:hidden">
+          <CardTitle className="text-sm">
+            <span className="line-clamp-2">{product.name}</span>
+          </CardTitle>
+          {product.reviewUrl && (
+            <Badge className="w-fit px-1 py-[1px]">
+              <Icons.StarFilled className="mr-1 h-3 w-3" />
+              TESTADO NO CANAL
+            </Badge>
+          )}
+        </CardHeader>
+
+        <CardContent className="flex flex-1 items-center gap-3 p-3 pt-0 sm:flex-col sm:items-start sm:p-6">
+          <div className="relative aspect-square w-24 sm:w-full">
             <Image
               src={product.imageUrl}
               alt={product.name}
@@ -75,65 +84,85 @@ export function ProductCard({
               fill
               className="object-contain"
             />
-          </AspectRatio>
-        </CardHeader>
+          </div>
+          <main className="flex h-full flex-col justify-center gap-y-1.5 sm:h-fit sm:gap-y-2.5">
+            <CardTitle className="hidden sm:block">
+              <span className="line-clamp-3">{product.name}</span>
+            </CardTitle>
 
-        <CardContent className="flex-1 space-y-2.5 p-4 pt-0">
-          <CardTitle>{product.name}</CardTitle>
+            {product.reviewUrl && (
+              <Badge className="hidden w-fit sm:inline-flex">
+                <Icons.StarFilled className="mr-1" />
+                TESTADO PELO CANAL
+              </Badge>
+            )}
 
-          {product.reviewUrl && (
-            <Badge>
-              <Icons.StarFilled className="mr-1" />
-              TESTADO PELO CANAL
-            </Badge>
-          )}
-
-          <div className="flex flex-col">
-            <CardDescription>
-              Menor preço via <strong>{bestDeal.retailer.name}</strong>
-            </CardDescription>
-            <p>
-              <strong className="text-xl">
-                {priceFormatter.format(
-                  priceCalculator(
-                    bestDeal.price,
-                    bestDeal.coupon?.discount,
-                    bestDeal.cashback?.value,
-                  ) / 100,
-                )}
-              </strong>
-            </p>
-
-            {!!bestDeal.installments && !!bestDeal.totalInstallmentPrice && (
-              <span className="text-sm text-muted-foreground">
-                até <strong>{bestDeal.installments}x</strong> de{' '}
-                <strong>
+            <div className="flex flex-col">
+              <CardDescription className="hidden text-sm sm:inline-flex">
+                Menor preço via <strong>{bestDeal.retailer.name}</strong>
+              </CardDescription>
+              <p>
+                <strong className="text-xl">
                   {priceFormatter.format(
-                    bestDeal.totalInstallmentPrice /
-                      (100 * bestDeal.installments),
+                    priceCalculator(
+                      bestDeal.price,
+                      bestDeal.coupon?.discount,
+                      bestDeal.cashback?.value,
+                    ) / 100,
                   )}
                 </strong>{' '}
-                {bestDeal.price >= bestDeal.totalInstallmentPrice ? (
-                  <span>sem juros</span>
-                ) : (
-                  <span>com juros</span>
-                )}
-              </span>
-            )}
-          </div>
-          {bestDeal.coupon && (
-            <p className="flex flex-col">
-              <span className="text-sm text-muted-foreground">Com cupom</span>
-              <strong>{bestDeal.coupon.code}</strong>
-            </p>
-          )}
+                <span className="text-xs text-muted-foreground sm:text-sm">
+                  à vista{' '}
+                </span>
+              </p>
 
-          {bestDeal.cashback && (
-            <p className="text-sm font-bold">
-              {bestDeal.cashback.value}% de cashback com{' '}
-              {bestDeal.cashback.provider}
-            </p>
-          )}
+              {!!bestDeal.installments && !!bestDeal.totalInstallmentPrice && (
+                <span className="text-xs text-muted-foreground sm:text-sm">
+                  até{' '}
+                  <strong className="text-sm">{bestDeal.installments}x</strong>{' '}
+                  de{' '}
+                  <strong className="text-sm">
+                    {priceFormatter.format(
+                      bestDeal.totalInstallmentPrice /
+                        (100 * bestDeal.installments),
+                    )}
+                  </strong>{' '}
+                  <p className="hidden sm:inline-flex">
+                    {bestDeal.price >= bestDeal.totalInstallmentPrice ? (
+                      <span>sem juros</span>
+                    ) : (
+                      <span>com juros</span>
+                    )}
+                  </p>
+                </span>
+              )}
+            </div>
+            {bestDeal.coupon && (
+              <p className="flex flex-col text-sm">
+                <span className="text-xs text-muted-foreground sm:text-sm">
+                  Com cupom
+                </span>
+                <strong>{bestDeal.coupon.code}</strong>
+              </p>
+            )}
+
+            {bestDeal.cashback && (
+              <>
+                <strong className="hidden text-sm sm:inline-flex">
+                  {bestDeal.cashback.value}% de cashback com{' '}
+                  {bestDeal.cashback.provider}
+                </strong>
+                <p className="flex flex-col text-sm sm:hidden">
+                  <span className="text-xs text-muted-foreground">
+                    Com cashback
+                  </span>
+                  <strong>
+                    {bestDeal.cashback.value}% com {bestDeal.cashback.provider}
+                  </strong>
+                </p>
+              </>
+            )}
+          </main>
         </CardContent>
 
         {/* <CardFooter className="p-0">
