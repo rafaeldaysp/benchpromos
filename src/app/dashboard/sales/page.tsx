@@ -21,7 +21,12 @@ const GET_SALES_AND_PRODUCT = gql`
         review
         label
         coupon
-        cashback
+        cashback {
+          provider
+          value
+          video
+          affiliatedUrl
+        }
         createdAt
         categoryId
         productSlug

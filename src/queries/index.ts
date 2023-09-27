@@ -20,7 +20,6 @@ export const GET_SALES = gql`
         review
         label
         coupon
-        cashback
         createdAt
         categoryId
         productSlug
@@ -28,6 +27,12 @@ export const GET_SALES = gql`
         category {
           name
           slug
+        }
+        cashback {
+          provider
+          value
+          video
+          affiliatedUrl
         }
         commentsCount
         reactions {
@@ -49,6 +54,12 @@ export type GetSalesQuery = {
       category: Pick<Category, 'name' | 'slug'>
       commentsCount: number
       reactions: { content: string; users: { id: string }[] }[]
+      cashback: {
+        provider: string
+        value: number
+        affiliatedUrl: string
+        video?: string
+      }
     })[]
   }
 }

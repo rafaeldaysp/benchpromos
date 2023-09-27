@@ -14,6 +14,7 @@ const GET_CASHBACKS = gql`
       url
       affiliatedUrl
       retailerId
+      video
       retailer {
         id
         name

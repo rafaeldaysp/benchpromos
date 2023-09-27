@@ -64,6 +64,7 @@ const defaultValues: Partial<Inputs> = {
   affiliatedUrl: '',
   provider: '',
   url: '',
+  video: '',
 }
 
 interface CashbackFormProps {
@@ -238,6 +239,23 @@ export function CashbackForm({ mode = 'create', cashback }: CashbackFormProps) {
                 <Input
                   placeholder="https://www.cuponomia.com.br/ref/<id>"
                   aria-invalid={!!form.formState.errors.affiliatedUrl}
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="video"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Vídeo (Opcional)</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="https://youtube.com/embed/<id>"
+                  aria-invalid={!!form.formState.errors.video}
                   {...field}
                 />
               </FormControl>

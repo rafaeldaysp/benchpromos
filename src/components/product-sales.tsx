@@ -12,9 +12,12 @@ import { type Product } from '@/types'
 import { priceFormatter } from '@/utils/formatter'
 import { Icons } from './icons'
 import { Badge } from './ui/badge'
-import { Button, buttonVariants } from './ui/button'
+import { buttonVariants } from './ui/button'
 import { Card, CardContent, CardFooter, CardHeader } from './ui/card'
 import { ScrollArea } from './ui/scroll-area'
+import { Dialog } from './ui/dialog'
+import { CouponModal } from './coupon-modal'
+import { CashbackModal } from './cashback-modal'
 
 dayjs.extend(relativeTime)
 dayjs.locale('pt-br')
@@ -41,7 +44,7 @@ export function ProductSales({ product }: ProductSalesProps) {
   const sales = data.sales.list
 
   return (
-    <main>
+    <Dialog>
       <header className="flex items-center gap-x-2 rounded-t-xl border bg-muted p-4 text-sm font-semibold">
         <div className="relative mx-auto aspect-square h-20">
           <Image
@@ -110,50 +113,34 @@ export function ProductSales({ product }: ProductSalesProps) {
                     </span>
                   )}
                 </div>
-                <div className="sm:flex sm:flex-col sm:gap-2 lg:flex-row lg:gap-4">
+                <div className="flex flex-col gap-2 lg:flex-row lg:gap-4">
                   {sale.coupon && (
                     <section className="text-xs sm:text-sm">
-                      <p className="flex flex-col text-muted-foreground sm:hidden">
+                      <p className="flex flex-col text-muted-foreground lg:hidden">
                         Com cupom
-                        <span className="text-sm font-bold text-foreground sm:hidden">
+                        <span className="text-sm font-bold text-foreground">
                           {sale.coupon}
                         </span>
                       </p>
-                      <Button
-                        variant={'secondary'}
-                        onClick={(e) => e.preventDefault()}
-                        className="hidden h-fit w-full items-center justify-between gap-2 rounded-xl px-2 sm:flex sm:px-4 lg:w-56"
-                      >
-                        <h3 className="flex items-center font-semibold ">
-                          <Icons.Tag className="mr-2 h-3 w-3 text-auxiliary sm:h-4 sm:w-4" />
-                          Cupom disponível
-                        </h3>
-
-                        <Icons.ChevronRight className="h-4 w-4" />
-                      </Button>
+                      <CouponModal
+                        coupon={{ code: sale.coupon }}
+                        className="hidden lg:inline-flex lg:w-56"
+                      />
                     </section>
                   )}
 
                   {sale.cashback && (
                     <section className="text-xs sm:text-sm">
-                      <p className="flex flex-col text-muted-foreground sm:hidden">
+                      <p className="flex flex-col text-muted-foreground lg:hidden">
                         Com cashback
-                        <span className="text-sm font-bold text-foreground sm:hidden">
-                          {sale.cashback}
+                        <span className="text-sm font-bold text-foreground">
+                          {sale.cashback.value}% com {sale.cashback.provider}
                         </span>
                       </p>
-                      <Button
-                        variant={'secondary'}
-                        onClick={(e) => e.preventDefault()}
-                        className="hidden h-fit w-full items-center justify-between gap-2 rounded-xl px-2 sm:flex sm:px-4 lg:w-56"
-                      >
-                        <h3 className="flex items-center font-semibold ">
-                          <Icons.RotateCcw className="mr-2 h-3 w-3 text-auxiliary sm:h-4 sm:w-4" />
-                          Cashback
-                        </h3>
-
-                        <Icons.ChevronRight className="h-4 w-4" />
-                      </Button>
+                      <CashbackModal
+                        cashback={sale.cashback}
+                        className="hidden lg:inline-flex lg:w-56"
+                      />
                     </section>
                   )}
                 </div>
@@ -174,6 +161,6 @@ export function ProductSales({ product }: ProductSalesProps) {
           </Card>
         ))}
       </ScrollArea>
-    </main>
+    </Dialog>
   )
 }

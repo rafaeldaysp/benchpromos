@@ -15,7 +15,7 @@ export function CopyButton({
   return (
     <Button
       variant={variant}
-      size="sm"
+      className="h-fit w-full border-dashed px-6 py-4 text-base"
       onClick={(e) => {
         e.preventDefault()
         e.stopPropagation()
@@ -27,10 +27,13 @@ export function CopyButton({
       {...props}
     >
       {isCopied ? (
-        <Icons.Check className="h-3 w-3" aria-hidden="true" />
+        <Icons.Check className="h-4 w-4" aria-hidden="true" />
       ) : (
-        <Icons.Copy className="h-3 w-3" aria-hidden="true" />
+        <Icons.Copy className="h-4 w-4" aria-hidden="true" />
       )}
+      <span className="ml-2 font-semibold uppercase tracking-widest">
+        {value}
+      </span>
       <span className="sr-only">
         {isCopied ? 'Copiado' : 'Copiar para área de transferência'}
       </span>

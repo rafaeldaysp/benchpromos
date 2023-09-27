@@ -34,7 +34,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
 import { saleSchema } from '@/lib/validations/sale'
-import type { Category } from '@/types'
+import type { Cashback, Category } from '@/types'
 
 const saleLabels = ['LANÇAMENTO', 'BAIXOU', 'PREÇÃO', 'PARCELADO']
 
@@ -54,11 +54,16 @@ const UPDATE_SALE = gql`
   }
 `
 
-const GET_CATEGORIES = gql`
+const GET_CATEGORIES_AND_CASHBACKS = gql`
   query GetCategories {
     categories {
       id
       name
+    }
+    cashbacks {
+      id
+      provider
+      value
     }
   }
 `
@@ -67,7 +72,6 @@ type Inputs = z.infer<typeof saleSchema>
 
 const defaultValues: Partial<Inputs> = {
   caption: '',
-  cashback: '',
   coupon: '',
   imageUrl: '',
   label: '',
@@ -99,7 +103,8 @@ export function SaleForm({
 
   const { data } = useQuery<{
     categories: Omit<Category, 'subcategories'>[]
-  }>(GET_CATEGORIES, {
+    cashbacks: Pick<Cashback, 'id' | 'provider' | 'value'>[]
+  }>(GET_CATEGORIES_AND_CASHBACKS, {
     fetchPolicy: 'network-only',
     context: {
       headers: {
@@ -115,6 +120,15 @@ export function SaleForm({
     }))
 
     return categoryItems
+  }, [data])
+
+  const cashbackItems = React.useMemo(() => {
+    const cashbackItems = data?.cashbacks.map((cashback) => ({
+      label: `${cashback.provider} • ${cashback.value}%`,
+      value: cashback.id,
+    }))
+
+    return cashbackItems
   }, [data])
 
   const [mutateSale, { loading: isLoading }] = useMutation(
@@ -373,17 +387,27 @@ export function SaleForm({
 
         <FormField
           control={form.control}
-          name="cashback"
+          name="cashbackId"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Cashback (opcional)</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="5%"
-                  aria-invalid={!!form.formState.errors.cashback}
-                  {...field}
-                />
-              </FormControl>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione um cashback" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {cashbackItems?.map((cashbackItem) => (
+                    <SelectItem
+                      key={cashbackItem.value}
+                      value={cashbackItem.value}
+                    >
+                      {cashbackItem.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               <FormMessage />
             </FormItem>
           )}

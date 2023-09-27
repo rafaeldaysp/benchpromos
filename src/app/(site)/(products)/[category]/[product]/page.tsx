@@ -6,6 +6,8 @@ import { notFound } from 'next/navigation'
 
 import { getCurrentUser } from '@/app/_actions/user'
 import { AlertPrice } from '@/components/alert-price'
+import { CashbackModal } from '@/components/cashback-modal'
+import { CouponModal } from '@/components/coupon-modal'
 import { Icons } from '@/components/icons'
 import { ProductBenchmarks } from '@/components/product-benchmarks'
 import { ProductNavbar } from '@/components/product-navbar'
@@ -79,6 +81,8 @@ const GET_PRODUCT = gql`
         cashback {
           value
           provider
+          video
+          affiliatedUrl
         }
       }
       history {
@@ -217,41 +221,27 @@ export default async function ProductPage({ params }: ProductPageProps) {
                     )}
                 </div>
                 {bestDeal.coupon?.availability && (
-                  <Button
-                    variant={'secondary'}
-                    className="flex h-fit w-full items-center justify-between gap-2 rounded-xl border-dashed px-4"
-                  >
-                    <div className="flex flex-col items-start">
-                      <span className="flex items-center font-semibold">
-                        <Icons.Tag className="mr-2 h-4 w-4 text-auxiliary" />
-                        Cupom disponível
-                      </span>
+                  <CouponModal
+                    coupon={bestDeal.coupon}
+                    description={
                       <span className="text-muted-foreground">
                         {couponFormatter(bestDeal.coupon.discount)} de desconto
                         neste produto
                       </span>
-                    </div>
-                    <Icons.ChevronRight className="h-4 w-4" />
-                  </Button>
+                    }
+                  />
                 )}
 
                 {bestDeal.cashback && (
-                  <Button
-                    variant={'secondary'}
-                    className="flex h-fit w-full items-center justify-between gap-2 rounded-xl border-dashed px-4"
-                  >
-                    <div className="flex flex-col items-start">
-                      <span className="flex items-center font-semibold">
-                        <Icons.RotateCcw className="mr-2 h-4 w-4 text-auxiliary" />
-                        Cashback
-                      </span>
+                  <CashbackModal
+                    cashback={bestDeal.cashback}
+                    description={
                       <span className="text-muted-foreground">
                         {bestDeal.cashback.value}% de volta com{' '}
                         {bestDeal.cashback.provider}
                       </span>
-                    </div>
-                    <Icons.ChevronRight className="h-4 w-4" />
-                  </Button>
+                    }
+                  />
                 )}
               </div>
               <a
@@ -415,40 +405,28 @@ export default async function ProductPage({ params }: ProductPageProps) {
                   </main>
                   <div className="flex flex-col gap-2 lg:flex-row lg:gap-4">
                     {deal.coupon?.availability && (
-                      <Button
-                        variant={'secondary'}
-                        className="flex h-fit w-full items-center justify-between gap-2 rounded-xl border-dashed px-4 lg:w-fit"
-                      >
-                        <div className="flex flex-col items-start">
-                          <span className="flex items-center font-semibold">
-                            <Icons.Tag className="mr-2 h-4 w-4 text-auxiliary" />
-                            Cupom disponível
-                          </span>
+                      <CouponModal
+                        coupon={deal.coupon}
+                        className="lg:w-fit"
+                        description={
                           <span className="text-muted-foreground">
                             {couponFormatter(deal.coupon.discount)} de desconto
                             neste produto
                           </span>
-                        </div>
-                        <Icons.ChevronRight className="h-4 w-4" />
-                      </Button>
+                        }
+                      />
                     )}
                     {deal.cashback && (
-                      <Button
-                        variant={'secondary'}
-                        className="flex h-fit w-full items-center justify-between gap-2 rounded-xl border-dashed px-4 lg:w-fit"
-                      >
-                        <div className="flex flex-col items-start">
-                          <span className="flex items-center font-semibold">
-                            <Icons.RotateCcw className="mr-2 h-4 w-4 text-auxiliary" />
-                            Cashback
-                          </span>
+                      <CashbackModal
+                        cashback={deal.cashback}
+                        className="lg:w-fit"
+                        description={
                           <span className="text-muted-foreground">
-                            {bestDeal.cashback.value}% de volta com{' '}
-                            {bestDeal.cashback.provider}
+                            {deal.cashback.value}% de volta com{' '}
+                            {deal.cashback.provider}
                           </span>
-                        </div>
-                        <Icons.ChevronRight className="h-4 w-4" />
-                      </Button>
+                        }
+                      />
                     )}
                   </div>
                 </CardContent>
@@ -723,7 +701,7 @@ function AlertCard({
     <Dialog>
       <Card id="alert-card" className="overflow-hidden">
         {userAlertPrice && (
-          <CardHeader className="block bg-primary px-6 py-1 text-sm text-primary-foreground">
+          <CardHeader className="block bg-primary px-6 py-1 text-sm font-medium text-primary-foreground">
             Alerta em{' '}
             <strong>{priceFormatter.format(userAlertPrice / 100)}</strong>
           </CardHeader>

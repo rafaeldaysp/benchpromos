@@ -12,4 +12,5 @@ export const cashbackSchema = z.object({
     .string()
     .min(1, 'Campo obrigatório')
     .url('Endereço de afiliado inválido'),
+  video: z.string().optional(),
 })

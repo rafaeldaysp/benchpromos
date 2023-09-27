@@ -50,6 +50,7 @@ export type Cashback = {
   value: number
   url: string
   affiliatedUrl: string
+  video?: string
 }
 
 export type Filter = {
@@ -98,7 +99,7 @@ export type Sale = {
   review?: string
   label?: string
   coupon?: string
-  cashback?: string
+  cashbackId?: string
   createdAt: string
   productSlug?: string
 }

@@ -23,8 +23,10 @@ import {
 } from '@/components/ui/card'
 import { useMediaQuery } from '@/hooks/use-media-query'
 import { cn } from '@/lib/utils'
-import { type Reaction } from '@/types'
+import { type Cashback, type Reaction } from '@/types'
 import { priceFormatter } from '@/utils/formatter'
+import { CashbackModal } from '../cashback-modal'
+import { CouponModal } from '../coupon-modal'
 import {
   ContextMenu,
   ContextMenuContent,
@@ -56,7 +58,7 @@ interface SaleCardProps extends React.HTMLAttributes<HTMLDivElement> {
     review?: string
     label?: string
     coupon?: string
-    cashback?: string
+    cashback?: Pick<Cashback, 'provider' | 'value' | 'video' | 'affiliatedUrl'>
     createdAt: string
     productSlug?: string
     category: {
@@ -77,10 +79,8 @@ export function SaleCard({
   apolloClient,
   ...props
 }: SaleCardProps) {
-  const [openDrawer, setOpenDrawer] = React.useState(false)
-
+  const [openMobileMenu, setOpenMobileMenu] = React.useState(false)
   const isSm = useMediaQuery('(max-width: 640px)')
-
   return (
     <>
       <ContextMenu>
@@ -95,181 +95,185 @@ export function SaleCard({
             {sale.highlight && (
               <BookmarkFilledIcon className="absolute -top-1 right-2 text-auxiliary sm:-top-0.5 sm:right-5" />
             )}
-            <Link
-              href={`/sale/${sale.slug}/${sale.id}`}
-              className="sm:select-text"
-            >
-              <CardHeader className="flex-row items-baseline space-y-0 p-3 text-xs sm:p-6 sm:text-sm">
-                <span className="flex-1">{sale.category.name}</span>
+
+            <CardHeader className="flex-row items-baseline space-y-0 p-3 text-xs sm:p-6 sm:text-sm">
+              <span className="flex-1">{sale.category.name}</span>
+
+              {sale.label && (
+                <Badge className="px-1 py-[1px] text-xs sm:hidden">
+                  {sale.label}
+                </Badge>
+              )}
+
+              <time className="flex-1 text-end">
+                {dayjs(sale.createdAt).fromNow()}
+              </time>
+            </CardHeader>
+
+            <CardContent className="flex-1 space-y-1.5 p-3 py-0 sm:space-y-2 sm:p-6 sm:pt-0">
+              <CardTitle className="line-clamp-2 space-x-1 font-semibold leading-none tracking-tight max-sm:text-sm sm:line-clamp-3">
+                <Link href={`/sale/${sale.slug}/${sale.id}`}>{sale.title}</Link>
+              </CardTitle>
+
+              <div className="grid grid-cols-3 gap-x-3 sm:block sm:gap-x-0 sm:space-y-2">
+                <Link
+                  href={`/sale/${sale.slug}/${sale.id}`}
+                  className="flex h-full items-center"
+                >
+                  <div className="relative mx-auto aspect-square w-full select-none sm:w-8/12">
+                    <Image
+                      src={sale.imageUrl}
+                      alt={sale.title}
+                      className="rounded-lg object-contain"
+                      fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    />
+                  </div>
+                </Link>
+
+                {sale.caption && (
+                  <CardDescription className="line-clamp-3 max-sm:hidden">
+                    {sale.caption}
+                  </CardDescription>
+                )}
 
                 {sale.label && (
-                  <Badge className="px-1 py-[1px] text-xs sm:hidden">
+                  <Badge variant="default" className="hidden sm:inline-flex">
+                    <StarFilledIcon className="mr-1" />
                     {sale.label}
                   </Badge>
                 )}
+                <div className="col-span-2 flex flex-col justify-center space-y-1.5 text-[14px] sm:space-y-2">
+                  <div className="flex flex-col">
+                    <p>
+                      <strong className="text-xl sm:text-2xl">
+                        {priceFormatter.format(sale.price / 100)}
+                      </strong>{' '}
+                      <span className="text-xs text-muted-foreground sm:text-sm">
+                        à vista{' '}
+                      </span>
+                    </p>
 
-                <time className="flex-1 text-end">
-                  {dayjs(sale.createdAt).fromNow()}
-                </time>
-              </CardHeader>
-              <CardContent className="flex-1 space-y-1.5 p-3 py-0 sm:space-y-2 sm:p-6 sm:pt-0">
-                <CardTitle className="line-clamp-2 space-x-1 font-semibold leading-none tracking-tight max-sm:text-sm sm:line-clamp-3">
-                  {sale.title}
-                </CardTitle>
-
-                <div className="grid grid-cols-3 gap-x-3 sm:block sm:gap-x-0 sm:space-y-2">
-                  <div className="flex h-full items-center">
-                    <div className="relative mx-auto aspect-square w-full select-none sm:w-8/12">
-                      <Image
-                        src={sale.imageUrl}
-                        alt={sale.title}
-                        className="rounded-lg object-contain"
-                        fill
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                      />
-                    </div>
-                  </div>
-
-                  {sale.caption && (
-                    <CardDescription className="line-clamp-3 max-sm:hidden">
-                      {sale.caption}
-                    </CardDescription>
-                  )}
-
-                  {sale.label && (
-                    <Badge variant="default" className="hidden sm:inline-flex">
-                      <StarFilledIcon className="mr-1" />
-                      {sale.label}
-                    </Badge>
-                  )}
-                  <div className="col-span-2 flex flex-col justify-center space-y-1.5 text-[14px] sm:space-y-2">
-                    <div className="flex flex-col">
-                      <p>
-                        <strong className="text-xl sm:text-2xl">
-                          {priceFormatter.format(sale.price / 100)}
+                    {!!sale.installments && !!sale.totalInstallmentPrice && (
+                      <span className="text-muted-foreground max-sm:text-xs">
+                        ou{' '}
+                        <strong className="max-sm:text-sm">
+                          {priceFormatter.format(
+                            sale.totalInstallmentPrice / 100,
+                          )}
                         </strong>{' '}
-                        <span className="text-xs text-muted-foreground sm:text-sm">
-                          à vista{' '}
-                        </span>
-                      </p>
-
-                      {!!sale.installments && !!sale.totalInstallmentPrice && (
-                        <span className="text-muted-foreground max-sm:text-xs">
-                          ou{' '}
-                          <strong className="max-sm:text-sm">
+                        em{' '}
+                        <strong className="max-sm:text-sm">
+                          {sale.installments}x
+                        </strong>{' '}
+                        <p className="hidden sm:inline">
+                          {' '}
+                          de{' '}
+                          <strong>
                             {priceFormatter.format(
-                              sale.totalInstallmentPrice / 100,
+                              sale.totalInstallmentPrice /
+                                (100 * sale.installments),
                             )}
-                          </strong>{' '}
-                          em{' '}
-                          <strong className="max-sm:text-sm">
-                            {sale.installments}x
-                          </strong>{' '}
-                          <p className="hidden sm:inline">
-                            {' '}
-                            de{' '}
-                            <strong>
-                              {priceFormatter.format(
-                                sale.totalInstallmentPrice /
-                                  (100 * sale.installments),
-                              )}
-                            </strong>
-                          </p>
-                        </span>
-                      )}
-                    </div>
-
-                    <footer className="space-y-1.5">
-                      {sale.coupon && (
-                        <section className="text-xs sm:text-sm">
-                          <p className="flex flex-col text-muted-foreground sm:hidden">
-                            Com cupom
-                            <span className="text-sm font-bold text-foreground sm:hidden">
-                              {sale.coupon}
-                            </span>
-                          </p>
-                          <Button
-                            variant={'secondary'}
-                            onClick={(e) => e.preventDefault()}
-                            className="hidden h-fit w-fit items-center justify-between gap-2 rounded-xl px-2 sm:flex sm:w-full sm:px-4"
-                          >
-                            <h3 className="flex items-center font-semibold ">
-                              <Icons.Tag className="mr-2 h-3 w-3 text-auxiliary sm:h-4 sm:w-4" />
-                              Cupom disponível
-                            </h3>
-
-                            <Icons.ChevronRight className="h-4 w-4" />
-                          </Button>
-                        </section>
-                      )}
-
-                      {sale.cashback && (
-                        <section className="text-xs sm:text-sm">
-                          <p className="flex flex-col text-muted-foreground sm:hidden">
-                            Com cashback
-                            <span className="text-sm font-bold text-foreground sm:hidden">
-                              {sale.cashback}
-                            </span>
-                          </p>
-                          <Button
-                            variant={'secondary'}
-                            onClick={(e) => e.preventDefault()}
-                            className="hidden h-fit w-fit items-center justify-between gap-2 rounded-xl px-2 sm:flex sm:w-full sm:px-4"
-                          >
-                            <h3 className="flex items-center font-semibold ">
-                              <Icons.RotateCcw className="mr-2 h-3 w-3 text-auxiliary sm:h-4 sm:w-4" />
-                              Cashback
-                            </h3>
-
-                            <Icons.ChevronRight className="h-4 w-4" />
-                          </Button>
-                        </section>
-                      )}
-
-                      <div>
-                        <Button
-                          onClick={(e) => {
-                            e.preventDefault()
-                            window.open(sale.url, '_blank')
-                          }}
-                          className="hidden h-fit w-full rounded-xl sm:inline-flex"
-                        >
-                          <span className="mr-2">ACESSAR</span>
-                          <Icons.ExternalLink className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </footer>
+                          </strong>
+                        </p>
+                      </span>
+                    )}
                   </div>
-                </div>
-              </CardContent>
-            </Link>
-            <CardFooter className="flex items-center justify-between gap-x-1.5 p-3 pt-1.5 sm:p-6 sm:pt-0">
-              <div className="flex items-center gap-x-1.5">
-                <Button
-                  size={'icon'}
-                  variant={'ghost'}
-                  className="w-6 shrink-0 sm:hidden"
-                  onClick={() => setOpenDrawer(true)}
-                >
-                  <Icons.MoreVertical className="h-4 w-4" />
-                </Button>
-                <Reactions
-                  saleId={sale.id}
-                  userId={user?.id}
-                  reactions={sale.reactions}
-                  apolloClient={apolloClient}
-                />
-              </div>
 
+                  <footer className="space-y-1.5">
+                    {sale.coupon && (
+                      <section className="text-xs sm:text-sm">
+                        <p className="flex flex-col text-muted-foreground sm:hidden">
+                          Com cupom
+                          <span className="text-sm font-bold text-foreground sm:hidden">
+                            {sale.coupon}
+                          </span>
+                        </p>
+
+                        <CouponModal
+                          className="hidden sm:inline-flex"
+                          coupon={{ code: sale.coupon }}
+                        />
+                      </section>
+                    )}
+
+                    {sale.cashback && (
+                      <section className="text-xs sm:text-sm">
+                        <p className="flex flex-col text-muted-foreground sm:hidden">
+                          Com cashback
+                          <span className="text-sm font-bold text-foreground sm:hidden">
+                            {sale.cashback.value}% com {sale.cashback.provider}
+                          </span>
+                        </p>
+                        <CashbackModal
+                          cashback={sale.cashback}
+                          className="hidden sm:inline-flex"
+                        />
+                      </section>
+                    )}
+
+                    <div>
+                      <a
+                        href={sale.url}
+                        target="_blank"
+                        className={cn(
+                          buttonVariants(),
+                          'hidden h-fit w-full rounded-xl font-semibold sm:inline-flex',
+                        )}
+                      >
+                        <span className="mr-2">ACESSAR</span>
+                        <Icons.ExternalLink
+                          className="h-4 w-4"
+                          strokeWidth={3}
+                        />
+                      </a>
+                    </div>
+                  </footer>
+                </div>
+              </div>
+            </CardContent>
+
+            <CardFooter className="block space-y-1.5 p-3 pt-1.5 sm:p-6 sm:pt-0">
+              <div className="flex w-full items-center justify-between gap-x-1.5">
+                <div className="flex items-center gap-x-1.5">
+                  <Button
+                    size={'icon'}
+                    variant={'ghost'}
+                    className="w-6 shrink-0 sm:hidden"
+                    onClick={() => setOpenMobileMenu(true)}
+                  >
+                    <Icons.MoreVertical className="h-4 w-4" />
+                  </Button>
+                  <Reactions
+                    saleId={sale.id}
+                    userId={user?.id}
+                    reactions={sale.reactions}
+                    apolloClient={apolloClient}
+                  />
+                </div>
+
+                <Link
+                  href={`/sale/${sale.slug}/${sale.id}#comments`}
+                  className={cn(
+                    buttonVariants({ variant: 'ghost', size: 'icon' }),
+                    'shrink-0',
+                  )}
+                >
+                  <span className="mr-1 text-sm">
+                    {sale.commentsCount ?? 0}
+                  </span>
+                  <Icons.MessageCircle className="h-4 w-4" />
+                </Link>
+              </div>
               <Link
-                href={`/sale/${sale.slug}/${sale.id}#comments`}
+                href={`/`}
                 className={cn(
-                  buttonVariants({ variant: 'ghost', size: 'icon' }),
-                  'shrink-0',
+                  buttonVariants({ variant: 'default' }),
+                  'h-fit w-full rounded-xl py-1.5 font-semibold sm:hidden',
                 )}
               >
-                <span className="mr-1 text-sm">{sale.commentsCount ?? 0}</span>
-                <Icons.MessageCircle className="h-4 w-4" />
+                VISUALIZAR
+                <Icons.ChevronRight className="ml-1 h-4 w-4" strokeWidth={3} />
               </Link>
             </CardFooter>
           </Card>
@@ -326,7 +330,11 @@ export function SaleCard({
           )}
         </ContextMenuContent>
       </ContextMenu>
-      <MobileMenu open={openDrawer} setOpen={setOpenDrawer} sale={sale} />
+      <MobileMenu
+        open={openMobileMenu}
+        setOpen={setOpenMobileMenu}
+        sale={sale}
+      />
     </>
   )
 }
@@ -355,11 +363,14 @@ function MobileMenu({ open, setOpen, sale }: MobileMenuProps) {
       onClose={() => setOpen(false)}
     >
       <DrawerContent
-        className={cn('h-full max-h-[70%] rounded-t-xl sm:hidden', {
-          'overflow-y-hidden': snap !== 1,
-        })}
+        className={cn(
+          'fixed h-full max-h-[70%] space-y-4 rounded-t-2xl sm:hidden',
+          {
+            'overflow-y-hidden': snap !== 1,
+          },
+        )}
       >
-        <div className="mx-auto mb-8 h-1.5 w-12 shrink-0 rounded-full bg-accent" />
+        <div className="relative -top-4 left-1/2 h-1.5 w-12 shrink-0 -translate-x-1/2 rounded-full bg-accent" />
         <main className="flex flex-col space-y-1">
           <Link
             href={`/sale/${sale.slug}/${sale.id}#comments`}
