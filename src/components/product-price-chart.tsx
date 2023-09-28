@@ -1,24 +1,26 @@
 'use client'
 
+import { gql, useSuspenseQuery } from '@apollo/client'
 import dayjs from 'dayjs'
 import 'dayjs/locale/pt-br'
 import { useTheme } from 'next-themes'
-
-import { priceFormatter } from '@/utils/formatter'
+import * as React from 'react'
 import {
   Area,
   AreaChart,
   CartesianGrid,
-  ResponsiveContainer,
   Tooltip as ChartTooltip,
+  ResponsiveContainer,
   XAxis,
   YAxis,
 } from 'recharts'
-import { Toggle } from './ui/toggle'
-import { Icons } from './icons'
-import { Popover, PopoverContent, PopoverTrigger } from './ui/popover'
-import { buttonVariants } from './ui/button'
+
 import { cn } from '@/lib/utils'
+import { priceFormatter } from '@/utils/formatter'
+import { Icons } from './icons'
+import { buttonVariants } from './ui/button'
+import { Popover, PopoverContent, PopoverTrigger } from './ui/popover'
+import { Toggle } from './ui/toggle'
 
 dayjs.locale('pt-br')
 
@@ -32,7 +34,7 @@ const fromNowOptions = [
     value: 60,
   },
   {
-    label: '90 dias',
+    label: '3 meses',
     value: 90,
   },
   {
@@ -41,21 +43,55 @@ const fromNowOptions = [
   },
 ]
 
-interface PriceChartProps {
-  data: {
-    lowestPrice: number
-    date: string
-  }[]
+const GET_PRODUCT_HISTORY = gql`
+  query ($input: GetProductHistoryInput!) {
+    productHistory(productHistoryInput: $input) {
+      dailyHistory {
+        lowestPrice
+        date
+      }
+      minPeriodPriceDay {
+        date
+        lowestPrice
+      }
+    }
+  }
+`
+type DailyHistory = {
+  lowestPrice: number
+  date: string
 }
-export default function PriceChart({ data }: PriceChartProps) {
+interface PriceChartProps {
+  productSlug: string
+}
+
+export default function PriceChart({ productSlug }: PriceChartProps) {
+  const [periodInDays, setPeriodInDays] = React.useState(30)
+
+  const { data, refetch } = useSuspenseQuery<{
+    productHistory: {
+      dailyHistory: DailyHistory[]
+      minPeriodPriceDay?: DailyHistory
+    }
+  }>(GET_PRODUCT_HISTORY, {
+    variables: {
+      input: {
+        periodInDays,
+        productId: productSlug,
+      },
+    },
+    fetchPolicy: 'cache-and-network',
+    refetchWritePolicy: 'overwrite',
+  })
+  const minPeriodPriceDay = data?.productHistory.minPeriodPriceDay
+  const dailyHistory = data?.productHistory.dailyHistory
+
   const { theme, systemTheme } = useTheme()
 
   const accentColor =
     theme === 'dark' || (theme === 'system' && systemTheme === 'dark')
       ? '#a3a3a3'
       : '#737373'
-
-  const minPriceDay = data[0] // isso virá do backend
 
   return (
     <main className="space-y-4">
@@ -66,50 +102,62 @@ export default function PriceChart({ data }: PriceChartProps) {
               variant={'primary'}
               className="h-fit px-2 py-1 text-muted-foreground data-[state=on]:shadow"
               key={option.value}
+              pressed={periodInDays === option.value}
+              onPressedChange={() => {
+                setPeriodInDays(option.value)
+                refetch({
+                  input: {
+                    periodInDays: option.value,
+                    productId: productSlug,
+                  },
+                })
+              }}
             >
               {option.label}
             </Toggle>
           ))}
         </nav>
-        <Popover>
-          <PopoverTrigger
-            className={cn(
-              buttonVariants({ variant: 'outline' }),
-              'flex gap-x-2 px-2 py-1',
-            )}
-          >
-            <span className="hidden items-center gap-x-1 sm:flex">
-              <h3 className="text-center text-sm text-muted-foreground">
-                Menor preço:
-              </h3>
-              <span className="text-center">
-                {priceFormatter.format(minPriceDay.lowestPrice / 100)}
+        {minPeriodPriceDay && (
+          <Popover>
+            <PopoverTrigger
+              className={cn(
+                buttonVariants({ variant: 'outline' }),
+                'flex gap-x-2 px-2 py-1',
+              )}
+            >
+              <span className="hidden items-center gap-x-1 sm:flex">
+                <h3 className="text-center text-sm text-muted-foreground">
+                  Menor preço:
+                </h3>
+                <span className="text-center">
+                  {priceFormatter.format(minPeriodPriceDay?.lowestPrice / 100)}
+                </span>
               </span>
-            </span>
-            <Icons.HelpCircle className="h-4 w-4 text-foreground" />
-          </PopoverTrigger>
-          <PopoverContent className="flex w-fit flex-col items-center justify-center">
-            <h3 className="font-semibold">
-              {dayjs().format('DD[ de] MMMM YYYY')}
-            </h3>
-            <span className="font-medium text-muted-foreground">
-              {priceFormatter.format(minPriceDay.lowestPrice / 100)}
-            </span>
-            <h3 className="flex items-center pt-2 text-sm text-success sm:hidden">
-              <Icons.Check className="mr-1 h-4 w-4 text-success" />
-              Menor preço
-            </h3>
-          </PopoverContent>
-        </Popover>
+              <Icons.HelpCircle className="h-4 w-4 text-foreground" />
+            </PopoverTrigger>
+            <PopoverContent className="flex w-fit flex-col items-center justify-center">
+              <h3 className="font-semibold">
+                {dayjs().format('DD[ de] MMMM YYYY')}
+              </h3>
+              <span className="font-medium text-muted-foreground">
+                {priceFormatter.format(minPeriodPriceDay.lowestPrice / 100)}
+              </span>
+              <h3 className="flex items-center pt-2 text-sm text-success sm:hidden">
+                <Icons.Check className="mr-1 h-4 w-4 text-success" />
+                Menor preço
+              </h3>
+            </PopoverContent>
+          </Popover>
+        )}
       </section>
       <ResponsiveContainer width="100%" height={300}>
         <AreaChart
           width={500}
           height={200}
-          data={data}
+          data={dailyHistory}
           margin={{
             top: 10,
-            right: 0,
+            right: 5,
             left: 40,
             bottom: 0,
           }}
@@ -131,7 +179,8 @@ export default function PriceChart({ data }: PriceChartProps) {
             tickFormatter={(value) => dayjs(value).format('DD MMM')}
             dataKey="date"
             tickLine={false}
-            tickMargin={6}
+            tickMargin={10}
+            minTickGap={14}
             fontSize={14}
             axisLine={false}
             stroke={accentColor}

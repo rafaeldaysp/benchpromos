@@ -7,12 +7,14 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
 import { priceFormatter } from '@/utils/formatter'
 import { priceCalculator } from '@/utils/price-calculator'
+import { buttonVariants } from './ui/button'
 
 interface ProductCardProps extends React.HTMLAttributes<HTMLDivElement> {
   product: {
@@ -64,15 +66,17 @@ export function ProductCard({
         {...props}
       >
         <CardHeader className="relative flex flex-col justify-center p-3 pb-1.5 sm:hidden">
+          {product.reviewUrl && (
+            <span className="text-center">
+              <Badge className="w-fit px-1 py-[1px]">
+                <Icons.StarFilled className="mr-1 h-3 w-3" />
+                TESTADO NO CANAL
+              </Badge>
+            </span>
+          )}
           <CardTitle className="text-sm">
             <span className="line-clamp-2">{product.name}</span>
           </CardTitle>
-          {product.reviewUrl && (
-            <Badge className="w-fit px-1 py-[1px]">
-              <Icons.StarFilled className="mr-1 h-3 w-3" />
-              TESTADO NO CANAL
-            </Badge>
-          )}
         </CardHeader>
 
         <CardContent className="flex flex-1 items-center gap-3 p-3 pt-0 sm:flex-col sm:items-start sm:p-6">
@@ -165,19 +169,20 @@ export function ProductCard({
           </main>
         </CardContent>
 
-        {/* <CardFooter className="p-0">
-        <a
-          href="#"
-          target="_blank"
-          rel="noreferrer"
-          className={cn(
-            buttonVariants({ variant: 'secondary' }),
-            'w-full rounded-none',
-          )}
-        >
-          Acessar
-        </a>
-      </CardFooter> */}
+        <CardFooter className="p-0 sm:hidden">
+          <a
+            href="#"
+            target="_blank"
+            rel="noreferrer"
+            className={cn(
+              buttonVariants({ variant: 'secondary' }),
+              'h-fit w-full rounded-b-xl rounded-t-none py-1 font-semibold',
+            )}
+          >
+            Ver produto
+            <Icons.ChevronRight className="ml-1 h-4 w-4" strokeWidth={3} />
+          </a>
+        </CardFooter>
       </Card>
     </Link>
   )

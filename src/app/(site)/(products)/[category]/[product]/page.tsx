@@ -85,10 +85,6 @@ const GET_PRODUCT = gql`
           affiliatedUrl
         }
       }
-      history {
-        date
-        lowestPrice
-      }
       benchmarksResults: benchmarks {
         id
         result
@@ -123,10 +119,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
         coupon: Coupon
         cashback: Cashback
       })[]
-      history: {
-        date: string
-        lowestPrice: number
-      }[]
+
       benchmarksResults: (Omit<BenchmarkResult, 'productId' | 'benchmarkId'> & {
         benchmark: Omit<Benchmark, 'id'>
       })[]
@@ -461,7 +454,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
         <Separator className="my-4" />
         <article className="space-y-4 md:gap-x-8 lg:grid lg:grid-cols-3 lg:space-y-0 xl:grid-cols-5">
           <div className="lg:col-span-2 xl:col-span-3">
-            <PriceChart data={product.history} />
+            <PriceChart productSlug={slug} />
           </div>
           <aside className="flex flex-col gap-y-2 xl:col-span-2">
             <AlertCard

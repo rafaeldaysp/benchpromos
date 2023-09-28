@@ -5,7 +5,7 @@ import { useSearchParams } from 'next/navigation'
 import * as React from 'react'
 
 import { useMediaQuery } from '@/hooks/use-media-query'
-import { cn } from '@/lib/utils'
+// import { cn } from '@/lib/utils'
 import {
   Bar,
   BarChart,
@@ -14,9 +14,10 @@ import {
   ResponsiveContainer,
   XAxis,
   YAxis,
-  type LabelProps,
+  // type LabelProps,
+  LabelList,
 } from 'recharts'
-import { Card, CardContent, CardHeader } from '../ui/card'
+// import { Card, CardContent, CardHeader } from '../ui/card'
 
 interface BenchmarkChartProps {
   results: {
@@ -128,7 +129,7 @@ export function BenchmarkChart({ results }: BenchmarkChartProps) {
         <Bar
           dataKey="result"
           className="cursor-pointer"
-          label={RenderCustomBarLabel}
+          // label={RenderCustomBarLabel}
           name="Resultado"
           radius={[0, 4, 4, 0]}
           onClick={(data) => {
@@ -140,6 +141,7 @@ export function BenchmarkChart({ results }: BenchmarkChartProps) {
               : setSelected((prev) => [...prev, productSlug])
           }}
         >
+          <LabelList dataKey="result" position="insideRight" stroke="#f9fafb" />
           {results?.map((result, index) => {
             return (
               <Cell
@@ -158,48 +160,48 @@ export function BenchmarkChart({ results }: BenchmarkChartProps) {
   )
 }
 
-const RenderCustomBarLabel = ({ x, y, width, height, value }: LabelProps) => {
-  return (
-    <text
-      x={Number(x) + Number(width) - 20}
-      y={Number(y) + Number(height) / 2 + 5}
-      className="select-none fill-primary-foreground text-xs font-bold sm:text-base"
-      textAnchor="middle"
-    >
-      {value}
-    </text>
-  )
-}
+// const RenderCustomBarLabel = ({ x, y, width, height, value }: LabelProps) => {
+//   return (
+//     <text
+//       x={Number(x) + Number(width) - 20}
+//       y={Number(y) + Number(height) / 2 + 5}
+//       className="select-none fill-primary-foreground text-xs font-bold sm:text-base"
+//       textAnchor="middle"
+//     >
+//       {value}
+//     </text>
+//   )
+// }
 
-interface CustomTooltipProps {
-  active?: boolean
-  payload?: { value: number }[]
-  label?: string
-  targetProduct?: string
-}
-const RenderCustomTooltip = ({
-  active,
-  payload,
-  label,
-  targetProduct,
-}: CustomTooltipProps) => {
-  if (active && payload && payload.length) {
-    return (
-      <Card className="bg-card/95">
-        <CardHeader className="w-40 p-4 sm:w-64 sm:p-6">
-          <p className="text-xs font-medium sm:text-sm">{label}</p>
-        </CardHeader>
-        <CardContent className="p-4 pt-0 sm:p-6 sm:pt-0">
-          <p
-            className={cn('text-sm font-bold text-primary sm:text-base', {
-              'text-[#d97706]': targetProduct && label?.includes(targetProduct),
-            })}
-          >
-            Resultado: {payload[0].value}
-          </p>
-        </CardContent>
-      </Card>
-    )
-  }
-  return null
-}
+// interface CustomTooltipProps {
+//   active?: boolean
+//   payload?: { value: number }[]
+//   label?: string
+//   targetProduct?: string
+// }
+// const RenderCustomTooltip = ({
+//   active,
+//   payload,
+//   label,
+//   targetProduct,
+// }: CustomTooltipProps) => {
+//   if (active && payload && payload.length) {
+//     return (
+//       <Card className="bg-card/95">
+//         <CardHeader className="w-40 p-4 sm:w-64 sm:p-6">
+//           <p className="text-xs font-medium sm:text-sm">{label}</p>
+//         </CardHeader>
+//         <CardContent className="p-4 pt-0 sm:p-6 sm:pt-0">
+//           <p
+//             className={cn('text-sm font-bold text-primary sm:text-base', {
+//               'text-[#d97706]': targetProduct && label?.includes(targetProduct),
+//             })}
+//           >
+//             Resultado: {payload[0].value}
+//           </p>
+//         </CardContent>
+//       </Card>
+//     )
+//   }
+//   return null
+// }
