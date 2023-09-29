@@ -2,7 +2,7 @@ import { getClient } from '@/lib/apollo'
 import { gql } from '@apollo/client'
 import { notFound } from 'next/navigation'
 
-import { getCurrentUser } from '@/app/_actions/user'
+import { getCurrentUser, getCurrentUserToken } from '@/app/_actions/user'
 import { UserCategoryAlertsForm } from '@/components/forms/user-category-alerts-form'
 import { ProductAlertCard } from '@/components/product-alert-card'
 import { Separator } from '@/components/ui/separator'
@@ -35,7 +35,7 @@ const GET_CATEGORIES_AND_USER_ALERTS = gql`
 
 export default async function AlertsPage() {
   const user = await getCurrentUser()
-
+  const token = await getCurrentUserToken()
   if (!user) notFound()
 
   const { data } = await getClient().query<{
@@ -62,8 +62,8 @@ export default async function AlertsPage() {
   })
 
   const categories = data?.categories ?? []
-  const categoriesAlerts = data?.userAlerts.selectedCategories ?? []
-  const productsAlerts = data?.userAlerts.subscribedProducts ?? []
+  const categoriesAlerts = data?.userAlerts?.selectedCategories ?? []
+  const productsAlerts = data?.userAlerts?.subscribedProducts ?? []
 
   return (
     <div className="space-y-6">
@@ -74,7 +74,7 @@ export default async function AlertsPage() {
         </p>
       </div>
       <Separator />
-      <AlertsPermission />
+      <AlertsPermission token={token} />
       <UserCategoryAlertsForm
         selectedCategories={categoriesAlerts}
         categories={categories}

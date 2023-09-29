@@ -3,11 +3,28 @@
 import { useNotifications } from '@/hooks/use-notifications'
 import { Switch } from '../ui/switch'
 
-export function AlertsPermission() {
-  const { permission, requestPermission } = useNotifications()
+interface AlertsPermissionProps {
+  token?: string
+}
 
-  function handleCheckedChange(checked: boolean) {
+export function AlertsPermission({ token }: AlertsPermissionProps) {
+  const {
+    endpoint,
+    permission,
+    requestPermission,
+    allowedByUser,
+    updateSubscription,
+  } = useNotifications(token)
+
+  async function handleCheckedChange(checked: boolean) {
     requestPermission()
+    if (endpoint)
+      updateSubscription({
+        variables: {
+          endpoint,
+          allow: checked,
+        },
+      })
   }
 
   return (
@@ -27,8 +44,8 @@ export function AlertsPermission() {
           </div>
 
           <Switch
-            checked={permission === 'granted'}
-            onCheckedChange={(checked) => handleCheckedChange(checked)}
+            checked={permission === 'granted' && allowedByUser}
+            onCheckedChange={handleCheckedChange}
           />
         </fieldset>
       </div>

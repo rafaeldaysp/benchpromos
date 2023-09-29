@@ -22,6 +22,7 @@ import {
 } from '@/components/ui/form'
 import { userAlertsSchema } from '@/lib/validations/user-alerts'
 import { type Category } from '@/types'
+import { RadioGroup, RadioGroupItem } from '../ui/radio-group'
 
 const UPDATE_USER_ALERTS = gql`
   mutation UpdateUserAlerts($input: UpdateAllAlertsInput!) {
@@ -48,6 +49,7 @@ export function UserCategoryAlertsForm({
     resolver: zodResolver(userAlertsSchema),
     defaultValues: {
       selectedCategories,
+      notification: 'all',
     },
   })
 
@@ -64,7 +66,7 @@ export function UserCategoryAlertsForm({
     },
   )
 
-  async function onSubmit({ selectedCategories }: Inputs) {
+  async function onSubmit({ selectedCategories, notification }: Inputs) {
     const token = await getCurrentUserToken()
     updateUserAlerts({
       context: {
@@ -75,6 +77,7 @@ export function UserCategoryAlertsForm({
       variables: {
         input: {
           selectedCategories,
+          notification,
         },
       },
     })
@@ -83,6 +86,48 @@ export function UserCategoryAlertsForm({
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <FormField
+          control={form.control}
+          name="notification"
+          render={({ field }) => (
+            <FormItem className="space-y-3">
+              <FormLabel className="text-base">Notificar-me sobre...</FormLabel>
+              <FormControl>
+                <RadioGroup
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                  className="flex flex-col space-y-1"
+                >
+                  <FormItem className="flex items-center space-x-3 space-y-0">
+                    <FormControl>
+                      <RadioGroupItem value="all" />
+                    </FormControl>
+                    <FormLabel className="font-normal">
+                      Alertas configurados, categorias selecionadas e respostas
+                      aos meus comentários
+                    </FormLabel>
+                  </FormItem>
+                  <FormItem className="flex items-center space-x-3 space-y-0">
+                    <FormControl>
+                      <RadioGroupItem value="alerts_only" />
+                    </FormControl>
+                    <FormLabel className="font-normal">
+                      Apenas alertas configurados e categorias selecionadas
+                    </FormLabel>
+                  </FormItem>
+                  <FormItem className="flex items-center space-x-3 space-y-0">
+                    <FormControl>
+                      <RadioGroupItem value="none" />
+                    </FormControl>
+                    <FormLabel className="font-normal">Nada</FormLabel>
+                  </FormItem>
+                </RadioGroup>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
         <FormField
           control={form.control}
           name="selectedCategories"

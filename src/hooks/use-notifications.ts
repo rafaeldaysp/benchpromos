@@ -3,8 +3,6 @@ import { useQuery } from '@apollo/experimental-nextjs-app-support/ssr'
 import * as React from 'react'
 import { toast } from 'sonner'
 
-import { getCurrentUserToken } from '@/app/_actions/user'
-
 const GET_PUBLIC_KEY = gql`
   query Query {
     publicKey
@@ -19,15 +17,60 @@ const CREATE_SUBSCRIPTION = gql`
   }
 `
 
+const GET_SUBSCRIPTION = gql`
+  query GetSubscription($endpoint: String!) {
+    subscription(endpoint: $endpoint) {
+      notificationsAllowed
+    }
+  }
+`
+
+const UPDATE_SUBSCRIPTION = gql`
+  mutation UpdateSubscription($endpoint: String!, $allow: Boolean!) {
+    updateSubscription(endpoint: $endpoint, allow: $allow) {
+      notificationsAllowed
+    }
+  }
+`
+
 // const REMOVE_SUBSCRIPTION = gql``
 
-export const useNotifications = () => {
+export const useNotifications = (userToken?: string) => {
   const [permission, setPermission] =
     React.useState<NotificationPermission | null>(null)
 
+  const [allowedByUser, setAllowedByUser] = React.useState(false)
+
+  const [endpoint, setEndpoint] = React.useState('')
+
   const { refetch: fetchPublicKey } = useQuery(GET_PUBLIC_KEY, { skip: true })
 
+  const { refetch: fetchSubscription } = useQuery<{
+    subscription: {
+      notificationsAllowed: boolean
+    }
+  }>(GET_SUBSCRIPTION, {
+    context: {
+      headers: {
+        Authorization: `Bearer ${userToken}`,
+      },
+    },
+    errorPolicy: 'ignore',
+    skip: true,
+  })
+
   const [createSubscription] = useMutation(CREATE_SUBSCRIPTION)
+
+  const [updateSubscription] = useMutation(UPDATE_SUBSCRIPTION, {
+    context: {
+      headers: {
+        Authorization: `Bearer ${userToken}`,
+      },
+    },
+    onCompleted(data, _clientOptions) {
+      setAllowedByUser(data.updateSubscription.notificationsAllowed)
+    },
+  })
 
   React.useEffect(() => {
     setPermission(Notification.permission)
@@ -68,10 +111,8 @@ export const useNotifications = () => {
       const registration = await navigator.serviceWorker.ready
 
       let subscription = await registration.pushManager.getSubscription()
-
-      if (!subscription) {
-        const token = await getCurrentUserToken()
-
+      if (subscription) setEndpoint(subscription.endpoint)
+      else {
         const { data } = await fetchPublicKey()
 
         const publickey = data.publicKey
@@ -80,7 +121,7 @@ export const useNotifications = () => {
           userVisibleOnly: true,
           applicationServerKey: publickey,
         })
-
+        setEndpoint(subscription.endpoint)
         try {
           const keys = subscription.toJSON().keys
 
@@ -88,7 +129,7 @@ export const useNotifications = () => {
             errorPolicy: 'all',
             context: {
               headers: {
-                Authorization: `Bearer ${token}`,
+                Authorization: `Bearer ${userToken}`,
               },
             },
             variables: {
@@ -114,6 +155,14 @@ export const useNotifications = () => {
           )
         }
       }
+      const initialNotificationsAllowed = await fetchSubscription({
+        endpoint: subscription.endpoint,
+      })
+
+      setAllowedByUser(
+        initialNotificationsAllowed?.data?.subscription?.notificationsAllowed ??
+          false,
+      )
     }
 
     if (Notification.permission === 'granted') registerUserSubscription()
@@ -121,7 +170,10 @@ export const useNotifications = () => {
   }, [])
 
   return {
+    endpoint,
     permission,
+    allowedByUser,
+    updateSubscription,
     requestPermission,
   }
 }
