@@ -4,10 +4,10 @@ import { notFound } from 'next/navigation'
 
 import { getCurrentUserToken } from '@/app/_actions/user'
 import { UserCategoryAlertsForm } from '@/components/forms/user-category-alerts-form'
-import { ProductAlertCard } from '@/components/product-alert-card'
+import { ProductsAlerts } from '@/components/products-alerts'
 import { Separator } from '@/components/ui/separator'
 import { AlertsPermission } from '@/components/user/user-alerts-permission'
-import type { Cashback, Category, Coupon, Product } from '@/types'
+import type { Category } from '@/types'
 
 const GET_CATEGORIES_AND_USER_ALERTS = gql`
   query GetCategoriesAndUserAlerts {
@@ -17,26 +17,6 @@ const GET_CATEGORIES_AND_USER_ALERTS = gql`
     }
     userAlerts {
       selectedCategories
-      subscribedProducts {
-        price
-        product {
-          id
-          name
-          slug
-          imageUrl
-          deals {
-            price
-            availability
-            coupon {
-              discount
-              availability
-            }
-            cashback {
-              value
-            }
-          }
-        }
-      }
     }
   }
 `
@@ -49,17 +29,6 @@ export default async function AlertsPage() {
     categories: Pick<Category, 'name' | 'id'>[]
     userAlerts: {
       selectedCategories: string[]
-      subscribedProducts: {
-        price: number
-        product: Pick<Product, 'id' | 'imageUrl' | 'slug' | 'name'> & {
-          deals: {
-            price: number
-            availability: boolean
-            coupon: Coupon
-            cashback: Cashback
-          }[]
-        }
-      }[]
     }
   }>({
     query: GET_CATEGORIES_AND_USER_ALERTS,
@@ -73,7 +42,6 @@ export default async function AlertsPage() {
 
   const categories = data?.categories ?? []
   const categoriesAlerts = data?.userAlerts?.selectedCategories ?? []
-  const productsAlerts = data?.userAlerts?.subscribedProducts ?? []
 
   return (
     <div className="space-y-6">
@@ -99,15 +67,7 @@ export default async function AlertsPage() {
             desejado.
           </h6>
         </div>
-        <div className="grid flex-1 grid-cols-1 gap-2 sm:grid-cols-2 ">
-          {productsAlerts.map((productAlert) => (
-            <ProductAlertCard
-              key={productAlert.product.id}
-              product={productAlert.product}
-              subscribedPrice={productAlert.price}
-            />
-          ))}
-        </div>
+        <ProductsAlerts token={token} />
       </fieldset>
     </div>
   )

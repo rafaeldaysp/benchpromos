@@ -9,18 +9,18 @@ const GET_PUBLIC_KEY = gql`
   }
 `
 
-const CREATE_SUBSCRIPTION = gql`
-  mutation CreateSubscription($input: CreateSubscriptionInput!) {
-    createSubscription(createSubscriptionInput: $input) {
-      id
-    }
-  }
-`
-
 const GET_SUBSCRIPTION = gql`
   query GetSubscription($endpoint: String!) {
     subscription(endpoint: $endpoint) {
       notificationsAllowed
+    }
+  }
+`
+
+const CREATE_SUBSCRIPTION = gql`
+  mutation CreateSubscription($input: CreateSubscriptionInput!) {
+    createSubscription(createSubscriptionInput: $input) {
+      id
     }
   }
 `

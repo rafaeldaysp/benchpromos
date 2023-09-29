@@ -169,19 +169,14 @@ export function ProductCard({
           </main>
         </CardContent>
 
-        <CardFooter className="p-0 sm:hidden">
-          <a
-            href="#"
-            target="_blank"
-            rel="noreferrer"
-            className={cn(
-              buttonVariants({ variant: 'secondary' }),
-              'h-fit w-full rounded-b-xl rounded-t-none py-1 font-semibold',
-            )}
-          >
-            Ver produto
-            <Icons.ChevronRight className="ml-1 h-4 w-4" strokeWidth={3} />
-          </a>
+        <CardFooter
+          className={cn(
+            buttonVariants({ variant: 'secondary' }),
+            'h-fit rounded-t-none p-0 py-1.5 sm:hidden',
+          )}
+        >
+          Ver produto
+          <Icons.ChevronRight className="ml-1 h-4 w-4" strokeWidth={3} />
         </CardFooter>
       </Card>
     </Link>

@@ -1,6 +1,6 @@
 'use client'
 
-import { gql, useMutation } from '@apollo/client'
+import { gql, useMutation, useSuspenseQuery } from '@apollo/client'
 import * as React from 'react'
 import { toast } from 'sonner'
 
@@ -9,13 +9,33 @@ import { Icons } from '@/components/icons'
 import { PriceInput } from '@/components/price-input'
 import { Button } from '@/components/ui/button'
 import {
+  Dialog,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  DialogTrigger,
 } from '@/components/ui/dialog'
 import { priceFormatter } from '@/utils/formatter'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from './ui/card'
+import { Label } from './ui/label'
+import { Switch } from './ui/switch'
+
+const GET_PRODUCT_ALERT = gql`
+  query GetProductAlert($userAlertInput: UserProductAlertInput!) {
+    userProductAlert(userProductAlertInput: $userAlertInput) {
+      price
+    }
+  }
+`
 
 const UPDATE_PRODUCT_ALERT = gql`
   mutation UpdateProductAlert($productId: ID!, $price: Int) {
@@ -24,6 +44,81 @@ const UPDATE_PRODUCT_ALERT = gql`
     }
   }
 `
+
+export function AlertCard({
+  productId,
+  switchId,
+  productPrice,
+  token,
+}: {
+  productId: string
+  productPrice: number
+  switchId: string
+  token?: string
+}) {
+  const { data } = useSuspenseQuery<{
+    userProductAlert: {
+      price: number
+    } | null
+  }>(GET_PRODUCT_ALERT, {
+    context: {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+    variables: {
+      userAlertInput: {
+        identifier: productId,
+      },
+    },
+    errorPolicy: 'ignore',
+  })
+  const userAlertPrice = data?.userProductAlert?.price
+  return (
+    <Dialog>
+      <Card id="alert-card" className="overflow-hidden">
+        {userAlertPrice && (
+          <CardHeader className="block bg-primary px-6 py-1 text-sm font-medium text-primary-foreground">
+            Alerta em{' '}
+            <strong>{priceFormatter.format(userAlertPrice / 100)}</strong>
+          </CardHeader>
+        )}
+        <CardContent className="py-4">
+          <div className="flex items-start space-x-2">
+            <Icons.BellRing className="h-4 w-4 text-auxiliary" />
+            <Label
+              htmlFor={switchId}
+              className="flex flex-1 flex-col space-y-1"
+            >
+              <CardTitle>Quer economizar?</CardTitle>
+              <CardDescription>
+                Nós alertamos você quando o preço baixar
+              </CardDescription>
+            </Label>
+            <DialogTrigger asChild>
+              <div>
+                <Switch checked={!!userAlertPrice} id={switchId} />
+              </div>
+            </DialogTrigger>
+          </div>
+        </CardContent>
+        {userAlertPrice && (
+          <CardFooter className="pb-4">
+            <DialogTrigger asChild>
+              <Button variant="outline">Editar alerta</Button>
+            </DialogTrigger>
+          </CardFooter>
+        )}
+      </Card>
+
+      <AlertPrice
+        productId={productId}
+        userAlertPrice={userAlertPrice}
+        productPrice={productPrice}
+      />
+    </Dialog>
+  )
+}
 
 interface AlertPriceProps {
   productId: string
@@ -42,7 +137,7 @@ export function AlertPrice({
     onError(error) {
       toast.error(error.message)
     },
-    refetchQueries: ['GetUserProductAlert'],
+    refetchQueries: ['GetProductAlert', 'GetProductsAlerts'],
   })
 
   function incrementPrice() {

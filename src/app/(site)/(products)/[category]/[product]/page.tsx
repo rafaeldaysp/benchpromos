@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 
 import { getCurrentUser, getCurrentUserToken } from '@/app/_actions/user'
-import { AlertPrice } from '@/components/alert-price'
+import { AlertCard, AlertPrice } from '@/components/alert-price'
 import { CashbackModal } from '@/components/cashback-modal'
 import { CouponModal } from '@/components/coupon-modal'
 import { Icons } from '@/components/icons'
@@ -94,15 +94,6 @@ const GET_PRODUCT = gql`
     }
   }
 `
-
-const GET_USER_ALERT = gql`
-  query GetUserProductAlert($userAlertInput: UserProductAlertInput!) {
-    userProductAlert(userProductAlertInput: $userAlertInput) {
-      price
-    }
-  }
-`
-
 interface ProductPageProps {
   params: {
     product: string
@@ -113,25 +104,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
   const { product: slug } = params
 
   const token = await getCurrentUserToken()
-
-  const { data: userAlertData } = await getClient().query<{
-    userProductAlert: {
-      price: number
-    }
-  }>({
-    query: GET_USER_ALERT,
-    variables: {
-      userAlertInput: {
-        identifier: slug,
-      },
-    },
-    context: {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    },
-    errorPolicy: 'ignore',
-  })
 
   const { data, errors } = await getClient().query<{
     product: Product & {
@@ -163,7 +135,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   const product = data.product
   const bestDeal = product.deals[0]
-  const userAlertPrice = userAlertData?.userProductAlert?.price
 
   return (
     <main className="relative mx-auto space-y-8 px-4 py-10 sm:container">
@@ -271,8 +242,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
           <AlertCard
             productId={product.id}
             switchId="alert-top"
-            userAlertPrice={userAlertPrice}
             productPrice={bestDeal.price}
+            token={token}
           />
 
           <Card>
@@ -476,8 +447,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
             <AlertCard
               productId={product.id}
               switchId="alert-middle"
-              userAlertPrice={userAlertPrice}
               productPrice={bestDeal.price}
+              token={token}
             />
             {/* <Card>
               <CardContent className="py-4">
@@ -704,62 +675,5 @@ export default async function ProductPage({ params }: ProductPageProps) {
         )}
       </section>
     </main>
-  )
-}
-
-function AlertCard({
-  productId,
-  switchId,
-  userAlertPrice,
-  productPrice,
-}: {
-  productId: string
-  switchId: string
-  userAlertPrice?: number
-  productPrice: number
-}) {
-  return (
-    <Dialog>
-      <Card id="alert-card" className="overflow-hidden">
-        {userAlertPrice && (
-          <CardHeader className="block bg-primary px-6 py-1 text-sm font-medium text-primary-foreground">
-            Alerta em{' '}
-            <strong>{priceFormatter.format(userAlertPrice / 100)}</strong>
-          </CardHeader>
-        )}
-        <CardContent className="py-4">
-          <div className="flex items-start space-x-2">
-            <Icons.BellRing className="h-4 w-4 text-auxiliary" />
-            <Label
-              htmlFor={switchId}
-              className="flex flex-1 flex-col space-y-1"
-            >
-              <CardTitle>Quer economizar?</CardTitle>
-              <CardDescription>
-                Nós alertamos você quando o preço baixar
-              </CardDescription>
-            </Label>
-            <DialogTrigger asChild>
-              <div>
-                <Switch checked={!!userAlertPrice} id={switchId} />
-              </div>
-            </DialogTrigger>
-          </div>
-        </CardContent>
-        {userAlertPrice && (
-          <CardFooter className="pb-4">
-            <DialogTrigger asChild>
-              <Button variant="outline">Editar alerta</Button>
-            </DialogTrigger>
-          </CardFooter>
-        )}
-      </Card>
-
-      <AlertPrice
-        productId={productId}
-        userAlertPrice={userAlertPrice}
-        productPrice={productPrice}
-      />
-    </Dialog>
   )
 }
