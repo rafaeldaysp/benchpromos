@@ -61,12 +61,10 @@ export default async function BenchmarksPage({
 
   return (
     <Card className="lg:col-span-4 lg:h-fit">
-      <CardHeader>
-        <CardTitle>
-          <p className="text-center text-sm sm:text-base">{benchmarkName}</p>
-        </CardTitle>
+      <CardHeader className="px-3 text-center sm:px-8">
+        <CardTitle className="text-sm sm:text-base">{benchmarkName}</CardTitle>
       </CardHeader>
-      <CardContent className="p-3 pl-0 pt-0 sm:p-6 sm:px-8 sm:pt-0 lg:px-12">
+      <CardContent className="p-3 pl-0 pt-0 sm:px-8 sm:pb-6">
         <BenchmarkChart results={results} />
       </CardContent>
     </Card>

@@ -3,20 +3,20 @@
 import { useTheme } from 'next-themes'
 import { useSearchParams } from 'next/navigation'
 import * as React from 'react'
-
-import { useMediaQuery } from '@/hooks/use-media-query'
-// import { cn } from '@/lib/utils'
 import {
   Bar,
   BarChart,
   CartesianGrid,
   Cell,
+  // type LabelProps,
+  LabelList,
   ResponsiveContainer,
   XAxis,
   YAxis,
-  // type LabelProps,
-  LabelList,
 } from 'recharts'
+
+import { useMediaQuery } from '@/hooks/use-media-query'
+import { cn } from '@/lib/utils'
 // import { Card, CardContent, CardHeader } from '../ui/card'
 
 interface BenchmarkChartProps {
@@ -102,9 +102,8 @@ export function BenchmarkChart({ results }: BenchmarkChartProps) {
           tickCount={5}
           type="number"
           axisLine={false}
-          fontSize={isSm ? 10 : 14}
-          fontWeight={500}
           stroke={accentColor}
+          className="text-[10px] font-medium sm:text-sm"
         />
         <YAxis
           dataKey={createYAxisString}
@@ -112,9 +111,8 @@ export function BenchmarkChart({ results }: BenchmarkChartProps) {
           width={isSm ? 200 : 350}
           type="category"
           stroke={accentColor}
-          fontSize={isSm ? 10 : 14}
-          fontWeight={500}
           axisLine={false}
+          className="text-[10px] font-medium sm:text-sm"
         />
 
         {/* <Tooltip
@@ -145,11 +143,14 @@ export function BenchmarkChart({ results }: BenchmarkChartProps) {
           {results?.map((result, index) => {
             return (
               <Cell
-                fill={
-                  selected.includes(result.product.slug)
-                    ? 'url(#auxiliaryColor)'
-                    : 'url(#primaryColor)'
-                }
+                className={cn(
+                  'fill-primary transition-colors hover:fill-primary/80',
+                  {
+                    'fill-amber-500 hover:fill-amber-500/80': selected.includes(
+                      result.product.slug,
+                    ),
+                  },
+                )}
                 key={`cell-${index}`}
               />
             )

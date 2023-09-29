@@ -4,12 +4,11 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 
-import { getCurrentUser } from '@/app/_actions/user'
+import { getCurrentUser, getCurrentUserToken } from '@/app/_actions/user'
 import { AlertPrice } from '@/components/alert-price'
 import { CashbackModal } from '@/components/cashback-modal'
 import { CouponModal } from '@/components/coupon-modal'
 import { Icons } from '@/components/icons'
-import { ProductBenchmarks } from '@/components/product-benchmarks'
 import { ProductNavbar } from '@/components/product-navbar'
 import PriceChart from '@/components/product-price-chart'
 import { ProductSales } from '@/components/product-sales'
@@ -41,12 +40,10 @@ import type {
 } from '@/types'
 import { couponFormatter, priceFormatter } from '@/utils/formatter'
 import { priceCalculator } from '@/utils/price-calculator'
+import { BenchmarkChart } from '@/components/benchmarks/benchmark-chart'
 
 const GET_PRODUCT = gql`
-  query GetProduct(
-    $productInput: GetProductInput!
-    $userAlertInput: UserProductAlertInput!
-  ) {
+  query GetProduct($productInput: GetProductInput!) {
     product(getProductInput: $productInput) {
       id
       name
@@ -95,6 +92,11 @@ const GET_PRODUCT = gql`
         }
       }
     }
+  }
+`
+
+const GET_USER_ALERT = gql`
+  query GetUserProductAlert($userAlertInput: UserProductAlertInput!) {
     userProductAlert(userProductAlertInput: $userAlertInput) {
       price
     }
@@ -110,7 +112,26 @@ interface ProductPageProps {
 export default async function ProductPage({ params }: ProductPageProps) {
   const { product: slug } = params
 
-  const user = await getCurrentUser()
+  const token = await getCurrentUserToken()
+
+  const { data: userAlertData } = await getClient().query<{
+    userProductAlert: {
+      price: number
+    }
+  }>({
+    query: GET_USER_ALERT,
+    variables: {
+      userAlertInput: {
+        identifier: slug,
+      },
+    },
+    context: {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+    errorPolicy: 'ignore',
+  })
 
   const { data, errors } = await getClient().query<{
     product: Product & {
@@ -134,10 +155,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
         identifier: slug,
         hasDeals: true,
       },
-      userAlertInput: {
-        identifier: slug,
-        userId: user?.id,
-      },
     },
     errorPolicy: 'all',
   })
@@ -146,8 +163,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   const product = data.product
   const bestDeal = product.deals[0]
-  const userAlertPrice = data.userProductAlert?.price
-  const benchmarksResults = data.product.benchmarksResults
+  const userAlertPrice = userAlertData?.userProductAlert?.price
 
   return (
     <main className="relative mx-auto space-y-8 px-4 py-10 sm:container">
@@ -636,11 +652,23 @@ export default async function ProductPage({ params }: ProductPageProps) {
         </header>
         <Separator className="my-4" />
         {product.benchmarksResults.length > 0 ? (
-          <ProductBenchmarks
-            benchmarksResults={benchmarksResults}
-            productSlug={slug}
+          // <Card>
+          //   <CardHeader className="px-3 text-center sm:px-8">
+          //     <CardTitle className="text-sm sm:text-base">
+          //       {product.name}
+          //     </CardTitle>
+          //   </CardHeader>
+          //   <CardContent className="p-3 pl-0 pt-0 sm:px-8 sm:pb-6">
+          <BenchmarkChart
+            results={product.benchmarksResults.map((benchmarkResult) => ({
+              result: benchmarkResult.result,
+              description: benchmarkResult.description,
+              product: benchmarkResult.benchmark,
+            }))}
           />
         ) : (
+          //   </CardContent>
+          // </Card>
           <h3 className="text-sm text-muted-foreground">
             Não temos avaliações ou benchmarks disponíveis para este produto em
             nosso site no momento. Estamos trabalhando para fornecer informações

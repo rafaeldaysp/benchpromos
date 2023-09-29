@@ -6,16 +6,19 @@ import { AlertPrice } from '@/components/alert-price'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardFooter, CardTitle } from '@/components/ui/card'
 import { Dialog, DialogTrigger } from '@/components/ui/dialog'
+import { type Cashback, type Coupon, type Product } from '@/types'
 import { priceFormatter } from '@/utils/formatter'
+import { priceCalculator } from '@/utils/price-calculator'
 
 interface UserProductAlertCard {
   subscribedPrice: number
-  product: {
-    id: string
-    imageUrl: string
-    slug: string
-    name: string
-    deals: { price: number }[]
+  product: Pick<Product, 'id' | 'imageUrl' | 'slug' | 'name'> & {
+    deals: {
+      price: number
+      availability: boolean
+      coupon: Coupon
+      cashback: Cashback
+    }[]
   }
 }
 
@@ -23,10 +26,11 @@ export function ProductAlertCard({
   subscribedPrice,
   product,
 }: UserProductAlertCard) {
+  const bestDeal = product.deals[0]
   return (
     <Dialog>
       <Card className="relative flex select-none flex-col overflow-hidden transition-colors hover:bg-muted/50">
-        <CardContent className="p-3 pb-0 sm:space-y-3">
+        <CardContent className="p-3 sm:space-y-3">
           <CardTitle className="line-clamp-2 space-x-1 p-2 text-sm font-semibold">
             {product.name}
           </CardTitle>
@@ -46,9 +50,21 @@ export function ProductAlertCard({
             <div className="col-span-1 flex flex-col justify-center space-y-1">
               <div className="flex flex-col">
                 <span>Preço atual</span>
-                <strong className="text-lg text-foreground">
-                  {priceFormatter.format(product.deals[0].price / 100)}
-                </strong>
+                {bestDeal.availability ? (
+                  <strong className="text-lg text-foreground">
+                    {priceFormatter.format(
+                      priceCalculator(
+                        bestDeal.price,
+                        bestDeal.coupon?.availability
+                          ? bestDeal.coupon.discount
+                          : undefined,
+                        bestDeal.cashback?.value,
+                      ) / 100,
+                    )}
+                  </strong>
+                ) : (
+                  <strong className="text-destructive">INDISPONÍVEL</strong>
+                )}
               </div>
 
               <div className="flex flex-col">

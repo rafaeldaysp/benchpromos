@@ -2,23 +2,23 @@ import { getClient } from '@/lib/apollo'
 import { gql } from '@apollo/client'
 import { notFound } from 'next/navigation'
 
-import { getCurrentUser, getCurrentUserToken } from '@/app/_actions/user'
+import { getCurrentUserToken } from '@/app/_actions/user'
 import { UserCategoryAlertsForm } from '@/components/forms/user-category-alerts-form'
 import { ProductAlertCard } from '@/components/product-alert-card'
 import { Separator } from '@/components/ui/separator'
 import { AlertsPermission } from '@/components/user/user-alerts-permission'
-import type { Category } from '@/types'
+import type { Cashback, Category, Coupon, Product } from '@/types'
 
 const GET_CATEGORIES_AND_USER_ALERTS = gql`
-  query GetCategoriesAndUserAlerts($userId: String!) {
+  query GetCategoriesAndUserAlerts {
     categories {
       id
       name
     }
-    userAlerts(id: $userId) {
+    userAlerts {
       selectedCategories
       subscribedProducts {
-        subscribedPrice
+        price
         product {
           id
           name
@@ -26,6 +26,14 @@ const GET_CATEGORIES_AND_USER_ALERTS = gql`
           imageUrl
           deals {
             price
+            availability
+            coupon {
+              discount
+              availability
+            }
+            cashback {
+              value
+            }
           }
         }
       }
@@ -34,29 +42,31 @@ const GET_CATEGORIES_AND_USER_ALERTS = gql`
 `
 
 export default async function AlertsPage() {
-  const user = await getCurrentUser()
   const token = await getCurrentUserToken()
-  if (!user) notFound()
+  if (!token) notFound()
 
   const { data } = await getClient().query<{
     categories: Pick<Category, 'name' | 'id'>[]
     userAlerts: {
       selectedCategories: string[]
       subscribedProducts: {
-        subscribedPrice: number
-        product: {
-          id: string
-          imageUrl: string
-          slug: string
-          name: string
-          deals: { price: number }[]
+        price: number
+        product: Pick<Product, 'id' | 'imageUrl' | 'slug' | 'name'> & {
+          deals: {
+            price: number
+            availability: boolean
+            coupon: Coupon
+            cashback: Cashback
+          }[]
         }
       }[]
     }
   }>({
     query: GET_CATEGORIES_AND_USER_ALERTS,
-    variables: {
-      userId: user.id,
+    context: {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     },
     errorPolicy: 'ignore',
   })
@@ -94,7 +104,7 @@ export default async function AlertsPage() {
             <ProductAlertCard
               key={productAlert.product.id}
               product={productAlert.product}
-              subscribedPrice={productAlert.subscribedPrice}
+              subscribedPrice={productAlert.price}
             />
           ))}
         </div>

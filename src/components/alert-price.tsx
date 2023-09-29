@@ -42,7 +42,7 @@ export function AlertPrice({
     onError(error) {
       toast.error(error.message)
     },
-    refetchQueries: ['GetProduct'],
+    refetchQueries: ['GetUserProductAlert'],
   })
 
   function incrementPrice() {
