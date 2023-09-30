@@ -156,10 +156,10 @@ export default async function SalePage({ params }: SalePageProps) {
         )}
 
         {sale.review && (
-          <Card className="relative h-fit border-none py-2 shadow-none transition-colors hover:bg-muted/50">
+          <Card className="relative h-fit border-none py-2 shadow-none">
             <Icons.Quote className="absolute left-4 top-2 h-4 w-4 -translate-y-1/2 rotate-180 bg-background text-muted-foreground" />
             <Icons.Quote className="absolute bottom-2 right-4 h-4 w-4 translate-y-1/2 bg-background text-muted-foreground" />
-            <CardContent className="h-full rounded-xl border p-4 text-sm font-medium shadow">
+            <CardContent className="h-full rounded-xl border p-4 text-sm font-medium shadow transition-colors hover:bg-muted/50">
               {sale.review}
             </CardContent>
           </Card>
