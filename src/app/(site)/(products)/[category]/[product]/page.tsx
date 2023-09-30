@@ -4,8 +4,9 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 
-import { getCurrentUser, getCurrentUserToken } from '@/app/_actions/user'
-import { AlertCard, AlertPrice } from '@/components/alert-price'
+import { getCurrentUserToken } from '@/app/_actions/user'
+import { AlertCard } from '@/components/alert-price'
+import { BenchmarkChart } from '@/components/benchmarks/benchmark-chart'
 import { CashbackModal } from '@/components/cashback-modal'
 import { CouponModal } from '@/components/coupon-modal'
 import { Icons } from '@/components/icons'
@@ -13,7 +14,7 @@ import { ProductNavbar } from '@/components/product-navbar'
 import PriceChart from '@/components/product-price-chart'
 import { ProductSales } from '@/components/product-sales'
 import { Badge } from '@/components/ui/badge'
-import { Button, buttonVariants } from '@/components/ui/button'
+import { buttonVariants } from '@/components/ui/button'
 import {
   Card,
   CardContent,
@@ -22,11 +23,9 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { Dialog, DialogTrigger } from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
-import { Switch } from '@/components/ui/switch'
 import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table'
 import { cn } from '@/lib/utils'
 import type {
@@ -40,7 +39,6 @@ import type {
 } from '@/types'
 import { couponFormatter, priceFormatter } from '@/utils/formatter'
 import { priceCalculator } from '@/utils/price-calculator'
-import { BenchmarkChart } from '@/components/benchmarks/benchmark-chart'
 
 const GET_PRODUCT = gql`
   query GetProduct($productInput: GetProductInput!) {
@@ -140,7 +138,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
     <main className="relative mx-auto space-y-8 px-4 py-10 sm:container">
       <section className="space-y-4 md:gap-x-8 lg:grid lg:grid-cols-3 lg:space-y-0 xl:grid-cols-5">
         <div className="space-y-4 lg:col-span-2 xl:col-span-3">
-          <strong className="line-clamp-3 leading-none tracking-tight md:text-xl">
+          <strong className="line-clamp-4 leading-none tracking-tight md:line-clamp-3 md:text-xl">
             {product.name}
           </strong>
           <div className="flex flex-col gap-4 md:flex-row md:gap-0">
@@ -450,20 +448,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
               productPrice={bestDeal.price}
               token={token}
             />
-            {/* <Card>
-              <CardContent className="py-4">
-                <div className="flex items-start space-x-2">
-                  <Icons.Check className="h-4 w-4 text-auxiliary" />
-                  <Label className="flex flex-1 flex-col space-y-1">
-                    <CardTitle>O preço está muito bom</CardTitle>
-                    <CardDescription>
-                      Com base no histórico dos últimos 30 dias, o preço está
-                      muito bom
-                    </CardDescription>
-                  </Label>
-                </div>
-              </CardContent>
-            </Card> */}
           </aside>
         </article>
       </section>
@@ -582,8 +566,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
               </CardHeader>
               <CardContent className="p-4 pt-0">
                 <Card className="relative h-fit transition-colors hover:bg-muted/50">
-                  <Icons.Quote className="absolute left-4 top-0 h-4 w-4 -translate-y-1/2 rotate-180 bg-background " />
-                  <Icons.Quote className="absolute bottom-0 right-4 h-4 w-4 translate-y-1/2 bg-background" />
+                  <Icons.Quote className="absolute left-4 top-0 h-4 w-4 -translate-y-1/2 rotate-180 bg-background text-muted-foreground " />
+                  <Icons.Quote className="absolute bottom-0 right-4 h-4 w-4 translate-y-1/2 bg-background text-muted-foreground" />
                   <CardContent className="h-full p-4 text-sm font-medium">
                     {product.description}
                   </CardContent>

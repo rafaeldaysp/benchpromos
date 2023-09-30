@@ -58,7 +58,7 @@ interface SaleCardProps extends React.HTMLAttributes<HTMLDivElement> {
     review?: string
     label?: string
     coupon?: string
-    cashback?: Pick<Cashback, 'provider' | 'value' | 'video' | 'affiliatedUrl'>
+    cashback?: Omit<Cashback, 'id' | 'url'>
     createdAt: string
     productSlug?: string
     category: {
@@ -87,7 +87,7 @@ export function SaleCard({
         <ContextMenuTrigger disabled={isSm} asChild>
           <Card
             className={cn(
-              'relative flex select-none flex-col overflow-hidden transition-colors hover:bg-muted/50',
+              'relative flex select-none flex-col overflow-hidden transition-colors hover:bg-muted/50 sm:select-auto',
               className,
             )}
             {...props}

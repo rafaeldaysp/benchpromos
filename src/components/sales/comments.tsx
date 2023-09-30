@@ -266,6 +266,12 @@ export function Comment({ saleId, comment, replyToId, user }: CommentProps) {
                     value={input}
                     maxLength={1000}
                     onChange={(e) => setInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key == 'Enter' && e.shiftKey == false) {
+                        e.preventDefault()
+                        handleUpdateComment()
+                      }
+                    }}
                     placeholder="Editar comentário..."
                     className="relative w-full resize-none appearance-none overflow-hidden bg-transparent text-sm leading-tight focus:outline-none"
                   />
@@ -381,6 +387,12 @@ function CommentSubmit({ saleId, commentId, user }: CommentSubmitProps) {
             maxLength={1000}
             onChange={(e) => setCommentInput(e.target.value)}
             placeholder="Adicionar um comentário..."
+            onKeyDown={(e) => {
+              if (e.key == 'Enter' && e.shiftKey == false) {
+                e.preventDefault()
+                handleCreateComment()
+              }
+            }}
             className="w-full resize-none appearance-none overflow-hidden bg-transparent text-sm leading-tight focus:outline-none"
           />
         </div>
