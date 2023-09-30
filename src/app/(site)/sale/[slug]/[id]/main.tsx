@@ -1,55 +1,81 @@
-import { getCurrentUser } from '@/app/_actions/user'
-import { SaleMain } from './main'
+'use client'
+
+import { gql } from '@apollo/client'
+import { useSuspenseQuery } from '@apollo/experimental-nextjs-app-support/ssr'
+import { type Session } from 'next-auth'
+import Image from 'next/image'
+import Link from 'next/link'
+import { notFound } from 'next/navigation'
+
 import { CashbackModal } from '@/components/cashback-modal'
 import { CouponModal } from '@/components/coupon-modal'
 import { Icons } from '@/components/icons'
 import { Comments } from '@/components/sales/comments'
+import { Reactions } from '@/components/sales/reactions'
 import { buttonVariants } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { getClient } from '@/lib/apollo'
 import { cn } from '@/lib/utils'
-import { Sale, Cashback, Category } from '@/types'
+import type { Cashback, Category, Sale } from '@/types'
 import { priceFormatter } from '@/utils/formatter'
-import { Link } from 'lucide-react'
-import { notFound } from 'next/navigation'
 
-interface SalePageProps {
-  params: {
-    slug: string
-    id: string
+const GET_SALE = gql`
+  query Sale($saleId: ID!) {
+    sale(id: $saleId) {
+      id
+      title
+      commentsCount
+      imageUrl
+      price
+      installments
+      totalInstallmentPrice
+      coupon
+      cashback {
+        value
+        provider
+      }
+      label
+      caption
+      productSlug
+      review
+      category {
+        slug
+      }
+      reactions {
+        id
+        content
+        userId
+      }
+    }
   }
+`
+interface SaleMainProps {
+  saleId: string
+  user?: Session['user']
 }
 
-export default async function SalePage({ params }: SalePageProps) {
-  const { id } = params
-
-  const user = await getCurrentUser()
-
-  const client = getClient()
-
-  const { data, errors } = await client.query<{
+export function SaleMain({ saleId, user }: SaleMainProps) {
+  const { data, error, client } = useSuspenseQuery<{
     sale: Sale & {
       commentsCount: number
       cashback: Omit<Cashback, 'id' | 'url'>
       category: Pick<Category, 'slug'>
-      reactions: Reaction[]
+      reactions: { content: string; userId: string }[]
     }
-  }>({
-    query: GET_SALE,
+  }>(GET_SALE, {
     errorPolicy: 'all',
     variables: {
-      saleId: id,
+      saleId,
     },
   })
 
-  if (errors) {
+  if (!data || error) {
     return notFound()
   }
 
   const sale = data.sale
 
   return (
-    <div className="space-y-10 px-4 py-10 sm:container lg:grid lg:grid-cols-3 lg:gap-8 lg:space-y-2 xl:grid-cols-5">
+    <div className="space-y-10 px-4 py-10 sm:container lg:grid lg:grid-cols-3 lg:gap-8 xl:grid-cols-5">
       <main className="flex flex-col gap-2 lg:col-span-2 lg:pt-2 xl:col-span-3">
         <strong className="line-clamp-4 leading-none tracking-tight md:text-xl">
           {sale.title}
@@ -152,12 +178,12 @@ export default async function SalePage({ params }: SalePageProps) {
           </Link>
         )}
 
-        {/* <Reactions
+        <Reactions
           apolloClient={client}
           reactions={sale.reactions}
           saleId={sale.id}
           userId={user?.id}
-        /> */}
+        />
       </main>
       <aside className="xl:col-span-2">
         <Comments saleId={sale.id} user={user} count={sale.commentsCount} />

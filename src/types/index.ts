@@ -134,13 +134,6 @@ export type BenchmarkResult = {
   description?: string
 }
 
-export type Reaction = {
-  content: string
-  users: {
-    id: string
-  }[]
-}
-
 export type headerOption = {
   title: string
   slug?: string

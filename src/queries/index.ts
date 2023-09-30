@@ -36,10 +36,9 @@ export const GET_SALES = gql`
         }
         commentsCount
         reactions {
+          id
           content
-          users {
-            id
-          }
+          userId
         }
       }
     }
@@ -53,7 +52,7 @@ export type GetSalesQuery = {
     list: (Sale & {
       category: Pick<Category, 'name' | 'slug'>
       commentsCount: number
-      reactions: { content: string; users: { id: string }[] }[]
+      reactions: { content: string; userId: string }[]
       cashback: {
         provider: string
         value: number

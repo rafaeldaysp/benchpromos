@@ -5,19 +5,23 @@ import { type ApolloClient } from '@apollo/client'
 import { getCurrentUserToken } from '@/app/_actions/user'
 import { Toggle } from '@/components/ui/toggle'
 import { useReactions } from '@/hooks/use-reactions'
-import { type Reaction } from '@/types'
 
 interface ReactionsProps {
   saleId: string
-  reactions: Reaction[]
   userId?: string
+  reactions: { content: string; userId: string }[]
   apolloClient: ApolloClient<unknown>
+}
+
+type GroupedReaction = {
+  content: string
+  userIds: string[]
 }
 
 export function Reactions({
   saleId,
+  userId,
   reactions,
-  userId = '',
   apolloClient,
 }: ReactionsProps) {
   const { toggleReaction } = useReactions({ saleId, userId, apolloClient })
@@ -42,10 +46,27 @@ export function Reactions({
     })
   }
 
+  const groupedReactions: GroupedReaction[] = reactions.reduce(
+    (acc, reaction) => {
+      const { content, userId } = reaction
+
+      const existingGroup = acc.find((group) => group.content === content)
+
+      if (existingGroup) {
+        existingGroup.userIds.push(userId)
+      } else {
+        acc.push({ content, userIds: [userId] })
+      }
+
+      return acc
+    },
+    [] as GroupedReaction[],
+  )
+
   return (
     <div className="flex flex-wrap gap-1">
-      {reactions.map((reaction) => {
-        const userReacted = reaction.users.some((user) => user.id === userId)
+      {groupedReactions.map((reaction) => {
+        const userReacted = reaction.userIds.some((id) => id === userId)
 
         return (
           <Toggle
@@ -56,7 +77,7 @@ export function Reactions({
             onClick={() => handleToggleReaction(reaction.content)}
           >
             {reaction.content}
-            <span className="ml-0.5 text-xs">{reaction.users.length}</span>
+            <span className="ml-0.5 text-xs">{reaction.userIds.length}</span>
           </Toggle>
         )
       })}

@@ -17,13 +17,11 @@ interface SalesProps {
 
 export function Sales({ user, productSlug }: SalesProps) {
   const [isPending, startTransition] = React.useTransition()
-  const [hasMoreSales, setHasMoreSales] = React.useState(true)
 
   const { data, fetchMore, client } = useSuspenseQuery<GetSalesQuery>(
     GET_SALES,
     {
       refetchWritePolicy: 'overwrite',
-      // fetchPolicy: 'cache-and-network',
       variables: {
         paginationInput: {
           limit: SALES_PER_SCROLL,
@@ -34,12 +32,9 @@ export function Sales({ user, productSlug }: SalesProps) {
     },
   )
 
+  const pageCount = data.sales.pages
   const sales = data.sales.list
   const page = Math.ceil(sales.length / SALES_PER_SCROLL)
-
-  React.useEffect(() => {
-    setHasMoreSales(true)
-  }, [page])
 
   function onEntry() {
     startTransition(() => {
@@ -52,10 +47,6 @@ export function Sales({ user, productSlug }: SalesProps) {
           productSlug,
         },
         updateQuery(previousResult, { fetchMoreResult }) {
-          if (!fetchMoreResult.sales.list.length) {
-            setHasMoreSales(false)
-          }
-
           const previousSales = previousResult.sales
           const fetchMoreSales = fetchMoreResult.sales
 
@@ -69,6 +60,8 @@ export function Sales({ user, productSlug }: SalesProps) {
       })
     })
   }
+
+  const hasMoreSales = page < pageCount
 
   if (sales.length === 0)
     return (
