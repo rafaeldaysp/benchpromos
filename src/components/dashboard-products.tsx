@@ -62,7 +62,7 @@ interface DashboardProductsProps {
 export function DashboardProducts({ children }: DashboardProductsProps) {
   const [isPending, startTransition] = React.useTransition()
   const [query, setQuery] = React.useState('')
-  const debouncedQuery = useDebounce(query, 1000)
+  const debouncedQuery = useDebounce(query, 300)
 
   const { data, refetch, fetchMore } = useSuspenseQuery<{
     productsList: {

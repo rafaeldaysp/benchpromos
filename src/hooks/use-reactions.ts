@@ -1,12 +1,13 @@
 import { gql, useMutation, type ApolloClient } from '@apollo/client'
 import { toast } from 'sonner'
 
-import { GET_SALES, type GetSalesQuery } from '@/queries'
-
 const TOGGLE_REACTION = gql`
   mutation ToggleReaction($input: ToggleSaleReactionInput!) {
-    reaction: toggleSaleReaction(toggleSaleReactionInput: $input) {
-      content
+    response: toggleSaleReaction(toggleSaleReactionInput: $input) {
+      reaction {
+        id
+      }
+      state
     }
   }
 `
@@ -17,98 +18,74 @@ export function useReactions({
   apolloClient,
 }: {
   saleId: string
-  userId: string
+  userId?: string
   apolloClient: ApolloClient<unknown>
 }) {
-  const [toggleReaction] = useMutation<{ reaction: { content: string } }>(
-    TOGGLE_REACTION,
-    {
-      onError(error, _clientOptions) {
-        toast.error(error.message)
-      },
-      onCompleted({ reaction: newReaction }, _clientOptions) {
-        try {
-          const cachedData = apolloClient.cache.readQuery<GetSalesQuery>({
-            query: GET_SALES,
-            variables: {
-              paginationInput: {
-                limit: 1,
-                page: 1,
-              },
-            },
-          })
-
-          if (!cachedData) return
-
-          const {
-            sales: { list, count, pages },
-          } = cachedData
-          const updatedSales = list.map((sale) => {
-            if (sale.id !== saleId) {
-              return sale
-            }
-
-            const existingReaction = sale.reactions.find(
-              (reaction) => reaction.content === newReaction.content,
-            )
-
-            if (!existingReaction) {
-              return {
-                ...sale,
-                reactions: [
-                  ...sale.reactions,
-                  {
-                    content: newReaction.content,
-                    users: [{ id: userId }],
-                  },
-                ],
-              }
-            }
-
-            const updatedReactions = sale.reactions.map((reaction) => {
-              if (reaction.content !== newReaction.content) {
-                return reaction
-              }
-
-              const userReacted = reaction.users.some(
-                (user) => user.id === userId,
-              )
-
-              const updatedUsers = userReacted
-                ? reaction.users.filter((user) => user.id !== userId)
-                : [...reaction.users, { id: userId }]
-
-              return {
-                ...reaction,
-                users: updatedUsers,
-              }
-            })
-
-            return {
-              ...sale,
-              reactions: updatedReactions.filter(
-                (reaction) => reaction.users.length > 0,
-              ),
-            }
-          })
-
-          apolloClient.cache.writeQuery<GetSalesQuery>({
-            query: GET_SALES,
-            variables: {
-              paginationInput: {
-                limit: 1,
-                page: 1,
-              },
-            },
-            overwrite: true,
-            data: { sales: { list: updatedSales, count, pages } },
-          })
-        } catch (error) {
-          console.error('Error updating cache:', error)
-        }
-      },
+  const [toggleReaction] = useMutation<{
+    response: {
+      reaction: { id: string }
+      state: boolean
+    }
+  }>(TOGGLE_REACTION, {
+    onError(error, _clientOptions) {
+      toast.error(error.message)
     },
-  )
+    update(_, { data }, { variables }) {
+      if (!data) return
+
+      const saleInCache = apolloClient.readFragment({
+        id: `Sale:${saleId}`,
+        fragment: gql`
+          fragment ExistingSale on Sale {
+            reactions {
+              __typename
+              id
+              content
+              userId
+            }
+          }
+        `,
+        variables: { saleId },
+      })
+
+      if (!saleInCache) {
+        return
+      }
+
+      let updatedReactions = saleInCache.reactions || []
+
+      if (data.response.state) {
+        updatedReactions = [
+          ...updatedReactions,
+          {
+            __typename: 'SaleReaction',
+            id: data.response.reaction.id,
+            content: variables?.input.content,
+            userId: userId,
+          },
+        ]
+      } else {
+        updatedReactions = updatedReactions.filter(
+          (reaction: { id: string }) =>
+            reaction.id !== data.response.reaction.id,
+        )
+      }
+
+      apolloClient.writeFragment({
+        id: `Sale:${saleId}`,
+        fragment: gql`
+          fragment UpdatedSale on Sale {
+            reactions
+          }
+        `,
+        data: {
+          __typename: 'Sale',
+          id: saleId,
+          reactions: updatedReactions,
+        },
+      })
+    },
+  })
 
   return { toggleReaction }
 }

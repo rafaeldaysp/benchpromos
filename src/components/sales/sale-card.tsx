@@ -9,8 +9,12 @@ import Image from 'next/image'
 import Link from 'next/link'
 import * as React from 'react'
 
+import { CashbackModal } from '@/components/cashback-modal'
+import { CouponModal } from '@/components/coupon-modal'
 import { Icons } from '@/components/icons'
+import { ReactionMenu } from '@/components/sales/reaction-menu'
 import { Reactions } from '@/components/sales/reactions'
+import { HighlightSaleToggle } from '@/components/sales/sale-highlight'
 import { Badge } from '@/components/ui/badge'
 import { Button, buttonVariants } from '@/components/ui/button'
 import {
@@ -21,12 +25,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { useMediaQuery } from '@/hooks/use-media-query'
-import { cn } from '@/lib/utils'
-import { type Cashback, type Reaction } from '@/types'
-import { priceFormatter } from '@/utils/formatter'
-import { CashbackModal } from '../cashback-modal'
-import { CouponModal } from '../coupon-modal'
 import {
   ContextMenu,
   ContextMenuContent,
@@ -35,10 +33,12 @@ import {
   ContextMenuSub,
   ContextMenuSubTrigger,
   ContextMenuTrigger,
-} from '../ui/context-menu'
-import { Drawer, DrawerContent } from '../ui/drawer'
-import { ReactionMenu } from './reaction-menu'
-import { HighlightSaleToggle } from './sale-highlight'
+} from '@/components/ui/context-menu'
+import { Drawer, DrawerContent } from '@/components/ui/drawer'
+import { useMediaQuery } from '@/hooks/use-media-query'
+import { cn } from '@/lib/utils'
+import type { Cashback } from '@/types'
+import { priceFormatter } from '@/utils/formatter'
 
 dayjs.extend(relativeTime)
 dayjs.locale('pt-br')
@@ -66,7 +66,10 @@ interface SaleCardProps extends React.HTMLAttributes<HTMLDivElement> {
       slug: string
     }
     commentsCount: number
-    reactions: Reaction[]
+    reactions: {
+      content: string
+      userId: string
+    }[]
   }
   user?: { id: string; isAdmin: boolean }
   apolloClient: ApolloClient<unknown>
@@ -74,9 +77,9 @@ interface SaleCardProps extends React.HTMLAttributes<HTMLDivElement> {
 
 export function SaleCard({
   sale,
-  className,
   user,
   apolloClient,
+  className,
   ...props
 }: SaleCardProps) {
   const [openMobileMenu, setOpenMobileMenu] = React.useState(false)
