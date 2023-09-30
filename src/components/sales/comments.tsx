@@ -44,7 +44,10 @@ export function Comments({ saleId, user, count }: CommentsProps) {
 
   return (
     <div className="space-y-8">
-      {/* Comment Submit */}
+      <span className="font-semibold">
+        {count} • comentário
+        {count > 1 || (count === 0 && 's')}
+      </span>
       <CommentSubmit saleId={saleId} user={user} />
 
       {comments ? (

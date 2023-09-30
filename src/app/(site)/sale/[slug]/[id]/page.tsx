@@ -84,7 +84,7 @@ export default async function SalePage({ params }: SalePageProps) {
   const sale = data.sale
 
   return (
-    <div className="space-y-10 px-4 py-10 sm:container lg:grid lg:grid-cols-3 lg:gap-8 xl:grid-cols-5">
+    <div className="space-y-10 px-4 py-10 sm:container lg:grid lg:grid-cols-3 lg:gap-8 lg:space-y-2 xl:grid-cols-5">
       <main className="flex flex-col gap-2 lg:col-span-2 lg:pt-2 xl:col-span-3">
         <strong className="line-clamp-4 leading-none tracking-tight md:text-xl">
           {sale.title}
