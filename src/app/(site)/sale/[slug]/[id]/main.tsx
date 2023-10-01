@@ -17,6 +17,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
 import type { Cashback, Category, Sale } from '@/types'
 import { priceFormatter } from '@/utils/formatter'
+import { Separator } from '@/components/ui/separator'
 
 const GET_SALE = gql`
   query Sale($saleId: ID!) {
@@ -32,6 +33,8 @@ const GET_SALE = gql`
       cashback {
         value
         provider
+        video
+        affiliatedUrl
       }
       label
       caption
@@ -75,7 +78,7 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
   const sale = data.sale
 
   return (
-    <div className="space-y-10 px-4 py-10 sm:container lg:grid lg:grid-cols-3 lg:gap-8 xl:grid-cols-5">
+    <div className="space-y-10 px-4 py-10 sm:container lg:grid lg:grid-cols-3 lg:gap-8 lg:space-y-2 xl:grid-cols-5">
       <main className="flex flex-col gap-2 lg:col-span-2 lg:pt-2 xl:col-span-3">
         <strong className="line-clamp-4 leading-none tracking-tight md:text-xl">
           {sale.title}
@@ -156,6 +159,15 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
           </Card>
         )}
 
+        <Reactions
+          apolloClient={client}
+          reactions={sale.reactions}
+          saleId={sale.id}
+          userId={user?.id}
+        />
+
+        <Separator />
+
         {sale.productSlug && (
           <Link
             href={`/${sale.category.slug}/${sale.productSlug}`}
@@ -177,13 +189,6 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
             <Icons.ChevronRight className="h-4 w-4" />
           </Link>
         )}
-
-        <Reactions
-          apolloClient={client}
-          reactions={sale.reactions}
-          saleId={sale.id}
-          userId={user?.id}
-        />
       </main>
       <aside className="xl:col-span-2">
         <Comments saleId={sale.id} user={user} count={sale.commentsCount} />
