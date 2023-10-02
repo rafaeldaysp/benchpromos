@@ -102,7 +102,7 @@ export function ProductCard({
             )}
 
             <div className="flex flex-col">
-              <CardDescription className="hidden text-sm sm:inline-flex">
+              <CardDescription className="hidden text-sm sm:block">
                 Menor preço via <strong>{bestDeal.retailer.name}</strong>
               </CardDescription>
               <p>
