@@ -80,7 +80,7 @@ export function ProductSelect({ products }: ProductSelectProps) {
             (search) =>
               product.name.toLowerCase().includes(search) ||
               product.category.name.toLowerCase().includes(search) ||
-              product.subcategory.name.toLowerCase().includes(search),
+              product.subcategory?.name.toLowerCase().includes(search),
           )
         }),
       )
@@ -181,7 +181,7 @@ export function ProductSelect({ products }: ProductSelectProps) {
                     {displayedProducts?.map((product) => (
                       <CommandItem
                         key={product.slug}
-                        value={`${product.name} ${product.category.name} ${product.subcategory.name}`}
+                        value={`${product.name} ${product.category.name} ${product.subcategory?.name}`}
                         className={cn(
                           'h-16 space-x-4 transition-colors aria-selected:bg-accent/50',
                           {
