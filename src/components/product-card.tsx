@@ -98,9 +98,9 @@ export function ProductCard({
             </CardTitle>
 
             {product.reviewUrl && (
-              <Badge className="hidden w-fit sm:inline-flex">
+              <Badge className="hidden w-fit px-1 py-0.5 sm:inline-flex">
                 <Icons.StarFilled className="mr-1" />
-                TESTADO PELO CANAL
+                TESTADO NO CANAL
               </Badge>
             )}
 

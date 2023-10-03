@@ -360,7 +360,7 @@ export function Products({
         <div className="hidden items-center gap-x-4 lg:flex">
           <h3 className="text-sm">Produtos por página</h3>
           <Select
-            defaultValue="16"
+            defaultValue="20"
             value={limit}
             onValueChange={(value) => setLimit(value)}
             onOpenChange={(open) => {
@@ -373,9 +373,9 @@ export function Products({
               <SelectValue placeholder="Theme" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="16">16</SelectItem>
-              <SelectItem value="32">32</SelectItem>
-              <SelectItem value="48">48</SelectItem>
+              <SelectItem value="20">20</SelectItem>
+              <SelectItem value="40">40</SelectItem>
+              <SelectItem value="100">100</SelectItem>
             </SelectContent>
           </Select>
         </div>

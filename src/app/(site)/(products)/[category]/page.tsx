@@ -158,7 +158,7 @@ export default async function ProductsPage({
         search,
         hasDeals: true,
         pagination: {
-          limit: limit ? Number(limit) : 16,
+          limit: limit ? Number(limit) : 20,
           page: page ? Number(page) : 1,
         },
         filters: filtersInput,
