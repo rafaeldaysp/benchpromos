@@ -77,7 +77,7 @@ export function BenchmarkChart({ results }: BenchmarkChartProps) {
     >
       <BarChart
         margin={{
-          left: -55,
+          left: isSm ? -55 : -40,
         }}
         data={results}
         barSize={isSm ? 25 : 30}

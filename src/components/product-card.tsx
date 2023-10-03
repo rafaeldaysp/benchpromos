@@ -98,7 +98,7 @@ export function ProductCard({
             </CardTitle>
 
             {product.reviewUrl && (
-              <Badge className="hidden w-fit px-1 py-0.5 sm:inline-flex">
+              <Badge className="hidden w-fit px-1 py-[1px] sm:inline-flex">
                 <Icons.StarFilled className="mr-1" />
                 TESTADO NO CANAL
               </Badge>
@@ -106,8 +106,8 @@ export function ProductCard({
 
             {bestDeal.availability ? (
               <>
-                <div className="flex flex-col">
-                  <CardDescription className="hidden text-sm sm:block">
+                <div className="flex flex-col gap-1">
+                  <CardDescription className="hidden text-sm leading-none sm:block">
                     Menor preço via <strong>{bestDeal.retailer.name}</strong>
                   </CardDescription>
                   <p>

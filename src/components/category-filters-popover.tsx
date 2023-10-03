@@ -35,18 +35,12 @@ export function CategoryFilterPopover({
   const [isPending, startTransition] = React.useTransition()
   const { createQueryString } = useQueryString()
 
-  // const [filterOptions, setFilterOptions] = React.useState(initialFilterOptions)
-
   const options = new Set(initialFilterOptions)
-
-  // React.useEffect(() => {
-  //   setFilterOptions(initialFilterOptions)
-  // }, [initialFilterOptions])
 
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="outline" className="rounded-full border-dashed">
+        <Button variant="outline" size={'sm'} className="border-dashed">
           <Icons.PlusCircle className="mr-2 h-4 w-4" />
           {categoryFilter.name}
           {options.size > 0 && (
@@ -133,11 +127,6 @@ export function CategoryFilterPopover({
                     )}
 
                     <span>{option.value}</span>
-                    {/* {facets?.get(option.value) && (
-                      <span className="ml-auto flex h-4 w-4 items-center justify-center font-mono text-xs">
-                        {facets.get(option.value)}
-                      </span>
-                    )} */}
                   </CommandItem>
                 )
               })}

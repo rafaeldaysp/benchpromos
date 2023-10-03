@@ -463,7 +463,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
         <ScrollArea
           className={cn('rounded-xl border', {
-            'h-[600px]': product.deals.length > 2,
+            'h-[450px]': product.deals.length > 2,
           })}
         >
           {product.deals.map((deal) => (

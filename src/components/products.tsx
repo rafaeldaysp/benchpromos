@@ -152,13 +152,13 @@ export function Products({
   }, [limit])
   return (
     <div className="space-y-6">
-      <div className="flex items-center space-x-2 sm:space-x-4">
+      <div className="flex items-center space-x-2 ">
         <Sheet>
           <SheetTrigger asChild>
             <Button
               aria-label="Filtrar produtos"
-              variant="outline"
-              className="rounded-full"
+              variant="secondary"
+              size={'sm'}
             >
               <Icons.SlidersHorizontal className="mr-2 h-4 w-4" />
               <span className="text-sm">Filtros</span>
@@ -309,7 +309,12 @@ export function Products({
           </SheetContent>
         </Sheet>
 
-        <Separator orientation="vertical" className="h-6" />
+        {/* <Separator
+          orientation="vertical"
+          className={cn('h-5', {
+            hidden: categoryFilters.length === 0,
+          })}
+        /> */}
 
         <ScrollArea className="w-full bg-background">
           <div className="w-max space-x-2 font-medium">
@@ -334,7 +339,7 @@ export function Products({
       <div className="flex justify-between">
         <div className="flex flex-1 items-center justify-between gap-x-4 lg:justify-normal">
           <h3 className="text-sm">
-            {productCount} resultado {productCount > 1 && 's'}
+            {productCount} resultado{productCount > 1 && 's'}
           </h3>
           <Select
             defaultValue="relevance"

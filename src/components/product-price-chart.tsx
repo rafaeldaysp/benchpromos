@@ -137,7 +137,7 @@ export default function PriceChart({ productSlug }: PriceChartProps) {
             </PopoverTrigger>
             <PopoverContent className="flex w-fit flex-col items-center justify-center">
               <h3 className="font-semibold">
-                {dayjs().format('DD[ de] MMMM YYYY')}
+                {dayjs(minPeriodPriceDay.date).format('DD[ de] MMMM YYYY')}
               </h3>
               <span className="font-medium text-muted-foreground">
                 {priceFormatter.format(minPeriodPriceDay.lowestPrice / 100)}
