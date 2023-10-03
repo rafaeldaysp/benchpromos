@@ -82,9 +82,10 @@ export default function PriceChart({ productSlug }: PriceChartProps) {
     },
     fetchPolicy: 'cache-and-network',
     refetchWritePolicy: 'overwrite',
+    errorPolicy: 'ignore',
   })
-  const minPeriodPriceDay = data?.productHistory.minPeriodPriceDay
-  const dailyHistory = data?.productHistory.dailyHistory
+  const minPeriodPriceDay = data?.productHistory?.minPeriodPriceDay
+  const dailyHistory = data?.productHistory?.dailyHistory ?? []
 
   const { theme, systemTheme } = useTheme()
 

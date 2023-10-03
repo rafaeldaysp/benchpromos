@@ -8,7 +8,7 @@ import { SaleCard } from '@/components/sales/sale-card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { GET_SALES, type GetSalesQuery } from '@/queries'
 
-const SALES_PER_SCROLL = 1
+const SALES_PER_SCROLL = 12
 
 interface SalesProps {
   user?: { id: string; isAdmin: boolean }
