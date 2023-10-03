@@ -53,7 +53,7 @@ export function CategoryFilterPopover({
             <>
               <Separator orientation="vertical" className="mx-2 h-4" />
               <Badge
-                variant="default"
+                variant="secondary"
                 className="rounded-sm px-1 font-normal xl:hidden"
               >
                 {options.size}

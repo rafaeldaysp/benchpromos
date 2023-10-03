@@ -166,8 +166,8 @@ export function Products({
                 <>
                   <Separator orientation="vertical" className="mx-2 h-4" />
                   <Badge
-                    variant="default"
-                    className="rounded-sm px-1 font-normal xl:hidden"
+                    variant="secondary"
+                    className="rounded-sm px-1 font-normal"
                   >
                     {filters.length}
                   </Badge>
