@@ -78,7 +78,7 @@ export function SignUpForm() {
             <FormItem>
               <FormLabel>Nome</FormLabel>
               <FormControl>
-                <Input placeholder="Rafael Days" {...field} />
+                <Input placeholder="Seu nome" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

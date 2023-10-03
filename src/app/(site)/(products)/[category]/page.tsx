@@ -42,6 +42,7 @@ const GET_PRODUCTS = gql`
           coupon {
             code
             discount
+            availability
           }
           cashback {
             value
@@ -145,7 +146,7 @@ export default async function ProductsPage({
           Deal,
           'price' | 'availability' | 'installments' | 'totalInstallmentPrice'
         > & { retailer: Pick<Retailer, 'name'> } & {
-          coupon: Pick<Coupon, 'code' | 'discount'>
+          coupon: Pick<Coupon, 'code' | 'discount' | 'availability'>
         } & { cashback: Pick<Cashback, 'value' | 'provider'> })[]
       })[]
     }
@@ -190,7 +191,6 @@ export default async function ProductsPage({
           serverPriceRange={serverPriceRange}
           sort={sort}
           limit={limit}
-          search={search}
         />
       </div>
     </div>

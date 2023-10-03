@@ -36,6 +36,7 @@ interface ProductCardProps extends React.HTMLAttributes<HTMLDivElement> {
       coupon: {
         discount: string
         code: string
+        availability: boolean
       }
       cashback: {
         value: number
@@ -91,7 +92,9 @@ export function ProductCard({
           </div>
           <main className="flex h-full flex-col justify-center gap-y-1.5 sm:h-fit sm:gap-y-2.5">
             <CardTitle className="hidden sm:block">
-              <span className="line-clamp-3">{product.name}</span>
+              <span className="line-clamp-3 text-sm leading-none">
+                {product.name}
+              </span>
             </CardTitle>
 
             {product.reviewUrl && (
@@ -101,53 +104,62 @@ export function ProductCard({
               </Badge>
             )}
 
-            <div className="flex flex-col">
-              <CardDescription className="hidden text-sm sm:block">
-                Menor preço via <strong>{bestDeal.retailer.name}</strong>
-              </CardDescription>
-              <p>
-                <strong className="text-xl">
-                  {priceFormatter.format(
-                    priceCalculator(
-                      bestDeal.price,
-                      bestDeal.coupon?.discount,
-                      bestDeal.cashback?.value,
-                    ) / 100,
-                  )}
-                </strong>{' '}
-                <span className="text-xs text-muted-foreground sm:text-sm">
-                  à vista{' '}
-                </span>
-              </p>
-
-              {!!bestDeal.installments && !!bestDeal.totalInstallmentPrice && (
-                <span className="text-xs text-muted-foreground sm:text-sm">
-                  até{' '}
-                  <strong className="text-sm">{bestDeal.installments}x</strong>{' '}
-                  de{' '}
-                  <strong className="text-sm">
-                    {priceFormatter.format(
-                      bestDeal.totalInstallmentPrice /
-                        (100 * bestDeal.installments),
-                    )}
-                  </strong>{' '}
-                  <p className="hidden sm:inline-flex">
-                    {bestDeal.price >= bestDeal.totalInstallmentPrice ? (
-                      <span>sem juros</span>
-                    ) : (
-                      <span>com juros</span>
-                    )}
+            {bestDeal.availability ? (
+              <>
+                <div className="flex flex-col">
+                  <CardDescription className="hidden text-sm sm:block">
+                    Menor preço via <strong>{bestDeal.retailer.name}</strong>
+                  </CardDescription>
+                  <p>
+                    <strong className="text-xl">
+                      {priceFormatter.format(
+                        priceCalculator(
+                          bestDeal.price,
+                          bestDeal.coupon?.discount,
+                          bestDeal.cashback?.value,
+                        ) / 100,
+                      )}
+                    </strong>{' '}
+                    <span className="text-xs text-muted-foreground sm:text-sm">
+                      à vista{' '}
+                    </span>
                   </p>
-                </span>
-              )}
-            </div>
-            {bestDeal.coupon && (
-              <p className="flex flex-col text-sm">
-                <span className="text-xs text-muted-foreground sm:text-sm">
-                  Com cupom
-                </span>
-                <strong>{bestDeal.coupon.code}</strong>
-              </p>
+
+                  {!!bestDeal.installments &&
+                    !!bestDeal.totalInstallmentPrice && (
+                      <span className="text-xs text-muted-foreground sm:text-sm">
+                        até{' '}
+                        <strong className="text-sm">
+                          {bestDeal.installments}x
+                        </strong>{' '}
+                        de{' '}
+                        <strong className="text-sm">
+                          {priceFormatter.format(
+                            bestDeal.totalInstallmentPrice /
+                              (100 * bestDeal.installments),
+                          )}
+                        </strong>{' '}
+                        <p className="hidden sm:inline-flex">
+                          {bestDeal.price >= bestDeal.totalInstallmentPrice ? (
+                            <span>sem juros</span>
+                          ) : (
+                            <span>com juros</span>
+                          )}
+                        </p>
+                      </span>
+                    )}
+                </div>
+                {bestDeal.coupon?.availability && (
+                  <p className="flex flex-col text-sm">
+                    <span className="text-xs text-muted-foreground sm:text-sm">
+                      Com cupom
+                    </span>
+                    <strong>{bestDeal.coupon.code}</strong>
+                  </p>
+                )}
+              </>
+            ) : (
+              <strong className="text-lg text-destructive">Indisponível</strong>
             )}
 
             {bestDeal.cashback && (
@@ -172,7 +184,7 @@ export function ProductCard({
         <CardFooter
           className={cn(
             buttonVariants({ variant: 'secondary' }),
-            'h-fit rounded-t-none p-0 py-1.5 sm:hidden',
+            'rounded-t-none sm:hidden',
           )}
         >
           Ver produto

@@ -8,7 +8,7 @@ import { Pagination } from '@/components/pagination'
 import { ProductCard } from '@/components/product-card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { ScrollArea } from '@/components/ui/scroll-area'
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import {
   Select,
   SelectContent,
@@ -39,6 +39,8 @@ import type {
   Product,
   Retailer,
 } from '@/types'
+import { CategoryFilterPopover } from './category-filters-popover'
+import { Badge } from './ui/badge'
 
 interface ProductsProps {
   products: (Product & {
@@ -47,7 +49,7 @@ interface ProductsProps {
       Deal,
       'price' | 'availability' | 'installments' | 'totalInstallmentPrice'
     > & { retailer: Pick<Retailer, 'name'> } & {
-      coupon: Pick<Coupon, 'code' | 'discount'>
+      coupon: Pick<Coupon, 'code' | 'discount' | 'availability'>
     } & { cashback: Pick<Cashback, 'value' | 'provider'> })[]
   })[]
   pageCount: number
@@ -57,7 +59,6 @@ interface ProductsProps {
   serverPriceRange: [number, number]
   sort?: string
   limit?: string
-  search?: string
 }
 
 export function Products({
@@ -69,7 +70,6 @@ export function Products({
   serverPriceRange,
   sort: initialSort,
   limit: initialLimit,
-  search,
 }: ProductsProps) {
   const searchParams = useSearchParams()
   const [isPending, startTransition] = React.useTransition()
@@ -93,6 +93,11 @@ export function Products({
   const debouncedPrice = useDebounce(currentPriceRange, 250)
 
   const page = searchParams.get('page') ?? '1'
+
+  const filterSlugNullRecord: Record<string, null> = {}
+  categoryFilters.forEach((filter) => {
+    filterSlugNullRecord[filter.slug] = null
+  })
 
   React.useEffect(() => {
     setFilters(initialFilters)
@@ -147,7 +152,7 @@ export function Products({
   }, [limit])
   return (
     <div className="space-y-6">
-      <div>
+      <div className="flex items-center space-x-2 sm:space-x-4">
         <Sheet>
           <SheetTrigger asChild>
             <Button
@@ -156,7 +161,18 @@ export function Products({
               className="rounded-full"
             >
               <Icons.SlidersHorizontal className="mr-2 h-4 w-4" />
-              <span>Filtros</span>
+              <span className="text-sm">Filtros</span>
+              {filters.length > 0 && (
+                <>
+                  <Separator orientation="vertical" className="mx-2 h-4" />
+                  <Badge
+                    variant="default"
+                    className="rounded-sm px-1 font-normal xl:hidden"
+                  >
+                    {filters.length}
+                  </Badge>
+                </>
+              )}
             </Button>
           </SheetTrigger>
           <SheetContent
@@ -278,11 +294,12 @@ export function Products({
                 className="w-full"
                 onClick={() => {
                   startTransition(() => {
-                    startTransition(() => {
-                      router.push(
-                        pathname.concat(search ? `?search=${search}` : ''),
-                      )
-                    })
+                    router.push(
+                      `${pathname}?${createQueryString({
+                        ...filterSlugNullRecord,
+                        page: null,
+                      })}`,
+                    )
                   })
                 }}
               >
@@ -291,11 +308,34 @@ export function Products({
             </SheetFooter>
           </SheetContent>
         </Sheet>
+
+        <Separator orientation="vertical" className="h-6" />
+
+        <ScrollArea className="w-full bg-background">
+          <div className="w-max space-x-2 font-medium">
+            {categoryFilters.map((categoryFilter) => (
+              <CategoryFilterPopover
+                key={categoryFilter.id}
+                categoryFilter={categoryFilter}
+                initialFilterOptions={
+                  initialFilters.find(
+                    (filter) => filter.slug === categoryFilter.slug,
+                  )?.options ?? []
+                }
+              />
+            ))}
+          </div>
+          <ScrollBar orientation="horizontal" />
+        </ScrollArea>
       </div>
+
+      <Separator />
 
       <div className="flex justify-between">
         <div className="flex flex-1 items-center justify-between gap-x-4 lg:justify-normal">
-          <div>{productCount} resultados</div>
+          <h3 className="text-sm">
+            {productCount} resultado {productCount > 1 && 's'}
+          </h3>
           <Select
             defaultValue="relevance"
             value={sort}
@@ -311,14 +351,14 @@ export function Products({
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="relevance">Relevância</SelectItem>
-              <SelectItem value="lowest">Menor Preço</SelectItem>
-              <SelectItem value="highest">Maior Preço</SelectItem>
+              <SelectItem value="lowest">Menor preço</SelectItem>
+              <SelectItem value="highest">Maior preço</SelectItem>
             </SelectContent>
           </Select>
         </div>
 
         <div className="hidden items-center gap-x-4 lg:flex">
-          <div>Produtos por página</div>
+          <h3 className="text-sm">Produtos por página</h3>
           <Select
             defaultValue="16"
             value={limit}
@@ -342,7 +382,7 @@ export function Products({
       </div>
       <div
         className={cn(
-          'grid justify-center gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 xl:grid-cols-4',
+          'grid grid-cols-1 justify-center gap-4 sm:grid-cols-2 sm:gap-6 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5',
           {
             'pointer-events-none': selectIsOpen,
           },

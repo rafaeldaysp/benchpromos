@@ -35,10 +35,10 @@ export function DashboardSidebarNav({
           href={item.href}
           className={cn(
             buttonVariants({ variant: 'ghost' }),
-            pathname === item.href
-              ? 'bg-muted hover:bg-muted'
-              : 'hover:bg-transparent hover:underline',
-            'justify-start',
+            'justify-start hover:bg-muted/50',
+            {
+              'bg-muted hover:bg-muted': item.href === pathname,
+            },
           )}
         >
           {item.title}
