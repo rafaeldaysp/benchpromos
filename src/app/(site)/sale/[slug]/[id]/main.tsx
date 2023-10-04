@@ -28,6 +28,7 @@ const GET_SALE = gql`
       imageUrl
       price
       installments
+      url
       totalInstallmentPrice
       coupon
       cashback {
@@ -130,17 +131,33 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
             {sale.coupon && <CouponModal coupon={{ code: sale.coupon }} />}
 
             {sale.cashback && <CashbackModal cashback={sale.cashback} />}
-            <a
-              className={cn(
-                buttonVariants(),
-                'flex h-10 w-full cursor-pointer rounded-xl',
-              )}
-              href={sale.url}
-              target="_blank"
-            >
-              <span className="mr-2 font-semibold">ACESSAR</span>
-              <Icons.ExternalLink strokeWidth={3} className="h-4 w-4" />
-            </a>
+            <div className="space-y-2">
+              <a
+                className={cn(buttonVariants(), 'flex h-10 rounded-xl')}
+                href={sale.url}
+                target="_blank"
+              >
+                <span className="mr-2 font-semibold">ACESSAR</span>
+                <Icons.ExternalLink strokeWidth={3} className="h-4 w-4" />
+              </a>
+              <Separator />
+            </div>
+            {sale.productSlug && (
+              <Link
+                href={`/${sale.category.slug}/${sale.productSlug}`}
+                className={cn(
+                  buttonVariants(),
+                  'flex h-10 animate-pulse rounded-xl font-semibold',
+                )}
+              >
+                {/* <Icons.StarFilled
+                  strokeWidth={3}
+                  className="mr-2 h-4 w-4 text-auxiliary"
+                /> */}
+                VER MAIS
+                <Icons.ChevronRight strokeWidth={3} className="ml-2 h-4 w-4" />
+              </Link>
+            )}
           </div>
         </section>
         {sale.caption && (
@@ -179,7 +196,7 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
             <p className="flex flex-1 flex-col">
               <span className="flex items-center gap-x-2 font-semibold">
                 <Icons.StarFilled className="h-4 w-4 text-auxiliary" />
-                Produto cadastrado
+                Mais informações do produto
               </span>
               <span className="text-muted-foreground">
                 Acompanhe o histórico de preços, especificações técnicas,
