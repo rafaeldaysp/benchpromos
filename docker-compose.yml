@@ -5,12 +5,12 @@ services:
     container_name: nextjs
     build:
       context: ./
-      target: deps
-    command: npm run dev
-    volumes:
-      - .:/app
-      - /app/node_modules
-      - /app/.next
+      # target: deps
+    # command: npm run dev
+    # volumes:
+    #   - .:/app
+    #   - /app/node_modules
+    #   - /app/.next
     ports:
       - 3000:3000
     env_file:
