@@ -176,8 +176,8 @@ export function ProductSelect({ products }: ProductSelectProps) {
             <>
               <Separator />
               {displayedProducts.length > 0 && (
-                <ScrollArea className="sm:max-h-[400px]">
-                  <CommandGroup heading="Produtos">
+                <CommandGroup heading="Produtos">
+                  <ScrollArea className="h-64 sm:h-72">
                     {displayedProducts?.map((product) => (
                       <CommandItem
                         key={product.slug}
@@ -221,8 +221,8 @@ export function ProductSelect({ products }: ProductSelectProps) {
                         <span className="line-clamp-2">{product.name}</span>
                       </CommandItem>
                     ))}
-                  </CommandGroup>
-                </ScrollArea>
+                  </ScrollArea>
+                </CommandGroup>
               )}
             </>
           )}
