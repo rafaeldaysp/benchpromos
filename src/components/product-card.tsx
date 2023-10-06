@@ -115,7 +115,9 @@ export function ProductCard({
                       {priceFormatter.format(
                         priceCalculator(
                           bestDeal.price,
-                          bestDeal.coupon?.discount,
+                          bestDeal.coupon?.availability
+                            ? bestDeal.coupon.discount
+                            : undefined,
                           bestDeal.cashback?.value,
                         ) / 100,
                       )}
@@ -135,7 +137,13 @@ export function ProductCard({
                         de{' '}
                         <strong className="text-sm">
                           {priceFormatter.format(
-                            bestDeal.totalInstallmentPrice /
+                            priceCalculator(
+                              bestDeal.totalInstallmentPrice,
+                              bestDeal.coupon?.availability
+                                ? bestDeal.coupon.discount
+                                : undefined,
+                              bestDeal.cashback?.value,
+                            ) /
                               (100 * bestDeal.installments),
                           )}
                         </strong>{' '}

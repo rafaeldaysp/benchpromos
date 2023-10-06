@@ -65,6 +65,7 @@ const GET_PRODUCT = gql`
         totalInstallmentPrice
         price
         url
+        availability
         retailer {
           name
         }
@@ -154,74 +155,92 @@ export default async function ProductPage({ params }: ProductPageProps) {
               </div>
             </div>
             <div className="flex flex-col space-y-2 md:flex-1 md:pr-8 lg:pr-0">
-              <div className="flex w-full flex-col gap-y-2 text-sm">
-                <div className="flex flex-col gap-y-1">
-                  <p className="text-muted-foreground">
-                    menor preço via <strong>{bestDeal.retailer.name}</strong>
-                  </p>
+              {bestDeal.availability ? (
+                <div className="flex w-full flex-col gap-y-2 text-sm">
+                  <div className="flex flex-col gap-y-1">
+                    <p className="text-muted-foreground">
+                      menor preço via <strong>{bestDeal.retailer.name}</strong>
+                    </p>
 
-                  <p>
-                    <strong className="text-3xl">
-                      {priceFormatter.format(
-                        priceCalculator(
-                          bestDeal.price,
-                          bestDeal.coupon?.availability
-                            ? bestDeal.coupon.discount
-                            : undefined,
-                          bestDeal.cashback?.value,
-                        ) / 100,
+                    <p>
+                      <strong className="text-3xl">
+                        {priceFormatter.format(
+                          priceCalculator(
+                            bestDeal.price,
+                            bestDeal.coupon?.availability
+                              ? bestDeal.coupon.discount
+                              : undefined,
+                            bestDeal.cashback?.value,
+                          ) / 100,
+                        )}
+                      </strong>{' '}
+                      <span className="text-muted-foreground">à vista </span>
+                    </p>
+
+                    {!!bestDeal.installments &&
+                      !!bestDeal.totalInstallmentPrice && (
+                        <span className="text-muted-foreground">
+                          ou{' '}
+                          <strong className="text-base">
+                            {priceFormatter.format(
+                              priceCalculator(
+                                bestDeal.totalInstallmentPrice,
+                                bestDeal.coupon?.availability
+                                  ? bestDeal.coupon.discount
+                                  : undefined,
+                                bestDeal.cashback?.value,
+                              ) / 100,
+                            )}
+                          </strong>{' '}
+                          em{' '}
+                          <strong className="text-base">
+                            {bestDeal.installments}x
+                          </strong>{' '}
+                          de{' '}
+                          <strong className="text-base">
+                            {priceFormatter.format(
+                              priceCalculator(
+                                bestDeal.totalInstallmentPrice,
+                                bestDeal.coupon?.availability
+                                  ? bestDeal.coupon.discount
+                                  : undefined,
+                                bestDeal.cashback?.value,
+                              ) /
+                                (100 * bestDeal.installments),
+                            )}
+                          </strong>
+                        </span>
                       )}
-                    </strong>{' '}
-                    <span className="text-muted-foreground">à vista </span>
-                  </p>
+                  </div>
+                  {bestDeal.coupon?.availability && (
+                    <CouponModal
+                      coupon={bestDeal.coupon}
+                      description={
+                        <span className="text-muted-foreground">
+                          {couponFormatter(bestDeal.coupon.discount)} de
+                          desconto neste produto
+                        </span>
+                      }
+                    />
+                  )}
 
-                  {!!bestDeal.installments &&
-                    !!bestDeal.totalInstallmentPrice && (
-                      <span className="text-muted-foreground">
-                        ou{' '}
-                        <strong className="text-base">
-                          {priceFormatter.format(
-                            bestDeal.totalInstallmentPrice / 100,
-                          )}
-                        </strong>{' '}
-                        em{' '}
-                        <strong className="text-base">
-                          {bestDeal.installments}x
-                        </strong>{' '}
-                        de{' '}
-                        <strong className="text-base">
-                          {priceFormatter.format(
-                            bestDeal.totalInstallmentPrice /
-                              (100 * bestDeal.installments),
-                          )}
-                        </strong>
-                      </span>
-                    )}
+                  {bestDeal.cashback && (
+                    <CashbackModal
+                      cashback={bestDeal.cashback}
+                      description={
+                        <span className="text-muted-foreground">
+                          {bestDeal.cashback.value}% de volta com{' '}
+                          {bestDeal.cashback.provider}
+                        </span>
+                      }
+                    />
+                  )}
                 </div>
-                {bestDeal.coupon?.availability && (
-                  <CouponModal
-                    coupon={bestDeal.coupon}
-                    description={
-                      <span className="text-muted-foreground">
-                        {couponFormatter(bestDeal.coupon.discount)} de desconto
-                        neste produto
-                      </span>
-                    }
-                  />
-                )}
-
-                {bestDeal.cashback && (
-                  <CashbackModal
-                    cashback={bestDeal.cashback}
-                    description={
-                      <span className="text-muted-foreground">
-                        {bestDeal.cashback.value}% de volta com{' '}
-                        {bestDeal.cashback.provider}
-                      </span>
-                    }
-                  />
-                )}
-              </div>
+              ) : (
+                <strong className="text-xl text-destructive">
+                  Indisponível
+                </strong>
+              )}
               <a
                 className={cn(
                   buttonVariants(),
@@ -518,7 +537,13 @@ export default async function ProductPage({ params }: ProductPageProps) {
                           ou{' '}
                           <strong className="text-sm md:text-base">
                             {priceFormatter.format(
-                              deal.totalInstallmentPrice / 100,
+                              priceCalculator(
+                                deal.totalInstallmentPrice,
+                                deal.coupon?.availability
+                                  ? deal.coupon.discount
+                                  : undefined,
+                                deal.cashback?.value,
+                              ) / 100,
                             )}
                           </strong>{' '}
                           em{' '}
@@ -528,7 +553,13 @@ export default async function ProductPage({ params }: ProductPageProps) {
                           de{' '}
                           <strong className="text-sm md:text-base">
                             {priceFormatter.format(
-                              deal.totalInstallmentPrice /
+                              priceCalculator(
+                                deal.totalInstallmentPrice,
+                                deal.coupon?.availability
+                                  ? deal.coupon.discount
+                                  : undefined,
+                                deal.cashback?.value,
+                              ) /
                                 (100 * deal.installments),
                             )}
                           </strong>

@@ -129,9 +129,11 @@ export function Combobox() {
         onClick={() => setIsOpen(true)}
       >
         <Icons.Search className="h-4 w-4 xl:mr-2" aria-hidden="true" />
-        <span className="hidden xl:inline-flex">
-          {query.trim().length > 0 ? query : 'Procurar produtos...'}
-        </span>
+        <div className="hidden w-[78%] xl:block">
+          <span className="line-clamp-1 break-all text-start">
+            {query.trim().length > 0 ? query : 'Procurar produtos...'}
+          </span>
+        </div>
         <span className="sr-only">Procurar produtos</span>
         <kbd className="pointer-events-none absolute right-1.5 top-2 hidden h-6 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 xl:flex">
           <span className="text-xs">Ctrl</span>K
