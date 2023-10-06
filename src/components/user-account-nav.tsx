@@ -62,7 +62,7 @@ export function UserAccountNav({ user }: UserAccountNavProps) {
         {user.isAdmin && (
           <>
             <DropdownMenuItem className="cursor-pointer" asChild>
-              <Link href="/dashboard/sales">
+              <Link href="/dashboard">
                 <Icons.Lock className="mr-2 h-4 w-4" />
                 <span>Dashboard</span>
               </Link>

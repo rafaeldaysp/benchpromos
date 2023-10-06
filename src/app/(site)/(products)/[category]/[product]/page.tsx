@@ -605,7 +605,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                         buttonVariants(),
                         'flex h-10 w-full cursor-pointer rounded-xl',
                       )}
-                      href={bestDeal.url}
+                      href={deal.url}
                       target="_blank"
                     >
                       <span className="mr-2 font-semibold">ACESSAR</span>
