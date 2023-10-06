@@ -171,12 +171,13 @@ export default async function ProductsPage({
     },
     errorPolicy: 'ignore',
   })
-  const products = data.productsList.products
-  const pageCount = data.productsList.pages
-  const productCount = data.productsList._count.products
+
+  const products = data?.productsList.products
+  const pageCount = data?.productsList.pages
+  const productCount = data?.productsList._count.products
   const serverPriceRange = [
-    data.productsList.minPrice,
-    data.productsList.maxPrice,
+    data?.productsList.minPrice / 100,
+    data?.productsList.maxPrice / 100,
   ] as [number, number]
 
   return (

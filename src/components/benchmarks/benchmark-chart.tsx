@@ -17,7 +17,10 @@ import {
 
 import { useMediaQuery } from '@/hooks/use-media-query'
 import { cn } from '@/lib/utils'
+import Image from 'next/image'
 // import { Card, CardContent, CardHeader } from '../ui/card'
+
+import Logo from '@/assets/full-logo-bench-promos.svg'
 
 interface BenchmarkChartProps {
   results: {
@@ -68,96 +71,114 @@ export function BenchmarkChart({ results }: BenchmarkChartProps) {
       </div>
     )
   return (
-    <ResponsiveContainer
-      height={
-        (isSm ? 40 : 50) + (isSm ? 40 : 50) * (results ? results.length : 0)
-      }
-      width={'100%'}
-      className={'select-none sm:select-auto'}
-    >
-      <BarChart
-        margin={{
-          left: isSm ? -55 : -40,
-        }}
-        data={results}
-        barSize={isSm ? 25 : 30}
-        layout="vertical"
+    <div className="relative">
+      <div className="absolute left-1/2 top-1/2 aspect-square w-full -translate-x-1/2 -translate-y-1/2">
+        <Image
+          src={Logo}
+          alt={'Logo'}
+          className="rounded-lg object-contain opacity-5"
+          fill
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+        />
+      </div>
+      <div className="absolute bottom-2 right-0 aspect-square w-16 -rotate-12 sm:w-20 md:w-24">
+        <Image
+          src={Logo}
+          alt={'Logo'}
+          className="rounded-lg object-contain"
+          fill
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+        />
+      </div>
+
+      <ResponsiveContainer
+        height={
+          (isSm ? 40 : 50) + (isSm ? 40 : 50) * (results ? results.length : 0)
+        }
+        width={'100%'}
+        className={'relative select-none sm:select-auto'}
       >
-        <defs>
-          <linearGradient id="primaryColor" x1="1" y1="0" x2="0" y2="0">
-            <stop offset="0%" stopColor="#6d28d9" stopOpacity={1} />
-            <stop offset="75%" stopColor="#6d28d9" stopOpacity={1} />
-          </linearGradient>
-          <linearGradient id="auxiliaryColor" x1="1" y1="0" x2="0" y2="0">
-            <stop offset="0%" stopColor="#d97706" stopOpacity={1} />
-            <stop offset="75%" stopColor="#d97706" stopOpacity={1} />
-          </linearGradient>
-        </defs>
+        <BarChart data={results} barSize={isSm ? 25 : 30} layout="vertical">
+          <defs>
+            <linearGradient id="primaryColor" x1="1" y1="0" x2="0" y2="0">
+              <stop offset="0%" stopColor="#6d28d9" stopOpacity={1} />
+              <stop offset="75%" stopColor="#6d28d9" stopOpacity={1} />
+            </linearGradient>
+            <linearGradient id="auxiliaryColor" x1="1" y1="0" x2="0" y2="0">
+              <stop offset="0%" stopColor="#d97706" stopOpacity={1} />
+              <stop offset="75%" stopColor="#d97706" stopOpacity={1} />
+            </linearGradient>
+          </defs>
 
-        <XAxis
-          allowDataOverflow
-          dataKey="result"
-          interval="preserveEnd"
-          tickLine={false}
-          tickCount={5}
-          type="number"
-          axisLine={false}
-          stroke={accentColor}
-          className="text-[10px] font-medium sm:text-sm"
-        />
-        <YAxis
-          dataKey={createYAxisString}
-          tickLine={false}
-          width={isSm ? 200 : 350}
-          type="category"
-          stroke={accentColor}
-          axisLine={false}
-          className="text-[10px] font-medium sm:text-sm"
-        />
+          <XAxis
+            allowDataOverflow
+            dataKey="result"
+            interval="preserveEnd"
+            tickLine={false}
+            tickCount={5}
+            type="number"
+            axisLine={false}
+            stroke={accentColor}
+            className="text-[10px] font-medium sm:text-sm"
+          />
+          <YAxis
+            dataKey={createYAxisString}
+            tickLine={false}
+            width={isSm ? 200 : 350}
+            type="category"
+            stroke={accentColor}
+            axisLine={false}
+            className="text-[10px] font-medium sm:text-sm"
+          />
 
-        {/* <Tooltip
+          {/* <Tooltip
           cursor={false}
           content={<RenderCustomTooltip targetProduct={targetProductName} />}
         /> */}
-        <CartesianGrid
-          stroke={accentColor}
-          strokeDasharray="3 3"
-          horizontal={false}
-        />
-        <Bar
-          dataKey="result"
-          className="cursor-pointer"
-          // label={RenderCustomBarLabel}
-          name="Resultado"
-          radius={[0, 4, 4, 0]}
-          onClick={(data) => {
-            const productSlug = data.product.slug as string
-            selected?.includes(productSlug)
-              ? setSelected((prev) =>
-                  prev.filter((slug) => slug !== productSlug),
-                )
-              : setSelected((prev) => [...prev, productSlug])
-          }}
-        >
-          <LabelList dataKey="result" position="insideRight" stroke="#f9fafb" />
-          {results?.map((result, index) => {
-            return (
-              <Cell
-                className={cn(
-                  'fill-primary transition-colors hover:fill-primary/80',
-                  {
-                    'fill-amber-500 hover:fill-amber-500/80': selected.includes(
-                      result.product.slug,
-                    ),
-                  },
-                )}
-                key={`cell-${index}`}
-              />
-            )
-          })}
-        </Bar>
-      </BarChart>
-    </ResponsiveContainer>
+          <CartesianGrid
+            stroke={accentColor}
+            strokeDasharray="3 3"
+            horizontal={false}
+          />
+          <Bar
+            dataKey="result"
+            className="cursor-pointer"
+            // label={RenderCustomBarLabel}
+            name="Resultado"
+            radius={[0, 4, 4, 0]}
+            onClick={(data) => {
+              const productSlug = data.product.slug as string
+              selected?.includes(productSlug)
+                ? setSelected((prev) =>
+                    prev.filter((slug) => slug !== productSlug),
+                  )
+                : setSelected((prev) => [...prev, productSlug])
+            }}
+          >
+            <LabelList
+              dataKey="result"
+              position="insideRight"
+              stroke="#f9fafb"
+              className="text-sm sm:text-lg"
+            />
+            {results?.map((result, index) => {
+              return (
+                <Cell
+                  className={cn(
+                    'fill-primary transition-colors hover:fill-primary/80',
+                    {
+                      'fill-amber-500 hover:fill-amber-500/80':
+                        selected.includes(result.product.slug),
+                    },
+                  )}
+                  key={`cell-${index}`}
+                />
+              )
+            })}
+          </Bar>
+        </BarChart>
+      </ResponsiveContainer>
+    </div>
   )
 }
 

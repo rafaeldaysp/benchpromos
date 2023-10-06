@@ -6,18 +6,32 @@ import { type Session } from 'next-auth'
 import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import { useState } from 'react'
 
 import { CashbackModal } from '@/components/cashback-modal'
 import { CouponModal } from '@/components/coupon-modal'
 import { Icons } from '@/components/icons'
 import { Comments } from '@/components/sales/comments'
 import { Reactions } from '@/components/sales/reactions'
-import { buttonVariants } from '@/components/ui/button'
+import { Button, buttonVariants } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
 import type { Cashback, Category, Sale } from '@/types'
 import { priceFormatter } from '@/utils/formatter'
 import { Separator } from '@/components/ui/separator'
+import { ReactionMenu } from '@/components/sales/reaction-menu'
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuSub,
+  ContextMenuTrigger,
+} from '@/components/ui/context-menu'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover'
+import { ReactionPopover } from '@/components/sales/reaction-popover'
 
 const GET_SALE = gql`
   query Sale($saleId: ID!) {
@@ -58,6 +72,8 @@ interface SaleMainProps {
 }
 
 export function SaleMain({ saleId, user }: SaleMainProps) {
+  const [reactionMenuOpen, setReactionMenuOpen] = useState(false)
+
   const { data, error, client } = useSuspenseQuery<{
     sale: Sale & {
       commentsCount: number
@@ -147,14 +163,14 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
                 href={`/${sale.category.slug}/${sale.productSlug}`}
                 className={cn(
                   buttonVariants(),
-                  'flex h-10 animate-pulse rounded-xl font-semibold',
+                  'flex h-10 rounded-xl font-semibold',
                 )}
               >
                 {/* <Icons.StarFilled
                   strokeWidth={3}
                   className="mr-2 h-4 w-4 text-auxiliary"
                 /> */}
-                VER MAIS
+                VISUALIZAR PRODUTO
                 <Icons.ChevronRight strokeWidth={3} className="ml-2 h-4 w-4" />
               </Link>
             )}
@@ -176,13 +192,28 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
           </Card>
         )}
 
-        <Reactions
-          apolloClient={client}
-          reactions={sale.reactions}
-          saleId={sale.id}
-          userId={user?.id}
-        />
-
+        <div className="flex items-center gap-1">
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button size={'icon'} variant={'ghost'}>
+                <Icons.SmilePlus className="h-4 w-4" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-full p-1">
+              <ReactionPopover
+                apolloClient={client}
+                saleId={sale.id}
+                userId={user?.id}
+              />
+            </PopoverContent>
+          </Popover>
+          <Reactions
+            apolloClient={client}
+            reactions={sale.reactions}
+            saleId={sale.id}
+            userId={user?.id}
+          />
+        </div>
         <Separator />
 
         {sale.productSlug && (

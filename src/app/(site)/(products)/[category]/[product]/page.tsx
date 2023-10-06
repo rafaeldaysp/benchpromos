@@ -218,7 +218,10 @@ export default async function ProductPage({ params }: ProductPageProps) {
                       description={
                         <span className="text-muted-foreground">
                           {couponFormatter(bestDeal.coupon.discount)} de
-                          desconto neste produto
+                          desconto{' '}
+                          <span className="hidden sm:inline-flex">
+                            neste produto
+                          </span>
                         </span>
                       }
                     />
@@ -625,25 +628,18 @@ export default async function ProductPage({ params }: ProductPageProps) {
         <Separator className="my-4" />
         <ProductSales product={product} />
       </section> */}
+      {product.benchmarksResults.length > 0 && (
+        <section id="benchmarks">
+          <header className="space-y-1">
+            <h2 className="font-semibold tracking-tight md:text-xl">
+              Benchmarks
+            </h2>
+            <p className="text-sm text-muted-foreground">
+              Saiba como este produto performa em nossos testes
+            </p>
+          </header>
+          <Separator className="my-4" />
 
-      <section id="benchmarks">
-        <header className="space-y-1">
-          <h2 className="font-semibold tracking-tight md:text-xl">
-            Benchmarks
-          </h2>
-          <p className="text-sm text-muted-foreground">
-            Saiba como este produto performa em nossos testes
-          </p>
-        </header>
-        <Separator className="my-4" />
-        {product.benchmarksResults.length > 0 ? (
-          // <Card>
-          //   <CardHeader className="px-3 text-center sm:px-8">
-          //     <CardTitle className="text-sm sm:text-base">
-          //       {product.name}
-          //     </CardTitle>
-          //   </CardHeader>
-          //   <CardContent className="p-3 pl-0 pt-0 sm:px-8 sm:pb-6">
           <BenchmarkChart
             results={product.benchmarksResults.map((benchmarkResult) => ({
               result: benchmarkResult.result,
@@ -651,16 +647,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
               product: benchmarkResult.benchmark,
             }))}
           />
-        ) : (
-          //   </CardContent>
-          // </Card>
-          <h3 className="text-sm text-muted-foreground">
-            Não temos avaliações ou benchmarks disponíveis para este produto em
-            nosso site no momento. Estamos trabalhando para fornecer informações
-            detalhadas em breve. Agradecemos sua compreensão.
-          </h3>
-        )}
-      </section>
+        </section>
+      )}
 
       <section id="review">
         <header className="space-y-1">

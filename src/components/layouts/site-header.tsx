@@ -9,6 +9,8 @@ import { MainNav } from './main-nav'
 import { getClient } from '@/lib/apollo'
 import { type Category } from '@/types'
 import { gql } from '@apollo/client'
+import { cn } from '@/lib/utils'
+import { Icons } from '../icons'
 
 const GET_CATEGORIES = gql`
   query GetCategories {
@@ -39,6 +41,18 @@ export async function SiteHeader() {
         <div className="flex flex-1 justify-end">
           <nav className="flex items-center space-x-2">
             <Combobox />
+
+            <div className="lg:hidden">
+              <Link
+                className={cn(
+                  buttonVariants({ variant: 'outline', size: 'icon' }),
+                )}
+                href={'/benchmarks'}
+              >
+                <Icons.BarChart4 className="h-4 w-4" />
+                <span className="sr-only">Mudar tema</span>
+              </Link>
+            </div>
 
             <ModeToggle />
 

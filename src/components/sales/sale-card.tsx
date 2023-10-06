@@ -39,6 +39,7 @@ import { useMediaQuery } from '@/hooks/use-media-query'
 import { cn } from '@/lib/utils'
 import type { Cashback } from '@/types'
 import { priceFormatter } from '@/utils/formatter'
+import { ReactionDrawer } from './reaction-drawer'
 
 dayjs.extend(relativeTime)
 dayjs.locale('pt-br')
@@ -269,7 +270,7 @@ export function SaleCard({
                 </Link>
               </div>
               <Link
-                href={`/`}
+                href={`/sale/${sale.slug}/${sale.id}`}
                 className={cn(
                   buttonVariants({ variant: 'default' }),
                   'h-fit w-full rounded-xl py-1.5 font-semibold sm:hidden',
@@ -337,6 +338,8 @@ export function SaleCard({
         open={openMobileMenu}
         setOpen={setOpenMobileMenu}
         sale={sale}
+        apolloClient={apolloClient}
+        user={user}
       />
     </>
   )
@@ -353,9 +356,17 @@ interface MobileMenuProps {
       slug: string
     }
   }
+  user?: { id: string; isAdmin: boolean }
+  apolloClient: ApolloClient<unknown>
 }
 
-function MobileMenu({ open, setOpen, sale }: MobileMenuProps) {
+function MobileMenu({
+  open,
+  setOpen,
+  sale,
+  user,
+  apolloClient,
+}: MobileMenuProps) {
   const [snap, setSnap] = React.useState<number | string | null>(0.7)
   return (
     <Drawer
@@ -367,14 +378,21 @@ function MobileMenu({ open, setOpen, sale }: MobileMenuProps) {
     >
       <DrawerContent
         className={cn(
-          'fixed h-full max-h-[70%] space-y-4 rounded-t-2xl sm:hidden',
+          'fixed h-full max-h-[70%] space-y-2 rounded-t-2xl sm:hidden',
           {
             'overflow-y-hidden': snap !== 1,
           },
         )}
       >
-        <div className="relative -top-4 left-1/2 h-1.5 w-12 shrink-0 -translate-x-1/2 rounded-full bg-accent" />
+        <div className="relative -top-2 left-1/2 h-1.5 w-12 shrink-0 -translate-x-1/2 rounded-full bg-accent" />
         <main className="flex flex-col space-y-1">
+          <ReactionDrawer
+            saleId={sale.id}
+            apolloClient={apolloClient}
+            userId={user?.id}
+          />
+
+          <h3 className="py-2 text-sm text-muted-foreground">Interagir</h3>
           <Link
             href={`/sale/${sale.slug}/${sale.id}#comments`}
             className="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-2.5 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
@@ -382,23 +400,43 @@ function MobileMenu({ open, setOpen, sale }: MobileMenuProps) {
             <Icons.MessageCircle className="mr-4 h-4 w-4" />
             <span>Comentar</span>
           </Link>
-          {sale.productSlug && (
-            <Link
-              href={`/${sale.category.slug}/${sale.productSlug}`}
-              className="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-2.5 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
-            >
-              <Icons.Eye className="mr-4 h-4 w-4" />
-              <span>Ver produto</span>
-            </Link>
-          )}
 
           <Link
             href={`/sale/${sale.slug}/${sale.id}`}
             className="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-2.5 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
           >
             <Icons.GanttChartSquare className="mr-4 h-4 w-4" />
-            <span>Mais detalhes</span>
+            <span>Visualizar promoção</span>
           </Link>
+          {sale.productSlug && (
+            <>
+              <h3 className="py-3 text-sm text-muted-foreground">
+                Mais informações
+              </h3>
+
+              <Link
+                href={`/${sale.category.slug}/${sale.productSlug}`}
+                className="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-2.5 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+              >
+                <Icons.Eye className="mr-4 h-4 w-4" />
+                <span>Visualizar produto</span>
+              </Link>
+              <Link
+                href={`/${sale.category.slug}/${sale.productSlug}#historico`}
+                className="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-2.5 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+              >
+                <Icons.LineChart className="mr-4 h-4 w-4" />
+                <span>Histórico de preços</span>
+              </Link>
+              <Link
+                href={`/${sale.category.slug}/${sale.productSlug}#precos`}
+                className="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-2.5 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+              >
+                <Icons.DollarSign className="mr-4 h-4 w-4" />
+                <span>Opções de compra</span>
+              </Link>
+            </>
+          )}
         </main>
       </DrawerContent>
     </Drawer>

@@ -41,6 +41,7 @@ import type {
 } from '@/types'
 import { CategoryFilterPopover } from './category-filters-popover'
 import { Badge } from './ui/badge'
+import { PriceInput } from './price-input'
 
 interface ProductsProps {
   products: (Product & {
@@ -86,7 +87,7 @@ export function Products({
   const clientPriceRange = searchParams
     .get('price')
     ?.split('-')
-    .map(Number) as [number, number]
+    .map((value) => Number(value) / 100) as [number, number]
   const [currentPriceRange, setCurrentPriceRange] = React.useState<
     [number, number]
   >(clientPriceRange ?? serverPriceRange)
@@ -118,7 +119,7 @@ export function Products({
     startTransition(() => {
       router.push(
         `${pathname}?${createQueryString({
-          price: `${min}-${max}`,
+          price: `${Number(min * 100)}-${Number(max * 100)}`,
         })}`,
       )
     })
@@ -201,29 +202,31 @@ export function Products({
                       }}
                     />
                     <div className="flex items-center space-x-4">
-                      <Input
-                        type="number"
-                        inputMode="numeric"
+                      <PriceInput
+                        disabled
                         min={serverPriceRange[0]}
                         max={serverPriceRange[1]}
                         className="h-9"
                         value={currentPriceRange[0]}
                         onChange={(e) => {
-                          const value = Number(e.target.value)
-                          setCurrentPriceRange([value, currentPriceRange[1]])
+                          setCurrentPriceRange((prev) => [
+                            Number(e.target.value),
+                            prev[1],
+                          ])
                         }}
                       />
                       <span className="text-muted-foreground">até</span>
-                      <Input
-                        type="number"
-                        inputMode="numeric"
+                      <PriceInput
+                        disabled
                         min={serverPriceRange[0]}
                         max={serverPriceRange[1]}
                         className="h-9"
                         value={currentPriceRange[1]}
                         onChange={(e) => {
-                          const value = Number(e.target.value)
-                          setCurrentPriceRange([currentPriceRange[0], value])
+                          setCurrentPriceRange((prev) => [
+                            prev[0],
+                            Number(e.target.value),
+                          ])
                         }}
                       />
                     </div>
@@ -339,7 +342,7 @@ export function Products({
       <div className="flex justify-between">
         <div className="flex flex-1 items-center justify-between gap-x-4 lg:justify-normal">
           <h3 className="text-sm">
-            {productCount} resultado{productCount > 1 && 's'}
+            {productCount ?? 0} resultado{productCount > 1 && 's'}
           </h3>
           <Select
             defaultValue="relevance"
@@ -393,11 +396,11 @@ export function Products({
           },
         )}
       >
-        {products.map((product) => (
+        {products?.map((product) => (
           <ProductCard key={product.id} product={product} />
         ))}
       </div>
-      {products.length && (
+      {products?.length && (
         <Pagination page={Number(page)} pageCount={pageCount} />
       )}
     </div>
