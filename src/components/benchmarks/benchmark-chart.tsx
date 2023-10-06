@@ -26,7 +26,7 @@ interface BenchmarkChartProps {
   results: {
     result: number
     description?: string
-    productDisplayName: string
+    productDisplayName?: string
     product: {
       name: string
       slug: string
