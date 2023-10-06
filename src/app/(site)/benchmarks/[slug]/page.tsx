@@ -12,6 +12,7 @@ const GET_BENCHMARK_RESULTS = gql`
     ) {
       result
       description
+      productDisplayName
       product {
         name
         slug
@@ -44,6 +45,7 @@ export default async function BenchmarkPage({
   const { data } = await getClient().query<{
     benchmarkResults: {
       result: number
+      productDisplayName: string
       description?: string
       product: {
         name: string

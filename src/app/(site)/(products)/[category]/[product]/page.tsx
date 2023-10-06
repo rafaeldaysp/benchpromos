@@ -39,6 +39,7 @@ import type {
 } from '@/types'
 import { couponFormatter, priceFormatter } from '@/utils/formatter'
 import { priceCalculator } from '@/utils/price-calculator'
+import { ProductBenchmarks } from '@/components/product-benchmarks'
 
 const GET_PRODUCT = gql`
   query GetProduct($productInput: GetProductInput!) {
@@ -640,12 +641,9 @@ export default async function ProductPage({ params }: ProductPageProps) {
           </header>
           <Separator className="my-4" />
 
-          <BenchmarkChart
-            results={product.benchmarksResults.map((benchmarkResult) => ({
-              result: benchmarkResult.result,
-              description: benchmarkResult.description,
-              product: benchmarkResult.benchmark,
-            }))}
+          <ProductBenchmarks
+            benchmarksResults={product.benchmarksResults}
+            productSlug={slug}
           />
         </section>
       )}

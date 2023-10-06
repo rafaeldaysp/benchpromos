@@ -50,7 +50,10 @@ export function BenchmarkChart({ results }: BenchmarkChartProps) {
 
   const createYAxisString = (result: (typeof results)[number]) => {
     const MAX_STRING_LENGTH = isSm ? 65 : 100
-    const displayName = result.productDisplayName ?? result.product.name
+    const displayName =
+      result.productDisplayName && result.productDisplayName !== ''
+        ? result.productDisplayName
+        : result.product.name
     const descriptionString = result.description
       ? ` [${result.description}]`
       : ''
