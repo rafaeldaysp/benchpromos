@@ -13,6 +13,7 @@ const GET_BENCHMARKS = gql`
       results {
         id
         result
+        productDisplayName
         description
         product {
           id
@@ -27,7 +28,10 @@ const GET_BENCHMARKS = gql`
 export default async function BenchmarksDashboardPage() {
   const { data } = await getClient().query<{
     benchmarks: (Benchmark & {
-      results: (Pick<BenchmarkResult, 'id' | 'result' | 'description'> & {
+      results: (Pick<
+        BenchmarkResult,
+        'id' | 'result' | 'description' | 'productDisplayName'
+      > & {
         product: Pick<Product, 'id' | 'name' | 'imageUrl'>
       })[]
     })[]

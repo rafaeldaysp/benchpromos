@@ -117,12 +117,8 @@ export function DataTableRowActions<TData>({
           </SheetHeader>
           <BenchmarkResultForm
             mode="update"
-            benchmarkResult={{
-              id: benchmarkDataRow.id,
-              benchmarkId: benchmarkDataRow.benchmark.id,
-              result: benchmarkDataRow.result,
-              description: benchmarkDataRow.description,
-            }}
+            benchmarkResult={benchmarkDataRow}
+            product={benchmarkDataRow.product}
           />
         </SheetContent>
 

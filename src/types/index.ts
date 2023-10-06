@@ -131,6 +131,7 @@ export type BenchmarkResult = {
   benchmarkId: string
   productId: string
   result: number
+  productDisplayName: string
   description?: string
 }
 

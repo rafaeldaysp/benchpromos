@@ -26,6 +26,7 @@ interface BenchmarkChartProps {
   results: {
     result: number
     description?: string
+    productDisplayName: string
     product: {
       name: string
       slug: string
@@ -49,13 +50,14 @@ export function BenchmarkChart({ results }: BenchmarkChartProps) {
 
   const createYAxisString = (result: (typeof results)[number]) => {
     const MAX_STRING_LENGTH = isSm ? 65 : 100
+    const displayName = result.productDisplayName ?? result.product.name
     const descriptionString = result.description
       ? ` [${result.description}]`
       : ''
-    if (result.product.name.length <= MAX_STRING_LENGTH)
-      return `${result.product.name}`.concat(descriptionString)
+    if (displayName.length <= MAX_STRING_LENGTH)
+      return `${displayName}`.concat(descriptionString)
 
-    return result.product.name
+    return displayName
       .substring(0, MAX_STRING_LENGTH - 3)
       .concat('...')
       .concat(descriptionString)
@@ -72,7 +74,11 @@ export function BenchmarkChart({ results }: BenchmarkChartProps) {
     )
   return (
     <div className="relative">
-      <div className="absolute left-1/2 top-1/2 aspect-square w-full -translate-x-1/2 -translate-y-1/2">
+      <div
+        className={`absolute left-1/2 top-1/2 aspect-square ${
+          results.length < 3 ? 'w-3/5' : 'w-full'
+        } -translate-x-1/2 -translate-y-1/2`}
+      >
         <Image
           src={Logo}
           alt={'Logo'}

@@ -32,7 +32,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
 import { benchmarkResultSchema } from '@/lib/validations/benchmark'
-import type { Benchmark } from '@/types'
+import type { Benchmark, Product } from '@/types'
 
 const CREATE_BENCHMARK_RESULT = gql`
   mutation CreateBenchmarkResult($input: CreateBenchmarkResultInput!) {
@@ -67,18 +67,19 @@ const defaultValues: Partial<Inputs> = {
 
 interface BenchmarkResultFormProps {
   mode?: 'create' | 'update'
-  productId?: string
+  product: Pick<Product, 'id' | 'name'>
   benchmarkResult?: { id?: string } & Partial<Inputs>
 }
 
 export function BenchmarkResultForm({
   mode = 'create',
-  productId,
+  product,
   benchmarkResult,
 }: BenchmarkResultFormProps) {
   const form = useForm<Inputs>({
     resolver: zodResolver(benchmarkResultSchema),
     defaultValues: {
+      productDisplayName: benchmarkResult?.productDisplayName ?? product.name,
       ...defaultValues,
       ...benchmarkResult,
     },
@@ -116,7 +117,7 @@ export function BenchmarkResultForm({
 
         setOpenDialog(
           mode === 'create'
-            ? `benchmarkResultCreateForm.${productId}`
+            ? `benchmarkResultCreateForm.${product.id}`
             : `benchmarkResultUpdateForm.${benchmarkResult?.id}`,
           false,
         )
@@ -136,7 +137,7 @@ export function BenchmarkResultForm({
       variables: {
         input: {
           id: benchmarkResult?.id,
-          productId,
+          productId: product.id,
           ...data,
         },
       },
@@ -169,6 +170,24 @@ export function BenchmarkResultForm({
                   ))}
                 </SelectContent>
               </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="productDisplayName"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Nome público do produto</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="Dell G15 RTX 3050 I5..."
+                  aria-invalid={!!form.formState.errors.productDisplayName}
+                  {...field}
+                />
+              </FormControl>
               <FormMessage />
             </FormItem>
           )}

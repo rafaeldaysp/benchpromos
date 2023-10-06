@@ -49,7 +49,10 @@ const DELETE_BENCHMARK = gql`
 
 interface BenchmarksMainProps {
   benchmarks: (Benchmark & {
-    results: (Pick<BenchmarkResult, 'id' | 'result' | 'description'> & {
+    results: (Pick<
+      BenchmarkResult,
+      'id' | 'result' | 'description' | 'productDisplayName'
+    > & {
       product: Pick<Product, 'id' | 'name' | 'imageUrl'>
     })[]
   })[]
@@ -80,6 +83,7 @@ export function BenchmarksMain({ benchmarks }: BenchmarksMainProps) {
       id: result.id,
       result: result.result,
       description: result.description,
+      productDisplayName: result.productDisplayName,
       benchmark: {
         id: benchmark.id,
         name: benchmark.name,
@@ -251,7 +255,7 @@ export function BenchmarksMain({ benchmarks }: BenchmarksMainProps) {
                         <SheetHeader>
                           <SheetTitle>ADICIONAR RESULTADO</SheetTitle>
                         </SheetHeader>
-                        <BenchmarkResultForm productId={product.id} />
+                        <BenchmarkResultForm product={product} />
                       </SheetContent>
                     </Sheet>
                   </DashboardItemCard.Actions>
