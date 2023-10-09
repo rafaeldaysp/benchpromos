@@ -26,11 +26,7 @@ interface BenchmarkChartProps {
   results: {
     result: number
     description?: string
-    productDisplayName?: string
-    product: {
-      name: string
-      slug: string
-    }
+    productAlias: string
   }[]
 }
 
@@ -38,9 +34,9 @@ export function BenchmarkChart({ results }: BenchmarkChartProps) {
   const isSm = useMediaQuery('(max-width: 640px)')
   const { theme, systemTheme } = useTheme()
   const searchParams = useSearchParams()
-  const targetProductSlug = searchParams.get('product')
+  const targetProductAlias = searchParams.get('product')
   const [selected, setSelected] = React.useState(
-    targetProductSlug ? [targetProductSlug] : [],
+    targetProductAlias ? [targetProductAlias] : [],
   )
 
   const accentColor =
@@ -50,17 +46,13 @@ export function BenchmarkChart({ results }: BenchmarkChartProps) {
 
   const createYAxisString = (result: (typeof results)[number]) => {
     const MAX_STRING_LENGTH = isSm ? 65 : 100
-    const displayName =
-      result.productDisplayName && result.productDisplayName !== ''
-        ? result.productDisplayName
-        : result.product.name
     const descriptionString = result.description
       ? ` [${result.description}]`
       : ''
-    if (displayName.length <= MAX_STRING_LENGTH)
-      return `${displayName}`.concat(descriptionString)
+    if (result.productAlias.length <= MAX_STRING_LENGTH)
+      return `${result.productAlias}`.concat(descriptionString)
 
-    return displayName
+    return result.productAlias
       .substring(0, MAX_STRING_LENGTH - 3)
       .concat('...')
       .concat(descriptionString)
@@ -156,12 +148,12 @@ export function BenchmarkChart({ results }: BenchmarkChartProps) {
             name="Resultado"
             radius={[0, 4, 4, 0]}
             onClick={(data) => {
-              const productSlug = data.product.slug as string
-              selected?.includes(productSlug)
+              const productAlias = data.productAlias as string
+              selected?.includes(productAlias)
                 ? setSelected((prev) =>
-                    prev.filter((slug) => slug !== productSlug),
+                    prev.filter((slug) => slug !== productAlias),
                   )
-                : setSelected((prev) => [...prev, productSlug])
+                : setSelected((prev) => [...prev, productAlias])
             }}
           >
             <LabelList
@@ -177,7 +169,7 @@ export function BenchmarkChart({ results }: BenchmarkChartProps) {
                     'fill-primary transition-colors hover:fill-primary/80',
                     {
                       'fill-amber-500 hover:fill-amber-500/80':
-                        selected.includes(result.product.slug),
+                        selected.includes(result.productAlias),
                     },
                   )}
                   key={`cell-${index}`}

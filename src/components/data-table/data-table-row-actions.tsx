@@ -79,6 +79,7 @@ export function DataTableRowActions<TData>({
       onOpenChange={(open) =>
         setOpenDialog(`benchmarkResultUpdateForm.${benchmarkDataRow.id}`, open)
       }
+      modal={true}
     >
       <AlertDialog>
         <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
@@ -117,8 +118,14 @@ export function DataTableRowActions<TData>({
           </SheetHeader>
           <BenchmarkResultForm
             mode="update"
-            benchmarkResult={benchmarkDataRow}
-            product={benchmarkDataRow.product}
+            benchmarkResult={{
+              id: benchmarkDataRow.id,
+              benchmarkId: benchmarkDataRow.benchmark.id,
+              description: benchmarkDataRow.description ?? undefined,
+              productAlias: benchmarkDataRow.product.alias,
+              result: benchmarkDataRow.result,
+              products: benchmarkDataRow.products,
+            }}
           />
         </SheetContent>
 

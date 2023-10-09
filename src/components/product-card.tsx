@@ -146,14 +146,7 @@ export function ProductCard({
                             ) /
                               (100 * bestDeal.installments),
                           )}
-                        </strong>{' '}
-                        <p className="hidden sm:inline-flex">
-                          {bestDeal.price >= bestDeal.totalInstallmentPrice ? (
-                            <span>sem juros</span>
-                          ) : (
-                            <span>com juros</span>
-                          )}
-                        </p>
+                        </strong>
                       </span>
                     )}
                 </div>

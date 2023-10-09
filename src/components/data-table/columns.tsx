@@ -10,10 +10,10 @@ import { Checkbox } from '@/components/ui/checkbox'
 export type BenchmarkData = {
   id: string
   result: number
-  productDisplayName: string
-  description?: string
   benchmark: { id: string; name: string }
-  product: { id: string; name: string; imageUrl: string }
+  product: { alias: string; imageUrl: string }
+  products: { id: string; name: string; imageUrl: string }[]
+  description?: string
 }
 
 export const columns: ColumnDef<BenchmarkData>[] = [
@@ -58,7 +58,7 @@ export const columns: ColumnDef<BenchmarkData>[] = [
             />
           </div>
           <div className="flex-1">
-            <p className="text-sm leading-7">{product.name}</p>
+            <p className="text-sm leading-7">{product.alias}</p>
           </div>
         </div>
       )
@@ -67,7 +67,7 @@ export const columns: ColumnDef<BenchmarkData>[] = [
       const product = row.getValue(id) as BenchmarkData['product']
       const input = value as string
 
-      const productName = product.name.toLowerCase()
+      const productName = product.alias.toLowerCase()
       const searchArray = input.toLowerCase().split(' ')
 
       return (

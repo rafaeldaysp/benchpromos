@@ -26,12 +26,10 @@ interface ProductBenchmarksProps {
   benchmarksResults: (Omit<BenchmarkResult, 'productId' | 'benchmarkId'> & {
     benchmark: Omit<Benchmark, 'id'>
   })[]
-  productSlug: string
 }
 
 export function ProductBenchmarks({
   benchmarksResults,
-  productSlug,
 }: ProductBenchmarksProps) {
   return (
     <Table>
@@ -61,7 +59,7 @@ export function ProductBenchmarks({
               <DropdownMenuContent align="end">
                 <DropdownMenuItem className="h-fit w-fit p-0">
                   <Link
-                    href={`/benchmarks/${benchmarkResult.benchmark.slug}?product=${productSlug}`}
+                    href={`/benchmarks/${benchmarkResult.benchmark.slug}?product=${benchmarkResult.productAlias}`}
                     className={cn(
                       buttonVariants({ variant: 'ghost' }),
                       'px-4 py-1 text-sm',

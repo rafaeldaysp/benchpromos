@@ -33,6 +33,9 @@ import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
 import { benchmarkResultSchema } from '@/lib/validations/benchmark'
 import type { Benchmark, Product } from '@/types'
+import { DashboardItemCard } from '../dashboard-item-card'
+import { DashboardProducts } from '../dashboard-products'
+import { Label } from '../ui/label'
 
 const CREATE_BENCHMARK_RESULT = gql`
   mutation CreateBenchmarkResult($input: CreateBenchmarkResultInput!) {
@@ -63,27 +66,32 @@ type Inputs = z.infer<typeof benchmarkResultSchema>
 
 const defaultValues: Partial<Inputs> = {
   description: '',
+  unit: 'FPS',
 }
 
 interface BenchmarkResultFormProps {
   mode?: 'create' | 'update'
-  product: Pick<Product, 'id' | 'name'>
-  benchmarkResult?: { id?: string } & Partial<Inputs>
+  benchmarkResult?: {
+    id?: string
+    products?: Pick<Product, 'id' | 'imageUrl' | 'name'>[]
+  } & Partial<Inputs>
 }
 
 export function BenchmarkResultForm({
   mode = 'create',
-  product,
   benchmarkResult,
 }: BenchmarkResultFormProps) {
   const form = useForm<Inputs>({
     resolver: zodResolver(benchmarkResultSchema),
     defaultValues: {
-      productDisplayName: benchmarkResult?.productDisplayName ?? product.name,
       ...defaultValues,
       ...benchmarkResult,
     },
   })
+
+  const [selectedProducts, setSelectedProducts] = React.useState<
+    Pick<Product, 'id' | 'imageUrl' | 'name'>[]
+  >(benchmarkResult?.products ?? [])
 
   const { setOpenDialog } = useFormStore()
   const router = useRouter()
@@ -117,7 +125,7 @@ export function BenchmarkResultForm({
 
         setOpenDialog(
           mode === 'create'
-            ? `benchmarkResultCreateForm.${product.id}`
+            ? `benchmarkResultCreateForm`
             : `benchmarkResultUpdateForm.${benchmarkResult?.id}`,
           false,
         )
@@ -137,7 +145,7 @@ export function BenchmarkResultForm({
       variables: {
         input: {
           id: benchmarkResult?.id,
-          productId: product.id,
+          productsIds: selectedProducts.map((product) => product.id),
           ...data,
         },
       },
@@ -177,14 +185,14 @@ export function BenchmarkResultForm({
 
         <FormField
           control={form.control}
-          name="productDisplayName"
+          name="productAlias"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Nome público do produto</FormLabel>
               <FormControl>
                 <Input
                   placeholder="Dell G15 RTX 3050 I5..."
-                  aria-invalid={!!form.formState.errors.productDisplayName}
+                  aria-invalid={!!form.formState.errors.productAlias}
                   {...field}
                 />
               </FormControl>
@@ -193,28 +201,48 @@ export function BenchmarkResultForm({
           )}
         />
 
-        <FormField
-          control={form.control}
-          name="result"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Resultado</FormLabel>
-              <FormControl>
-                <NumericFormat
-                  customInput={Input}
-                  displayType="input"
-                  placeholder="100"
-                  decimalScale={0}
-                  value={field.value ? field.value : undefined}
-                  onValueChange={({ floatValue }) =>
-                    field.onChange(floatValue ?? 0)
-                  }
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <div className="grid grid-cols-2 gap-x-2">
+          <FormField
+            control={form.control}
+            name="result"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Resultado</FormLabel>
+                <FormControl>
+                  <NumericFormat
+                    customInput={Input}
+                    displayType="input"
+                    placeholder="100"
+                    decimalScale={0}
+                    value={field.value ? field.value : undefined}
+                    onValueChange={({ floatValue }) =>
+                      field.onChange(floatValue ?? 0)
+                    }
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="unit"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Medida</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="FPS"
+                    aria-invalid={!!form.formState.errors.unit}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
 
         <FormField
           control={form.control}
@@ -229,6 +257,56 @@ export function BenchmarkResultForm({
             </FormItem>
           )}
         />
+
+        <div className="space-y-2">
+          <Label>Vincular produtos • {selectedProducts.length}</Label>
+
+          {selectedProducts.map((product) => (
+            <DashboardItemCard.Root className="border" key={product.id}>
+              <DashboardItemCard.Image src={product.imageUrl} alt="" />
+
+              <DashboardItemCard.Content>
+                <p className="text-sm leading-7">{product.name}</p>
+              </DashboardItemCard.Content>
+
+              <DashboardItemCard.Actions>
+                <DashboardItemCard.Action
+                  variant="destructive"
+                  icon={Icons.X}
+                  onClick={() =>
+                    setSelectedProducts((prev) =>
+                      prev.filter((selected) => selected.id !== product.id),
+                    )
+                  }
+                  type="button"
+                />
+              </DashboardItemCard.Actions>
+            </DashboardItemCard.Root>
+          ))}
+
+          <DashboardProducts>
+            {({ products }) =>
+              products.map((product) => (
+                <DashboardItemCard.Root key={product.id}>
+                  <DashboardItemCard.Image src={product.imageUrl} alt="" />
+
+                  <DashboardItemCard.Content>
+                    <p className="text-sm leading-7">{product.name}</p>
+                  </DashboardItemCard.Content>
+                  <DashboardItemCard.Actions>
+                    <DashboardItemCard.Action
+                      icon={Icons.Plus}
+                      // onClick={() =>
+                      //   setSelectedProducts((prev) => [...prev, product])
+                      // }
+                      type="button"
+                    />
+                  </DashboardItemCard.Actions>
+                </DashboardItemCard.Root>
+              ))
+            }
+          </DashboardProducts>
+        </div>
 
         <Button type="submit" disabled={isLoading}>
           {isLoading && (

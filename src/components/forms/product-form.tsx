@@ -29,11 +29,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { Textarea } from '@/components/ui/textarea'
 import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
 import { productSchema } from '@/lib/validations/product'
 import type { Category } from '@/types'
-import { Textarea } from '@/components/ui/textarea'
 
 const CREATE_PRODUCT = gql`
   mutation CreateProduct($input: CreateProductInput!) {
@@ -235,7 +235,7 @@ export function ProductForm({ mode = 'create', product }: ProductFormProps) {
                     <SelectValue placeholder="Selecione uma categoria" />
                   </SelectTrigger>
                 </FormControl>
-                <SelectContent>
+                <SelectContent className="max-h-80">
                   {categoryItems?.map((categoryItem) => (
                     <SelectItem
                       key={categoryItem.value}

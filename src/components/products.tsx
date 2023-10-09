@@ -7,7 +7,6 @@ import { Icons } from '@/components/icons'
 import { Pagination } from '@/components/pagination'
 import { ProductCard } from '@/components/product-card'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import {
   Select,
@@ -27,7 +26,6 @@ import {
 } from '@/components/ui/sheet'
 import { Slider } from '@/components/ui/slider'
 import { Toggle } from '@/components/ui/toggle'
-import { useDebounce } from '@/hooks/use-debounce'
 import { useQueryString } from '@/hooks/use-query-string'
 import { cn } from '@/lib/utils'
 import type {
@@ -40,8 +38,8 @@ import type {
   Retailer,
 } from '@/types'
 import { CategoryFilterPopover } from './category-filters-popover'
-import { Badge } from './ui/badge'
 import { PriceInput } from './price-input'
+import { Badge } from './ui/badge'
 
 interface ProductsProps {
   products: (Product & {
@@ -78,7 +76,6 @@ export function Products({
   const router = useRouter()
 
   const [filters, setFilters] = React.useState(initialFilters)
-  const [sort, setSort] = React.useState(initialSort)
   const [limit, setLimit] = React.useState(initialLimit)
   const [selectIsOpen, setSelectIsOpen] = React.useState(false)
 
@@ -88,10 +85,11 @@ export function Products({
     .get('price')
     ?.split('-')
     .map((value) => Number(value) / 100) as [number, number]
+  const [sort, setSort] = React.useState(initialSort)
   const [currentPriceRange, setCurrentPriceRange] = React.useState<
     [number, number]
   >(clientPriceRange ?? serverPriceRange)
-  const debouncedPrice = useDebounce(currentPriceRange, 250)
+  // const debouncedPrice = useDebounce(currentPriceRange, 250)
 
   const page = searchParams.get('page') ?? '1'
 
@@ -106,25 +104,25 @@ export function Products({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialFilters])
 
-  React.useEffect(() => {
-    const [min, max] = debouncedPrice
+  // React.useEffect(() => {
+  //   const [min, max] = debouncedPrice
 
-    if (
-      min === serverPriceRange[0] &&
-      max === serverPriceRange[1] &&
-      !clientPriceRange
-    )
-      return
+  //   if (
+  //     min === serverPriceRange[0] &&
+  //     max === serverPriceRange[1] &&
+  //     !clientPriceRange
+  //   )
+  //     return
 
-    startTransition(() => {
-      router.push(
-        `${pathname}?${createQueryString({
-          price: `${Number(min * 100)}-${Number(max * 100)}`,
-        })}`,
-      )
-    })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedPrice])
+  //   startTransition(() => {
+  //     router.push(
+  //       `${pathname}?${createQueryString({
+  //         price: `${Number(min * 100)}-${Number(max * 100)}`,
+  //       })}`,
+  //     )
+  //   })
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [debouncedPrice])
 
   React.useEffect(() => {
     if (!sort) return
@@ -137,7 +135,7 @@ export function Products({
       )
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sort])
+  }, [sort, setSort])
 
   React.useEffect(() => {
     if (!limit) return
@@ -203,32 +201,46 @@ export function Products({
                     />
                     <div className="flex items-center space-x-4">
                       <PriceInput
-                        disabled
                         min={serverPriceRange[0]}
                         max={serverPriceRange[1]}
                         className="h-9"
                         value={currentPriceRange[0]}
-                        onChange={(e) => {
+                        onValueChange={({ floatValue }) => {
                           setCurrentPriceRange((prev) => [
-                            Number(e.target.value),
+                            Number(~~(floatValue ?? 0)),
                             prev[1],
                           ])
                         }}
                       />
                       <span className="text-muted-foreground">até</span>
                       <PriceInput
-                        disabled
                         min={serverPriceRange[0]}
                         max={serverPriceRange[1]}
                         className="h-9"
                         value={currentPriceRange[1]}
-                        onChange={(e) => {
+                        onValueChange={({ floatValue }) => {
                           setCurrentPriceRange((prev) => [
                             prev[0],
-                            Number(e.target.value),
+                            Number(~~(floatValue ?? 0)),
                           ])
                         }}
                       />
+                      <Button
+                        variant={'outline'}
+                        onClick={() =>
+                          startTransition(() => {
+                            router.push(
+                              `${pathname}?${createQueryString({
+                                price: `${Number(
+                                  currentPriceRange[0] * 100,
+                                )}-${Number(currentPriceRange[1] * 100)}`,
+                              })}`,
+                            )
+                          })
+                        }
+                      >
+                        Ok
+                      </Button>
                     </div>
                   </div>
                 )}

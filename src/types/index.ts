@@ -129,9 +129,8 @@ export type Benchmark = {
 export type BenchmarkResult = {
   id: string
   benchmarkId: string
-  productId: string
   result: number
-  productDisplayName: string
+  productAlias: string
   description?: string
 }
 

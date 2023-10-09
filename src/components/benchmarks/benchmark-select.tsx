@@ -15,6 +15,7 @@ import {
   CommandItem,
 } from '../ui/command'
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
+import { ScrollArea } from '../ui/scroll-area'
 
 interface BenchmarkSelectProps {
   benchmarks: {
@@ -46,52 +47,54 @@ export function BenchmarkSelect({ benchmarks }: BenchmarkSelectProps) {
         <CommandInput placeholder="Procurar benchmark..." />
         <CommandEmpty>Nenhum benchmark encontrado.</CommandEmpty>
         <CommandGroup>
-          {benchmarks.map((benchmark) => (
-            <CommandItem
-              key={benchmark.slug}
-              value={benchmark.name}
-              onSelectCapture={(e) => e.preventDefault()}
-              className={cn(
-                'hover:bg-muted/50 hover:underline aria-selected:bg-background',
-                {
-                  'bg-muted aria-selected:bg-muted hover:bg-muted':
-                    currentBenchmark === benchmark.slug,
-                },
-              )}
-              onSelect={() =>
-                startTransition(() => {
-                  setOpen(false)
-                  router.push(
-                    `/benchmarks/${benchmark.slug}?${createQueryString({
-                      products: productsString,
-                    })}`,
-                  )
-                })
-              }
-            >
-              {isPending ? (
-                <Icons.Spinner
-                  className={cn(
-                    'mr-2 h-4 w-4 animate-spin',
-                    currentBenchmark === benchmark.slug
-                      ? 'opacity-100'
-                      : 'opacity-0',
-                  )}
-                />
-              ) : (
-                <Icons.Check
-                  className={cn(
-                    'mr-2 h-4 w-4',
-                    currentBenchmark === benchmark.slug
-                      ? 'opacity-100'
-                      : 'opacity-0',
-                  )}
-                />
-              )}
+          <ScrollArea className="max-h-80 sm:max-h-[500px]">
+            {benchmarks.map((benchmark) => (
+              <CommandItem
+                key={benchmark.slug}
+                value={benchmark.name}
+                onSelectCapture={(e) => e.preventDefault()}
+                className={cn(
+                  'hover:bg-muted/50 hover:underline aria-selected:bg-background',
+                  {
+                    'bg-muted aria-selected:bg-muted hover:bg-muted':
+                      currentBenchmark === benchmark.slug,
+                  },
+                )}
+                onSelect={() =>
+                  startTransition(() => {
+                    setOpen(false)
+                    router.push(
+                      `/benchmarks/${benchmark.slug}?${createQueryString({
+                        products: productsString,
+                      })}`,
+                    )
+                  })
+                }
+              >
+                {isPending ? (
+                  <Icons.Spinner
+                    className={cn(
+                      'mr-2 h-4 w-4 animate-spin',
+                      currentBenchmark === benchmark.slug
+                        ? 'opacity-100'
+                        : 'opacity-0',
+                    )}
+                  />
+                ) : (
+                  <Icons.Check
+                    className={cn(
+                      'mr-2 h-4 w-4',
+                      currentBenchmark === benchmark.slug
+                        ? 'opacity-100'
+                        : 'opacity-0',
+                    )}
+                  />
+                )}
 
-              {benchmark.name}
-            </CommandItem>
-          ))}
+                {benchmark.name}
+              </CommandItem>
+            ))}
+          </ScrollArea>
         </CommandGroup>
       </Command>
     )

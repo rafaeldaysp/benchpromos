@@ -1,4 +1,4 @@
-import { gql } from '@apollo/client'
+import { gql, useQuery } from '@apollo/client'
 import { useSuspenseQuery } from '@apollo/experimental-nextjs-app-support/ssr'
 import * as React from 'react'
 import { InView } from 'react-intersection-observer'
@@ -64,7 +64,7 @@ export function DashboardProducts({ children }: DashboardProductsProps) {
   const [query, setQuery] = React.useState('')
   const debouncedQuery = useDebounce(query, 300)
 
-  const { data, refetch, fetchMore } = useSuspenseQuery<{
+  const { data, refetch, fetchMore } = useQuery<{
     productsList: {
       pages: number
       products: (Product & {
@@ -86,11 +86,11 @@ export function DashboardProducts({ children }: DashboardProductsProps) {
     },
   })
 
-  const pageCount = data.productsList.pages
-  const products = data.productsList.products.map((product) =>
-    removeNullValues(product),
-  )
-  const page = Math.ceil(products.length / PRODUCTS_PER_PAGE)
+  const pageCount = data?.productsList.pages ?? 0
+  const products =
+    data?.productsList.products.map((product) => removeNullValues(product)) ??
+    []
+  const page = Math.ceil(products ? products.length : 0 / PRODUCTS_PER_PAGE)
 
   React.useEffect(() => {
     if (debouncedQuery.length > 0) {

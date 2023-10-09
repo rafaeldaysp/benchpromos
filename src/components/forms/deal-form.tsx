@@ -36,6 +36,7 @@ import { useFormStore } from '@/hooks/use-form-store'
 import { dealSchema } from '@/lib/validations/deal'
 import type { Cashback, Coupon } from '@/types'
 import { couponFormatter } from '@/utils/formatter'
+import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
 
 const CREATE_DEAL = gql`
   mutation CreateDeal($input: CreateDealInput!) {
@@ -329,7 +330,17 @@ export function DealForm({
           name="sku"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>SKU (opcional)</FormLabel>
+              <FormLabel>
+                SKU (opcional){' '}
+                <Popover>
+                  <PopoverTrigger className="h-5 w-5 rounded-full bg-primary text-center">
+                    ?
+                  </PopoverTrigger>
+                  <PopoverContent className="p-2 text-sm">
+                    Casas Bahia, Extra, Ponto, Fastshop, Lenovo, AliExpress
+                  </PopoverContent>
+                </Popover>
+              </FormLabel>
               <FormControl>
                 <Input aria-invalid={!!form.formState.errors.sku} {...field} />
               </FormControl>
