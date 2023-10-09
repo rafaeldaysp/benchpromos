@@ -30,12 +30,23 @@ import {
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { env } from '@/env.mjs'
+import { useDebounce } from '@/hooks/use-debounce'
 import { useFormStore } from '@/hooks/use-form-store'
+import { cn } from '@/lib/utils'
 import { benchmarkResultSchema } from '@/lib/validations/benchmark'
 import type { Benchmark, Product } from '@/types'
+import Image from 'next/image'
 import { DashboardItemCard } from '../dashboard-item-card'
-import { DashboardProducts } from '../dashboard-products'
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '../ui/command'
 import { Label } from '../ui/label'
+import { Skeleton } from '../ui/skeleton'
 
 const CREATE_BENCHMARK_RESULT = gql`
   mutation CreateBenchmarkResult($input: CreateBenchmarkResultInput!) {
@@ -125,7 +136,7 @@ export function BenchmarkResultForm({
 
         setOpenDialog(
           mode === 'create'
-            ? `benchmarkResultCreateForm`
+            ? `benchmarkResultCreateForm.${benchmarkResult?.benchmarkId}`
             : `benchmarkResultUpdateForm.${benchmarkResult?.id}`,
           false,
         )
@@ -283,30 +294,9 @@ export function BenchmarkResultForm({
               </DashboardItemCard.Actions>
             </DashboardItemCard.Root>
           ))}
-
-          <DashboardProducts>
-            {({ products }) =>
-              products.map((product) => (
-                <DashboardItemCard.Root key={product.id}>
-                  <DashboardItemCard.Image src={product.imageUrl} alt="" />
-
-                  <DashboardItemCard.Content>
-                    <p className="text-sm leading-7">{product.name}</p>
-                  </DashboardItemCard.Content>
-                  <DashboardItemCard.Actions>
-                    <DashboardItemCard.Action
-                      icon={Icons.Plus}
-                      // onClick={() =>
-                      //   setSelectedProducts((prev) => [...prev, product])
-                      // }
-                      type="button"
-                    />
-                  </DashboardItemCard.Actions>
-                </DashboardItemCard.Root>
-              ))
-            }
-          </DashboardProducts>
         </div>
+
+        <Combobox setSelectedProducts={setSelectedProducts} />
 
         <Button type="submit" disabled={isLoading}>
           {isLoading && (
@@ -319,5 +309,147 @@ export function BenchmarkResultForm({
         </Button>
       </form>
     </Form>
+  )
+}
+
+const GET_PRODUCTS_BY_SEARCH = gql`
+  query GetProductsBySearch($input: GetProductsInput) {
+    productsList: products(getProductsInput: $input) {
+      categorySlug: slug
+      products {
+        id
+        name
+        imageUrl
+        slug
+        category {
+          name
+          slug
+        }
+        subcategory {
+          name
+        }
+      }
+    }
+  }
+`
+
+type SearchedProduct = {
+  id: string
+  name: string
+  imageUrl: string
+  slug: string
+  category: {
+    name: string
+    slug: string
+  }
+  subcategory: {
+    name: string
+  }
+}
+
+function Combobox({
+  setSelectedProducts,
+}: {
+  setSelectedProducts: React.Dispatch<
+    React.SetStateAction<Pick<Product, 'id' | 'name' | 'imageUrl'>[]>
+  >
+}) {
+  const [query, setQuery] = React.useState('')
+  const debouncedQuery = useDebounce(query, 200)
+  const [data, setData] = React.useState<{
+    categorySlug: string
+    products: SearchedProduct[]
+  } | null>(null)
+  const [isPending, startTransition] = React.useTransition()
+
+  const { refetch } = useQuery<{
+    productsList: {
+      categorySlug: string
+      products: SearchedProduct[]
+    }
+  }>(GET_PRODUCTS_BY_SEARCH, {
+    skip: true,
+    fetchPolicy: 'network-only',
+    refetchWritePolicy: 'overwrite',
+  })
+
+  const products = data?.products ?? []
+
+  React.useEffect(() => {
+    if (debouncedQuery.trim().length === 0) setData(null)
+
+    if (debouncedQuery.trim().length > 1) {
+      startTransition(async () => {
+        const { data } = await refetch({
+          input: {
+            search: debouncedQuery,
+            sortBy: 'relevance',
+            pagination: {
+              limit: 5,
+              page: 1,
+            },
+          },
+        })
+        setData({
+          categorySlug: data.productsList.categorySlug,
+          products: data.productsList.products,
+        })
+      })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedQuery])
+
+  return (
+    <Command>
+      <CommandInput
+        placeholder="Procurar produtos..."
+        value={query}
+        onValueChange={setQuery}
+      />
+      <CommandList>
+        <CommandEmpty
+          className={cn(isPending ? 'hidden' : 'py-6 text-center text-sm')}
+        >
+          Nenhum produto encontrado.
+        </CommandEmpty>
+        {isPending && products.length === 0 ? (
+          <div className="space-y-1 overflow-hidden px-1 py-2">
+            <Skeleton className="h-20 rounded-sm" />
+            <Skeleton className="h-20 rounded-sm" />
+          </div>
+        ) : (
+          products.length > 0 && (
+            <CommandGroup heading="Sugestões">
+              {products?.map((product) => (
+                <CommandItem
+                  key={product.id}
+                  value={`${product.name} ${product.category.name} ${product.subcategory?.name}`}
+                  className="h-16 space-x-4"
+                  onSelect={() => {
+                    setSelectedProducts((prev) =>
+                      prev.some((value) => value.id === product.id)
+                        ? prev
+                        : [...prev, product],
+                    )
+                  }}
+                >
+                  <div className="relative aspect-square h-full">
+                    <Image
+                      src={product.imageUrl}
+                      alt=""
+                      fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      className="object-contain"
+                    />
+                  </div>
+
+                  <span className="line-clamp-2">{product.name}</span>
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          )
+        )}
+      </CommandList>
+    </Command>
   )
 }

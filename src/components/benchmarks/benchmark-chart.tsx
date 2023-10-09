@@ -58,6 +58,8 @@ export function BenchmarkChart({ results }: BenchmarkChartProps) {
       .concat(descriptionString)
   }
 
+  console.log(results)
+
   if (results.length === 0)
     return (
       <div className="flex w-full justify-center text-center">
@@ -82,7 +84,7 @@ export function BenchmarkChart({ results }: BenchmarkChartProps) {
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         />
       </div>
-      <div className="absolute bottom-2 right-0 aspect-square w-16 -rotate-12 sm:w-20 md:w-24">
+      {/* <div className="absolute bottom-2 right-0 aspect-square w-16 -rotate-12 sm:w-20 md:w-24">
         <Image
           src={Logo}
           alt={'Logo'}
@@ -90,7 +92,7 @@ export function BenchmarkChart({ results }: BenchmarkChartProps) {
           fill
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         />
-      </div>
+      </div> */}
 
       <ResponsiveContainer
         height={

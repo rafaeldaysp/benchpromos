@@ -81,7 +81,9 @@ export function BenchmarksMain({ benchmarks, results }: BenchmarksMainProps) {
     benchmark: result.benchmark,
     product: {
       alias: result.productAlias,
-      imageUrl: result.products[0].imageUrl,
+      imageUrl:
+        result.products[0]?.imageUrl ??
+        'https://media.discordapp.net/attachments/770049237034860565/1160708445171888188/image.png?ex=6535a4fa&is=65232ffa&hm=acb53d704b584f455561ba8618c1808bae71a44a1f5dc9c797ffaeebbe98e6c8&=',
     },
     result: result.result,
     description: result.description,
@@ -140,9 +142,14 @@ export function BenchmarksMain({ benchmarks, results }: BenchmarksMainProps) {
                 </DashboardItemCard.Content>
                 <DashboardItemCard.Actions>
                   <Sheet
-                    open={openDialogs[`benchmarkResultCreateForm`]}
+                    open={
+                      openDialogs[`benchmarkResultCreateForm.${benchmark.id}`]
+                    }
                     onOpenChange={(open) =>
-                      setOpenDialog(`benchmarkResultCreateForm`, open)
+                      setOpenDialog(
+                        `benchmarkResultCreateForm.${benchmark.id}`,
+                        open,
+                      )
                     }
                   >
                     <SheetTrigger asChild>

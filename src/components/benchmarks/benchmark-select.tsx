@@ -43,11 +43,11 @@ export function BenchmarkSelect({ benchmarks }: BenchmarkSelectProps) {
 
   function BenchmarkCommand({ className }: { className?: string }) {
     return (
-      <Command className={className} loop>
+      <Command className={cn('rounded-xl border', className)} loop>
         <CommandInput placeholder="Procurar benchmark..." />
         <CommandEmpty>Nenhum benchmark encontrado.</CommandEmpty>
         <CommandGroup>
-          <ScrollArea className="max-h-80 sm:max-h-[500px]">
+          <ScrollArea className="h-80 w-full sm:h-[400px]">
             {benchmarks.map((benchmark) => (
               <CommandItem
                 key={benchmark.slug}
@@ -102,8 +102,7 @@ export function BenchmarkSelect({ benchmarks }: BenchmarkSelectProps) {
 
   return (
     <div className="space-y-5">
-      <BenchmarkCommand className="hidden lg:block" />
-      <div className="flex w-full space-x-2 lg:hidden lg:space-x-0">
+      <div className="flex w-full space-x-2 lg:space-x-0">
         <Button
           variant={'outline'}
           disabled={currentBenchmarkIndex < 1 || isPending}
@@ -150,7 +149,7 @@ export function BenchmarkSelect({ benchmarks }: BenchmarkSelectProps) {
               role="combobox"
               disabled={isPending}
               aria-expanded={open}
-              className="w-full px-1 text-sm sm:px-4"
+              className="w-full break-all px-1 sm:px-4 lg:text-start"
             >
               <span className="line-clamp-1">
                 {currentBenchmark
