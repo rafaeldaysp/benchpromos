@@ -74,7 +74,7 @@ export default async function BenchmarksLayout({
         <aside className="space-y-4 sm:max-w-5xl">
           <ProductSelect products={products} />
           <Separator className="hidden lg:block" />
-          <BenchmarkSelect benchmarks={benchmarks} />
+          {benchmarks.length > 0 && <BenchmarkSelect benchmarks={benchmarks} />}
         </aside>
         {children}
       </div>
