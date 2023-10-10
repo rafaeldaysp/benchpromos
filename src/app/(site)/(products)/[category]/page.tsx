@@ -155,6 +155,7 @@ export default async function ProductsPage({
     variables: {
       input: {
         category,
+        subcategory,
         search,
         hasDeals: true,
         pagination: {

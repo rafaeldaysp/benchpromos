@@ -110,7 +110,7 @@ export function SaleCard({
   const [openMobileMenu, setOpenMobileMenu] = React.useState(false)
   const { openDialogs, setOpenDialog } = useFormStore()
   const isSm = useMediaQuery('(max-width: 640px)')
-  console.log(sale.coupon)
+
   return (
     <Sheet
       open={openDialogs[`saleUpdateForm.${sale.id}`]}

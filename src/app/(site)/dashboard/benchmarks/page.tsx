@@ -12,7 +12,7 @@ const GET_BENCHMARKS = gql`
       name
       slug
     }
-    benchmarkResults {
+    results {
       id
       result
       productAlias
@@ -33,7 +33,7 @@ const GET_BENCHMARKS = gql`
 export default async function BenchmarksDashboardPage() {
   const { data } = await getClient().query<{
     benchmarks: Benchmark[]
-    benchmarkResults: (Pick<
+    results: (Pick<
       BenchmarkResult,
       'id' | 'result' | 'description' | 'productAlias'
     > & {
@@ -44,7 +44,7 @@ export default async function BenchmarksDashboardPage() {
     query: GET_BENCHMARKS,
   })
   const benchmarks = data.benchmarks
-  const results = data.benchmarkResults
+  const results = data.results
 
   return (
     <div className="space-y-6">

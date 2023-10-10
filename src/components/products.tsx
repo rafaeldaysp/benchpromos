@@ -56,6 +56,8 @@ interface ProductsProps {
   categoryFilters: Filter[]
   filters: { slug: string; options: string[] }[]
   serverPriceRange: [number, number]
+  subcategories?: { id: string; name: string; slug: string }[]
+  subcategory?: string
   sort?: string
   limit?: string
 }
