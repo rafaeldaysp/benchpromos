@@ -35,6 +35,7 @@ import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
 import { saleSchema } from '@/lib/validations/sale'
 import type { Cashback, Category } from '@/types'
+import { ScrollArea } from '../ui/scroll-area'
 
 const saleLabels = ['LANÇAMENTO', 'BAIXOU', 'PREÇÃO', 'PARCELADO']
 
@@ -64,6 +65,9 @@ const GET_CATEGORIES_AND_CASHBACKS = gql`
       id
       provider
       value
+      retailer {
+        name
+      }
     }
   }
 `
@@ -103,7 +107,9 @@ export function SaleForm({
 
   const { data } = useQuery<{
     categories: Omit<Category, 'subcategories'>[]
-    cashbacks: Pick<Cashback, 'id' | 'provider' | 'value'>[]
+    cashbacks: (Pick<Cashback, 'id' | 'provider' | 'value'> & {
+      retailer: { name: string }
+    })[]
   }>(GET_CATEGORIES_AND_CASHBACKS, {
     fetchPolicy: 'network-only',
     context: {
@@ -124,7 +130,7 @@ export function SaleForm({
 
   const cashbackItems = React.useMemo(() => {
     const cashbackItems = data?.cashbacks.map((cashback) => ({
-      label: `${cashback.provider} • ${cashback.value}%`,
+      label: `${cashback.provider} • ${cashback.value}% • ${cashback.retailer.name}`,
       value: cashback.id,
     }))
 
@@ -225,14 +231,16 @@ export function SaleForm({
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {categoryItems?.map((categoryItem) => (
-                    <SelectItem
-                      key={categoryItem.value}
-                      value={categoryItem.value}
-                    >
-                      {categoryItem.label}
-                    </SelectItem>
-                  ))}
+                  <ScrollArea className="h-80">
+                    {categoryItems?.map((categoryItem) => (
+                      <SelectItem
+                        key={categoryItem.value}
+                        value={categoryItem.value}
+                      >
+                        {categoryItem.label}
+                      </SelectItem>
+                    ))}
+                  </ScrollArea>
                 </SelectContent>
               </Select>
               <FormMessage />

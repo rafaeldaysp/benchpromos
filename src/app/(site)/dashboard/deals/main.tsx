@@ -210,7 +210,7 @@ export function DealsMain({ deals, retailers, categories }: DealsMainProps) {
 
       <div className="space-y-4">
         <div className="flex flex-col items-start gap-y-2 sm:flex-row sm:items-center sm:justify-between">
-          <h4 className="font-medium tracking-tight">
+          <h4 className="flex font-medium tracking-tight">
             Ofertas • {filteredDeals.length}
           </h4>
           <ScrollArea className="w-full bg-background">

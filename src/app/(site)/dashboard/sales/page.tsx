@@ -1,64 +1,7 @@
-import { gql } from '@apollo/client'
-
 import { Separator } from '@/components/ui/separator'
-import { getClient } from '@/lib/apollo'
-import type { Category, Product, Sale } from '@/types'
-import { removeNullValues } from '@/utils'
 import { SalesMain } from './main'
 
-const GET_SALES_AND_PRODUCT = gql`
-  query GetSalesAndProduct {
-    sales {
-      list {
-        id
-        title
-        imageUrl
-        url
-        price
-        installments
-        totalInstallmentPrice
-        caption
-        review
-        label
-        coupon
-        cashback {
-          provider
-          value
-          video
-          affiliatedUrl
-        }
-        createdAt
-        categoryId
-        productSlug
-        product {
-          name
-          slug
-          imageUrl
-          category {
-            id
-            name
-          }
-        }
-      }
-    }
-  }
-`
-
 export default async function SalesDashboardPage() {
-  const { data } = await getClient().query<{
-    sales: {
-      list: (Sale & {
-        product: Pick<Product, 'slug' | 'name' | 'imageUrl'> & {
-          category: Pick<Category, 'id' | 'name'>
-        }
-      })[]
-    }
-  }>({
-    query: GET_SALES_AND_PRODUCT,
-  })
-
-  const sales = data.sales.list.map((sale) => removeNullValues(sale))
-
   return (
     <div className="space-y-6">
       <div>
@@ -68,7 +11,7 @@ export default async function SalesDashboardPage() {
         </p>
       </div>
       <Separator />
-      <SalesMain sales={sales} />
+      <SalesMain />
     </div>
   )
 }
