@@ -1,6 +1,6 @@
 import { gql } from '@apollo/client'
 
-import type { Category, Sale } from '@/types'
+import type { Cashback, Category, Sale } from '@/types'
 
 export const GET_SALES = gql`
   query GetSales($productSlug: ID, $paginationInput: PaginationInput) {
@@ -54,12 +54,7 @@ export type GetSalesQuery = {
       category: Pick<Category, 'name' | 'slug'>
       commentsCount: number
       reactions: { content: string; userId: string }[]
-      cashback: {
-        provider: string
-        value: number
-        affiliatedUrl: string
-        video?: string
-      }
+      cashback: Cashback
     })[]
   }
 }
