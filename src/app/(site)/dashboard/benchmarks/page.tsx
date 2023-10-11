@@ -20,6 +20,7 @@ const GET_BENCHMARKS = gql`
       products {
         id
         name
+        slug
         imageUrl
       }
       benchmark {
@@ -37,7 +38,7 @@ export default async function BenchmarksDashboardPage() {
       BenchmarkResult,
       'id' | 'result' | 'description' | 'productAlias'
     > & {
-      products: Pick<Product, 'id' | 'name' | 'imageUrl'>[]
+      products: Pick<Product, 'id' | 'name' | 'imageUrl' | 'slug'>[]
       benchmark: Benchmark
     })[]
   }>({

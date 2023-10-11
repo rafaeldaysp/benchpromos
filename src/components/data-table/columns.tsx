@@ -12,7 +12,7 @@ export type BenchmarkData = {
   result: number
   benchmark: { id: string; name: string }
   product: { alias: string; imageUrl: string }
-  products: { id: string; name: string; imageUrl: string }[]
+  products: { id: string; name: string; imageUrl: string; slug: string }[]
   description?: string
 }
 
@@ -64,15 +64,13 @@ export const columns: ColumnDef<BenchmarkData>[] = [
       )
     },
     filterFn: (row, id, value) => {
-      const product = row.getValue(id) as BenchmarkData['product']
-      const input = value as string
-
-      const productName = product.alias.toLowerCase()
-      const searchArray = input.toLowerCase().split(' ')
+      const products = row.original.products
+      const input = value as string[]
+      const searchString = products.map((product) => product.slug).join('')
 
       return (
         row.getIsSelected() ||
-        searchArray.every((search) => productName.includes(search))
+        input.some((search) => searchString.includes(search))
       )
     },
     meta: {

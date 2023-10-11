@@ -51,7 +51,7 @@ interface BenchmarksMainProps {
     BenchmarkResult,
     'id' | 'result' | 'description' | 'productAlias'
   > & {
-    products: Pick<Product, 'id' | 'name' | 'imageUrl'>[]
+    products: Pick<Product, 'id' | 'name' | 'imageUrl' | 'slug'>[]
     benchmark: Benchmark
   })[]
 }

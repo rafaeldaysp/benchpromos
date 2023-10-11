@@ -115,7 +115,6 @@ export function DashboardSales({ children }: DashboardSalesProps) {
           fetchMoreResult.sales.count = fetchMorePages
           fetchMoreResult.sales.list = [...previousSales, ...fetchMoreSales]
 
-          console.log(fetchMoreResult)
           return { ...fetchMoreResult }
         },
       })

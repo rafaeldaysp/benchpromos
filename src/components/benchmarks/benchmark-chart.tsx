@@ -58,8 +58,6 @@ export function BenchmarkChart({ results }: BenchmarkChartProps) {
       .concat(descriptionString)
   }
 
-  console.log(results)
-
   if (results.length === 0)
     return (
       <div className="flex w-full justify-center text-center">

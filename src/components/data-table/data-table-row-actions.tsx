@@ -79,7 +79,6 @@ export function DataTableRowActions<TData>({
       onOpenChange={(open) =>
         setOpenDialog(`benchmarkResultUpdateForm.${benchmarkDataRow.id}`, open)
       }
-      modal={true}
     >
       <AlertDialog>
         <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
