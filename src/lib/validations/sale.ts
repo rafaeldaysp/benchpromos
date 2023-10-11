@@ -22,4 +22,5 @@ export const saleSchema = z.object({
   label: z.string().optional(),
   coupon: z.string().optional(),
   cashbackId: z.string().optional(),
+  sponsored: z.boolean(),
 })

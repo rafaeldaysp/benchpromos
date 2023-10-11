@@ -102,6 +102,7 @@ export type Sale = {
   cashbackId?: string
   createdAt: string
   productSlug?: string
+  sponsored: boolean
 }
 
 export type Comment = {

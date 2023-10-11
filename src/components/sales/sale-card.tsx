@@ -77,6 +77,7 @@ interface SaleCardProps extends React.HTMLAttributes<HTMLDivElement> {
     url: string
     price: number
     highlight: boolean
+    sponsored: boolean
     installments?: number
     totalInstallmentPrice?: number
     caption?: string
@@ -123,11 +124,16 @@ export function SaleCard({
           <ContextMenuTrigger disabled={isSm} asChild>
             <Card
               className={cn(
-                'relative flex select-none flex-col overflow-hidden transition-colors hover:bg-muted/50 sm:select-auto',
+                'relative flex select-none flex-col overflow-hidden transition-colors hover:bg-muted/50 sm:select-auto ',
                 className,
               )}
               {...props}
             >
+              {sale.sponsored && (
+                <div className="h-fit bg-muted py-1 text-center text-xs text-muted-foreground">
+                  <strong>PATROCINADO</strong>
+                </div>
+              )}
               {sale.highlight && (
                 <BookmarkFilledIcon className="absolute -top-1 right-2 text-auxiliary sm:-top-0.5 sm:right-5" />
               )}

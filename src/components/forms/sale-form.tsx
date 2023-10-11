@@ -36,6 +36,7 @@ import { useFormStore } from '@/hooks/use-form-store'
 import { saleSchema } from '@/lib/validations/sale'
 import type { Cashback, Category } from '@/types'
 import { ScrollArea } from '../ui/scroll-area'
+import { Checkbox } from '../ui/checkbox'
 
 const saleLabels = ['LANÇAMENTO', 'BAIXOU', 'PREÇÃO', 'PARCELADO']
 
@@ -417,6 +418,23 @@ export function SaleForm({
                 </SelectContent>
               </Select>
               <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="sponsored"
+          render={({ field }) => (
+            <FormItem className="flex flex-row items-start justify-between space-x-3 space-y-0">
+              <FormLabel>Patrocinado</FormLabel>
+              <FormControl>
+                <Checkbox
+                  checked={field.value}
+                  // @ts-expect-error ...
+                  onCheckedChange={field.onChange}
+                />
+              </FormControl>
             </FormItem>
           )}
         />

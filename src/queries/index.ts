@@ -24,6 +24,7 @@ export const GET_SALES = gql`
         categoryId
         productSlug
         highlight
+        sponsored
         category {
           name
           slug
