@@ -42,6 +42,7 @@ export type Coupon = {
   retailerId: string
   minimumSpend: number
   description?: string
+  updatedAt: string
 }
 
 export type Cashback = {
@@ -51,6 +52,7 @@ export type Cashback = {
   url: string
   affiliatedUrl: string
   video?: string
+  updatedAt: string
 }
 
 export type Filter = {

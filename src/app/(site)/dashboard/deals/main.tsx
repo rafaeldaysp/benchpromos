@@ -4,6 +4,9 @@ import { gql, useMutation } from '@apollo/client'
 import { useRouter } from 'next/navigation'
 import * as React from 'react'
 import { toast } from 'sonner'
+import dayjs from 'dayjs'
+import 'dayjs/locale/pt-br'
+import relativeTime from 'dayjs/plugin/relativeTime'
 
 import { DashboardItemCard } from '@/components/dashboard-item-card'
 import { DashboardProducts } from '@/components/dashboard-products'
@@ -60,6 +63,9 @@ import type {
 } from '@/types'
 import { couponFormatter, priceFormatter } from '@/utils/formatter'
 import { priceCalculator } from '@/utils/price-calculator'
+
+dayjs.extend(relativeTime)
+dayjs.locale('pt-br')
 
 const DELETE_DEAL = gql`
   mutation DeleteDeal($dealId: ID!) {
@@ -321,19 +327,26 @@ export function DealsMain({ deals, retailers, categories }: DealsMainProps) {
                   </p>
                   <span className="text-xs text-muted-foreground">
                     {deal.retailer.name} •{' '}
-                    {priceFormatter.format(
-                      priceCalculator(
-                        deal.price,
-                        deal.coupon?.discount,
-                        deal.cashback?.value,
-                      ) / 100,
-                    )}
-                    {deal.coupon &&
-                      ` • ${couponFormatter(deal.coupon.discount)} ${
-                        deal.coupon.code
-                      }`}
-                    {deal.cashback &&
-                      ` • ${deal.cashback.value}% ${deal.cashback.provider}`}
+                    {deal.availability ? (
+                      <span>
+                        {priceFormatter.format(
+                          priceCalculator(
+                            deal.price,
+                            deal.coupon?.discount,
+                            deal.cashback?.value,
+                          ) / 100,
+                        )}
+                        {deal.coupon &&
+                          ` • ${couponFormatter(deal.coupon.discount)} ${
+                            deal.coupon.code
+                          }`}
+                        {deal.cashback &&
+                          ` • ${deal.cashback.value}% ${deal.cashback.provider}`}
+                      </span>
+                    ) : (
+                      <strong className="text-destructive">Indisponível</strong>
+                    )}{' '}
+                    • Atualizado {dayjs(deal.updatedAt).fromNow()}
                   </span>
                 </DashboardItemCard.Content>
 

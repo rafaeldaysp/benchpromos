@@ -4,6 +4,9 @@ import { gql, useMutation } from '@apollo/client'
 import { useRouter } from 'next/navigation'
 import * as React from 'react'
 import { toast } from 'sonner'
+import dayjs from 'dayjs'
+import 'dayjs/locale/pt-br'
+import relativeTime from 'dayjs/plugin/relativeTime'
 
 import { DashboardItemCard } from '@/components/dashboard-item-card'
 import { CouponForm } from '@/components/forms/coupon-form'
@@ -33,6 +36,9 @@ import { useFormStore } from '@/hooks/use-form-store'
 import { type Coupon, type Retailer } from '@/types'
 import { couponFormatter } from '@/utils/formatter'
 import { cn } from '@/lib/utils'
+
+dayjs.extend(relativeTime)
+dayjs.locale('pt-br')
 
 const DELETE_COUPON = gql`
   mutation DeleteCoupon($couponId: ID!) {
@@ -124,7 +130,8 @@ export function CouponsMain({ coupons }: CouponsMainProps) {
               >
                 <p className="text-sm leading-7">{coupon.code}</p>
                 <span className="text-xs text-muted-foreground">
-                  {coupon.retailer.name} • {couponFormatter(coupon.discount)}
+                  {coupon.retailer.name} • {couponFormatter(coupon.discount)} •
+                  Atualizado {dayjs(coupon.updatedAt).fromNow()}
                 </span>
               </DashboardItemCard.Content>
 

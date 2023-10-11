@@ -16,6 +16,7 @@ const GET_COUPONS = gql`
       retailerId
       minimumSpend
       description
+      updatedAt
       retailer {
         name
       }

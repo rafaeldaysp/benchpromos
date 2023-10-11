@@ -1,6 +1,9 @@
 'use client'
 
 import { gql, useMutation } from '@apollo/client'
+import dayjs from 'dayjs'
+import 'dayjs/locale/pt-br'
+import relativeTime from 'dayjs/plugin/relativeTime'
 import { useRouter } from 'next/navigation'
 import * as React from 'react'
 import { toast } from 'sonner'
@@ -30,8 +33,11 @@ import {
 } from '@/components/ui/sheet'
 import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
-import { type Retailer, type Cashback } from '@/types'
 import { cn } from '@/lib/utils'
+import { type Cashback, type Retailer } from '@/types'
+
+dayjs.extend(relativeTime)
+dayjs.locale('pt-br')
 
 const DELETE_CASHBACK = gql`
   mutation DeleteCashback($cashbackId: ID!) {
@@ -123,7 +129,8 @@ export function CashbacksMain({ cashbacks }: CashbacksMainProps) {
               >
                 <p className="text-sm leading-7">{cashback.provider}</p>
                 <span className="text-xs text-muted-foreground">
-                  {cashback.retailer.name} • {cashback.value}%
+                  {cashback.retailer.name} • {cashback.value}% • Atualizado{' '}
+                  {dayjs(cashback.updatedAt).fromNow()}
                 </span>
               </DashboardItemCard.Content>
 

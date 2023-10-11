@@ -79,7 +79,7 @@ export function DataTableToolbar<TData>({
   return (
     <div className="flex items-center justify-between">
       <div className="flex flex-1 items-center space-x-2">
-        <div className="w-60">
+        <div className="w-fit sm:w-60">
           <ProductSelect products={products} />
         </div>
         {table.getColumn('benchmark') && (
