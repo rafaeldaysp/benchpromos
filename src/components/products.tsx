@@ -72,6 +72,7 @@ export function Products({
   serverPriceRange,
   sort: initialSort,
   limit: initialLimit,
+  subcategories,
 }: ProductsProps) {
   const searchParams = useSearchParams()
   const [isPending, startTransition] = React.useTransition()
@@ -430,6 +431,40 @@ export function Products({
             <h3 className="font-medium tracking-wide text-foreground">
               Categorias
             </h3>
+            <div className="w-52 space-y-1">
+              {subcategories?.map((subcategory) => (
+                <Button
+                  key={subcategory.id}
+                  className="w-full"
+                  variant={'outline'}
+                  onClick={() =>
+                    startTransition(() => {
+                      router.push(
+                        `${pathname}?${createQueryString({
+                          subcategory: subcategory.slug,
+                        })}`,
+                      )
+                    })
+                  }
+                >
+                  {subcategory.name}
+                </Button>
+              ))}
+              <Button
+                className="w-full"
+                onClick={() =>
+                  startTransition(() => {
+                    router.push(
+                      `${pathname}?${createQueryString({
+                        subcategory: null,
+                      })}`,
+                    )
+                  })
+                }
+              >
+                Todas
+              </Button>
+            </div>
           </PopoverContent>
         </Popover>
 
