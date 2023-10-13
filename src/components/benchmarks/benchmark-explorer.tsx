@@ -110,14 +110,16 @@ function File({ file }: { file: Benchmark }) {
       href={`/benchmarks/${file.slug}`}
       className={cn(
         buttonVariants({ variant: 'ghost' }),
-        'h-fit w-full justify-start pl-10',
+        'h-fit w-full justify-start space-x-2 pl-10',
         {
           'bg-muted': pathname.includes(file.slug),
         },
       )}
     >
-      <Icons.MenuSquare className="mr-2 h-4 w-4" />
-      {file.name}
+      <div>
+        <Icons.MenuSquare className="h-4 w-4" />
+      </div>
+      <span className="line-clamp-3">{file.name}</span>
     </Link>
   )
 }
