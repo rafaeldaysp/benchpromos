@@ -584,7 +584,11 @@ export default async function ProductPage({ params }: ProductPageProps) {
                       )}
                     </div>
                   </main>
-                  <div className="flex flex-col gap-2 lg:flex-row lg:gap-4">
+                  <div
+                    className={cn('flex flex-col gap-2 lg:flex-row lg:gap-4', {
+                      hidden: !deal.availability,
+                    })}
+                  >
                     {deal.coupon?.availability && (
                       <CouponModal
                         coupon={deal.coupon}

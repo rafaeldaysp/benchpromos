@@ -158,26 +158,26 @@ export function ProductCard({
                     <strong>{bestDeal.coupon.code}</strong>
                   </p>
                 )}
+                {bestDeal.cashback && (
+                  <>
+                    <strong className="hidden text-sm sm:inline-flex">
+                      {bestDeal.cashback.value}% de cashback com{' '}
+                      {bestDeal.cashback.provider}
+                    </strong>
+                    <p className="flex flex-col text-sm sm:hidden">
+                      <span className="text-xs text-muted-foreground">
+                        Com cashback
+                      </span>
+                      <strong>
+                        {bestDeal.cashback.value}% com{' '}
+                        {bestDeal.cashback.provider}
+                      </strong>
+                    </p>
+                  </>
+                )}
               </>
             ) : (
               <strong className="text-lg text-destructive">Indisponível</strong>
-            )}
-
-            {bestDeal.cashback && (
-              <>
-                <strong className="hidden text-sm sm:inline-flex">
-                  {bestDeal.cashback.value}% de cashback com{' '}
-                  {bestDeal.cashback.provider}
-                </strong>
-                <p className="flex flex-col text-sm sm:hidden">
-                  <span className="text-xs text-muted-foreground">
-                    Com cashback
-                  </span>
-                  <strong>
-                    {bestDeal.cashback.value}% com {bestDeal.cashback.provider}
-                  </strong>
-                </p>
-              </>
             )}
           </main>
         </CardContent>
