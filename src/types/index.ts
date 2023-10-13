@@ -127,6 +127,7 @@ export type Benchmark = {
   id: string
   name: string
   slug: string
+  parentId?: string
 }
 
 export type BenchmarkResult = {

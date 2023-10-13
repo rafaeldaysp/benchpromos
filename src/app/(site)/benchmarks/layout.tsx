@@ -1,19 +1,21 @@
 import { getClient } from '@/lib/apollo'
 import { gql } from '@apollo/client'
 
-import { BenchmarkSelect } from '@/components/benchmarks/benchmark-select'
+import { BenchmarkExplorer } from '@/components/benchmarks/benchmark-explorer'
 import { ProductSelect } from '@/components/benchmarks/product-select'
 import { Separator } from '@/components/ui/separator'
-import { type Product } from '@/types'
+import { type Benchmark, type Product } from '@/types'
 
 const GET_BENCHMARKS = gql`
   query GetBenchmarks(
-    $hasResults: Boolean
+    $getBenchmarksInput: GetBenchmarksInput
     $getProductsInput: GetProductsInput
   ) {
-    benchmarks(hasResults: $hasResults) {
+    benchmarks(getBenchmarksInput: $getBenchmarksInput) {
+      id
       name
       slug
+      childrenCount
     }
     productsList: products(getProductsInput: $getProductsInput) {
       products {
@@ -39,7 +41,7 @@ export default async function BenchmarksLayout({
   children,
 }: SettingsLayoutProps) {
   const { data } = await getClient().query<{
-    benchmarks: { name: string; slug: string }[]
+    benchmarks: (Benchmark & { childrenCount: number })[]
     productsList: {
       products: (Pick<Product, 'name' | 'slug' | 'imageUrl'> & {
         category: { name: string }
@@ -49,7 +51,9 @@ export default async function BenchmarksLayout({
   }>({
     query: GET_BENCHMARKS,
     variables: {
-      hasResults: true,
+      getBenchmarksInput: {
+        parentId: null,
+      },
       getProductsInput: {
         hasBenchmark: true,
         sortBy: 'relevance',
@@ -74,7 +78,7 @@ export default async function BenchmarksLayout({
         <aside className="space-y-4 sm:max-w-5xl">
           <ProductSelect products={products} />
           <Separator className="hidden lg:block" />
-          {benchmarks.length > 0 && <BenchmarkSelect benchmarks={benchmarks} />}
+          {benchmarks.length > 0 && <BenchmarkExplorer root={benchmarks} />}
         </aside>
         {children}
       </div>

@@ -11,6 +11,7 @@ const GET_BENCHMARKS = gql`
       id
       name
       slug
+      parentId
     }
     results {
       id

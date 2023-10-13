@@ -2,6 +2,7 @@ import * as z from 'zod'
 
 export const benchmarkSchema = z.object({
   name: z.string().min(1, 'Campo obrigatório'),
+  parentId: z.string(),
 })
 
 export const benchmarkResultSchema = z.object({

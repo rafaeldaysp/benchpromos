@@ -1,12 +1,12 @@
 'use client'
 
 import { gql, useMutation } from '@apollo/client'
-import { useRouter } from 'next/navigation'
-import * as React from 'react'
-import { toast } from 'sonner'
 import dayjs from 'dayjs'
 import 'dayjs/locale/pt-br'
 import relativeTime from 'dayjs/plugin/relativeTime'
+import { useRouter } from 'next/navigation'
+import * as React from 'react'
+import { toast } from 'sonner'
 
 import { DashboardItemCard } from '@/components/dashboard-item-card'
 import { DashboardProducts } from '@/components/dashboard-products'

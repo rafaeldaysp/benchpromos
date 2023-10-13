@@ -21,18 +21,27 @@ import { Input } from '@/components/ui/input'
 import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
 import { benchmarkSchema } from '@/lib/validations/benchmark'
+import { type Benchmark } from '@/types'
+import { removeNullValues } from '@/utils'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../ui/select'
 
 const CREATE_BENCHMARK = gql`
-  mutation CreateBenchmark($name: String!) {
-    createBenchmark(name: $name) {
+  mutation CreateBenchmark($input: CreateBenchmarkInput!) {
+    createBenchmark(createBenchmarkInput: $input) {
       id
     }
   }
 `
 
 const UPDATE_BENCHMARK = gql`
-  mutation UpdateBenchmark($benchmarkId: ID!, $name: String!) {
-    updateBenchmark(id: $benchmarkId, name: $name) {
+  mutation UpdateBenchmark($input: UpdateBenchmarkInput!) {
+    updateBenchmark(updateBenchmarkInput: $input) {
       id
     }
   }
@@ -42,24 +51,28 @@ type Inputs = z.infer<typeof benchmarkSchema>
 
 const defaultValues: Partial<Inputs> = {
   name: '',
+  parentId: 'null',
 }
 
 interface BenchmarkFormProps {
   mode?: 'create' | 'update'
   benchmark?: { id?: string } & Partial<Inputs>
+  benchmarks: Benchmark[]
 }
 
 export function BenchmarkForm({
   mode = 'create',
   benchmark,
+  benchmarks,
 }: BenchmarkFormProps) {
   const form = useForm<Inputs>({
     resolver: zodResolver(benchmarkSchema),
     defaultValues: {
       ...defaultValues,
-      ...benchmark,
+      ...removeNullValues(benchmark),
     },
   })
+
   const { setOpenDialog } = useFormStore()
   const router = useRouter()
 
@@ -95,11 +108,14 @@ export function BenchmarkForm({
     },
   )
 
-  async function onSubmit(data: Inputs) {
+  async function onSubmit({ name, parentId }: Inputs) {
     await mutateBenchmark({
       variables: {
-        benchmarkId: benchmark?.id,
-        ...data,
+        input: {
+          id: benchmark?.id,
+          name,
+          parentId: parentId === 'null' ? null : parentId,
+        },
       },
     })
   }
@@ -120,6 +136,32 @@ export function BenchmarkForm({
                   {...field}
                 />
               </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="parentId"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Diretório pai</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione um diretório pai" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent className="max-h-80">
+                  <SelectItem value={'null'}>Nenhum</SelectItem>
+                  {benchmarks.map((benchmark) => (
+                    <SelectItem key={benchmark.id} value={benchmark.id}>
+                      {benchmark.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               <FormMessage />
             </FormItem>
           )}
