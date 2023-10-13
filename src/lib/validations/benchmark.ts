@@ -16,6 +16,7 @@ export const benchmarkResultSchema = z.object({
 export const benchmarkDataRowSchema = z.object({
   id: z.string(),
   result: z.number(),
+  unit: z.string(),
   description: z.string().nullable(),
   benchmark: z.object({
     id: z.string(),

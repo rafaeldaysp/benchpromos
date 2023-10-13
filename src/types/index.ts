@@ -134,6 +134,7 @@ export type BenchmarkResult = {
   id: string
   benchmarkId: string
   result: number
+  unit: string
   productAlias: string
   description?: string
 }

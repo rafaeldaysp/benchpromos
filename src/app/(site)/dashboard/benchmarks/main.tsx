@@ -47,10 +47,7 @@ const DELETE_BENCHMARK = gql`
 
 interface BenchmarksMainProps {
   benchmarks: Benchmark[]
-  results: (Pick<
-    BenchmarkResult,
-    'id' | 'result' | 'description' | 'productAlias'
-  > & {
+  results: (Omit<BenchmarkResult, 'benchmarkId'> & {
     products: Pick<Product, 'id' | 'name' | 'imageUrl' | 'slug'>[]
     benchmark: Benchmark
   })[]
@@ -86,6 +83,7 @@ export function BenchmarksMain({ benchmarks, results }: BenchmarksMainProps) {
     result: result.result,
     description: result.description,
     products: result.products,
+    unit: result.unit,
   })) as BenchmarkData[]
 
   const filteredBenchmarks = benchmarks.filter((benchmark) =>

@@ -10,6 +10,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 export type BenchmarkData = {
   id: string
   result: number
+  unit: string
   benchmark: { id: string; name: string }
   product: { alias: string; imageUrl: string }
   products: { id: string; name: string; imageUrl: string; slug: string }[]

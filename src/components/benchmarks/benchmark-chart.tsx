@@ -10,6 +10,7 @@ import {
   Cell,
   // type LabelProps,
   LabelList,
+  Legend,
   ResponsiveContainer,
   XAxis,
   YAxis,
@@ -26,6 +27,7 @@ interface BenchmarkChartProps {
   results: {
     result: number
     description?: string
+    unit?: string
     productAlias: string
   }[]
 }
@@ -141,6 +143,7 @@ export function BenchmarkChart({ results }: BenchmarkChartProps) {
             strokeDasharray="3 3"
             horizontal={false}
           />
+          <Legend content={<CustomLegend unit={results[0].unit ?? 'oi'} />} />
           <Bar
             dataKey="result"
             className="cursor-pointer"
@@ -162,6 +165,7 @@ export function BenchmarkChart({ results }: BenchmarkChartProps) {
               stroke="#f9fafb"
               className="text-sm sm:text-lg"
             />
+
             {results?.map((result, index) => {
               return (
                 <Cell
@@ -183,6 +187,14 @@ export function BenchmarkChart({ results }: BenchmarkChartProps) {
   )
 }
 
+function CustomLegend({ unit }: { unit: string }) {
+  return (
+    <div className="flex w-full items-center justify-center gap-x-2">
+      <div className="h-4 w-4 rounded-sm bg-primary" />
+      <span className="text-muted-foreground">{unit}</span>
+    </div>
+  )
+}
 // const RenderCustomBarLabel = ({ x, y, width, height, value }: LabelProps) => {
 //   return (
 //     <text

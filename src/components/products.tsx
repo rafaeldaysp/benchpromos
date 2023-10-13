@@ -40,6 +40,7 @@ import type {
 import { CategoryFilterPopover } from './category-filters-popover'
 import { PriceInput } from './price-input'
 import { Badge } from './ui/badge'
+import { Popover, PopoverContent, PopoverTrigger } from './ui/popover'
 
 interface ProductsProps {
   products: (Product & {
@@ -214,7 +215,7 @@ export function Products({
                           ])
                         }}
                       />
-                      <span className="text-muted-foreground">até</span>
+                      <span className="text-sm text-muted-foreground">até</span>
                       <PriceInput
                         min={serverPriceRange[0]}
                         max={serverPriceRange[1]}
@@ -333,19 +334,120 @@ export function Products({
           })}
         /> */}
 
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button aria-label="Filtrar preços" variant="secondary" size={'sm'}>
+              <Icons.DollarSign className="mr-2 h-4 w-4" />
+              <span className="text-sm">Preços</span>
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-full space-y-4 sm:w-fit">
+            <h3 className="font-medium tracking-wide text-foreground">
+              Preços (R$)
+            </h3>
+            <Slider
+              variant="range"
+              value={currentPriceRange}
+              min={serverPriceRange[0]}
+              max={serverPriceRange[1]}
+              step={1}
+              onValueChange={(value: typeof currentPriceRange) => {
+                setCurrentPriceRange(value)
+              }}
+            />
+            <div className="flex items-center space-x-2">
+              <PriceInput
+                min={serverPriceRange[0]}
+                max={serverPriceRange[1]}
+                className="h-9 w-24"
+                value={currentPriceRange[0]}
+                onValueChange={({ floatValue }) => {
+                  setCurrentPriceRange((prev) => [
+                    Number(~~(floatValue ?? 0)),
+                    prev[1],
+                  ])
+                }}
+              />
+              <span className="text-muted-foreground">até</span>
+              <PriceInput
+                min={serverPriceRange[0]}
+                max={serverPriceRange[1]}
+                className="h-9 w-24"
+                value={currentPriceRange[1]}
+                onValueChange={({ floatValue }) => {
+                  setCurrentPriceRange((prev) => [
+                    prev[0],
+                    Number(~~(floatValue ?? 0)),
+                  ])
+                }}
+              />
+            </div>
+            <div className="space-y-2">
+              <Button
+                variant={'default'}
+                className="w-full"
+                onClick={() =>
+                  startTransition(() => {
+                    router.push(
+                      `${pathname}?${createQueryString({
+                        price: `${Number(currentPriceRange[0] * 100)}-${Number(
+                          currentPriceRange[1] * 100,
+                        )}`,
+                      })}`,
+                    )
+                  })
+                }
+              >
+                Aplicar
+              </Button>
+              <Button
+                className="w-full"
+                variant={'outline'}
+                onClick={() => {
+                  startTransition(() => {
+                    router.push(
+                      `${pathname}?${createQueryString({
+                        price: null,
+                      })}`,
+                    )
+                  })
+                }}
+              >
+                Resetar
+              </Button>
+            </div>
+          </PopoverContent>
+        </Popover>
+
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button aria-label="Filtrar preços" variant="secondary" size={'sm'}>
+              <Icons.Menu className="mr-2 h-4 w-4" />
+              <span className="text-sm">Categorias</span>
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-full space-y-4 sm:w-fit">
+            <h3 className="font-medium tracking-wide text-foreground">
+              Categorias
+            </h3>
+          </PopoverContent>
+        </Popover>
+
         <ScrollArea className="w-full bg-background">
           <div className="w-max space-x-2 font-medium">
-            {categoryFilters.map((categoryFilter) => (
-              <CategoryFilterPopover
-                key={categoryFilter.id}
-                categoryFilter={categoryFilter}
-                initialFilterOptions={
-                  initialFilters.find(
-                    (filter) => filter.slug === categoryFilter.slug,
-                  )?.options ?? []
-                }
-              />
-            ))}
+            {categoryFilters
+              .filter((filter) => filter.options.length > 0)
+              .map((categoryFilter) => (
+                <CategoryFilterPopover
+                  key={categoryFilter.id}
+                  categoryFilter={categoryFilter}
+                  initialFilterOptions={
+                    initialFilters.find(
+                      (filter) => filter.slug === categoryFilter.slug,
+                    )?.options ?? []
+                  }
+                />
+              ))}
           </div>
           <ScrollBar orientation="horizontal" />
         </ScrollArea>
@@ -368,7 +470,7 @@ export function Products({
               }, 100)
             }}
           >
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="w-40">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -391,10 +493,10 @@ export function Products({
               }, 100)
             }}
           >
-            <SelectTrigger className="w-[90px]">
+            <SelectTrigger className="w-20">
               <SelectValue placeholder="Theme" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="min-w-fit">
               <SelectItem value="20">20</SelectItem>
               <SelectItem value="40">40</SelectItem>
               <SelectItem value="100">100</SelectItem>
@@ -419,4 +521,8 @@ export function Products({
       )}
     </div>
   )
+}
+
+function FiltersSheet() {
+  return
 }

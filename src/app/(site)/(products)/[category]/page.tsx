@@ -67,6 +67,11 @@ const GET_CATEGORY = gql`
           slug
         }
       }
+      subcategories {
+        id
+        name
+        slug
+      }
     }
   }
 `
@@ -98,6 +103,7 @@ export default async function ProductsPage({
   const { data: categoryData } = await getClient().query<{
     category: {
       filters: Filter[]
+      subcategories: { id: string; name: string; slug: string }[]
     }
   }>({
     query: GET_CATEGORY,
@@ -112,6 +118,9 @@ export default async function ProductsPage({
   }
 
   const categoryFilters = categoryData.category.filters
+  const subcategories = categoryData.category.subcategories
+
+  console.log(subcategories)
 
   // const validFilterSlugs = categoryFilters.map((filter) => filter.slug)
 
@@ -190,6 +199,7 @@ export default async function ProductsPage({
           productCount={productCount}
           categoryFilters={categoryFilters}
           filters={filtersInput}
+          subcategories={subcategories}
           serverPriceRange={serverPriceRange}
           sort={sort}
           limit={limit}

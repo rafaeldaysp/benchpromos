@@ -124,6 +124,7 @@ export function DataTableRowActions<TData>({
               productAlias: benchmarkDataRow.product.alias,
               result: benchmarkDataRow.result,
               products: benchmarkDataRow.products,
+              unit: benchmarkDataRow.unit,
             }}
           />
         </SheetContent>

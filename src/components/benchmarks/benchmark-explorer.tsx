@@ -2,7 +2,7 @@
 
 import { gql, useQuery } from '@apollo/client'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useSearchParams } from 'next/navigation'
 
 import { cn } from '@/lib/utils'
 import { type Benchmark } from '@/types'
@@ -15,6 +15,7 @@ import {
 } from '../ui/accordion'
 import { buttonVariants } from '../ui/button'
 import { Skeleton } from '../ui/skeleton'
+import { useQueryString } from '@/hooks/use-query-string'
 
 const GET_PARENTS = gql`
   query ($getBenchmarksInput: GetBenchmarksInput) {
@@ -47,7 +48,7 @@ function Parent({ parent }: { parent: Benchmark & { childrenCount: number } }) {
           <AccordionTrigger
             className={cn(
               buttonVariants({ variant: 'ghost' }),
-              'h-fit justify-start hover:no-underline',
+              'h-fit justify-start px-2 hover:no-underline',
             )}
           >
             <Icons.Folder className="h-4 w-4 fill-auxiliary text-auxiliary" />
@@ -103,14 +104,19 @@ function Children({
 
 function File({ file }: { file: Benchmark }) {
   const pathname = usePathname()
+  const { createQueryString } = useQueryString()
+  const params = useSearchParams()
+
+  const products = params.get('products')
+  const concated = products ? '?'.concat(createQueryString({ products })) : ''
 
   return (
     <Link
       key={file.id}
-      href={`/benchmarks/${file.slug}`}
+      href={`/benchmarks/${file.slug}`.concat(concated)}
       className={cn(
         buttonVariants({ variant: 'ghost' }),
-        'h-fit w-full justify-start space-x-2 pl-10',
+        'h-fit w-full justify-start space-x-2 px-2 pl-8',
         {
           'bg-muted': pathname.includes(file.slug),
         },

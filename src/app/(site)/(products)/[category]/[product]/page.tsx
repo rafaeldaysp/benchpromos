@@ -103,6 +103,8 @@ interface ProductPageProps {
 export default async function ProductPage({ params }: ProductPageProps) {
   const { product: slug } = params
 
+  console.log(slug)
+
   const token = await getCurrentUserToken()
 
   const { data, errors } = await getClient().query<{
