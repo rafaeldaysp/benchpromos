@@ -47,7 +47,9 @@ export function ProductBenchmarks({
           <DropdownMenu key={benchmarkResult.id}>
             <TableRow className="font-medium even:bg-muted">
               <TableCell>{benchmarkResult.benchmark.name}</TableCell>
-              <TableCell>{benchmarkResult.result} [FPS]</TableCell>
+              <TableCell>
+                {benchmarkResult.result} [{benchmarkResult.unit}]
+              </TableCell>
               <TableCell className="max-sm:hidden">
                 {benchmarkResult.description ?? ''}
               </TableCell>

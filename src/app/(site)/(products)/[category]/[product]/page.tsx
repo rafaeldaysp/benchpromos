@@ -84,6 +84,7 @@ const GET_PRODUCT = gql`
       benchmarksResults: benchmarks {
         id
         result
+        unit
         description
         productAlias
         benchmark {

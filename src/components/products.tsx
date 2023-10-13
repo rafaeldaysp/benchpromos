@@ -419,54 +419,59 @@ export function Products({
             </div>
           </PopoverContent>
         </Popover>
-
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button aria-label="Filtrar preços" variant="secondary" size={'sm'}>
-              <Icons.Menu className="mr-2 h-4 w-4" />
-              <span className="text-sm">Categorias</span>
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-full space-y-4 sm:w-fit">
-            <h3 className="font-medium tracking-wide text-foreground">
-              Categorias
-            </h3>
-            <div className="w-52 space-y-1">
-              {subcategories?.map((subcategory) => (
+        {subcategories && subcategories.length > 0 && (
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                aria-label="Filtrar preços"
+                variant="secondary"
+                size={'sm'}
+              >
+                <Icons.Menu className="mr-2 h-4 w-4" />
+                <span className="text-sm">Categorias</span>
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-full space-y-4 sm:w-fit">
+              <h3 className="font-medium tracking-wide text-foreground">
+                Categorias
+              </h3>
+              <div className="w-52 space-y-1">
+                {subcategories?.map((subcategory) => (
+                  <Button
+                    key={subcategory.id}
+                    className="w-full"
+                    variant={'outline'}
+                    onClick={() =>
+                      startTransition(() => {
+                        router.push(
+                          `${pathname}?${createQueryString({
+                            subcategory: subcategory.slug,
+                          })}`,
+                        )
+                      })
+                    }
+                  >
+                    {subcategory.name}
+                  </Button>
+                ))}
                 <Button
-                  key={subcategory.id}
                   className="w-full"
-                  variant={'outline'}
                   onClick={() =>
                     startTransition(() => {
                       router.push(
                         `${pathname}?${createQueryString({
-                          subcategory: subcategory.slug,
+                          subcategory: null,
                         })}`,
                       )
                     })
                   }
                 >
-                  {subcategory.name}
+                  Todas
                 </Button>
-              ))}
-              <Button
-                className="w-full"
-                onClick={() =>
-                  startTransition(() => {
-                    router.push(
-                      `${pathname}?${createQueryString({
-                        subcategory: null,
-                      })}`,
-                    )
-                  })
-                }
-              >
-                Todas
-              </Button>
-            </div>
-          </PopoverContent>
-        </Popover>
+              </div>
+            </PopoverContent>
+          </Popover>
+        )}
 
         <ScrollArea className="w-full bg-background">
           <div className="w-max space-x-2 font-medium">
