@@ -7,6 +7,7 @@ import 'dayjs/locale/pt-br'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { type Metadata } from 'next'
 import { Montserrat as FontSans } from 'next/font/google'
+import Script from 'next/script'
 import * as React from 'react'
 
 import { ApolloWrapper } from '@/components/apollo-wrapper'
@@ -72,7 +73,21 @@ interface RootLayoutProps {
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="pt-BR" suppressHydrationWarning>
-      <head />
+      <head>
+        <Script
+          async
+          src={`https://www.googletagmanager.com/gtag/js?id=${env.NEXT_PUBLIC_GTAG}`}
+        />
+        <Script id="google-analytics">
+          {`
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+ 
+          gtag('config', '${env.NEXT_PUBLIC_GTAG}');
+        `}
+        </Script>
+      </head>
       <body
         className={cn(
           'min-h-screen bg-background antialiased',

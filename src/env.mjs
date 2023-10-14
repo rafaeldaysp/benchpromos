@@ -22,6 +22,7 @@ export const env = createEnv({
     NEXT_PUBLIC_APP_URL: z.string().min(1),
     NEXT_PUBLIC_API_URL: z.string().min(1),
     NEXT_PUBLIC_API_KEY: z.string().min(1),
+    NEXT_PUBLIC_GTAG: z.string().min(1),
   },
   /*
    * Due to how Next.js bundles environment variables on Edge and Client,
@@ -38,5 +39,6 @@ export const env = createEnv({
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
     NEXT_PUBLIC_API_KEY: process.env.NEXT_PUBLIC_API_KEY,
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
+    NEXT_PUBLIC_GTAG: process.env.NEXT_PUBLIC_GTAG,
   },
 })
