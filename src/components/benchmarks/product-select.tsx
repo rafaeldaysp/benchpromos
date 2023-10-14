@@ -21,7 +21,7 @@ import { useQueryString } from '@/hooks/use-query-string'
 import { cn } from '@/lib/utils'
 import { Badge } from '../ui/badge'
 import { Checkbox } from '../ui/checkbox'
-import { ScrollArea } from '../ui/scroll-area'
+import { ScrollArea, ScrollBar } from '../ui/scroll-area'
 
 type SearchedProduct = {
   name: string
@@ -176,52 +176,55 @@ export function ProductSelect({ products }: ProductSelectProps) {
             <>
               <Separator />
               {displayedProducts.length > 0 && (
-                <CommandGroup heading="Produtos">
-                  <ScrollArea className="h-64 sm:h-72">
-                    {displayedProducts?.map((product) => (
-                      <CommandItem
-                        key={product.slug}
-                        value={`${product.name} ${product.category.name} ${product.subcategory?.name}`}
-                        className={cn(
-                          'h-16 space-x-4 transition-colors aria-selected:bg-accent/50',
-                          {
-                            'bg-accent aria-selected:bg-accent/80':
-                              selectedProducts.some(
-                                (p) => p.slug === product.slug,
-                              ),
-                          },
-                        )}
-                        onSelect={() => {
-                          setSelectedProducts((prev) =>
-                            prev.some((p) => p.slug === product.slug)
-                              ? prev.filter((p) => p.slug !== product.slug)
-                              : [...prev, product],
-                          )
-                        }}
-                      >
-                        <div>
-                          <Checkbox
-                            checked={selectedProducts?.some(
+                <CommandGroup
+                  className="h-64 overflow-y-auto sm:h-72"
+                  heading="Produtos"
+                >
+                  {/* <ScrollArea className="h-64 sm:h-72"> */}
+                  {displayedProducts?.map((product) => (
+                    <CommandItem
+                      key={product.slug}
+                      value={`${product.name} ${product.category.name} ${product.subcategory?.name}`}
+                      className={cn(
+                        'h-16 space-x-4 transition-colors aria-selected:bg-accent/50',
+                        {
+                          'bg-accent aria-selected:bg-accent/80':
+                            selectedProducts.some(
                               (p) => p.slug === product.slug,
-                            )}
-                            aria-label="Selecionar"
-                            className="flex translate-y-[2px] items-center justify-center border-black data-[state=checked]:translate-y-0 data-[state=checked]:bg-black data-[state=checked]:text-white dark:border-white dark:data-[state=checked]:bg-white dark:data-[state=checked]:text-black"
-                          />
-                        </div>
-                        <div className="relative aspect-square h-full">
-                          <Image
-                            src={product.imageUrl}
-                            alt=""
-                            fill
-                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                            className="object-contain"
-                          />
-                        </div>
+                            ),
+                        },
+                      )}
+                      onSelect={() => {
+                        setSelectedProducts((prev) =>
+                          prev.some((p) => p.slug === product.slug)
+                            ? prev.filter((p) => p.slug !== product.slug)
+                            : [...prev, product],
+                        )
+                      }}
+                    >
+                      <div>
+                        <Checkbox
+                          checked={selectedProducts?.some(
+                            (p) => p.slug === product.slug,
+                          )}
+                          aria-label="Selecionar"
+                          className="flex translate-y-[2px] items-center justify-center border-black data-[state=checked]:translate-y-0 data-[state=checked]:bg-black data-[state=checked]:text-white dark:border-white dark:data-[state=checked]:bg-white dark:data-[state=checked]:text-black"
+                        />
+                      </div>
+                      <div className="relative aspect-square h-full">
+                        <Image
+                          src={product.imageUrl}
+                          alt=""
+                          fill
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                          className="object-contain"
+                        />
+                      </div>
 
-                        <span className="line-clamp-2">{product.name}</span>
-                      </CommandItem>
-                    ))}
-                  </ScrollArea>
+                      <span className="line-clamp-2">{product.name}</span>
+                    </CommandItem>
+                  ))}
+                  {/* </ScrollArea> */}
                 </CommandGroup>
               )}
             </>

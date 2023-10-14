@@ -155,271 +155,189 @@ export function Products({
   }, [limit])
   return (
     <div className="space-y-6">
-      <div className="flex items-center space-x-2 ">
-        <Sheet>
-          <SheetTrigger asChild>
-            <Button
-              aria-label="Filtrar produtos"
-              variant="secondary"
-              size={'sm'}
-            >
-              <Icons.SlidersHorizontal className="mr-2 h-4 w-4" />
-              <span className="text-sm">Filtros</span>
-              {filters.length > 0 && (
-                <>
-                  <Separator orientation="vertical" className="mx-2 h-4" />
-                  <Badge
-                    variant="secondary"
-                    className="rounded-sm px-1 font-normal"
-                  >
-                    {filters.length}
-                  </Badge>
-                </>
-              )}
-            </Button>
-          </SheetTrigger>
-          <SheetContent
-            side="left"
-            className="flex w-full flex-col px-0 sm:max-w-md"
-          >
-            <SheetHeader className="px-4">
-              <SheetTitle>Filtros</SheetTitle>
-            </SheetHeader>
-            <Separator />
-            <ScrollArea className="flex-1">
-              <div className="space-y-10 px-4">
-                {serverPriceRange[0] !== serverPriceRange[1] && (
-                  <div className="space-y-4">
-                    <h3 className="font-medium tracking-wide text-foreground">
-                      Preços (R$)
-                    </h3>
-                    <Slider
-                      variant="range"
-                      value={currentPriceRange}
-                      min={serverPriceRange[0]}
-                      max={serverPriceRange[1]}
-                      step={1}
-                      onValueChange={(value: typeof currentPriceRange) => {
-                        setCurrentPriceRange(value)
-                      }}
-                    />
-                    <div className="flex items-center space-x-4">
-                      <PriceInput
-                        min={serverPriceRange[0]}
-                        max={serverPriceRange[1]}
-                        className="h-9"
-                        value={currentPriceRange[0]}
-                        onValueChange={({ floatValue }) => {
-                          setCurrentPriceRange((prev) => [
-                            Number(~~(floatValue ?? 0)),
-                            prev[1],
-                          ])
-                        }}
-                      />
-                      <span className="text-sm text-muted-foreground">até</span>
-                      <PriceInput
-                        min={serverPriceRange[0]}
-                        max={serverPriceRange[1]}
-                        className="h-9"
-                        value={currentPriceRange[1]}
-                        onValueChange={({ floatValue }) => {
-                          setCurrentPriceRange((prev) => [
-                            prev[0],
-                            Number(~~(floatValue ?? 0)),
-                          ])
-                        }}
-                      />
-                      <Button
-                        variant={'outline'}
-                        onClick={() =>
-                          startTransition(() => {
-                            router.push(
-                              `${pathname}?${createQueryString({
-                                price: `${Number(
-                                  currentPriceRange[0] * 100,
-                                )}-${Number(currentPriceRange[1] * 100)}`,
-                              })}`,
-                            )
-                          })
-                        }
-                      >
-                        Ok
-                      </Button>
-                    </div>
-                  </div>
-                )}
-                {categoryFilters
-                  .filter((categoryFilter) => categoryFilter.options.length)
-                  .map((categoryFilter) => {
-                    const filter = filters.find(
-                      (filter) => filter.slug === categoryFilter.slug,
-                    )
-
-                    return (
-                      <div key={categoryFilter.id} className="space-y-2">
-                        <h3 className="font-medium tracking-wide text-foreground">
-                          {categoryFilter.name}
-                        </h3>
-                        <div className="flex flex-wrap gap-2.5">
-                          {categoryFilter.options.map((option) => {
-                            const options = new Set(filter?.options)
-
-                            const setted = options.has(option.slug)
-
-                            return (
-                              <Toggle
-                                key={option.id}
-                                variant="outline"
-                                size="sm"
-                                pressed={setted}
-                                disabled={isPending}
-                                className="rounded-full"
-                                onClick={() => {
-                                  startTransition(() => {
-                                    if (setted) {
-                                      options.delete(option.slug)
-                                    } else {
-                                      options.add(option.slug)
-                                    }
-
-                                    const value = options.size
-                                      ? Array.from(options).join('.')
-                                      : null
-
-                                    router.push(
-                                      `${pathname}?${createQueryString({
-                                        page: null,
-                                        [categoryFilter.slug]: value,
-                                      })}`,
-                                    )
-                                  })
-                                }}
-                              >
-                                {option.value}
-                              </Toggle>
-                            )
-                          })}
-                        </div>
-                      </div>
-                    )
-                  })}
-              </div>
-            </ScrollArea>
-            <Separator />
-            <SheetFooter className="px-4">
+      <ScrollArea className="w-full bg-background">
+        <div className="flex items-center space-x-2 ">
+          <Sheet>
+            <SheetTrigger asChild>
               <Button
-                aria-label="Limpar filtros"
-                size="sm"
-                className="w-full"
-                onClick={() => {
-                  startTransition(() => {
-                    router.push(
-                      `${pathname}?${createQueryString({
-                        ...filterSlugNullRecord,
-                        page: null,
-                      })}`,
-                    )
-                  })
-                }}
+                aria-label="Filtrar produtos"
+                variant="secondary"
+                size={'sm'}
               >
-                Limpar Filtros
+                <Icons.SlidersHorizontal className="mr-2 h-4 w-4" />
+                <span className="text-sm">Filtros</span>
+                {filters.length > 0 && (
+                  <>
+                    <Separator orientation="vertical" className="mx-2 h-4" />
+                    <Badge
+                      variant="secondary"
+                      className="rounded-sm px-1 font-normal"
+                    >
+                      {filters.length}
+                    </Badge>
+                  </>
+                )}
               </Button>
-            </SheetFooter>
-          </SheetContent>
-        </Sheet>
+            </SheetTrigger>
+            <SheetContent
+              side="left"
+              className="flex w-full flex-col px-0 sm:max-w-md"
+            >
+              <SheetHeader className="px-4">
+                <SheetTitle>Filtros</SheetTitle>
+              </SheetHeader>
+              <Separator />
+              <ScrollArea className="flex-1">
+                <div className="space-y-10 px-4">
+                  {serverPriceRange[0] !== serverPriceRange[1] && (
+                    <div className="space-y-4">
+                      <h3 className="font-medium tracking-wide text-foreground">
+                        Preços (R$)
+                      </h3>
+                      <Slider
+                        variant="range"
+                        value={currentPriceRange}
+                        min={serverPriceRange[0]}
+                        max={serverPriceRange[1]}
+                        step={1}
+                        onValueChange={(value: typeof currentPriceRange) => {
+                          setCurrentPriceRange(value)
+                        }}
+                      />
+                      <div className="flex items-center space-x-4">
+                        <PriceInput
+                          min={serverPriceRange[0]}
+                          max={serverPriceRange[1]}
+                          className="h-9"
+                          value={currentPriceRange[0]}
+                          onValueChange={({ floatValue }) => {
+                            setCurrentPriceRange((prev) => [
+                              Number(~~(floatValue ?? 0)),
+                              prev[1],
+                            ])
+                          }}
+                        />
+                        <span className="text-sm text-muted-foreground">
+                          até
+                        </span>
+                        <PriceInput
+                          min={serverPriceRange[0]}
+                          max={serverPriceRange[1]}
+                          className="h-9"
+                          value={currentPriceRange[1]}
+                          onValueChange={({ floatValue }) => {
+                            setCurrentPriceRange((prev) => [
+                              prev[0],
+                              Number(~~(floatValue ?? 0)),
+                            ])
+                          }}
+                        />
+                        <Button
+                          variant={'outline'}
+                          onClick={() =>
+                            startTransition(() => {
+                              router.push(
+                                `${pathname}?${createQueryString({
+                                  price: `${Number(
+                                    currentPriceRange[0] * 100,
+                                  )}-${Number(currentPriceRange[1] * 100)}`,
+                                })}`,
+                              )
+                            })
+                          }
+                        >
+                          Ok
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                  {categoryFilters
+                    .filter((categoryFilter) => categoryFilter.options.length)
+                    .map((categoryFilter) => {
+                      const filter = filters.find(
+                        (filter) => filter.slug === categoryFilter.slug,
+                      )
 
-        {/* <Separator
+                      return (
+                        <div key={categoryFilter.id} className="space-y-2">
+                          <h3 className="font-medium tracking-wide text-foreground">
+                            {categoryFilter.name}
+                          </h3>
+                          <div className="flex flex-wrap gap-2.5">
+                            {categoryFilter.options.map((option) => {
+                              const options = new Set(filter?.options)
+
+                              const setted = options.has(option.slug)
+
+                              return (
+                                <Toggle
+                                  key={option.id}
+                                  variant="outline"
+                                  size="sm"
+                                  pressed={setted}
+                                  disabled={isPending}
+                                  className="rounded-full"
+                                  onClick={() => {
+                                    startTransition(() => {
+                                      if (setted) {
+                                        options.delete(option.slug)
+                                      } else {
+                                        options.add(option.slug)
+                                      }
+
+                                      const value = options.size
+                                        ? Array.from(options).join('.')
+                                        : null
+
+                                      router.push(
+                                        `${pathname}?${createQueryString({
+                                          page: null,
+                                          [categoryFilter.slug]: value,
+                                        })}`,
+                                      )
+                                    })
+                                  }}
+                                >
+                                  {option.value}
+                                </Toggle>
+                              )
+                            })}
+                          </div>
+                        </div>
+                      )
+                    })}
+                </div>
+              </ScrollArea>
+              <Separator />
+              <SheetFooter className="px-4">
+                <Button
+                  aria-label="Limpar filtros"
+                  size="sm"
+                  className="w-full"
+                  onClick={() => {
+                    startTransition(() => {
+                      router.push(
+                        `${pathname}?${createQueryString({
+                          ...filterSlugNullRecord,
+                          page: null,
+                        })}`,
+                      )
+                    })
+                  }}
+                >
+                  Limpar Filtros
+                </Button>
+              </SheetFooter>
+            </SheetContent>
+          </Sheet>
+
+          {/* <Separator
           orientation="vertical"
           className={cn('h-5', {
             hidden: categoryFilters.length === 0,
           })}
         /> */}
 
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button aria-label="Filtrar preços" variant="secondary" size={'sm'}>
-              <Icons.DollarSign className="mr-2 h-4 w-4" />
-              <span className="text-sm">Preços</span>
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-full space-y-4 sm:w-fit">
-            <h3 className="font-medium tracking-wide text-foreground">
-              Preços (R$)
-            </h3>
-            <Slider
-              variant="range"
-              value={currentPriceRange}
-              min={serverPriceRange[0]}
-              max={serverPriceRange[1]}
-              step={1}
-              onValueChange={(value: typeof currentPriceRange) => {
-                setCurrentPriceRange(value)
-              }}
-            />
-            <div className="flex items-center space-x-2">
-              <PriceInput
-                min={serverPriceRange[0]}
-                max={serverPriceRange[1]}
-                className="h-9 w-24"
-                value={currentPriceRange[0]}
-                onValueChange={({ floatValue }) => {
-                  setCurrentPriceRange((prev) => [
-                    Number(~~(floatValue ?? 0)),
-                    prev[1],
-                  ])
-                }}
-              />
-              <span className="text-muted-foreground">até</span>
-              <PriceInput
-                min={serverPriceRange[0]}
-                max={serverPriceRange[1]}
-                className="h-9 w-24"
-                value={currentPriceRange[1]}
-                onValueChange={({ floatValue }) => {
-                  setCurrentPriceRange((prev) => [
-                    prev[0],
-                    Number(~~(floatValue ?? 0)),
-                  ])
-                }}
-              />
-            </div>
-            <div className="space-y-2">
-              <Button
-                variant={'default'}
-                className="w-full"
-                onClick={() =>
-                  startTransition(() => {
-                    router.push(
-                      `${pathname}?${createQueryString({
-                        price: `${Number(currentPriceRange[0] * 100)}-${Number(
-                          currentPriceRange[1] * 100,
-                        )}`,
-                      })}`,
-                    )
-                  })
-                }
-              >
-                Aplicar
-              </Button>
-              <Button
-                className="w-full"
-                variant={'outline'}
-                onClick={() => {
-                  startTransition(() => {
-                    router.push(
-                      `${pathname}?${createQueryString({
-                        price: null,
-                      })}`,
-                    )
-                  })
-                }}
-              >
-                Resetar
-              </Button>
-            </div>
-          </PopoverContent>
-        </Popover>
-        {subcategories && subcategories.length > 0 && (
           <Popover>
             <PopoverTrigger asChild>
               <Button
@@ -427,53 +345,141 @@ export function Products({
                 variant="secondary"
                 size={'sm'}
               >
-                <Icons.Menu className="mr-2 h-4 w-4" />
-                <span className="text-sm">Categorias</span>
+                <Icons.DollarSign className="mr-2 h-4 w-4" />
+                <span className="text-sm">Preços</span>
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-full space-y-4 sm:w-fit">
               <h3 className="font-medium tracking-wide text-foreground">
-                Categorias
+                Preços (R$)
               </h3>
-              <div className="w-52 space-y-1">
-                {subcategories?.map((subcategory) => (
-                  <Button
-                    key={subcategory.id}
-                    className="w-full"
-                    variant={'outline'}
-                    onClick={() =>
-                      startTransition(() => {
-                        router.push(
-                          `${pathname}?${createQueryString({
-                            subcategory: subcategory.slug,
-                          })}`,
-                        )
-                      })
-                    }
-                  >
-                    {subcategory.name}
-                  </Button>
-                ))}
+              <Slider
+                variant="range"
+                value={currentPriceRange}
+                min={serverPriceRange[0]}
+                max={serverPriceRange[1]}
+                step={1}
+                onValueChange={(value: typeof currentPriceRange) => {
+                  setCurrentPriceRange(value)
+                }}
+              />
+              <div className="flex items-center space-x-2">
+                <PriceInput
+                  min={serverPriceRange[0]}
+                  max={serverPriceRange[1]}
+                  className="h-9 w-24"
+                  value={currentPriceRange[0]}
+                  onValueChange={({ floatValue }) => {
+                    setCurrentPriceRange((prev) => [
+                      Number(~~(floatValue ?? 0)),
+                      prev[1],
+                    ])
+                  }}
+                />
+                <span className="text-muted-foreground">até</span>
+                <PriceInput
+                  min={serverPriceRange[0]}
+                  max={serverPriceRange[1]}
+                  className="h-9 w-24"
+                  value={currentPriceRange[1]}
+                  onValueChange={({ floatValue }) => {
+                    setCurrentPriceRange((prev) => [
+                      prev[0],
+                      Number(~~(floatValue ?? 0)),
+                    ])
+                  }}
+                />
+              </div>
+              <div className="space-y-2">
                 <Button
+                  variant={'default'}
                   className="w-full"
                   onClick={() =>
                     startTransition(() => {
                       router.push(
                         `${pathname}?${createQueryString({
-                          subcategory: null,
+                          price: `${Number(
+                            currentPriceRange[0] * 100,
+                          )}-${Number(currentPriceRange[1] * 100)}`,
                         })}`,
                       )
                     })
                   }
                 >
-                  Todas
+                  Aplicar
+                </Button>
+                <Button
+                  className="w-full"
+                  variant={'outline'}
+                  onClick={() => {
+                    startTransition(() => {
+                      router.push(
+                        `${pathname}?${createQueryString({
+                          price: null,
+                        })}`,
+                      )
+                    })
+                  }}
+                >
+                  Resetar
                 </Button>
               </div>
             </PopoverContent>
           </Popover>
-        )}
+          {subcategories && subcategories.length > 0 && (
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  aria-label="Filtrar preços"
+                  variant="secondary"
+                  size={'sm'}
+                >
+                  <Icons.Menu className="mr-2 h-4 w-4" />
+                  <span className="text-sm">Categorias</span>
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-full space-y-4 sm:w-fit">
+                <h3 className="font-medium tracking-wide text-foreground">
+                  Categorias
+                </h3>
+                <div className="w-52 space-y-1">
+                  {subcategories?.map((subcategory) => (
+                    <Button
+                      key={subcategory.id}
+                      className="w-full"
+                      variant={'outline'}
+                      onClick={() =>
+                        startTransition(() => {
+                          router.push(
+                            `${pathname}?${createQueryString({
+                              subcategory: subcategory.slug,
+                            })}`,
+                          )
+                        })
+                      }
+                    >
+                      {subcategory.name}
+                    </Button>
+                  ))}
+                  <Button
+                    className="w-full"
+                    onClick={() =>
+                      startTransition(() => {
+                        router.push(
+                          `${pathname}?${createQueryString({
+                            subcategory: null,
+                          })}`,
+                        )
+                      })
+                    }
+                  >
+                    Todas
+                  </Button>
+                </div>
+              </PopoverContent>
+            </Popover>
+          )}
 
-        <ScrollArea className="w-full bg-background">
           <div className="w-max space-x-2 font-medium">
             {categoryFilters
               .filter((filter) => filter.options.length > 0)
@@ -489,9 +495,9 @@ export function Products({
                 />
               ))}
           </div>
-          <ScrollBar orientation="horizontal" />
-        </ScrollArea>
-      </div>
+        </div>
+        <ScrollBar orientation="horizontal" />
+      </ScrollArea>
 
       <Separator />
 
