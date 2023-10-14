@@ -355,10 +355,9 @@ export function SaleCard({
               </Link>
             </ContextMenuItem>
 
-            <ContextMenuSeparator />
-
             {sale.productSlug && (
               <>
+                <ContextMenuSeparator />
                 <ContextMenuItem asChild>
                   <Link href={`/${sale.category.slug}/${sale.productSlug}`}>
                     <Icons.Eye className="mr-2 h-4 w-4" />
