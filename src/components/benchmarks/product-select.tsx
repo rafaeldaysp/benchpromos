@@ -21,7 +21,6 @@ import { useQueryString } from '@/hooks/use-query-string'
 import { cn } from '@/lib/utils'
 import { Badge } from '../ui/badge'
 import { Checkbox } from '../ui/checkbox'
-import { ScrollArea, ScrollBar } from '../ui/scroll-area'
 
 type SearchedProduct = {
   name: string
@@ -237,7 +236,16 @@ export function ProductSelect({ products }: ProductSelectProps) {
               variant={'ghost'}
               className="px-2"
               size={'sm'}
-              onClick={() => setSelectedProducts(products)}
+              onClick={() =>
+                setSelectedProducts((prev) => [
+                  ...prev,
+                  ...displayedProducts.filter((product) =>
+                    prev.filter(
+                      (previusProduct) => previusProduct.slug !== product.slug,
+                    ),
+                  ),
+                ])
+              }
             >
               <Icons.PlusCircle className="mr-2 h-4 w-4" />
               Todos
