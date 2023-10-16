@@ -5,15 +5,17 @@ import { InView } from 'react-intersection-observer'
 
 import { Icons } from '@/components/icons'
 import { ScrollArea } from '@/components/ui/scroll-area'
+import { useDebounce } from '@/hooks/use-debounce'
 import { cn } from '@/lib/utils'
 import type { Cashback, Category, Product, Sale } from '@/types'
 import { removeNullValues } from '@/utils'
+import { Input } from './ui/input'
 
 const SALES_PER_PAGE = 12
 
 const GET_SALES = gql`
-  query GetSales($pagination: PaginationInput) {
-    sales(paginationInput: $pagination) {
+  query GetSales($pagination: PaginationInput, $search: String) {
+    sales(paginationInput: $pagination, search: $search) {
       count
       list {
         id
@@ -71,8 +73,10 @@ interface DashboardSalesProps {
 
 export function DashboardSales({ children }: DashboardSalesProps) {
   const [isPending, startTransition] = React.useTransition()
+  const [query, setQuery] = React.useState('')
+  const debouncedQuery = useDebounce(query, 300)
 
-  const { data, fetchMore } = useSuspenseQuery<{
+  const { data, refetch, fetchMore } = useSuspenseQuery<{
     sales: {
       count: number
       list: (Sale & {
@@ -87,6 +91,7 @@ export function DashboardSales({ children }: DashboardSalesProps) {
     fetchPolicy: 'cache-and-network',
     refetchWritePolicy: 'overwrite',
     variables: {
+      search: debouncedQuery,
       pagination: {
         limit: SALES_PER_PAGE,
         page: 1,
@@ -98,10 +103,18 @@ export function DashboardSales({ children }: DashboardSalesProps) {
   const page = Math.ceil(sales.length / SALES_PER_PAGE)
   const pageCount = Math.ceil(data?.sales.count / SALES_PER_PAGE)
 
+  React.useEffect(() => {
+    if (debouncedQuery.length > 0) {
+      refetch()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedQuery])
+
   function onEntry() {
     startTransition(() => {
       fetchMore({
         variables: {
+          search: debouncedQuery,
           pagination: {
             limit: SALES_PER_PAGE,
             page: page + 1,
@@ -125,6 +138,11 @@ export function DashboardSales({ children }: DashboardSalesProps) {
 
   return (
     <div className="space-y-4">
+      <Input
+        placeholder="Pesquise por uma promoção..."
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+      />
       {sales.length > 0 ? (
         <ScrollArea
           className={cn('rounded-md border', {
