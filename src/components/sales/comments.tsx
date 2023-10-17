@@ -27,6 +27,7 @@ import { Toggle } from '@/components/ui/toggle'
 import { UserAvatar } from '@/components/user-avatar'
 import { useComments } from '@/hooks/use-comments'
 import { cn } from '@/lib/utils'
+import { LoginPopup } from '../login-popup'
 
 dayjs.extend(relativeTime)
 dayjs.locale('pt-br')
@@ -357,6 +358,7 @@ interface CommentSubmitProps {
 }
 
 function CommentSubmit({ saleId, commentId, user }: CommentSubmitProps) {
+  const [openLoginPopup, setOpenLoginPopup] = React.useState(false)
   const [commentInput, setCommentInput] = React.useState('')
   const inputRef = React.useRef<HTMLTextAreaElement | null>(null)
   const { createComment, createCommentLoading, removeActiveReplyCommentId } =
@@ -366,6 +368,11 @@ function CommentSubmit({ saleId, commentId, user }: CommentSubmitProps) {
     })
 
   async function handleCreateComment() {
+    if (!user) {
+      setOpenLoginPopup(true)
+      return
+    }
+
     const { errors } = await createComment({ text: commentInput })
 
     if (!errors) {
@@ -377,6 +384,7 @@ function CommentSubmit({ saleId, commentId, user }: CommentSubmitProps) {
 
   return (
     <div className={cn('flex gap-x-1', { 'ml-10': commentId })}>
+      <LoginPopup open={openLoginPopup} setOpen={setOpenLoginPopup} />
       <UserAvatar
         user={{ name: user?.name || null, image: user?.image || null }}
         className="h-8 w-8"

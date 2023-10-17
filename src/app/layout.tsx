@@ -11,6 +11,7 @@ import Script from 'next/script'
 import * as React from 'react'
 
 import { ApolloWrapper } from '@/components/apollo-wrapper'
+import { DailyLoginPopup } from '@/components/daily-login-popup'
 import { ThemeProvider } from '@/components/theme-provider'
 import { Toaster } from '@/components/ui/toaster'
 import { siteConfig } from '@/config/site'
@@ -94,6 +95,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
           fontSans.className,
         )}
       >
+        <DailyLoginPopup />
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
           <ApolloWrapper>{children}</ApolloWrapper>
         </ThemeProvider>
