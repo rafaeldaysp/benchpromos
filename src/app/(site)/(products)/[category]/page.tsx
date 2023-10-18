@@ -85,10 +85,41 @@ interface ProductsPageProps {
   }
 }
 
-export function generateMetadata({ params }: ProductsPageProps) {
+export async function generateMetadata({ params }: ProductsPageProps) {
+  const { category } = params
+
+  const GET_CATEGORY_METADATA = gql`
+    query GetCategory($categoryId: ID!) {
+      category(id: $categoryId) {
+        name
+      }
+    }
+  `
+
+  const { data: categoryData } = await getClient().query<{
+    category: {
+      name: string
+    }
+  }>({
+    query: GET_CATEGORY_METADATA,
+    variables: {
+      categoryId: category,
+    },
+    errorPolicy: 'all',
+  })
+
+  const categoryName = categoryData?.category?.name
+
+  if (!categoryName) {
+    return {
+      title: 'Não encontrado',
+      description: 'Esta página não foi encontrada.',
+    }
+  }
+
   return {
-    title: params.category,
-    description: '',
+    title: categoryName,
+    description: `Acompanhe os preços de ${categoryName}, veja históricos e crie alertas.`,
   }
 }
 
@@ -119,8 +150,6 @@ export default async function ProductsPage({
 
   const categoryFilters = categoryData.category.filters
   const subcategories = categoryData.category.subcategories
-
-  console.log(subcategories)
 
   // const validFilterSlugs = categoryFilters.map((filter) => filter.slug)
 

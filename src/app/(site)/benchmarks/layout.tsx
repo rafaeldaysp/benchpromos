@@ -1,5 +1,6 @@
 import { getClient } from '@/lib/apollo'
 import { gql } from '@apollo/client'
+import { type Metadata } from 'next'
 
 import { BenchmarkExplorer } from '@/components/benchmarks/benchmark-explorer'
 import { ProductSelect } from '@/components/benchmarks/product-select'
@@ -35,6 +36,12 @@ const GET_BENCHMARKS = gql`
 
 interface SettingsLayoutProps {
   children: React.ReactNode
+}
+
+export const metadata: Metadata = {
+  title: 'Benchmarks',
+  description:
+    'Visualize o desempenho de produtos em diversos jogos e testes sintéticos realizados pela nossa equipe.',
 }
 
 export default async function BenchmarksLayout({

@@ -101,10 +101,57 @@ interface ProductPageProps {
   }
 }
 
-export default async function ProductPage({ params }: ProductPageProps) {
+export async function generateMetadata({ params }: ProductPageProps) {
   const { product: slug } = params
 
-  console.log(slug)
+  const GET_PRODUCT_METADATA = gql`
+    query GetProduct($productInput: GetProductInput!) {
+      product(getProductInput: $productInput) {
+        name
+        category {
+          name
+        }
+        subcategory {
+          name
+        }
+      }
+    }
+  `
+  const { data, errors } = await getClient().query<{
+    product: {
+      name: string
+      category: { name: string }
+      subcategory: { name: string }
+    }
+  }>({
+    query: GET_PRODUCT_METADATA,
+    variables: {
+      productInput: {
+        identifier: slug,
+        hasDeals: true,
+      },
+    },
+    errorPolicy: 'all',
+  })
+
+  const product = data?.product
+
+  if (errors || !product)
+    return {
+      title: 'Não encontrado',
+      description: 'Essa página não foi encontrada.',
+    }
+
+  return {
+    title: product.name,
+    description: `${product.category.name} -${
+      product.subcategory?.name ? ` -${product.subcategory.name} - ` : ''
+    } ${product.name}`,
+  }
+}
+
+export default async function ProductPage({ params }: ProductPageProps) {
+  const { product: slug } = params
 
   const token = await getCurrentUserToken()
 
@@ -120,9 +167,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
         benchmark: Omit<Benchmark, 'id'>
       })[]
     }
-    userProductAlert: {
-      price: number
-    } | null
   }>({
     query: GET_PRODUCT,
     variables: {
