@@ -13,11 +13,11 @@ export const authSchema = z.object({
     .min(8, {
       message: 'A senha deve ter pelo menos 8 caracteres',
     })
-    .max(100)
-    .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})/, {
-      message:
-        'A senha deve conter pelo menos 8 caracteres, um maiúsculo, um minúsculo, um número e um caractere especial',
-    }),
+    .max(100),
+  // .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})/, {
+  //   message:
+  //     'A senha deve conter pelo menos 8 caracteres, um maiúsculo, um minúsculo, um número e um caractere especial',
+  // }),
 })
 
 export const checkEmailSchema = z.object({

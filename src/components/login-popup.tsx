@@ -69,7 +69,11 @@ export function LoginPopup({ open, setOpen }: LoginPopupProps) {
             </CardContent>
           </Card>
           <SheetFooter className="flex flex-col gap-2">
-            <Link href={'/sign-in'} className={cn(buttonVariants(), 'w-full')}>
+            <Link
+              href={'/sign-in'}
+              className={cn(buttonVariants(), 'w-full')}
+              onClick={() => setOpen(false)}
+            >
               Fazer login agora
             </Link>
             <Button
@@ -120,7 +124,11 @@ export function LoginPopup({ open, setOpen }: LoginPopupProps) {
           </CardContent>
         </Card>
         <DialogFooter className="flex gap-2">
-          <Link href={'/sign-in'} className={cn(buttonVariants(), 'w-full')}>
+          <Link
+            href={'/sign-in'}
+            className={cn(buttonVariants(), 'w-full')}
+            onClick={() => setOpen(false)}
+          >
             Fazer login agora
           </Link>
           <Button

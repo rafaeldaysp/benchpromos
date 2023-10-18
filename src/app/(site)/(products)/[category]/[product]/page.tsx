@@ -144,8 +144,8 @@ export async function generateMetadata({ params }: ProductPageProps) {
 
   return {
     title: product.name,
-    description: `${product.category.name} -${
-      product.subcategory?.name ? ` -${product.subcategory.name} - ` : ''
+    description: `${product.category.name} ${
+      product.subcategory?.name ? ` ${product.subcategory.name} - ` : ''
     } ${product.name}`,
   }
 }

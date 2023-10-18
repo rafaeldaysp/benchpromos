@@ -19,13 +19,6 @@ import { cn } from '@/lib/utils'
 import type { Cashback, Category, Sale } from '@/types'
 import { priceFormatter } from '@/utils/formatter'
 import { Separator } from '@/components/ui/separator'
-import { ReactionMenu } from '@/components/sales/reaction-menu'
-import {
-  ContextMenu,
-  ContextMenuContent,
-  ContextMenuSub,
-  ContextMenuTrigger,
-} from '@/components/ui/context-menu'
 import {
   Popover,
   PopoverContent,
