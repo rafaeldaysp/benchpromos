@@ -108,8 +108,11 @@ export async function generateMetadata({ params }: ProductPageProps) {
     query GetProduct($productInput: GetProductInput!) {
       product(getProductInput: $productInput) {
         name
+        slug
+        imageUrl
         category {
           name
+          slug
         }
         subcategory {
           name
@@ -120,7 +123,9 @@ export async function generateMetadata({ params }: ProductPageProps) {
   const { data, errors } = await getClient().query<{
     product: {
       name: string
-      category: { name: string }
+      slug: string
+      imageUrl: string
+      category: { name: string; slug: string }
       subcategory: { name: string }
     }
   }>({
@@ -144,9 +149,12 @@ export async function generateMetadata({ params }: ProductPageProps) {
 
   return {
     title: product.name,
-    description: `${product.category.name} ${
-      product.subcategory?.name ? ` ${product.subcategory.name} - ` : ''
+    description: `${product.category.name}${
+      product.subcategory?.name ? ` ${product.subcategory.name} -` : ''
     } ${product.name}`,
+    alternates: {
+      canonical: `/${[product.category.slug]}/${product.slug}`,
+    },
   }
 }
 

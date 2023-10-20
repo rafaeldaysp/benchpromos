@@ -6,25 +6,25 @@ import { type Session } from 'next-auth'
 import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { useState } from 'react'
 
 import { CashbackModal } from '@/components/cashback-modal'
 import { CouponModal } from '@/components/coupon-modal'
 import { Icons } from '@/components/icons'
 import { Comments } from '@/components/sales/comments'
+import { ReactionPopover } from '@/components/sales/reaction-popover'
 import { Reactions } from '@/components/sales/reactions'
+import { Badge } from '@/components/ui/badge'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { cn } from '@/lib/utils'
-import type { Cashback, Category, Sale } from '@/types'
-import { priceFormatter } from '@/utils/formatter'
-import { Separator } from '@/components/ui/separator'
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
-import { ReactionPopover } from '@/components/sales/reaction-popover'
+import { Separator } from '@/components/ui/separator'
+import { cn } from '@/lib/utils'
+import type { Cashback, Category, Sale } from '@/types'
+import { priceFormatter } from '@/utils/formatter'
 
 const GET_SALE = gql`
   query Sale($saleId: ID!) {
@@ -38,6 +38,7 @@ const GET_SALE = gql`
       url
       totalInstallmentPrice
       coupon
+      expired
       cashback {
         value
         provider
@@ -65,8 +66,6 @@ interface SaleMainProps {
 }
 
 export function SaleMain({ saleId, user }: SaleMainProps) {
-  const [reactionMenuOpen, setReactionMenuOpen] = useState(false)
-
   const { data, error, client } = useSuspenseQuery<{
     sale: Sale & {
       commentsCount: number
@@ -89,7 +88,19 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
 
   return (
     <div className="space-y-10 px-4 py-10 sm:container lg:grid lg:grid-cols-3 lg:gap-8 lg:space-y-2 xl:grid-cols-5">
-      <main className="flex flex-col gap-2 lg:col-span-2 lg:pt-2 xl:col-span-3">
+      <main
+        className={cn(
+          'flex flex-col gap-2 lg:col-span-2 lg:pt-2 xl:col-span-3',
+          {
+            'opacity-60 text-muted-foreground': sale.expired,
+          },
+        )}
+      >
+        {sale.expired && (
+          <Badge variant={'secondary'} className="flex justify-center">
+            EXPIRADO
+          </Badge>
+        )}
         <strong className="line-clamp-4 leading-none tracking-tight md:text-xl">
           {sale.title}
         </strong>
@@ -99,7 +110,9 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
               <Image
                 src={sale.imageUrl}
                 alt={sale.title}
-                className="rounded-lg object-contain"
+                className={cn('rounded-lg object-contain', {
+                  grayscale: sale.expired,
+                })}
                 fill
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               />

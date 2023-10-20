@@ -56,6 +56,7 @@ import {
 } from '../ui/alert-dialog'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '../ui/sheet'
 import { MobileMenu } from './mobile-menu'
+import { useSaleExpired } from '@/hooks/use-toggle-sale-expired'
 
 dayjs.extend(relativeTime)
 dayjs.locale('pt-br')
@@ -78,6 +79,7 @@ interface SaleCardProps extends React.HTMLAttributes<HTMLDivElement> {
     price: number
     highlight: boolean
     sponsored: boolean
+    expired: boolean
     installments?: number
     totalInstallmentPrice?: number
     caption?: string
@@ -110,6 +112,10 @@ export function SaleCard({
 }: SaleCardProps) {
   const [openMobileMenu, setOpenMobileMenu] = React.useState(false)
   const { openDialogs, setOpenDialog } = useFormStore()
+  const { toggleSaleExpired } = useSaleExpired({
+    id: sale.id,
+    expired: sale.expired,
+  })
   const isSm = useMediaQuery('(max-width: 640px)')
 
   return (
@@ -124,11 +130,19 @@ export function SaleCard({
           <ContextMenuTrigger disabled={isSm} asChild>
             <Card
               className={cn(
-                'relative flex select-none flex-col overflow-hidden transition-colors hover:bg-muted/50 sm:select-auto ',
+                'relative flex select-none flex-col overflow-hidden transition-colors hover:bg-muted/50 sm:select-auto',
                 className,
+                {
+                  'text-muted-foreground opacity-60': sale.expired,
+                },
               )}
               {...props}
             >
+              {sale.expired && (
+                <div className="h-fit bg-muted py-1 text-center text-xs text-muted-foreground">
+                  <strong>EXPIRADO</strong>
+                </div>
+              )}
               {sale.sponsored && (
                 <div className="h-fit bg-muted py-1 text-center text-xs text-muted-foreground">
                   <strong>PATROCINADO</strong>
@@ -168,7 +182,9 @@ export function SaleCard({
                       <Image
                         src={sale.imageUrl}
                         alt={sale.title}
-                        className="rounded-lg object-contain"
+                        className={cn('rounded-lg object-contain', {
+                          grayscale: sale.expired,
+                        })}
                         fill
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       />
@@ -418,6 +434,21 @@ export function SaleCard({
                     <Icons.Trash className="mr-2 h-4 w-4 " />
                     Excluir
                   </AlertDialogTrigger>
+                </ContextMenuItem>
+                <ContextMenuSeparator />
+
+                <ContextMenuItem onClick={() => toggleSaleExpired()}>
+                  {sale.expired ? (
+                    <>
+                      <Icons.Check className="mr-2 h-4 w-4" />
+                      Disponível
+                    </>
+                  ) : (
+                    <>
+                      <Icons.Clock8 className="mr-2 h-4 w-4" />
+                      Expirado
+                    </>
+                  )}
                 </ContextMenuItem>
               </>
             )}

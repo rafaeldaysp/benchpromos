@@ -25,6 +25,7 @@ export const GET_SALES = gql`
         productSlug
         highlight
         sponsored
+        expired
         category {
           name
           slug

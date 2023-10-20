@@ -14,6 +14,7 @@ import {
   ChevronsLeft,
   ChevronsRight,
   CircleDollarSign,
+  Clock8,
   Copy,
   Crown,
   DollarSign,
@@ -123,6 +124,7 @@ export const Icons = {
   HelpCircle,
   RotateCcw,
   Quote,
+  Clock8,
   Google: ({ ...props }: LucideProps) => (
     <svg
       aria-hidden="true"

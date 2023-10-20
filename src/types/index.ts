@@ -105,6 +105,7 @@ export type Sale = {
   createdAt: string
   productSlug?: string
   sponsored: boolean
+  expired: boolean
 }
 
 export type Comment = {
