@@ -85,7 +85,6 @@ export function DataTableRowActions<TData>({
             <Button
               variant="ghost"
               className="flex h-8 w-8 p-0 data-[state=open]:bg-muted"
-              onClick={() => console.log(benchmarkDataRow.id)}
             >
               <Icons.MoreHorizontal className="h-4 w-4" />
               <span className="sr-only">Abrir menu</span>
