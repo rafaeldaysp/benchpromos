@@ -6,42 +6,64 @@ import type { Benchmark, BenchmarkResult, Product } from '@/types'
 import { BenchmarksMain } from './main'
 
 const GET_BENCHMARKS = gql`
-  query GetBenchmarks {
+  query GetBenchmarks($pagination: PaginationInput) {
     benchmarks {
       id
       name
       slug
       parentId
     }
-    results {
-      id
-      result
-      unit
-      productAlias
-      description
-      products {
+    results(pagination: $pagination) {
+      count
+      list {
         id
-        name
-        slug
-        imageUrl
-      }
-      benchmark {
-        id
-        name
+        result
+        unit
+        productAlias
+        description
+        products {
+          id
+          name
+          slug
+          imageUrl
+        }
+        benchmark {
+          id
+          name
+        }
       }
     }
   }
 `
+interface BenchmarksProps {
+  searchParams: {
+    page: string
+    limit: string
+  }
+}
 
-export default async function BenchmarksDashboardPage() {
+export default async function BenchmarksDashboardPage({
+  searchParams,
+}: BenchmarksProps) {
+  const { page, limit } = searchParams
+
   const { data } = await getClient().query<{
     benchmarks: Benchmark[]
-    results: (Omit<BenchmarkResult, 'benchmarkId'> & {
-      products: Pick<Product, 'id' | 'name' | 'imageUrl' | 'slug'>[]
-      benchmark: Benchmark
-    })[]
+    results: {
+      count: number
+      list: (Omit<BenchmarkResult, 'benchmarkId'> & {
+        products: Pick<Product, 'id' | 'name' | 'imageUrl' | 'slug'>[]
+        benchmark: Benchmark
+      })[]
+    }
   }>({
     query: GET_BENCHMARKS,
+    variables: {
+      pagination: {
+        page: Number(page ?? 1),
+        limit: Number(limit ?? 10),
+      },
+    },
   })
   const benchmarks = data.benchmarks
   const results = data.results

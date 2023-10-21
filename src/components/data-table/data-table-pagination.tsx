@@ -1,12 +1,9 @@
-import { type Table } from '@tanstack/react-table'
-import {
-  ChevronLeft,
-  ChevronRight,
-  ChevronsLeft,
-  ChevronsRight,
-} from 'lucide-react'
+'use client'
 
-import { Button } from '@/components/ui/button'
+import { type Table } from '@tanstack/react-table'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import * as React from 'react'
+
 import {
   Select,
   SelectContent,
@@ -14,14 +11,46 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { useQueryString } from '@/hooks/use-query-string'
+import { Pagination } from '../pagination'
+
+const DEFAULT_LIMIT = '10'
 
 interface DataTablePaginationProps<TData> {
   table: Table<TData>
+  count: number
 }
 
 export function DataTablePagination<TData>({
   table,
+  count,
 }: DataTablePaginationProps<TData>) {
+  const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+
+  const { initialLimit, initialPage } = {
+    initialLimit: searchParams.get('limit'),
+    initialPage: searchParams.get('page'),
+  }
+
+  const [limit, setLimit] = React.useState(initialLimit ?? undefined)
+
+  const { createQueryString } = useQueryString()
+
+  React.useEffect(() => {
+    if (!limit) return
+
+    React.startTransition(() => {
+      router.push(
+        `${pathname}?${createQueryString({
+          limit,
+        })}`,
+      )
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [limit])
+
   return (
     <div className="flex items-center justify-end px-2 md:justify-between">
       <div className="hidden flex-1 text-sm text-muted-foreground md:block">
@@ -31,14 +60,9 @@ export function DataTablePagination<TData>({
       <div className="flex items-center space-x-6 lg:space-x-8">
         <div className="hidden items-center space-x-2 md:flex">
           <p className="text-sm font-medium">Linhas por página</p>
-          <Select
-            value={`${table.getState().pagination.pageSize}`}
-            onValueChange={(value) => {
-              table.setPageSize(Number(value))
-            }}
-          >
+          <Select value={limit ?? DEFAULT_LIMIT} onValueChange={setLimit}>
             <SelectTrigger className="h-8 w-[70px]">
-              <SelectValue placeholder={table.getState().pagination.pageSize} />
+              <SelectValue />
             </SelectTrigger>
             <SelectContent side="top">
               {[10, 20, 30, 40, 200].map((pageSize) => (
@@ -53,44 +77,10 @@ export function DataTablePagination<TData>({
           Página {table.getState().pagination.pageIndex + 1} de{' '}
           {table.getPageCount()}
         </div>
-        <div className="flex items-center space-x-2">
-          <Button
-            variant="outline"
-            className="hidden h-8 w-8 p-0 lg:flex"
-            onClick={() => table.setPageIndex(0)}
-            disabled={!table.getCanPreviousPage()}
-          >
-            <span className="sr-only">Ir para a primeira página</span>
-            <ChevronsLeft className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="outline"
-            className="h-8 w-8 p-0"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            <span className="sr-only">Ir para a página anterior</span>
-            <ChevronLeft className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="outline"
-            className="h-8 w-8 p-0"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            <span className="sr-only">Ir para a página seguinte</span>
-            <ChevronRight className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="outline"
-            className="hidden h-8 w-8 p-0 lg:flex"
-            onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-            disabled={!table.getCanNextPage()}
-          >
-            <span className="sr-only">Ir para a última página</span>
-            <ChevronsRight className="h-4 w-4" />
-          </Button>
-        </div>
+        <Pagination
+          page={Number(initialPage ?? '1')}
+          pageCount={Math.ceil(count / Number(limit ?? DEFAULT_LIMIT))}
+        />
       </div>
     </div>
   )

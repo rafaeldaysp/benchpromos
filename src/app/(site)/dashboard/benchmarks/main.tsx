@@ -47,10 +47,13 @@ const DELETE_BENCHMARK = gql`
 
 interface BenchmarksMainProps {
   benchmarks: Benchmark[]
-  results: (Omit<BenchmarkResult, 'benchmarkId'> & {
-    products: Pick<Product, 'id' | 'name' | 'imageUrl' | 'slug'>[]
-    benchmark: Benchmark
-  })[]
+  results: {
+    count: number
+    list: (Omit<BenchmarkResult, 'benchmarkId'> & {
+      products: Pick<Product, 'id' | 'name' | 'imageUrl' | 'slug'>[]
+      benchmark: Benchmark
+    })[]
+  }
 }
 
 export function BenchmarksMain({ benchmarks, results }: BenchmarksMainProps) {
@@ -73,7 +76,7 @@ export function BenchmarksMain({ benchmarks, results }: BenchmarksMainProps) {
     },
   })
 
-  const benchmarkData = results.map((result) => ({
+  const benchmarkData = results.list.map((result) => ({
     id: result.id,
     benchmark: result.benchmark,
     product: {
@@ -92,11 +95,14 @@ export function BenchmarksMain({ benchmarks, results }: BenchmarksMainProps) {
 
   return (
     <div className="space-y-8">
-      <DataTable
-        columns={columns}
-        data={benchmarkData}
-        benchmarks={benchmarks}
-      />
+      <div>
+        <DataTable
+          columns={columns}
+          data={benchmarkData}
+          benchmarks={benchmarks}
+          count={results.count}
+        />
+      </div>
 
       <div className="flex justify-end gap-x-2">
         <Sheet
