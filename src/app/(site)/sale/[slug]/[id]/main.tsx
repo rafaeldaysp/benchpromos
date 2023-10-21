@@ -159,7 +159,18 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
                 href={sale.url}
                 target="_blank"
               >
-                <span className="mr-2 font-semibold">ACESSAR</span>
+                <span
+                  className="mr-2 font-semibold"
+                  onClick={() => {
+                    // @ts-expect-error ...
+                    window.dataLayer.push({
+                      event: 'clicked',
+                      title: 'cliquei no botao de acessar',
+                    })
+                  }}
+                >
+                  ACESSAR
+                </span>
                 <Icons.ExternalLink strokeWidth={3} className="h-4 w-4" />
               </a>
               <Separator />
@@ -171,6 +182,13 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
                   buttonVariants(),
                   'flex h-10 rounded-xl font-semibold',
                 )}
+                onClick={() => {
+                  // @ts-expect-error ...
+                  window.dataLayer.push({
+                    event: 'product_view_from_sale',
+                    title: 'Visualizar produto',
+                  })
+                }}
               >
                 {/* <Icons.StarFilled
                   strokeWidth={3}

@@ -53,6 +53,12 @@ export function CouponModal({
         onClick={(e) => {
           setOpen(true)
           e.preventDefault()
+
+          // @ts-expect-error ...
+          window.dataLayer.push({
+            event: 'coupon_view',
+            title: 'Clique na visualização de cupom',
+          })
         }}
         {...props}
       >

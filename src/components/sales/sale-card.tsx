@@ -281,6 +281,13 @@ export function SaleCard({
                             buttonVariants(),
                             'hidden h-fit w-full rounded-xl font-semibold sm:inline-flex',
                           )}
+                          onClick={() => {
+                            // @ts-expect-error ...
+                            window.dataLayer.push({
+                              event: 'sale_access',
+                              title: 'Promoção acessada',
+                            })
+                          }}
                         >
                           <span className="mr-2">ACESSAR</span>
                           <Icons.ExternalLink

@@ -74,6 +74,13 @@ export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="pt-BR" suppressHydrationWarning>
       <head>
+        <Script id="google-tag-manager">
+          {`(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer', '${env.NEXT_PUBLIC_GTAG}');`}
+        </Script>
         <Script
           async
           src={`https://www.googletagmanager.com/gtag/js?id=${env.NEXT_PUBLIC_GTAG}`}
@@ -94,6 +101,15 @@ export default function RootLayout({ children }: RootLayoutProps) {
           fontSans.className,
         )}
       >
+        <noscript>
+          <iframe
+            src="https://www.googletagmanager.com/ns.html?id=GTM-N6NMJ8XR"
+            height="0"
+            width="0"
+            className="invisible hidden"
+          ></iframe>
+        </noscript>
+
         <DailyLoginPopup />
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
           <ApolloWrapper>{children}</ApolloWrapper>
