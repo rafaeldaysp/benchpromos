@@ -74,7 +74,9 @@ export function DataTableRowActions<TData>({
 
   return (
     <Sheet
-      open={openDialogs[`benchmarkResultUpdateForm.${benchmarkDataRow.id}`]}
+      open={
+        openDialogs[`benchmarkResultUpdateForm.${benchmarkDataRow.id}`] ?? false
+      }
       onOpenChange={(open) =>
         setOpenDialog(`benchmarkResultUpdateForm.${benchmarkDataRow.id}`, open)
       }
