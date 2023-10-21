@@ -60,7 +60,13 @@ export function DataTablePagination<TData>({
       <div className="flex items-center space-x-6 lg:space-x-8">
         <div className="hidden items-center space-x-2 md:flex">
           <p className="text-sm font-medium">Linhas por página</p>
-          <Select value={limit ?? DEFAULT_LIMIT} onValueChange={setLimit}>
+          <Select
+            value={limit ?? DEFAULT_LIMIT}
+            onValueChange={(value) => {
+              setLimit(value)
+              table.setPageSize(Number(value))
+            }}
+          >
             <SelectTrigger className="h-8 w-[70px]">
               <SelectValue />
             </SelectTrigger>
