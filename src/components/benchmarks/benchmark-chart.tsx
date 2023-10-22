@@ -161,9 +161,9 @@ export function BenchmarkChart({ results }: BenchmarkChartProps) {
           >
             <LabelList
               dataKey="result"
-              position="insideRight"
+              position={isSm ? `center` : `insideRight`}
               stroke="#f9fafb"
-              className="text-sm sm:text-lg"
+              className="bg-white text-[10px] sm:text-lg"
             />
 
             {results?.map((result, index) => {

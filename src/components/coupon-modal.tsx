@@ -45,6 +45,7 @@ export function CouponModal({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <Button
+        id="coupon_view_from_sale_card"
         variant={variant}
         className={cn(
           'flex h-fit w-full items-center justify-between gap-2 rounded-xl px-4',
@@ -53,12 +54,6 @@ export function CouponModal({
         onClick={(e) => {
           setOpen(true)
           e.preventDefault()
-
-          // @ts-expect-error ...
-          window.dataLayer.push({
-            event: 'coupon_view',
-            title: 'Clique na visualização de cupom',
-          })
         }}
         {...props}
       >

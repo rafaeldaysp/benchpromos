@@ -158,19 +158,9 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
                 className={cn(buttonVariants(), 'flex h-10 rounded-xl')}
                 href={sale.url}
                 target="_blank"
+                id="access_sale_from_page"
               >
-                <span
-                  className="mr-2 font-semibold"
-                  onClick={() => {
-                    // @ts-expect-error ...
-                    window.dataLayer.push({
-                      event: 'clicked',
-                      title: 'cliquei no botao de acessar',
-                    })
-                  }}
-                >
-                  ACESSAR
-                </span>
+                <span className="mr-2 font-semibold">ACESSAR</span>
                 <Icons.ExternalLink strokeWidth={3} className="h-4 w-4" />
               </a>
               <Separator />
@@ -182,13 +172,7 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
                   buttonVariants(),
                   'flex h-10 rounded-xl font-semibold',
                 )}
-                onClick={() => {
-                  // @ts-expect-error ...
-                  window.dataLayer.push({
-                    event: 'product_view_from_sale',
-                    title: 'Visualizar produto',
-                  })
-                }}
+                id="product_view_from_sale_page"
               >
                 {/* <Icons.StarFilled
                   strokeWidth={3}
