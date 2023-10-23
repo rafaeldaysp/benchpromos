@@ -50,7 +50,11 @@ export function CategoryFilterPopover({
                 variant="secondary"
                 className="rounded-sm px-1 font-normal xl:hidden"
               >
-                {options.size}
+                {isPending ? (
+                  <Icons.Spinner className="h-4 w-4 animate-spin" />
+                ) : (
+                  `${options.size}`
+                )}
               </Badge>
               <div className="hidden space-x-1 xl:flex">
                 {options.size > 1 ? (
@@ -58,7 +62,12 @@ export function CategoryFilterPopover({
                     variant="secondary"
                     className="rounded-sm px-1 font-normal"
                   >
-                    {options.size} selecionado(s)
+                    {isPending ? (
+                      <Icons.Spinner className="mr-1 h-4 w-4 animate-spin" />
+                    ) : (
+                      `${options.size}`
+                    )}{' '}
+                    selecionado(s)
                   </Badge>
                 ) : (
                   categoryFilter.options
@@ -89,6 +98,8 @@ export function CategoryFilterPopover({
                 return (
                   <CommandItem
                     key={option.slug}
+                    disabled={isPending}
+                    className={cn({ 'opacity-60': isPending })}
                     onSelect={() => {
                       const setted = options.has(option.slug)
                       startTransition(() => {
@@ -111,20 +122,16 @@ export function CategoryFilterPopover({
                       })
                     }}
                   >
-                    {isPending ? (
-                      <Icons.Spinner className="mr-2 h-4 w-4 animate-spin" />
-                    ) : (
-                      <div
-                        className={cn(
-                          'mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary',
-                          isSelected
-                            ? 'bg-primary text-primary-foreground'
-                            : 'opacity-50 [&_svg]:invisible',
-                        )}
-                      >
-                        <Icons.Check className="h-4 w-4" />
-                      </div>
-                    )}
+                    <div
+                      className={cn(
+                        'mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary',
+                        isSelected
+                          ? 'bg-primary text-primary-foreground'
+                          : 'opacity-50 [&_svg]:invisible',
+                      )}
+                    >
+                      <Icons.Check className="h-4 w-4" />
+                    </div>
 
                     <span>{option.value}</span>
                   </CommandItem>

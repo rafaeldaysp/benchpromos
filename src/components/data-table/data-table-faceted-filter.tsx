@@ -92,7 +92,12 @@ export function DataTableFacetedFilter({
                 variant="secondary"
                 className="rounded-sm px-1 font-normal"
               >
-                {selectedOptions.length} selecionado(s)
+                {isPending ? (
+                  <Icons.Spinner className="mr-1 h-4 w-4 animate-spin" />
+                ) : (
+                  `${selectedOptions.length}`
+                )}{' '}
+                selecionado(s)
               </Badge>
             ) : (
               options
@@ -123,6 +128,7 @@ export function DataTableFacetedFilter({
                     <CommandItem
                       key={option.value}
                       disabled={isPending}
+                      className={cn({ 'opacity-60': isPending })}
                       onSelect={() => {
                         if (isSelected) {
                           setSelectedOptions((prev) =>
