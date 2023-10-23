@@ -45,6 +45,7 @@ export function DataTablePagination<TData>({
       router.push(
         `${pathname}?${createQueryString({
           limit,
+          page: null,
         })}`,
       )
     })
@@ -53,32 +54,33 @@ export function DataTablePagination<TData>({
 
   return (
     <div className="flex items-center justify-end px-2 md:justify-between">
-      <div className="hidden flex-1 text-sm text-muted-foreground md:block">
+      {/* <div className="hidden flex-1 text-sm text-muted-foreground md:block">
         {table.getFilteredSelectedRowModel().rows.length} de{' '}
         {table.getFilteredRowModel().rows.length} linha(s) selecionada(s).
+      </div> */}
+
+      <div className="hidden items-center space-x-2 md:flex">
+        <p className="text-sm font-medium">Linhas por página</p>
+        <Select
+          value={limit ?? DEFAULT_LIMIT}
+          onValueChange={(value) => {
+            setLimit(value)
+            table.setPageSize(Number(value))
+          }}
+        >
+          <SelectTrigger className="h-8 w-[70px]">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent side="top">
+            {[10, 20, 30, 40, 200].map((pageSize) => (
+              <SelectItem key={pageSize} value={`${pageSize}`}>
+                {pageSize}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
-      <div className="flex items-center space-x-6 lg:space-x-8">
-        <div className="hidden items-center space-x-2 md:flex">
-          <p className="text-sm font-medium">Linhas por página</p>
-          <Select
-            value={limit ?? DEFAULT_LIMIT}
-            onValueChange={(value) => {
-              setLimit(value)
-              table.setPageSize(Number(value))
-            }}
-          >
-            <SelectTrigger className="h-8 w-[70px]">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent side="top">
-              {[10, 20, 30, 40, 200].map((pageSize) => (
-                <SelectItem key={pageSize} value={`${pageSize}`}>
-                  {pageSize}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+      <div className="flex items-center gap-x-2">
         <div className="flex w-[100px] items-center justify-center text-sm font-medium">
           Página {table.getState().pagination.pageIndex + 1} de{' '}
           {table.getPageCount()}

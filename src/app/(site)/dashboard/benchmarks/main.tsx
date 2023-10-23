@@ -99,7 +99,6 @@ export function BenchmarksMain({ benchmarks, results }: BenchmarksMainProps) {
         <DataTable
           columns={columns}
           data={benchmarkData}
-          benchmarks={benchmarks}
           count={results.count}
         />
       </div>

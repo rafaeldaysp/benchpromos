@@ -11,7 +11,10 @@ import { type Product } from '@/types'
 import { ProductSelect } from '../benchmarks/product-select'
 
 const GET_PRODUCTS = gql`
-  query GetBenchmarks($getProductsInput: GetProductsInput) {
+  query GetBenchmarks(
+    $getProductsInput: GetProductsInput
+    $getBenchmarksInput: GetBenchmarksInput
+  ) {
     productsList: products(getProductsInput: $getProductsInput) {
       products {
         name
@@ -25,17 +28,21 @@ const GET_PRODUCTS = gql`
         }
       }
     }
+
+    benchmarks(getBenchmarksInput: $getBenchmarksInput) {
+      name
+      slug
+      resultsCount
+    }
   }
 `
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>
-  benchmarks: { name: string }[]
 }
 
 export function DataTableToolbar<TData>({
   table,
-  benchmarks,
 }: DataTableToolbarProps<TData>) {
   const params = useSearchParams()
   const selectedProducts = params.get('products')?.split('.')
@@ -50,24 +57,30 @@ export function DataTableToolbar<TData>({
         subcategory: { name: string }
       })[]
     }
+    benchmarks: { name: string; slug: string; resultsCount: number }[]
   }>(GET_PRODUCTS, {
     variables: {
       getProductsInput: {
         hasBenchmark: true,
         sortBy: 'relevance',
       },
+      getBenchmarksInput: {
+        hasResults: true,
+      },
     },
     errorPolicy: 'all',
   })
 
   const products = data?.productsList.products ?? []
+  const benchmarks = data?.benchmarks ?? []
 
   // const isFiltered = table.getState().columnFilters.length > 0
 
   const benchmarkOptions = benchmarks.map((benchmark) => {
     return {
       label: benchmark.name,
-      value: benchmark.name,
+      value: benchmark.slug,
+      count: benchmark.resultsCount,
     }
   })
 
@@ -84,7 +97,6 @@ export function DataTableToolbar<TData>({
         </div>
         {table.getColumn('benchmark') && (
           <DataTableFacetedFilter
-            column={table.getColumn('benchmark')}
             title="Benchmarks"
             options={benchmarkOptions}
           />
