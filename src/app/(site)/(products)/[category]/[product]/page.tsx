@@ -11,7 +11,9 @@ import { CouponModal } from '@/components/coupon-modal'
 import { Icons } from '@/components/icons'
 import { ProductNavbar } from '@/components/product-navbar'
 import PriceChart from '@/components/product-price-chart'
-import { ProductSales } from '@/components/product-sales'
+import { ProductBenchmarks } from '@/components/product-benchmarks'
+import { ScrollLink } from '@/components/scroll-link'
+import ScrollToTopButton from '@/components/scroll-to-top-button'
 import { Badge } from '@/components/ui/badge'
 import { buttonVariants } from '@/components/ui/button'
 import {
@@ -38,7 +40,6 @@ import type {
 } from '@/types'
 import { couponFormatter, priceFormatter } from '@/utils/formatter'
 import { priceCalculator } from '@/utils/price-calculator'
-import { ProductBenchmarks } from '@/components/product-benchmarks'
 
 const GET_PRODUCT = gql`
   query GetProduct($productInput: GetProductInput!) {
@@ -334,9 +335,10 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 </Label>
               </div>
             </CardContent>
-            <CardFooter className="pb-4">
+            <CardFooter className="scroll-smooth pb-4">
               <Link
                 href={'#historico'}
+                scroll={false}
                 className={cn(buttonVariants({ variant: 'outline' }))}
               >
                 Ver histórico

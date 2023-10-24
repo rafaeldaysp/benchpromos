@@ -14,14 +14,14 @@ const options: {
   icon?: LucideIcon
 }[] = [
   {
-    label: 'Preços',
-    value: 'precos',
-    icon: Icons.DollarSign,
-  },
-  {
     label: 'Histórico',
     value: 'historico',
     icon: Icons.LineChart,
+  },
+  {
+    label: 'Preços',
+    value: 'precos',
+    icon: Icons.DollarSign,
   },
   {
     label: 'Ficha técnica',
@@ -33,11 +33,11 @@ const options: {
     value: 'analise',
     icon: Icons.ScrollText,
   },
-  {
-    label: 'Promoções',
-    value: 'promocoes',
-    icon: Icons.Receipt,
-  },
+  // {
+  //   label: 'Promoções',
+  //   value: 'promocoes',
+  //   icon: Icons.Receipt,
+  // },
   {
     label: 'Benchmarks',
     value: 'benchmarks',
@@ -56,6 +56,7 @@ export function ProductNavbar() {
       <div className="w-max space-x-2 p-1 font-medium">
         {options.map((option) => (
           <Link
+            scroll={false}
             key={option.value}
             className={cn(
               buttonVariants({ variant: 'ghost' }),

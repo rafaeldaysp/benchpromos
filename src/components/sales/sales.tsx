@@ -7,6 +7,7 @@ import { InView } from 'react-intersection-observer'
 import { SaleCard } from '@/components/sales/sale-card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { GET_SALES, type GetSalesQuery } from '@/queries'
+import ScrollToTopButton from '../scroll-to-top-button'
 
 const SALES_PER_SCROLL = 12
 
@@ -90,6 +91,7 @@ export function Sales({ user, productSlug }: SalesProps) {
           }}
         />
       )}
+      <ScrollToTopButton />
     </div>
   )
 }
