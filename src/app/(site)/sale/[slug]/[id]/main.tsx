@@ -25,6 +25,8 @@ import { Separator } from '@/components/ui/separator'
 import { cn } from '@/lib/utils'
 import type { Cashback, Category, Sale } from '@/types'
 import { priceFormatter } from '@/utils/formatter'
+import { AlertCard } from '@/components/alert-price'
+import PriceChart from '@/components/product-price-chart'
 
 const GET_SALE = gql`
   query Sale($saleId: ID!) {
@@ -222,28 +224,40 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
             userId={user?.id}
           />
         </div>
-        <Separator />
 
         {sale.productSlug && (
-          <Link
-            href={`/${sale.category.slug}/${sale.productSlug}`}
-            className={cn(
-              buttonVariants({ variant: 'secondary' }),
-              'flex h-fit justify-between rounded-xl px-6 py-4',
-            )}
-          >
-            <p className="flex flex-1 flex-col">
-              <span className="flex items-center gap-x-2 font-semibold">
-                <Icons.StarFilled className="h-4 w-4 text-auxiliary" />
-                Mais informações do produto
-              </span>
-              <span className="text-muted-foreground">
-                Acompanhe o histórico de preços, especificações técnicas,
-                habilite alertas e muito mais
-              </span>
-            </p>
-            <Icons.ChevronRight className="h-4 w-4" />
-          </Link>
+          <div className="space-y-2">
+            <div className="space-y-1">
+              <h2 className="font-semibold tracking-tight md:text-xl">
+                Histórico
+              </h2>
+              <p className="text-sm text-muted-foreground">
+                Acompanhe o preço deste produto ao longo do tempo
+              </p>
+            </div>
+            <Separator className="my-4" />
+            <PriceChart productSlug={sale.productSlug} />
+            <Separator className="my-4" />
+            <Link
+              href={`/${sale.category.slug}/${sale.productSlug}`}
+              className={cn(
+                buttonVariants({ variant: 'secondary' }),
+                'flex h-fit justify-between rounded-xl px-6 py-4',
+              )}
+            >
+              <p className="flex flex-1 flex-col">
+                <span className="flex items-center gap-x-2 font-semibold">
+                  <Icons.StarFilled className="h-4 w-4 text-auxiliary" />
+                  Mais informações do produto
+                </span>
+                <span className="text-muted-foreground">
+                  Acompanhe o histórico de preços, especificações técnicas,
+                  habilite alertas e muito mais
+                </span>
+              </p>
+              <Icons.ChevronRight className="h-4 w-4" />
+            </Link>
+          </div>
         )}
       </main>
       <aside className="xl:col-span-2">

@@ -78,7 +78,7 @@ export function DashboardUsers({ children }: DashboardUsersProps) {
   const users = data?.users.list.map(removeNullValues)
   const count = data?.users.count
   const page = Math.ceil(users.length / USERS_PER_PAGE)
-  const pageCount = Math.ceil(data?.users.count / USERS_PER_PAGE)
+  const pageCount = Math.ceil(count / USERS_PER_PAGE)
 
   React.useEffect(() => {
     if (debouncedQuery.length > 0) {
