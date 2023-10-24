@@ -51,6 +51,7 @@ import {
   ScrollText,
   Search,
   Send,
+  ShieldAlert,
   SlidersHorizontal,
   SmilePlus,
   Sun,
@@ -125,6 +126,7 @@ export const Icons = {
   RotateCcw,
   Quote,
   Clock8,
+  ShieldAlert,
   Google: ({ ...props }: LucideProps) => (
     <svg
       aria-hidden="true"

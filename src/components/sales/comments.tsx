@@ -35,7 +35,7 @@ dayjs.locale('pt-br')
 interface CommentsProps {
   saleId: string
   count: number
-  user?: Pick<Session['user'], 'id' | 'image' | 'name' | 'isAdmin'>
+  user?: Pick<Session['user'], 'id' | 'image' | 'name' | 'role'>
 }
 
 export function Comments({ saleId, user, count }: CommentsProps) {
@@ -133,7 +133,7 @@ interface RepliesProps {
   saleId: string
   replyToId: string
   count: number
-  user?: Pick<Session['user'], 'id' | 'image' | 'name' | 'isAdmin'>
+  user?: Pick<Session['user'], 'id' | 'image' | 'name' | 'role'>
 }
 
 function Replies({ saleId, replyToId, user, count }: RepliesProps) {
@@ -183,7 +183,7 @@ interface CommentProps {
     text: string
     user: {
       id: string
-      isAdmin: boolean
+      role: 'ADMIN' | 'MOD' | 'USER'
       name: string
       image: string
     }
@@ -197,7 +197,7 @@ interface CommentProps {
     likesCount: number
   }
   replyToId?: string
-  user?: Pick<Session['user'], 'id' | 'image' | 'name' | 'isAdmin'>
+  user?: Pick<Session['user'], 'id' | 'image' | 'name' | 'role'>
 }
 
 export function Comment({ saleId, comment, replyToId, user }: CommentProps) {
@@ -245,11 +245,18 @@ export function Comment({ saleId, comment, replyToId, user }: CommentProps) {
               <span className="text-xs font-semibold sm:text-sm">
                 {comment.user.name}
               </span>
-              {comment.user.isAdmin && (
+              {comment.user.role === 'ADMIN' && (
                 <Badge className="px-1 py-0">
                   {' '}
                   <Icons.Crown className="mr-1 h-3 w-3 text-xs sm:text-sm" />{' '}
                   ADM
+                </Badge>
+              )}
+              {comment.user.role === 'MOD' && (
+                <Badge className="px-1 py-0" variant={'success'}>
+                  {' '}
+                  <Icons.ShieldAlert className="mr-1 h-3 w-3 text-xs sm:text-sm" />{' '}
+                  MOD
                 </Badge>
               )}
             </div>
@@ -320,7 +327,9 @@ export function Comment({ saleId, comment, replyToId, user }: CommentProps) {
           </footer>
         </div>
         <div className="h-8 w-8">
-          {(user?.isAdmin || user?.id === comment.user.id) && (
+          {(user?.role === 'ADMIN' ||
+            user?.role === 'MOD' ||
+            user?.id === comment.user.id) && (
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"

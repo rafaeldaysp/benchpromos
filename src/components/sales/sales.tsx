@@ -12,7 +12,7 @@ import ScrollToTopButton from '../scroll-to-top-button'
 const SALES_PER_SCROLL = 12
 
 interface SalesProps {
-  user?: { id: string; isAdmin: boolean }
+  user?: { id: string; role: 'ADMIN' | 'MOD' | 'USER' }
   productSlug?: string
 }
 

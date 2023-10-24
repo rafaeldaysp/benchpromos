@@ -20,7 +20,7 @@ const TOGGLE_HIGHLIGHT = gql`
 
 interface HighlightProps {
   sale: Pick<Sale, 'id' | 'highlight'>
-  user?: { id: string; isAdmin: boolean }
+  user?: { id: string; role: 'ADMIN' | 'MOD' | 'USER' }
   className?: string
 }
 
@@ -32,8 +32,11 @@ export function HighlightSaleToggle({ sale, user, className }: HighlightProps) {
     // refetchQueries: ['GetSales'],
   })
 
-  async function handleToggleHighlight(id: string, isAdmin?: boolean) {
-    if (!isAdmin) return
+  async function handleToggleHighlight(
+    id: string,
+    role?: 'ADMIN' | 'MOD' | 'USER',
+  ) {
+    if (role !== 'ADMIN') return
 
     const token = await getCurrentUserToken()
 
@@ -56,7 +59,7 @@ export function HighlightSaleToggle({ sale, user, className }: HighlightProps) {
         'flex h-fit w-full cursor-default select-none items-center justify-start rounded-sm px-2 py-1.5 text-sm font-normal outline-none',
         className,
       )}
-      onClick={() => handleToggleHighlight(sale.id, user?.isAdmin)}
+      onClick={() => handleToggleHighlight(sale.id, user?.role)}
     >
       <Icons.Bookmark className="mr-2 h-4 w-4" />
       {sale.highlight ? 'Desmarcar' : 'Marcar'}

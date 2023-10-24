@@ -17,7 +17,7 @@ const GET_USER = gql`
       name
       email
       image
-      isAdmin
+      role
       emailVerified
     }
   }
@@ -37,7 +37,7 @@ const AUTHORIZE = gql`
       emailVerified
       image
       name
-      isAdmin
+      role
     }
   }
 `
@@ -123,7 +123,7 @@ export const authOptions: NextAuthOptions = {
         name: dbUser.name,
         email: dbUser.email,
         picture: dbUser.image,
-        isAdmin: dbUser.isAdmin,
+        role: dbUser.role,
         emailVerified: dbUser.emailVerified,
       }
     },
@@ -133,7 +133,7 @@ export const authOptions: NextAuthOptions = {
         session.user.name = token.name
         session.user.email = token.email
         session.user.image = token.picture
-        session.user.isAdmin = token.isAdmin
+        session.user.role = token.role
         session.user.emailVerified = token.emailVerified
       }
 

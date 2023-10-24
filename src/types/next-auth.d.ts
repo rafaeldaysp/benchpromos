@@ -4,7 +4,7 @@ declare module 'next-auth' {
   interface Session {
     user: User & {
       id: string
-      isAdmin: boolean
+      role: 'ADMIN' | 'MOD' | 'USER'
       emailVerified?: Date
     }
   }
@@ -13,7 +13,7 @@ declare module 'next-auth' {
 declare module 'next-auth/jwt' {
   interface JWT {
     id: string
-    isAdmin: boolean
+    role: 'ADMIN' | 'MOD' | 'USER'
     emailVerified?: Date
   }
 }

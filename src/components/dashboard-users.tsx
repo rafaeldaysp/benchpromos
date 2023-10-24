@@ -6,95 +6,78 @@ import { InView } from 'react-intersection-observer'
 import { Icons } from '@/components/icons'
 import { Input } from '@/components/ui/input'
 import { ScrollArea } from '@/components/ui/scroll-area'
+import { env } from '@/env.mjs'
 import { useDebounce } from '@/hooks/use-debounce'
-import type { Category, Product } from '@/types'
-import { removeNullValues } from '@/utils'
 import { cn } from '@/lib/utils'
+import { removeNullValues } from '@/utils'
 
-const PRODUCTS_PER_PAGE = 12
+const USERS_PER_PAGE = 12
 
-const GET_PRODUCTS = gql`
-  query GetProducts($input: GetProductsInput) {
-    productsList: products(getProductsInput: $input) {
-      pages
-      products {
+const GET_USERS = gql`
+  query GetUsers($getUsersInput: GetUsersInput) {
+    users(getUsersInput: $getUsersInput) {
+      count
+      list {
         id
         name
-        imageUrl
-        specs {
-          title
-          value
-        }
-        pros {
-          value
-        }
-        cons {
-          value
-        }
-        description
-        reviewUrl
-        referencePrice
-        categoryId
-        slug
-        subcategoryId
-        recommended
-        views
-        category {
-          id
-          name
-        }
-        filters {
-          optionId
-          option {
-            value
-          }
-        }
+        email
+        image
+        role
       }
     }
   }
 `
 
-interface DashboardProductsProps {
+interface DashboardUsersProps {
   children: (data: {
-    products: (Product & {
-      category: Pick<Category, 'id' | 'name'>
-      filters: { optionId: string; option: { value: string } }[]
-    })[]
+    users: {
+      id: string
+      name: string
+      email: string
+      image: string
+      role: 'USER' | 'MOD' | 'ADMIN'
+    }[]
   }) => React.ReactNode
 }
 
-export function DashboardProducts({ children }: DashboardProductsProps) {
+export function DashboardUsers({ children }: DashboardUsersProps) {
   const [isPending, startTransition] = React.useTransition()
   const [query, setQuery] = React.useState('')
   const debouncedQuery = useDebounce(query, 300)
 
   const { data, refetch, fetchMore } = useSuspenseQuery<{
-    productsList: {
-      pages: number
-      products: (Product & {
-        category: Pick<Category, 'id' | 'name'>
-        filters: { optionId: string; option: { value: string } }[]
-      })[]
+    users: {
+      count: number
+      list: {
+        id: string
+        name: string
+        email: string
+        image: string
+        role: 'USER' | 'MOD' | 'ADMIN'
+      }[]
     }
-  }>(GET_PRODUCTS, {
+  }>(GET_USERS, {
+    context: {
+      headers: {
+        'api-key': env.NEXT_PUBLIC_API_KEY,
+      },
+    },
     fetchPolicy: 'cache-and-network',
     refetchWritePolicy: 'overwrite',
     variables: {
-      input: {
+      getUsersInput: {
         search: debouncedQuery,
         pagination: {
-          limit: PRODUCTS_PER_PAGE,
+          limit: USERS_PER_PAGE,
           page: 1,
         },
       },
     },
   })
 
-  const pageCount = data?.productsList.pages
-  const products = data?.productsList.products.map((product) =>
-    removeNullValues(product),
-  )
-  const page = Math.ceil(products.length / PRODUCTS_PER_PAGE)
+  const users = data?.users.list.map(removeNullValues)
+  const page = Math.ceil(users.length / USERS_PER_PAGE)
+  const pageCount = Math.ceil(data?.users.count / USERS_PER_PAGE)
 
   React.useEffect(() => {
     if (debouncedQuery.length > 0) {
@@ -106,25 +89,27 @@ export function DashboardProducts({ children }: DashboardProductsProps) {
   function onEntry() {
     startTransition(() => {
       fetchMore({
+        context: {
+          headers: {
+            'api-key': env.NEXT_PUBLIC_API_KEY,
+          },
+        },
         variables: {
           input: {
             search: debouncedQuery,
             pagination: {
-              limit: PRODUCTS_PER_PAGE,
+              limit: USERS_PER_PAGE,
               page: page + 1,
             },
           },
         },
         updateQuery(previousResult, { fetchMoreResult }) {
-          const fetchMorePages = previousResult.productsList.pages
-          const previousProducts = previousResult.productsList.products
-          const fetchMoreProducts = fetchMoreResult.productsList.products
+          const fetchMorePages = previousResult.users.count
+          const previousUsers = previousResult.users.list
+          const fetchMoreUsers = fetchMoreResult.users.list
 
-          fetchMoreResult.productsList.pages = fetchMorePages
-          fetchMoreResult.productsList.products = [
-            ...previousProducts,
-            ...fetchMoreProducts,
-          ]
+          fetchMoreResult.users.count = fetchMorePages
+          fetchMoreResult.users.list = [...previousUsers, ...fetchMoreUsers]
 
           return { ...fetchMoreResult }
         },
@@ -132,22 +117,22 @@ export function DashboardProducts({ children }: DashboardProductsProps) {
     })
   }
 
-  const hasMoreProducts = page < pageCount
+  const hasMoreUsers = page < pageCount
 
   return (
     <div className="space-y-4">
       <Input
-        placeholder="Pesquise por um produto..."
+        placeholder="Pesquise por um usuário..."
         value={query}
         onChange={(e) => setQuery(e.target.value)}
       />
-      {products.length > 0 ? (
+      {users.length > 0 ? (
         <ScrollArea
           className={cn('rounded-md border', {
-            'h-[600px]': products.length > 6,
+            'h-[600px]': users.length > 6,
           })}
         >
-          {children({ products })}
+          {children({ users })}
           {isPending ? (
             <div className="flex justify-center py-4">
               <Icons.Spinner
@@ -159,7 +144,7 @@ export function DashboardProducts({ children }: DashboardProductsProps) {
             <InView
               as="div"
               delay={500}
-              hidden={!hasMoreProducts}
+              hidden={!hasMoreUsers}
               onChange={(_, entry) => {
                 if (entry.isIntersecting) onEntry()
               }}
@@ -168,7 +153,7 @@ export function DashboardProducts({ children }: DashboardProductsProps) {
         </ScrollArea>
       ) : (
         <div className="flex justify-center">
-          <p className="text-muted-foreground">Nenhum produto encontrado.</p>
+          <p className="text-muted-foreground">Nenhum usuário encontrado.</p>
         </div>
       )}
     </div>

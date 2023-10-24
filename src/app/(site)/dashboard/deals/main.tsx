@@ -216,85 +216,87 @@ export function DealsMain({ deals, retailers, categories }: DealsMainProps) {
 
       <div className="space-y-4">
         <div className="flex flex-col items-start gap-y-2 sm:flex-row sm:items-center sm:justify-between">
-          <h4 className="flex font-medium tracking-tight">
+          <h2 className="flex w-fit items-center font-medium tracking-tight">
             Ofertas • {filteredDeals.length}
-          </h4>
-          <ScrollArea className="w-full bg-background">
-            <div className="flex items-center gap-2">
-              {selectedRetailer && (
-                <>
-                  <Dialog
-                    open={openDialogs['dealsLinkForm']}
-                    onOpenChange={(open) =>
-                      setOpenDialog('dealsLinkForm', open)
-                    }
-                  >
-                    <DialogTrigger asChild>
-                      {selectedDealIds.length > 0 && selectedRetailer && (
-                        <Button
-                          variant="outline"
-                          className="w-fit px-3 sm:px-4"
-                        >
-                          Editar ({selectedDealIds.length})
-                        </Button>
-                      )}
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>ATUALIZAR MÚLTIPLAS OFERTAS</DialogTitle>
-                        <DialogDescription>
-                          Atualize o cupom e/ou cashback de múltiplas ofertas.
-                        </DialogDescription>
-                      </DialogHeader>
-                      <DealsLinkForm
-                        dealIds={selectedDealIds}
-                        retailerId={selectedRetailer.id}
-                      />
-                    </DialogContent>
-                  </Dialog>
+          </h2>
+          <div className="">
+            <ScrollArea className="w-full bg-background">
+              <div className="flex items-center gap-2">
+                {selectedRetailer && (
+                  <>
+                    <Dialog
+                      open={openDialogs['dealsLinkForm']}
+                      onOpenChange={(open) =>
+                        setOpenDialog('dealsLinkForm', open)
+                      }
+                    >
+                      <DialogTrigger asChild>
+                        {selectedDealIds.length > 0 && selectedRetailer && (
+                          <Button
+                            variant="outline"
+                            className="w-fit px-3 sm:px-4"
+                          >
+                            Editar ({selectedDealIds.length})
+                          </Button>
+                        )}
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>ATUALIZAR MÚLTIPLAS OFERTAS</DialogTitle>
+                          <DialogDescription>
+                            Atualize o cupom e/ou cashback de múltiplas ofertas.
+                          </DialogDescription>
+                        </DialogHeader>
+                        <DealsLinkForm
+                          dealIds={selectedDealIds}
+                          retailerId={selectedRetailer.id}
+                        />
+                      </DialogContent>
+                    </Dialog>
 
-                  <Select
-                    defaultValue=""
-                    onValueChange={(value) => {
-                      setSelectedCategory(
-                        categories.find((category) => category.id === value),
-                      )
-                    }}
-                  >
-                    <SelectTrigger className="line-clamp-1 w-fit sm:w-[200px]">
-                      <SelectValue placeholder="Selecione uma categoria" />
-                    </SelectTrigger>
-                    <SelectContent className="max-h-[300px]">
-                      <SelectItem value="">Todas</SelectItem>
-                      {categories.map((category) => (
-                        <SelectItem key={category.id} value={category.id}>
-                          {category.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                    <Select
+                      defaultValue=""
+                      onValueChange={(value) => {
+                        setSelectedCategory(
+                          categories.find((category) => category.id === value),
+                        )
+                      }}
+                    >
+                      <SelectTrigger className="line-clamp-1 w-fit sm:w-[200px]">
+                        <SelectValue placeholder="Selecione uma categoria" />
+                      </SelectTrigger>
+                      <SelectContent className="max-h-[300px]">
+                        <SelectItem value="">Todas</SelectItem>
+                        {categories.map((category) => (
+                          <SelectItem key={category.id} value={category.id}>
+                            {category.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
 
-                  <Button
-                    variant="outline"
-                    className="w-fit px-3 sm:px-4"
-                    onClick={() =>
-                      selectedDealIds.length === filteredDeals.length
-                        ? setSelectedDealIds([])
-                        : setSelectedDealIds(
-                            filteredDeals.map((deal) => deal.id),
-                          )
-                    }
-                  >
-                    {selectedDealIds.length === filteredDeals.length
-                      ? 'Desmarcar'
-                      : 'Marcar'}
-                    <h6 className="ml-1 hidden sm:inline-flex">todos</h6>
-                  </Button>
-                  <ScrollBar orientation="horizontal" />
-                </>
-              )}
-            </div>
-          </ScrollArea>
+                    <Button
+                      variant="outline"
+                      className="w-fit px-3 sm:px-4"
+                      onClick={() =>
+                        selectedDealIds.length === filteredDeals.length
+                          ? setSelectedDealIds([])
+                          : setSelectedDealIds(
+                              filteredDeals.map((deal) => deal.id),
+                            )
+                      }
+                    >
+                      {selectedDealIds.length === filteredDeals.length
+                        ? 'Desmarcar'
+                        : 'Marcar'}
+                      <h6 className="ml-1 hidden sm:inline-flex">todos</h6>
+                    </Button>
+                    <ScrollBar orientation="horizontal" />
+                  </>
+                )}
+              </div>
+            </ScrollArea>
+          </div>
         </div>
 
         {filteredDeals.length > 0 ? (

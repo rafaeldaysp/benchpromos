@@ -38,6 +38,7 @@ import {
 import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
 import type { Category, Filter, Product } from '@/types'
+import { Badge } from '@/components/ui/badge'
 
 const DELETE_PRODUCT = gql`
   mutation DeleteProduct($productId: ID!) {
@@ -161,7 +162,14 @@ export function ProductsMain({ filters }: ProductsMainProps) {
               >
                 <p className="text-sm leading-7">{product.name}</p>
                 <span className="text-xs text-muted-foreground">
-                  {product.category.name}
+                  <div className="space-x-1">
+                    {product.category.name} • {` `}
+                    {product.filters.map((filter) => (
+                      <span key={filter.optionId}>{filter.option.value} •</span>
+                    ))}
+                    {` `}
+                    {product.views} visualizações
+                  </div>
                 </span>
               </DashboardItemCard.Content>
 

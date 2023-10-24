@@ -30,8 +30,9 @@ export type Product = {
   referencePrice?: number
   categoryId: string
   slug: string
-  subcategoryId?: string
   recommended: boolean
+  views: number
+  subcategoryId?: string
 }
 
 export type Coupon = {

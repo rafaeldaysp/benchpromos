@@ -59,7 +59,7 @@ export function UserAccountNav({ user }: UserAccountNavProps) {
           </Link>
         </DropdownMenuItem>
 
-        {user.isAdmin && (
+        {user.role === 'ADMIN' && (
           <>
             <DropdownMenuItem className="cursor-pointer" asChild>
               <Link href="/dashboard">

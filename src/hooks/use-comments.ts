@@ -17,7 +17,7 @@ const GET_COMMENTS = gql`
       replyToId
       user {
         id
-        isAdmin
+        role
         name
         image
       }
@@ -34,7 +34,12 @@ const GET_COMMENTS = gql`
 
 type GetCommentsQuery = {
   comments: (Pick<Comment, 'id' | 'text' | 'createdAt' | 'updatedAt'> & {
-    user: { id: string; isAdmin: boolean; name: string; image: string }
+    user: {
+      id: string
+      role: 'ADMIN' | 'MOD' | 'USER'
+      name: string
+      image: string
+    }
     likes: {
       user: {
         id: string
@@ -56,7 +61,7 @@ const CREATE_COMMENT = gql`
       replyToId
       user {
         id
-        isAdmin
+        role
         name
         image
       }

@@ -99,7 +99,7 @@ interface SaleCardProps extends React.HTMLAttributes<HTMLDivElement> {
       userId: string
     }[]
   }
-  user?: { id: string; isAdmin: boolean }
+  user?: { id: string; role: 'ADMIN' | 'MOD' | 'USER' }
   apolloClient: ApolloClient<unknown>
 }
 
@@ -402,7 +402,7 @@ export function SaleCard({
               </>
             )}
 
-            {user?.isAdmin && (
+            {user?.role === 'ADMIN' && (
               <>
                 <ContextMenuSeparator />
                 <ContextMenuItem className="p-0">

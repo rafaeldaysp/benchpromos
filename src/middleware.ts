@@ -7,7 +7,7 @@ export default withAuth(
     const token = await getToken({ req })
 
     if (req.nextUrl.pathname.startsWith('/dashboard')) {
-      const isAdmin = token?.isAdmin
+      const isAdmin = token?.role === 'ADMIN'
 
       if (!isAdmin) {
         return NextResponse.redirect(new URL('/', req.url))

@@ -32,6 +32,10 @@ const sidebarNavItems = [
     href: '/dashboard/cashbacks',
   },
   {
+    title: 'Usuários',
+    href: '/dashboard/users',
+  },
+  {
     title: 'Benchmarks',
     href: '/dashboard/benchmarks',
   },

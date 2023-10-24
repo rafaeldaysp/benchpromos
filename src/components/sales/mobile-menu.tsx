@@ -23,7 +23,7 @@ interface MobileMenuProps {
     }
     highlight: boolean
   }
-  user?: { id: string; isAdmin: boolean }
+  user?: { id: string; role: 'ADMIN' | 'MOD' | 'USER' }
   apolloClient: ApolloClient<unknown>
 }
 
@@ -49,7 +49,7 @@ export function MobileMenu({
           'fixed h-full max-h-[70%] space-y-2 rounded-t-2xl sm:hidden',
           {
             'overflow-y-hidden': snap !== 1,
-            'max-h-[80%]': user?.isAdmin,
+            'max-h-[80%]': user?.role === 'ADMIN',
           },
         )}
       >
@@ -121,7 +121,7 @@ export function MobileMenu({
               </Link>
             </>
           )}
-          {user?.isAdmin && (
+          {user?.role === 'ADMIN' && (
             <>
               <h3 className="py-3 text-sm text-muted-foreground">Admin</h3>
 
