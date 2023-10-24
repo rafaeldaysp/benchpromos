@@ -12,8 +12,6 @@ import { Icons } from '@/components/icons'
 import { ProductNavbar } from '@/components/product-navbar'
 import PriceChart from '@/components/product-price-chart'
 import { ProductBenchmarks } from '@/components/product-benchmarks'
-import { ScrollLink } from '@/components/scroll-link'
-import ScrollToTopButton from '@/components/scroll-to-top-button'
 import { Badge } from '@/components/ui/badge'
 import { buttonVariants } from '@/components/ui/button'
 import {
