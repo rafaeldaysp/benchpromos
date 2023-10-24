@@ -76,6 +76,7 @@ export function DashboardUsers({ children }: DashboardUsersProps) {
   })
 
   const users = data?.users.list.map(removeNullValues)
+  const count = data?.users.count
   const page = Math.ceil(users.length / USERS_PER_PAGE)
   const pageCount = Math.ceil(data?.users.count / USERS_PER_PAGE)
 
@@ -95,7 +96,7 @@ export function DashboardUsers({ children }: DashboardUsersProps) {
           },
         },
         variables: {
-          input: {
+          getUsersInput: {
             search: debouncedQuery,
             pagination: {
               limit: USERS_PER_PAGE,
@@ -121,6 +122,7 @@ export function DashboardUsers({ children }: DashboardUsersProps) {
 
   return (
     <div className="space-y-4">
+      <h3 className="font-medium tracking-tight">Usuários • {count}</h3>
       <Input
         placeholder="Pesquise por um usuário..."
         value={query}
