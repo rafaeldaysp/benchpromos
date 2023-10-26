@@ -254,7 +254,11 @@ export function SalesMain() {
                         <SheetHeader>
                           <SheetTitle>EDITAR PROMOÇÃO</SheetTitle>
                         </SheetHeader>
-                        <SaleForm mode="update" sale={sale} />
+                        <SaleForm
+                          mode="update"
+                          sale={sale}
+                          productSlug={selectedProduct?.slug}
+                        />
                       </SheetContent>
                     </Sheet>
 

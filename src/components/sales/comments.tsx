@@ -269,7 +269,9 @@ export function Comment({ saleId, comment, replyToId, user }: CommentProps) {
           </header>
           <div className="">
             {mode === 'text' ? (
-              <p className="break-all text-sm leading-tight">{comment.text}</p>
+              <p className="break-all text-sm leading-tight sm:break-words">
+                {comment.text}
+              </p>
             ) : (
               <div>
                 <div className="flex flex-1 border-b p-2">

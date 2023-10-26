@@ -165,24 +165,29 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
                 <span className="mr-2 font-semibold">ACESSAR</span>
                 <Icons.ExternalLink strokeWidth={3} className="h-4 w-4" />
               </a>
-              <Separator />
             </div>
             {sale.productSlug && (
-              <Link
-                href={`/${sale.category.slug}/${sale.productSlug}`}
-                className={cn(
-                  buttonVariants(),
-                  'flex h-10 rounded-xl font-semibold',
-                )}
-                id="product_view_from_sale_page"
-              >
-                {/* <Icons.StarFilled
+              <>
+                <Separator />
+                <Link
+                  href={`/${sale.category.slug}/${sale.productSlug}`}
+                  className={cn(
+                    buttonVariants(),
+                    'flex h-10 rounded-xl font-semibold',
+                  )}
+                  id="product_view_from_sale_page"
+                >
+                  {/* <Icons.StarFilled
                   strokeWidth={3}
                   className="mr-2 h-4 w-4 text-auxiliary"
                 /> */}
-                VISUALIZAR PRODUTO
-                <Icons.ChevronRight strokeWidth={3} className="ml-2 h-4 w-4" />
-              </Link>
+                  VISUALIZAR PRODUTO
+                  <Icons.ChevronRight
+                    strokeWidth={3}
+                    className="ml-2 h-4 w-4"
+                  />
+                </Link>
+              </>
             )}
           </div>
         </section>
