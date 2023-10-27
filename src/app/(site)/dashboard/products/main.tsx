@@ -1,6 +1,7 @@
 'use client'
 
 import { gql, useMutation } from '@apollo/client'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import * as React from 'react'
 import { toast } from 'sonner'
 
@@ -29,6 +30,13 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog'
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import {
   Sheet,
   SheetContent,
   SheetHeader,
@@ -37,8 +45,8 @@ import {
 } from '@/components/ui/sheet'
 import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
+import { useQueryString } from '@/hooks/use-query-string'
 import type { Category, Filter, Product } from '@/types'
-import { Badge } from '@/components/ui/badge'
 
 const DELETE_PRODUCT = gql`
   mutation DeleteProduct($productId: ID!) {
@@ -48,12 +56,31 @@ const DELETE_PRODUCT = gql`
   }
 `
 
+const selectOptions = [
+  {
+    label: 'Relevância',
+    value: 'relevance',
+  },
+  {
+    label: 'Última atualização',
+    value: 'lastUpdate',
+  },
+]
+
 interface ProductsMainProps {
   filters: Filter[]
 }
 
 export function ProductsMain({ filters }: ProductsMainProps) {
+  const [isLoading, startTransition] = React.useTransition()
+  const router = useRouter()
+  const pathname = usePathname()
   const { openDialogs, setOpenDialog } = useFormStore()
+  const { createQueryString } = useQueryString()
+
+  const searchParams = useSearchParams()
+
+  const initialSorting = searchParams.get('sort')
 
   const [selectedProduct, setSelectedProduct] = React.useState<
     Product & {
@@ -88,47 +115,75 @@ export function ProductsMain({ filters }: ProductsMainProps) {
   return (
     <div className="space-y-8">
       {/* Products Actions */}
-      <div className="flex justify-end gap-x-2">
-        {selectedProduct && (
-          <Dialog
-            open={openDialogs['productFiltersForm']}
-            onOpenChange={(open) => setOpenDialog('productFiltersForm', open)}
-          >
-            <DialogTrigger asChild>
-              <Button variant="outline">Editar Filtros</Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>FILTROS</DialogTitle>
-              </DialogHeader>
-              <ProductFiltersForm
-                categoryFilters={categoryFilters}
-                productId={selectedProduct.id}
-                productFilters={selectedProduct.filters}
-              />
-            </DialogContent>
-          </Dialog>
-        )}
-
-        <Sheet
-          open={openDialogs['productCreateForm']}
-          onOpenChange={(open) => setOpenDialog('productCreateForm', open)}
+      <div className="flex justify-between gap-x-2">
+        <Select
+          defaultValue={
+            selectOptions.find((option) => option.value === initialSorting)
+              ?.value ?? 'lastUpdate'
+          }
+          onValueChange={(value) => {
+            startTransition(() => {
+              router.push(
+                `${pathname}?${createQueryString({
+                  sort: value === 'relevance' ? value : null,
+                })}`,
+              )
+            })
+          }}
         >
-          <SheetTrigger asChild>
-            <Button variant="outline">Adicionar</Button>
-          </SheetTrigger>
-          <SheetContent
-            className="w-full space-y-4 overflow-auto sm:max-w-xl"
-            side="left"
-          >
-            <SheetHeader>
-              <SheetTitle>ADICIONAR PRODUTO</SheetTitle>
-            </SheetHeader>
-            <ProductForm product={{ ...selectedProduct, id: undefined }} />
-          </SheetContent>
-        </Sheet>
-      </div>
+          <SelectTrigger className="w-60">
+            <SelectValue placeholder="Selecione a ordem dos produtos" />
+          </SelectTrigger>
+          <SelectContent className="w-60">
+            {selectOptions.map((option) => (
+              <SelectItem key={option.value} value={option.value}>
+                {option.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
 
+        <div className="flex justify-end gap-x-2">
+          {selectedProduct && (
+            <Dialog
+              open={openDialogs['productFiltersForm']}
+              onOpenChange={(open) => setOpenDialog('productFiltersForm', open)}
+            >
+              <DialogTrigger asChild>
+                <Button variant="outline">Editar Filtros</Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>FILTROS</DialogTitle>
+                </DialogHeader>
+                <ProductFiltersForm
+                  categoryFilters={categoryFilters}
+                  productId={selectedProduct.id}
+                  productFilters={selectedProduct.filters}
+                />
+              </DialogContent>
+            </Dialog>
+          )}
+
+          <Sheet
+            open={openDialogs['productCreateForm']}
+            onOpenChange={(open) => setOpenDialog('productCreateForm', open)}
+          >
+            <SheetTrigger asChild>
+              <Button variant="outline">Adicionar</Button>
+            </SheetTrigger>
+            <SheetContent
+              className="w-full space-y-4 overflow-auto sm:max-w-xl"
+              side="left"
+            >
+              <SheetHeader>
+                <SheetTitle>ADICIONAR PRODUTO</SheetTitle>
+              </SheetHeader>
+              <ProductForm product={{ ...selectedProduct, id: undefined }} />
+            </SheetContent>
+          </Sheet>
+        </div>
+      </div>
       {selectedProduct && (
         <DashboardItemCard.Root className="border">
           <DashboardItemCard.Image src={selectedProduct.imageUrl} alt="" />

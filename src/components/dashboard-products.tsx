@@ -1,5 +1,6 @@
 import { gql } from '@apollo/client'
 import { useSuspenseQuery } from '@apollo/experimental-nextjs-app-support/ssr'
+import { useSearchParams } from 'next/navigation'
 import * as React from 'react'
 import { InView } from 'react-intersection-observer'
 
@@ -7,9 +8,9 @@ import { Icons } from '@/components/icons'
 import { Input } from '@/components/ui/input'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { useDebounce } from '@/hooks/use-debounce'
+import { cn } from '@/lib/utils'
 import type { Category, Product } from '@/types'
 import { removeNullValues } from '@/utils'
-import { cn } from '@/lib/utils'
 
 const PRODUCTS_PER_PAGE = 12
 
@@ -68,6 +69,12 @@ export function DashboardProducts({ children }: DashboardProductsProps) {
   const [query, setQuery] = React.useState('')
   const debouncedQuery = useDebounce(query, 300)
 
+  const searchParams = useSearchParams()
+
+  const sortBy = searchParams.get('sort')
+
+  console.log(sortBy)
+
   const { data, refetch, fetchMore } = useSuspenseQuery<{
     productsList: {
       pages: number
@@ -86,6 +93,7 @@ export function DashboardProducts({ children }: DashboardProductsProps) {
           limit: PRODUCTS_PER_PAGE,
           page: 1,
         },
+        sortBy,
       },
     },
   })
@@ -113,6 +121,7 @@ export function DashboardProducts({ children }: DashboardProductsProps) {
               limit: PRODUCTS_PER_PAGE,
               page: page + 1,
             },
+            sortBy,
           },
         },
         updateQuery(previousResult, { fetchMoreResult }) {
