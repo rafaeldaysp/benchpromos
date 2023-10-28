@@ -366,7 +366,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
         </aside>
       </section>
 
-      <section id="navbar" className="sticky top-[58px] z-30 sm:top-[60px]">
+      <section className="sticky top-[58px] z-30 sm:top-[60px]">
         <ProductNavbar />
         <Separator />
       </section>

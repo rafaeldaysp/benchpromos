@@ -73,8 +73,6 @@ export function DashboardProducts({ children }: DashboardProductsProps) {
 
   const sortBy = searchParams.get('sort')
 
-  console.log(sortBy)
-
   const { data, refetch, fetchMore } = useSuspenseQuery<{
     productsList: {
       pages: number
