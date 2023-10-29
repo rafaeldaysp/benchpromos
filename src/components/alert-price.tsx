@@ -129,7 +129,7 @@ export function AlertCard({
 interface AlertPriceProps {
   productId: string
   productPrice: number
-  setOpenLoginPopup: React.Dispatch<React.SetStateAction<boolean>>
+  setOpenLoginPopup?: React.Dispatch<React.SetStateAction<boolean>>
   userAlertPrice?: number
 }
 
@@ -160,7 +160,7 @@ export function AlertPrice({
     const token = await getCurrentUserToken()
 
     if (!token) {
-      setOpenLoginPopup(true)
+      if (setOpenLoginPopup) setOpenLoginPopup(true)
       return
     }
 
