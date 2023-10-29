@@ -6,6 +6,7 @@ import * as React from 'react'
 
 import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
+import { Icons } from '../icons'
 
 interface DashboardSidebarNavProps extends React.HTMLAttributes<HTMLElement> {
   items: {
@@ -29,6 +30,18 @@ export function DashboardSidebarNav({
       )}
       {...props}
     >
+      <Link
+        href="/"
+        className={cn(
+          buttonVariants({ variant: 'link' }),
+          'justify-start text-foreground hover:text-primary',
+        )}
+      >
+        <>
+          <Icons.Home className="mr-2 h-4 w-4" />
+          Início
+        </>
+      </Link>
       {items.map((item) => (
         <Link
           key={item.href}
