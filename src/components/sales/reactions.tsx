@@ -11,6 +11,7 @@ interface ReactionsProps {
   userId?: string
   reactions: { content: string; userId: string }[]
   apolloClient: ApolloClient<unknown>
+  setOpenLoginPopup: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 type GroupedReaction = {
@@ -23,11 +24,15 @@ export function Reactions({
   userId,
   reactions,
   apolloClient,
+  setOpenLoginPopup,
 }: ReactionsProps) {
   const { toggleReaction } = useReactions({ saleId, userId, apolloClient })
 
   async function handleToggleReaction(emote: string) {
-    if (!userId) return
+    if (!userId) {
+      setOpenLoginPopup(true)
+      return
+    }
 
     const token = await getCurrentUserToken()
 

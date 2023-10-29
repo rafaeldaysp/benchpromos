@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 export default async function BenchmarksPage() {
+  // await new Promise((r) => setTimeout(r, 10000))
   return (
     <Card className="lg:col-span-4 lg:h-fit">
       <CardHeader className="px-3 text-center sm:px-8">

@@ -57,6 +57,8 @@ export function ProductNavbar() {
     window.addEventListener('scroll', () => {
       const sections = Array.from(document.querySelectorAll('section[id]'))
 
+      if (sections.length === 0) return
+
       const current = sections.reduce((res, obj) => {
         return Math.abs(obj.getBoundingClientRect().top) <
           Math.abs(res.getBoundingClientRect().top)

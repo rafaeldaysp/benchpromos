@@ -47,13 +47,13 @@ export function UserAccountNav({ user }: UserAccountNavProps) {
         <DropdownMenuSeparator />
 
         <DropdownMenuItem className="cursor-pointer" asChild>
-          <Link href="/user/profile">
+          <Link href="/usuario/perfil">
             <Icons.User className="mr-2 h-4 w-4" />
             <span>Perfil</span>
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem className="cursor-pointer" asChild>
-          <Link href="/user/alerts">
+          <Link href="/usuario/alertas">
             <Icons.Bell className="mr-2 h-4 w-4" />
             <span>Alertas</span>
           </Link>

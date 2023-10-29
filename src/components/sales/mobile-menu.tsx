@@ -14,6 +14,7 @@ interface MobileMenuProps {
   open: boolean
   setOpen: React.Dispatch<React.SetStateAction<boolean>>
   setOpenSaleDialog: (dialogName: string, open: boolean) => void
+  setOpenLoginPopup: React.Dispatch<React.SetStateAction<boolean>>
   sale: {
     slug: string
     id: string
@@ -34,6 +35,7 @@ export function MobileMenu({
   user,
   apolloClient,
   setOpenSaleDialog,
+  setOpenLoginPopup,
 }: MobileMenuProps) {
   const [snap, setSnap] = React.useState<number | string | null>(0.7)
   return (
@@ -59,11 +61,12 @@ export function MobileMenu({
             saleId={sale.id}
             apolloClient={apolloClient}
             userId={user?.id}
+            setOpenLoginPopup={setOpenLoginPopup}
           />
 
           <h3 className="py-2 text-sm text-muted-foreground">Interagir</h3>
           <Link
-            href={`/sale/${sale.slug}/${sale.id}#comments`}
+            href={`/promocao/${sale.slug}/${sale.id}#comments`}
             className={cn(
               buttonVariants({ variant: 'ghost', size: 'lg' }),
               'justify-start px-2 ',
@@ -74,7 +77,7 @@ export function MobileMenu({
           </Link>
 
           <Link
-            href={`/sale/${sale.slug}/${sale.id}`}
+            href={`/promocao/${sale.slug}/${sale.id}`}
             className={cn(
               buttonVariants({ variant: 'ghost', size: 'lg' }),
               'justify-start px-2 ',

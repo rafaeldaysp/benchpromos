@@ -38,11 +38,13 @@ import {
 import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
 import { useMediaQuery } from '@/hooks/use-media-query'
+import { useSaleExpired } from '@/hooks/use-toggle-sale-expired'
 import { cn } from '@/lib/utils'
 import type { Cashback } from '@/types'
 import { removeNullValues } from '@/utils'
 import { priceFormatter } from '@/utils/formatter'
 import { SaleForm } from '../forms/sale-form'
+import { LoginPopup } from '../login-popup'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -56,7 +58,6 @@ import {
 } from '../ui/alert-dialog'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '../ui/sheet'
 import { MobileMenu } from './mobile-menu'
-import { useSaleExpired } from '@/hooks/use-toggle-sale-expired'
 
 dayjs.extend(relativeTime)
 dayjs.locale('pt-br')
@@ -110,6 +111,7 @@ export function SaleCard({
   className,
   ...props
 }: SaleCardProps) {
+  const [openLoginPopup, setOpenLoginPopup] = React.useState(false)
   const [openMobileMenu, setOpenMobileMenu] = React.useState(false)
   const { openDialogs, setOpenDialog } = useFormStore()
   const { toggleSaleExpired } = useSaleExpired({
@@ -168,14 +170,14 @@ export function SaleCard({
 
               <CardContent className="flex-1 space-y-1.5 p-3 py-0 sm:space-y-2 sm:p-6 sm:pt-0">
                 <CardTitle className="line-clamp-2 space-x-1 font-semibold leading-none tracking-tight max-sm:text-sm sm:line-clamp-3">
-                  <Link href={`/sale/${sale.slug}/${sale.id}`}>
+                  <Link href={`/promocao/${sale.slug}/${sale.id}`}>
                     {sale.title}
                   </Link>
                 </CardTitle>
 
                 <div className="grid grid-cols-3 gap-x-3 sm:block sm:gap-x-0 sm:space-y-2">
                   <Link
-                    href={`/sale/${sale.slug}/${sale.id}`}
+                    href={`/promocao/${sale.slug}/${sale.id}`}
                     className="flex h-full items-center"
                   >
                     <div className="relative mx-auto aspect-square w-full select-none sm:w-8/12">
@@ -311,11 +313,12 @@ export function SaleCard({
                       userId={user?.id}
                       reactions={sale.reactions}
                       apolloClient={apolloClient}
+                      setOpenLoginPopup={setOpenLoginPopup}
                     />
                   </div>
 
                   <Link
-                    href={`/sale/${sale.slug}/${sale.id}#comments`}
+                    href={`/promocao/${sale.slug}/${sale.id}#comments`}
                     className={cn(
                       buttonVariants({ variant: 'ghost', size: 'icon' }),
                       'shrink-0',
@@ -328,7 +331,7 @@ export function SaleCard({
                   </Link>
                 </div>
                 <Link
-                  href={`/sale/${sale.slug}/${sale.id}`}
+                  href={`/promocao/${sale.slug}/${sale.id}`}
                   className={cn(
                     buttonVariants({ variant: 'default' }),
                     'h-fit w-full rounded-xl py-1.5 font-semibold sm:hidden',
@@ -355,18 +358,19 @@ export function SaleCard({
                 saleId={sale.id}
                 userId={user?.id}
                 apolloClient={apolloClient}
+                setOpenLoginPopup={setOpenLoginPopup}
               />
             </ContextMenuSub>
 
             <ContextMenuItem asChild>
-              <Link href={`/sale/${sale.slug}/${sale.id}#comments`}>
+              <Link href={`/promocao/${sale.slug}/${sale.id}#comments`}>
                 <Icons.MessageCircle className="mr-2 h-4 w-4" />
                 <span>Comentar</span>
               </Link>
             </ContextMenuItem>
 
             <ContextMenuItem asChild>
-              <Link href={`/sale/${sale.slug}/${sale.id}`}>
+              <Link href={`/promocao/${sale.slug}/${sale.id}`}>
                 <Icons.GanttChartSquare className="mr-2 h-4 w-4" />
                 <span>Ver promoção</span>
               </Link>
@@ -462,6 +466,7 @@ export function SaleCard({
           apolloClient={apolloClient}
           user={user}
           setOpenSaleDialog={setOpenDialog}
+          setOpenLoginPopup={setOpenLoginPopup}
         />
         <SheetContent
           className="w-full space-y-4 overflow-auto sm:max-w-xl"
@@ -478,6 +483,8 @@ export function SaleCard({
         </SheetContent>
 
         <DeleteSaleDialog saleId={sale.id} />
+
+        <LoginPopup open={openLoginPopup} setOpen={setOpenLoginPopup} />
       </AlertDialog>
     </Sheet>
   )

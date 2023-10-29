@@ -336,7 +336,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
             <CardFooter className="scroll-smooth pb-4">
               <Link
                 href={'#historico'}
-                scroll={false}
                 className={cn(buttonVariants({ variant: 'outline' }))}
               >
                 Ver histórico
@@ -701,21 +700,24 @@ export default async function ProductPage({ params }: ProductPageProps) {
         <Separator className="my-4" />
         <ProductSales product={product} />
       </section> */}
-      {product.benchmarksResults.length > 0 && (
-        <section id="benchmarks">
-          <header className="space-y-1">
-            <h2 className="font-semibold tracking-tight md:text-xl">
-              Benchmarks
-            </h2>
-            <p className="text-sm text-muted-foreground">
-              Saiba como este produto performa em nossos testes
-            </p>
-          </header>
-          <Separator className="my-4" />
-
+      <section id="benchmarks">
+        <header className="space-y-1">
+          <h2 className="font-semibold tracking-tight md:text-xl">
+            Benchmarks
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            Saiba como este produto performa em nossos testes
+          </p>
+        </header>
+        <Separator className="my-4" />
+        {product.benchmarksResults.length > 0 ? (
           <ProductBenchmarks benchmarksResults={product.benchmarksResults} />
-        </section>
-      )}
+        ) : (
+          <h3 className="text-sm text-muted-foreground">
+            Esse produto não apresenta resultados em benchmarks.
+          </h3>
+        )}
+      </section>
 
       <section id="review">
         <header className="space-y-1">

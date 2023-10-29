@@ -11,7 +11,6 @@ import Script from 'next/script'
 import * as React from 'react'
 
 import { ApolloWrapper } from '@/components/apollo-wrapper'
-import { DailyLoginPopup } from '@/components/daily-login-popup'
 import { ThemeProvider } from '@/components/theme-provider'
 import { Toaster } from '@/components/ui/toaster'
 import { siteConfig } from '@/config/site'
@@ -110,7 +109,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
           />
         </noscript>
 
-        <DailyLoginPopup />
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
           <ApolloWrapper>{children}</ApolloWrapper>
         </ThemeProvider>

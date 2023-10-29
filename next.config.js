@@ -8,6 +8,22 @@ const nextConfig = {
       },
     ],
   },
+  rewrites: async () => {
+    return [
+      {
+        source: '/promocao/:slug/:id',
+        destination: '/sale/:slug/:id',
+      },
+      {
+        source: '/usuario/perfil',
+        destination: '/user/profile',
+      },
+      {
+        source: '/usuario/alertas',
+        destination: '/user/alerts',
+      },
+    ]
+  },
   experimental: {
     serverActions: true,
   },

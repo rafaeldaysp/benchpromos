@@ -18,6 +18,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog'
 import { priceFormatter } from '@/utils/formatter'
+import { LoginPopup } from './login-popup'
 import {
   Card,
   CardContent,
@@ -56,6 +57,7 @@ export function AlertCard({
   switchId: string
   token?: string
 }) {
+  const [openLoginPopup, setOpenLoginPopup] = React.useState(false)
   const { data } = useSuspenseQuery<{
     userProductAlert: {
       price: number
@@ -75,54 +77,59 @@ export function AlertCard({
   })
   const userAlertPrice = data?.userProductAlert?.price
   return (
-    <Dialog>
-      <Card id="alert-card" className="overflow-hidden">
-        {userAlertPrice && (
-          <CardHeader className="block bg-primary px-6 py-1 text-sm font-medium text-primary-foreground">
-            Alerta em{' '}
-            <strong>{priceFormatter.format(userAlertPrice / 100)}</strong>
-          </CardHeader>
-        )}
-        <CardContent className="py-4">
-          <div className="flex items-start space-x-2">
-            <Icons.BellRing className="h-4 w-4 text-auxiliary" />
-            <Label
-              htmlFor={switchId}
-              className="flex flex-1 flex-col space-y-1"
-            >
-              <CardTitle>Quer economizar?</CardTitle>
-              <CardDescription>
-                Nós alertamos você quando o preço baixar
-              </CardDescription>
-            </Label>
-            <DialogTrigger asChild>
-              <div>
-                <Switch checked={!!userAlertPrice} id={switchId} />
-              </div>
-            </DialogTrigger>
-          </div>
-        </CardContent>
-        {userAlertPrice && (
-          <CardFooter className="pb-4">
-            <DialogTrigger asChild>
-              <Button variant="outline">Editar alerta</Button>
-            </DialogTrigger>
-          </CardFooter>
-        )}
-      </Card>
+    <>
+      <LoginPopup open={openLoginPopup} setOpen={setOpenLoginPopup} />
+      <Dialog>
+        <Card id="alert-card" className="overflow-hidden">
+          {userAlertPrice && (
+            <CardHeader className="block bg-primary px-6 py-1 text-sm font-medium text-primary-foreground">
+              Alerta em{' '}
+              <strong>{priceFormatter.format(userAlertPrice / 100)}</strong>
+            </CardHeader>
+          )}
+          <CardContent className="py-4">
+            <div className="flex items-start space-x-2">
+              <Icons.BellRing className="h-4 w-4 text-auxiliary" />
+              <Label
+                htmlFor={switchId}
+                className="flex flex-1 flex-col space-y-1"
+              >
+                <CardTitle>Quer economizar?</CardTitle>
+                <CardDescription>
+                  Nós alertamos você quando o preço baixar
+                </CardDescription>
+              </Label>
+              <DialogTrigger asChild>
+                <div>
+                  <Switch checked={!!userAlertPrice} id={switchId} />
+                </div>
+              </DialogTrigger>
+            </div>
+          </CardContent>
+          {userAlertPrice && (
+            <CardFooter className="pb-4">
+              <DialogTrigger asChild>
+                <Button variant="outline">Editar alerta</Button>
+              </DialogTrigger>
+            </CardFooter>
+          )}
+        </Card>
 
-      <AlertPrice
-        productId={productId}
-        userAlertPrice={userAlertPrice}
-        productPrice={productPrice}
-      />
-    </Dialog>
+        <AlertPrice
+          productId={productId}
+          userAlertPrice={userAlertPrice}
+          productPrice={productPrice}
+          setOpenLoginPopup={setOpenLoginPopup}
+        />
+      </Dialog>
+    </>
   )
 }
 
 interface AlertPriceProps {
   productId: string
   productPrice: number
+  setOpenLoginPopup: React.Dispatch<React.SetStateAction<boolean>>
   userAlertPrice?: number
 }
 
@@ -130,6 +137,7 @@ export function AlertPrice({
   productId,
   productPrice,
   userAlertPrice,
+  setOpenLoginPopup,
 }: AlertPriceProps) {
   const [price, setPrice] = React.useState(userAlertPrice ?? productPrice)
 
@@ -150,6 +158,11 @@ export function AlertPrice({
 
   async function handleMutateAlert(price: number | null) {
     const token = await getCurrentUserToken()
+
+    if (!token) {
+      setOpenLoginPopup(true)
+      return
+    }
 
     mutateProductAlert({
       context: {
@@ -185,38 +198,41 @@ export function AlertPrice({
             : 'Você ainda não possui um alerta para esse produto'}
         </DialogDescription>
       </DialogHeader>
-      <div className="space-y-8 text-center">
-        <span>
-          {!!userAlertPrice
-            ? 'Para alterar o alerta, indique um novo valor:'
-            : 'Para criar um alerta, indique um valor:'}
-        </span>
-        <div className="flex justify-center gap-x-2">
-          <Button
-            size="icon"
-            variant="outline"
-            className="rounded-full"
-            onClick={decrementPrice}
-          >
-            <Icons.Minus />
-          </Button>
+      <div className="space-y-4  text-center">
+        <div className="space-y-4 rounded-xl border py-4">
+          <span className="flex items-center justify-center">
+            <Icons.Bell className="mr-2 h-4 w-4 text-auxiliary" />
+            {!!userAlertPrice
+              ? 'Para alterar o alerta, indique um novo valor:'
+              : 'Para criar um alerta, indique um valor:'}
+          </span>
+          <div className="flex justify-center gap-x-2">
+            <Button
+              size="icon"
+              variant="outline"
+              className="rounded-full"
+              onClick={decrementPrice}
+            >
+              <Icons.Minus />
+            </Button>
 
-          <PriceInput
-            className="max-w-[150px] text-center"
-            value={price / 100}
-            onValueChange={({ floatValue }) =>
-              setPrice(~~((floatValue ?? 0) * 100))
-            }
-          />
+            <PriceInput
+              className="max-w-[150px] text-center"
+              value={price / 100}
+              onValueChange={({ floatValue }) =>
+                setPrice(~~((floatValue ?? 0) * 100))
+              }
+            />
 
-          <Button
-            size="icon"
-            variant="outline"
-            className="rounded-full"
-            onClick={incrementPrice}
-          >
-            <Icons.Plus />
-          </Button>
+            <Button
+              size="icon"
+              variant="outline"
+              className="rounded-full"
+              onClick={incrementPrice}
+            >
+              <Icons.Plus />
+            </Button>
+          </div>
         </div>
         <DialogFooter className="gap-y-4">
           <Button

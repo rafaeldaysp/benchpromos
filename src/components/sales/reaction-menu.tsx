@@ -14,17 +14,22 @@ interface ReactionMenuProps {
   saleId: string
   userId?: string
   apolloClient: ApolloClient<unknown>
+  setOpenLoginPopup: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export function ReactionMenu({
   saleId,
   userId = '',
   apolloClient,
+  setOpenLoginPopup,
 }: ReactionMenuProps) {
   const { toggleReaction } = useReactions({ saleId, userId, apolloClient })
 
   async function handleToggleReaction(emote: string) {
-    if (!userId) return
+    if (!userId) {
+      setOpenLoginPopup(true)
+      return
+    }
 
     const token = await getCurrentUserToken()
 

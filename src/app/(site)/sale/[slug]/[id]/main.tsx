@@ -6,10 +6,13 @@ import { type Session } from 'next-auth'
 import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import * as React from 'react'
 
 import { CashbackModal } from '@/components/cashback-modal'
 import { CouponModal } from '@/components/coupon-modal'
 import { Icons } from '@/components/icons'
+import { LoginPopup } from '@/components/login-popup'
+import PriceChart from '@/components/product-price-chart'
 import { Comments } from '@/components/sales/comments'
 import { ReactionPopover } from '@/components/sales/reaction-popover'
 import { Reactions } from '@/components/sales/reactions'
@@ -25,8 +28,6 @@ import { Separator } from '@/components/ui/separator'
 import { cn } from '@/lib/utils'
 import type { Cashback, Category, Sale } from '@/types'
 import { priceFormatter } from '@/utils/formatter'
-import { AlertCard } from '@/components/alert-price'
-import PriceChart from '@/components/product-price-chart'
 
 const GET_SALE = gql`
   query Sale($saleId: ID!) {
@@ -68,6 +69,7 @@ interface SaleMainProps {
 }
 
 export function SaleMain({ saleId, user }: SaleMainProps) {
+  const [openLoginPopup, setOpenLoginPopup] = React.useState(false)
   const { data, error, client } = useSuspenseQuery<{
     sale: Sale & {
       commentsCount: number
@@ -90,6 +92,7 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
 
   return (
     <div className="space-y-10 px-4 py-10 sm:container lg:grid lg:grid-cols-3 lg:gap-8 lg:space-y-2 xl:grid-cols-5">
+      <LoginPopup open={openLoginPopup} setOpen={setOpenLoginPopup} />
       <main
         className={cn(
           'flex flex-col gap-2 lg:col-span-2 lg:pt-2 xl:col-span-3',
@@ -219,6 +222,7 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
                 apolloClient={client}
                 saleId={sale.id}
                 userId={user?.id}
+                setOpenLoginPopup={setOpenLoginPopup}
               />
             </PopoverContent>
           </Popover>
@@ -227,6 +231,7 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
             reactions={sale.reactions}
             saleId={sale.id}
             userId={user?.id}
+            setOpenLoginPopup={setOpenLoginPopup}
           />
         </div>
 
@@ -265,7 +270,7 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
           </div>
         )}
       </main>
-      <aside className="xl:col-span-2">
+      <aside className="xl:col-span-2" id="comments">
         <Comments saleId={sale.id} user={user} count={sale.commentsCount} />
       </aside>
     </div>
