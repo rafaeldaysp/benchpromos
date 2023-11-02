@@ -59,7 +59,7 @@ export function SalesNav() {
 
   return (
     <div className="flex w-full flex-col justify-between gap-4 sm:flex-row">
-      <div className="flex w-full items-center space-x-2 sm:w-[65%] md:w-[70%] lg:w-[80%] xl:w-[83%]">
+      <div className="flex w-full items-center gap-x-2 sm:w-[65%] md:w-[70%] lg:w-[80%] xl:w-[83%]">
         <Button
           size={'sm'}
           variant={'outline'}
