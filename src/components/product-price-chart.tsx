@@ -1,6 +1,6 @@
 'use client'
 
-import { gql, useSuspenseQuery } from '@apollo/client'
+import { gql, useQuery } from '@apollo/client'
 import dayjs from 'dayjs'
 import 'dayjs/locale/pt-br'
 import { useTheme } from 'next-themes'
@@ -68,7 +68,7 @@ interface PriceChartProps {
 export default function PriceChart({ productSlug }: PriceChartProps) {
   const [periodInDays, setPeriodInDays] = React.useState(30)
 
-  const { data, refetch } = useSuspenseQuery<{
+  const { data, refetch } = useQuery<{
     productHistory: {
       dailyHistory: DailyHistory[]
       minPeriodPriceDay?: DailyHistory

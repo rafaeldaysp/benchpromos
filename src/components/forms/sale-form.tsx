@@ -79,7 +79,6 @@ const defaultValues: Partial<Inputs> = {
   caption: '',
   coupon: '',
   imageUrl: '',
-  label: '',
   review: '',
   title: '',
   url: '',
@@ -168,12 +167,14 @@ export function SaleForm({
     },
   )
 
-  async function onSubmit(data: Inputs) {
+  async function onSubmit({ label, cashbackId, ...data }: Inputs) {
     await mutateSale({
       variables: {
         input: {
           id: sale?.id,
           productSlug,
+          label: label === 'none' ? null : label,
+          cashbackId: cashbackId === 'none' ? null : cashbackId,
           ...data,
         },
       },
@@ -364,6 +365,7 @@ export function SaleForm({
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
+                  <SelectItem value="none">Nenhum</SelectItem>
                   {saleLabels.map((label) => (
                     <SelectItem key={label} value={label}>
                       {label}
@@ -407,6 +409,7 @@ export function SaleForm({
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
+                  <SelectItem value="none">Nenhum</SelectItem>
                   {cashbackItems?.map((cashbackItem) => (
                     <SelectItem
                       key={cashbackItem.value}
