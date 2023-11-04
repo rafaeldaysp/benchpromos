@@ -10,6 +10,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { GET_SALES, type GetSalesQuery } from '@/queries'
 import ScrollToTopButton from '../scroll-to-top-button'
 import { SalesNav } from './sales-nav'
+import { SalesNavSimplified } from './sales-nav-simplified'
 
 const SALES_PER_SCROLL = 12
 
@@ -83,7 +84,7 @@ export function Sales({ user, productSlug }: SalesProps) {
 
   return (
     <main className="space-y-4">
-      <SalesNav />
+      <SalesNavSimplified />
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {sales.map((sale) => (
