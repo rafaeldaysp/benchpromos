@@ -5,7 +5,7 @@ import Link from 'next/link'
 
 import { siteConfig } from '@/config/site'
 // import { externalLinkOptions } from '@/constants/header'
-import Logo from '@/assets/logo-benchpromos.svg'
+import Logo from '@/assets/black_friday_bp.svg'
 import { Icons } from '@/components/icons'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import {
