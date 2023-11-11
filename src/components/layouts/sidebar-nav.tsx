@@ -3,9 +3,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 
-import { siteConfig } from '@/config/site'
-// import { externalLinkOptions } from '@/constants/header'
-import Logo from '@/assets/black_friday_bp.svg'
+import Logo from '@/assets/black_friday_bp2.svg'
 import { Icons } from '@/components/icons'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import {
@@ -15,6 +13,7 @@ import {
   SheetHeader,
   SheetTrigger,
 } from '@/components/ui/sheet'
+import { siteConfig } from '@/config/site'
 import { cn } from '@/lib/utils'
 import { type headerOption } from '@/types'
 
@@ -22,7 +21,7 @@ interface SideBarProps {
   options: headerOption[]
 }
 
-export function SideBar({ options }: SideBarProps) {
+export function SidebarNav({ options }: SideBarProps) {
   const optionsWithoutContent = options.filter((option) => !option.content)
 
   return (

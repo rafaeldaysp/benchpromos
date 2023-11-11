@@ -269,7 +269,7 @@ export function Comment({ saleId, comment, replyToId, user }: CommentProps) {
           </header>
           <div className="">
             {mode === 'text' ? (
-              <p className="break-all text-sm leading-tight sm:break-words">
+              <p className="overflow-x-hidden text-sm leading-tight">
                 {comment.text}
               </p>
             ) : (
