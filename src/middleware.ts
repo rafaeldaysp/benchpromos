@@ -16,6 +16,13 @@ export default withAuth(
       return null
     }
 
+    if (req.nextUrl.pathname.startsWith('/usuario')) {
+      if (!token?.email)
+        return NextResponse.redirect(new URL('/sign-in', req.url))
+
+      return null
+    }
+
     if (
       req.nextUrl.pathname === '/sign-up' ||
       req.nextUrl.pathname === '/sign-in'
@@ -38,5 +45,5 @@ export default withAuth(
 )
 
 export const config = {
-  matcher: ['/dashboard/:path*', '/sign-up', '/sign-in'],
+  matcher: ['/dashboard/:path*', '/sign-up', '/sign-in', '/usuario/:path*'],
 }

@@ -8,11 +8,15 @@ const nextConfig = {
       },
     ],
   },
-  rewrites: async () => {
+  async rewrites() {
     return [
       {
         source: '/promocao/:slug/:id',
         destination: '/sale/:slug/:id',
+      },
+      {
+        source: '/usuario',
+        destination: '/user',
       },
       {
         source: '/usuario/perfil',
