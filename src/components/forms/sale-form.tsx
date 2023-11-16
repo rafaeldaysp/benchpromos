@@ -82,6 +82,7 @@ const defaultValues: Partial<Inputs> = {
   review: '',
   title: '',
   url: '',
+  sponsored: false,
 }
 
 interface SaleFormProps {
