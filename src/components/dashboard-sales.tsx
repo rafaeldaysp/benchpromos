@@ -14,8 +14,16 @@ import { Input } from './ui/input'
 const SALES_PER_PAGE = 12
 
 const GET_SALES = gql`
-  query GetSales($pagination: PaginationInput, $search: String) {
-    sales(paginationInput: $pagination, search: $search) {
+  query GetSales(
+    $pagination: PaginationInput
+    $search: String
+    $showExpired: Boolean
+  ) {
+    sales(
+      paginationInput: $pagination
+      search: $search
+      showExpired: $showExpired
+    ) {
       count
       list {
         id
@@ -97,6 +105,7 @@ export function DashboardSales({ children }: DashboardSalesProps) {
         limit: SALES_PER_PAGE,
         page: 1,
       },
+      showExpired: true,
     },
   })
 
@@ -120,6 +129,7 @@ export function DashboardSales({ children }: DashboardSalesProps) {
             limit: SALES_PER_PAGE,
             page: page + 1,
           },
+          showExpired: true,
         },
         updateQuery(previousResult, { fetchMoreResult }) {
           const fetchMorePages = previousResult.sales.count
