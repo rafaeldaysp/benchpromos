@@ -21,6 +21,7 @@ import { Icons } from './icons'
 import { buttonVariants } from './ui/button'
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover'
 import { Toggle } from './ui/toggle'
+import { PriceBar } from './product-history-price-bar'
 
 dayjs.locale('pt-br')
 
@@ -63,9 +64,13 @@ type DailyHistory = {
 }
 interface PriceChartProps {
   productSlug: string
+  currentPrice: number | null
 }
 
-export default function PriceChart({ productSlug }: PriceChartProps) {
+export default function PriceChart({
+  productSlug,
+  currentPrice,
+}: PriceChartProps) {
   const [periodInDays, setPeriodInDays] = React.useState(30)
 
   const { data, refetch } = useQuery<{
@@ -96,6 +101,15 @@ export default function PriceChart({ productSlug }: PriceChartProps) {
 
   return (
     <main className="space-y-4">
+      {currentPrice && (
+        <PriceBar
+          data={dailyHistory
+            .filter((dayHistory) => dayHistory.lowestPrice)
+            .map((dayHistory) => dayHistory.lowestPrice)}
+          currentValue={currentPrice}
+          dataRange={periodInDays}
+        />
+      )}
       <section className="flex justify-between gap-2 font-medium">
         <nav className="w-fit rounded-lg bg-muted p-1 sm:space-x-1">
           {fromNowOptions.map((option) => (

@@ -380,7 +380,20 @@ export default async function ProductPage({ params }: ProductPageProps) {
         <Separator className="my-4" />
         <article className="space-y-4 md:gap-x-8 lg:grid lg:grid-cols-3 lg:space-y-0 xl:grid-cols-5">
           <div className="lg:col-span-2 xl:col-span-3">
-            <PriceChart productSlug={slug} />
+            <PriceChart
+              productSlug={slug}
+              currentPrice={
+                bestDeal.availability
+                  ? priceCalculator(
+                      bestDeal.price,
+                      bestDeal.coupon?.availability
+                        ? bestDeal.coupon.discount
+                        : undefined,
+                      bestDeal.cashback?.value,
+                    )
+                  : null
+              }
+            />
           </div>
           <aside className="flex flex-col gap-y-2 xl:col-span-2">
             <AlertCard

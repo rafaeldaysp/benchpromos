@@ -204,7 +204,7 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
           <Card className="relative h-fit border-none py-2 shadow-none">
             <Icons.Quote className="absolute left-4 top-2 h-4 w-4 -translate-y-1/2 rotate-180 bg-background text-muted-foreground" />
             <Icons.Quote className="absolute bottom-2 right-4 h-4 w-4 translate-y-1/2 bg-background text-muted-foreground" />
-            <CardContent className="h-full rounded-xl border p-4 text-sm font-medium shadow transition-colors hover:bg-muted/50">
+            <CardContent className="h-full rounded-xl border p-4 text-sm font-medium shadow">
               {sale.review}
             </CardContent>
           </Card>
@@ -246,7 +246,10 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
               </p>
             </div>
             <Separator className="my-4" />
-            <PriceChart productSlug={sale.productSlug} />
+            <PriceChart
+              productSlug={sale.productSlug}
+              currentPrice={sale.price}
+            />
             <Separator className="my-4" />
             <Link
               href={`/${sale.category.slug}/${sale.productSlug}`}

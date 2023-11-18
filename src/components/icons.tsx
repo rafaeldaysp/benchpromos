@@ -43,6 +43,7 @@ import {
   MoreHorizontal,
   MoreVertical,
   PcCase,
+  Play,
   Plus,
   PlusCircle,
   Quote,
@@ -129,6 +130,7 @@ export const Icons = {
   Quote,
   Clock8,
   ShieldAlert,
+  Play,
   Google: ({ ...props }: LucideProps) => (
     <svg
       aria-hidden="true"

@@ -9,7 +9,6 @@ import { SaleCard } from '@/components/sales/sale-card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { GET_SALES, type GetSalesQuery } from '@/queries'
 import ScrollToTopButton from '../scroll-to-top-button'
-import { SalesNav } from './sales-nav'
 import { SalesNavSimplified } from './sales-nav-simplified'
 
 const SALES_PER_SCROLL = 12
@@ -73,14 +72,6 @@ export function Sales({ user, productSlug }: SalesProps) {
   }
 
   const hasMoreSales = page < pageCount
-
-  // if (sales.length === 0)
-  //   return (
-  //     <h3 className="text-sm text-muted-foreground">
-  //       Estamos constantemente atualizando nossas ofertas, por isso, fique de
-  //       olho para futuras promoções que podem estar a caminho
-  //     </h3>
-  //   )
 
   return (
     <main className="space-y-4">
