@@ -20,7 +20,7 @@ const gradativeScale = [
     textStyle: 'text-success',
   },
   {
-    minValue: 0,
+    minValue: 10,
     message: 'abaixo da média',
     textStyle: 'text-lime-600 dark:text-lime-400',
   },
@@ -40,7 +40,7 @@ const gradativeScale = [
     textStyle: 'text-orange-500',
   },
   {
-    minValue: 100,
+    minValue: 90,
     message: 'muito acima da média',
     textStyle: 'text-destructive',
   },
@@ -74,7 +74,7 @@ export function PriceBar({
   }, [data])
 
   const priceOnScale =
-    (100 * (currentValue - mean)) / (2 * standartDeviation) / 2 + 50
+    (100 * (currentValue - mean)) / (2 * standartDeviation + 1) / 2 + 50
 
   const maxValueObject = gradativeScale.reduce(
     (prev, current) =>
