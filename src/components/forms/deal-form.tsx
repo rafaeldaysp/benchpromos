@@ -158,7 +158,7 @@ export function DealForm({
     },
   )
 
-  async function onSubmit({ cashbackId, ...data }: Inputs) {
+  async function onSubmit({ cashbackId, couponId, ...data }: Inputs) {
     await mutateDeal({
       variables: {
         input: {
@@ -166,6 +166,7 @@ export function DealForm({
           productId,
           retailerId,
           cashbackId: cashbackId === 'none' ? null : cashbackId,
+          couponId: couponId === 'none' ? null : couponId,
           ...data,
         },
       },
@@ -269,6 +270,7 @@ export function DealForm({
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
+                  <SelectItem value="none">Nenhum</SelectItem>
                   {couponItems?.map((couponItem) => (
                     <SelectItem key={couponItem.value} value={couponItem.value}>
                       {couponItem.label}
