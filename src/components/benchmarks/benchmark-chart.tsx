@@ -14,14 +14,13 @@ import {
   ResponsiveContainer,
   XAxis,
   YAxis,
+  type LabelProps,
 } from 'recharts'
 
+import Logo from '@/assets/full-logo-bench-promos.svg'
 import { useMediaQuery } from '@/hooks/use-media-query'
 import { cn } from '@/lib/utils'
 import Image from 'next/image'
-// import { Card, CardContent, CardHeader } from '../ui/card'
-
-import Logo from '@/assets/full-logo-bench-promos.svg'
 
 interface BenchmarkChartProps {
   results: {
@@ -35,11 +34,11 @@ interface BenchmarkChartProps {
 export function BenchmarkChart({ results }: BenchmarkChartProps) {
   const isSm = useMediaQuery('(max-width: 640px)')
   const { theme, systemTheme } = useTheme()
-  const searchParams = useSearchParams()
-  const targetProductAlias = searchParams.get('product')
-  const [selected, setSelected] = React.useState(
-    targetProductAlias ? [targetProductAlias] : [],
-  )
+  const [selected, setSelected] = React.useState<
+    { alias: string; result: number }[]
+  >([])
+
+  const maxResult = Math.max(...results.map((obj) => obj.result))
 
   const accentColor =
     theme === 'dark' || (theme === 'system' && systemTheme === 'dark')
@@ -119,6 +118,11 @@ export function BenchmarkChart({ results }: BenchmarkChartProps) {
             interval="preserveEnd"
             tickLine={false}
             tickCount={5}
+            domain={[
+              0,
+              (dataMax: number) =>
+                Math.ceil((dataMax / (isSm ? 3 : 4) + dataMax) / 5) * 5,
+            ]}
             type="number"
             axisLine={false}
             stroke={accentColor}
@@ -135,9 +139,11 @@ export function BenchmarkChart({ results }: BenchmarkChartProps) {
           />
 
           {/* <Tooltip
-          cursor={false}
-          content={<RenderCustomTooltip targetProduct={targetProductName} />}
-        /> */}
+            cursor={false}
+            content={
+              <RenderCustomTooltip selectedResult={selected[0]?.result} />
+            }
+          /> */}
           <CartesianGrid
             stroke={accentColor}
             strokeDasharray="3 3"
@@ -147,23 +153,34 @@ export function BenchmarkChart({ results }: BenchmarkChartProps) {
           <Bar
             dataKey="result"
             className="cursor-pointer"
-            // label={RenderCustomBarLabel}
             name="Resultado"
             radius={[0, 4, 4, 0]}
             onClick={(data) => {
               const productAlias = data.productAlias as string
-              selected?.includes(productAlias)
+              selected.some((item) => item.alias === productAlias)
                 ? setSelected((prev) =>
-                    prev.filter((slug) => slug !== productAlias),
+                    prev.filter((item) => item.alias !== productAlias),
                   )
-                : setSelected((prev) => [...prev, productAlias])
+                : setSelected((prev) => [
+                    ...prev,
+                    { alias: productAlias, result: data.result },
+                  ])
             }}
           >
+            {/* <LabelList
+              position="right"
+              // stroke="#f9fafb"
+              className="bg-white stroke-foreground text-[10px] sm:text-sm"
+            /> */}
+
             <LabelList
-              dataKey="result"
-              position={isSm ? `center` : `insideRight`}
-              stroke="#f9fafb"
-              className="bg-white text-[10px] sm:text-lg"
+              content={
+                <RenderCustomBarLabel
+                  selected={selected}
+                  isSm={isSm}
+                  maxValue={maxResult}
+                />
+              }
             />
 
             {results?.map((result, index) => {
@@ -172,8 +189,21 @@ export function BenchmarkChart({ results }: BenchmarkChartProps) {
                   className={cn(
                     'fill-primary transition-colors hover:fill-primary/80',
                     {
-                      'fill-amber-500 hover:fill-amber-500/80':
-                        selected.includes(result.productAlias),
+                      'fill-auxiliary/80 hover:fill-auxiliary/60':
+                        selected.some(
+                          (item) => item.alias === result.productAlias,
+                        ),
+                      // 'fill-success hover:fill-success/80': selected.some(
+                      //   (item) =>
+                      //     item.alias === result.productAlias &&
+                      //     item.result > selected[0]?.result,
+                      // ),
+                      // 'fill-destructive hover:fill-destructive/80':
+                      //   selected.some(
+                      //     (item) =>
+                      //       item.alias === result.productAlias &&
+                      //       item.result < selected[0]?.result,
+                      //   ),
                     },
                   )}
                   key={`cell-${index}`}
@@ -195,38 +225,79 @@ function CustomLegend({ unit }: { unit: string }) {
     </div>
   )
 }
-// const RenderCustomBarLabel = ({ x, y, width, height, value }: LabelProps) => {
-//   return (
-//     <text
-//       x={Number(x) + Number(width) - 20}
-//       y={Number(y) + Number(height) / 2 + 5}
-//       className="select-none fill-primary-foreground text-xs font-bold sm:text-base"
-//       textAnchor="middle"
-//     >
-//       {value}
-//     </text>
-//   )
-// }
+const RenderCustomBarLabel = ({
+  x,
+  y,
+  width,
+  height,
+  value,
+  selected,
+  isSm,
+  maxValue,
+}: LabelProps & {
+  selected: { alias: string; result: number }[]
+  isSm: boolean
+  maxValue: number
+}) => {
+  return (
+    <>
+      <text
+        x={Number(x) + Number(width) + (maxValue / 2 > Number(value) ? 4 : -4)}
+        y={Number(y) + Number(height) / 2 + 4}
+        className="select-none fill-foreground text-[10px] font-bold sm:text-sm"
+        textAnchor={maxValue / 2 > Number(value) ? 'right' : 'end'}
+      >
+        {value}
+      </text>
+      {selected.length > 0 && (
+        <text
+          x={
+            Number(x) +
+            Number(width) +
+            4 +
+            (maxValue / 2 > Number(value)
+              ? Math.log10(Number(value)) * 10 + 5
+              : 0) +
+            (isSm && maxValue / 2 > Number(value) ? -5 : 0)
+          }
+          y={Number(y) + Number(height) / 2 + 4}
+          className={cn(
+            'select-none fill-auxiliary text-[10px] font-bold sm:text-sm',
+            {
+              'fill-success': Number(value) > selected[0].result,
+              'fill-destructive': Number(value) < selected[0].result,
+            },
+          )}
+          textAnchor="right"
+        >
+          {<>{Math.ceil((100 * Number(value)) / selected[0].result - 100)}%</>}
+        </text>
+      )}
+    </>
+  )
+}
 
 // interface CustomTooltipProps {
 //   active?: boolean
 //   payload?: { value: number }[]
 //   label?: string
 //   targetProduct?: string
+//   selectedResult?: number
 // }
 // const RenderCustomTooltip = ({
 //   active,
 //   payload,
 //   label,
 //   targetProduct,
+//   selectedResult,
 // }: CustomTooltipProps) => {
 //   if (active && payload && payload.length) {
 //     return (
 //       <Card className="bg-card/95">
-//         <CardHeader className="w-40 p-4 sm:w-64 sm:p-6">
-//           <p className="text-xs font-medium sm:text-sm">{label}</p>
+//         <CardHeader className="w-40 p-4 sm:w-64">
+//           <p className="text-xs font-semibold sm:text-sm">{label}</p>
 //         </CardHeader>
-//         <CardContent className="p-4 pt-0 sm:p-6 sm:pt-0">
+//         <CardContent className="p-4 pt-0">
 //           <p
 //             className={cn('text-sm font-bold text-primary sm:text-base', {
 //               'text-[#d97706]': targetProduct && label?.includes(targetProduct),
@@ -234,6 +305,17 @@ function CustomLegend({ unit }: { unit: string }) {
 //           >
 //             Resultado: {payload[0].value}
 //           </p>
+//           {selectedResult && (
+//             <span
+//               className={cn('text-sm font-bold text-auxiliary sm:text-base', {
+//                 'text-success': selectedResult < payload[0].value,
+//                 'text-destructive': selectedResult > payload[0].value,
+//               })}
+//             >
+//               Variação:{' '}
+//               {Math.ceil((100 * payload[0].value) / selectedResult - 100)}%
+//             </span>
+//           )}
 //         </CardContent>
 //       </Card>
 //     )
