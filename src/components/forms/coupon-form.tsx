@@ -34,6 +34,7 @@ import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
 import { couponSchema } from '@/lib/validations/coupon'
 import type { Retailer } from '@/types'
+import { PriceInput } from '../price-input'
 
 const CREATE_COUPON = gql`
   mutation CreateCoupon($input: CreateCouponInput!) {
@@ -218,9 +219,12 @@ export function CouponForm({ mode = 'create', coupon }: CouponFormProps) {
             <FormItem>
               <FormLabel>Valor Mínimo (opcional)</FormLabel>
               <FormControl>
-                <Input
-                  aria-invalid={!!form.formState.errors.minimumSpend}
-                  {...field}
+                <PriceInput
+                  placeholder="3.999,99"
+                  value={field.value ? field.value / 100 : undefined}
+                  onValueChange={({ floatValue }) =>
+                    field.onChange(~~((floatValue ?? 0) * 100))
+                  }
                 />
               </FormControl>
               <FormDescription>Valor mínimo para uso do cupom.</FormDescription>
