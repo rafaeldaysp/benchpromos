@@ -16,8 +16,9 @@ services:
         limits:
           cpus: '1'
           memory: '0.8'
-  nginx-web:
+  nginx:
     image: nginx:latest
+    container_name: nginx-web
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
       - ./certbot/conf:/etc/letsencrypt
@@ -36,9 +37,9 @@ services:
     command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
     restart: always
 
-  certbot-web:
+  certbot:
     image: certbot/certbot:latest
-    container_name: certbot
+    container_name: certbot-web
     volumes:
       - ./certbot/conf:/etc/letsencrypt:rw
       - ./certbot/www:/var/www/certbot:rw
