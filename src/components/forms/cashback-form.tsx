@@ -199,7 +199,7 @@ export function CashbackForm({ mode = 'create', cashback }: CashbackFormProps) {
                   customInput={Input}
                   displayType="input"
                   placeholder="5"
-                  decimalScale={0}
+                  decimalScale={1}
                   value={field.value ? field.value : undefined}
                   onValueChange={({ floatValue }) =>
                     field.onChange(floatValue ?? 0)
