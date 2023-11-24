@@ -2,17 +2,15 @@ version: '3.8'
 
 services:
   web:
+    hostname: web
     container_name: nextjs
     build:
       context: ./
-      # target: deps
-    # command: npm run dev
-    # volumes:
-    #   - .:/app
-    #   - /app/node_modules
-    #   - /app/.next
-    ports:
-      - 3000:3000
     env_file:
       - ./.env
     restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: '0.8'

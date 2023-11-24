@@ -300,9 +300,9 @@ export function SalesMain() {
         <TabsContent value="products">
           <DashboardProducts>
             {({ products }) =>
-              products.map((product) => (
+              products.map((product, i) => (
                 <DashboardItemCard.Root
-                  key={product.slug}
+                  key={i}
                   className="cursor-pointer"
                   onClick={() => setSelectedProduct(product)}
                 >

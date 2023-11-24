@@ -11,11 +11,11 @@ export const metadata: Metadata = {
 const userSidebarNavItems = [
   {
     title: 'Perfil',
-    href: '/usuario/perfil',
+    href: '/user/profile',
   },
   {
     title: 'Alertas',
-    href: '/usuario/alertas',
+    href: '/user/alerts',
   },
 ]
 
