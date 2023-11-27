@@ -5,7 +5,7 @@ import './globals.css'
 import dayjs from 'dayjs'
 import 'dayjs/locale/pt-br'
 import relativeTime from 'dayjs/plugin/relativeTime'
-import { type Metadata } from 'next'
+import { type Viewport, type Metadata } from 'next'
 import { Montserrat as FontSans } from 'next/font/google'
 import Script from 'next/script'
 import * as React from 'react'
@@ -48,10 +48,6 @@ export const metadata: Metadata = {
       url: 'https://github.com/rafaeldaysp',
     },
   ],
-  themeColor: [
-    { media: '(prefers-color-scheme: light)', color: 'white' },
-    { media: '(prefers-color-scheme: dark)', color: 'black' },
-  ],
   openGraph: {
     type: 'website',
     locale: 'pt_BR',
@@ -63,6 +59,13 @@ export const metadata: Metadata = {
   icons: {
     icon: '/favicon.ico',
   },
+}
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: 'white' },
+    { media: '(prefers-color-scheme: dark)', color: 'black' },
+  ],
 }
 
 interface RootLayoutProps {

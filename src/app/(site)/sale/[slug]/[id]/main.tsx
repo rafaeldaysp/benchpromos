@@ -153,6 +153,44 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
                   </strong>
                 </span>
               )}
+
+              {sale.cashback && (
+                <div className="flex items-center gap-x-2 rounded-xl border p-2 text-sm text-muted-foreground shadow-sm">
+                  <div>
+                    <Icons.AlertCircle className="h-4 w-4 text-auxiliary" />
+                  </div>
+                  <div>
+                    Você paga{' '}
+                    <span className="font-bold text-foreground">
+                      {priceFormatter.format(
+                        sale.price / (100 - sale.cashback.value),
+                      )}{' '}
+                    </span>
+                    à vista
+                    {sale.installments && sale.totalInstallmentPrice && (
+                      <span>
+                        {' '}
+                        ou{' '}
+                        <span className="font-bold text-foreground">
+                          {priceFormatter.format(
+                            sale.totalInstallmentPrice /
+                              (100 - sale.cashback.value),
+                          )}
+                        </span>{' '}
+                        em até{' '}
+                        <span className="font-bold text-foreground">
+                          {sale.installments}x
+                        </span>{' '}
+                        e recebe{' '}
+                        <span className="font-bold text-foreground">
+                          {sale.cashback.value}%
+                        </span>{' '}
+                        de cashback
+                      </span>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
 
             {sale.coupon && <CouponModal coupon={{ code: sale.coupon }} />}
@@ -170,27 +208,17 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
               </a>
             </div>
             {sale.productSlug && (
-              <>
-                <Separator />
-                <Link
-                  href={`/${sale.category.slug}/${sale.productSlug}`}
-                  className={cn(
-                    buttonVariants(),
-                    'flex h-10 rounded-xl font-semibold',
-                  )}
-                  id="product_view_from_sale_page"
-                >
-                  {/* <Icons.StarFilled
-                  strokeWidth={3}
-                  className="mr-2 h-4 w-4 text-auxiliary"
-                /> */}
-                  VISUALIZAR PRODUTO
-                  <Icons.ChevronRight
-                    strokeWidth={3}
-                    className="ml-2 h-4 w-4"
-                  />
-                </Link>
-              </>
+              <Link
+                href={`/${sale.category.slug}/${sale.productSlug}`}
+                className={cn(
+                  buttonVariants(),
+                  'flex h-10 rounded-xl font-semibold',
+                )}
+                id="product_view_from_sale_page"
+              >
+                VISUALIZAR PRODUTO
+                <Icons.ChevronRight strokeWidth={3} className="ml-2 h-4 w-4" />
+              </Link>
             )}
           </div>
         </section>

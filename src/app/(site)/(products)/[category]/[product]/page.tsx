@@ -1,5 +1,4 @@
 import { getClient } from '@/lib/apollo'
-import { gql } from '@apollo/client'
 import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
@@ -38,6 +37,7 @@ import type {
 } from '@/types'
 import { couponFormatter, priceFormatter } from '@/utils/formatter'
 import { priceCalculator } from '@/utils/price-calculator'
+import { gql } from '@apollo/client'
 
 const GET_PRODUCT = gql`
   query GetProduct($productInput: GetProductInput!) {
@@ -149,8 +149,8 @@ export async function generateMetadata({ params }: ProductPageProps) {
   return {
     title: product.name,
     description: `${product.category.name}${
-      product.subcategory?.name ? ` ${product.subcategory.name} -` : ''
-    } ${product.name}`,
+      product.subcategory?.name ? ` ${product.subcategory.name}` : ''
+    } - ${product.name}`,
     alternates: {
       canonical: `/${[product.category.slug]}/${product.slug}`,
     },
@@ -266,6 +266,55 @@ export default async function ProductPage({ params }: ProductPageProps) {
                           </strong>
                         </span>
                       )}
+                    {bestDeal.cashback && (
+                      <div className="flex items-center gap-x-2 rounded-xl border p-2 text-sm text-muted-foreground">
+                        <div>
+                          <Icons.AlertCircle className="h-4 w-4 text-auxiliary" />
+                        </div>
+                        <div>
+                          Você paga{' '}
+                          <span className="font-bold text-foreground">
+                            {priceFormatter.format(
+                              priceCalculator(
+                                bestDeal.price,
+                                bestDeal.coupon?.availability
+                                  ? bestDeal.coupon.discount
+                                  : undefined,
+                                undefined,
+                              ) / 100,
+                            )}{' '}
+                          </span>
+                          à vista
+                          {bestDeal.installments &&
+                            bestDeal.totalInstallmentPrice && (
+                              <span>
+                                {' '}
+                                ou{' '}
+                                <span className="font-bold text-foreground">
+                                  {priceFormatter.format(
+                                    priceCalculator(
+                                      bestDeal.totalInstallmentPrice,
+                                      bestDeal.coupon?.availability
+                                        ? bestDeal.coupon.discount
+                                        : undefined,
+                                      undefined,
+                                    ) / 100,
+                                  )}
+                                </span>{' '}
+                                em até{' '}
+                                <span className="font-bold text-foreground">
+                                  {bestDeal.installments}x
+                                </span>{' '}
+                                e recebe{' '}
+                                <span className="font-bold text-foreground">
+                                  {bestDeal.cashback.value}%
+                                </span>{' '}
+                                de cashback
+                              </span>
+                            )}
+                        </div>
+                      </div>
+                    )}
                   </div>
                   {bestDeal.coupon?.availability && (
                     <CouponModal
