@@ -76,6 +76,17 @@ export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="pt-BR" suppressHydrationWarning>
       <head>
+        <Script id="lomadee" type="text/javascript">
+          {`
+var lmdimgpixel = document.createElement('img');
+lmdimgpixel.src = '//secure.lomadee.com/pub.png?pid=23284322';
+lmdimgpixel.id = 'lmd-verification-pixel-23284322';
+lmdimgpixel.style = 'display:none';
+
+var elmt = document.getElementsByTagName('body')[0];
+elmt.appendChild(lmdimgpixel);
+`}
+        </Script>
         <Script id="google-tag-manager">
           {`(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
