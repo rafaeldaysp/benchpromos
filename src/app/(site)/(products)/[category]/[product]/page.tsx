@@ -1,4 +1,6 @@
 import { getClient } from '@/lib/apollo'
+import { gql } from '@apollo/client'
+import { type Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
@@ -8,9 +10,9 @@ import { AlertCard } from '@/components/alert-price'
 import { CashbackModal } from '@/components/cashback-modal'
 import { CouponModal } from '@/components/coupon-modal'
 import { Icons } from '@/components/icons'
+import { ProductBenchmarks } from '@/components/product-benchmarks'
 import { ProductNavbar } from '@/components/product-navbar'
 import PriceChart from '@/components/product-price-chart'
-import { ProductBenchmarks } from '@/components/product-benchmarks'
 import { Badge } from '@/components/ui/badge'
 import { buttonVariants } from '@/components/ui/button'
 import {
@@ -25,6 +27,7 @@ import { Label } from '@/components/ui/label'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
 import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table'
+import { siteConfig } from '@/config/site'
 import { cn } from '@/lib/utils'
 import type {
   Benchmark,
@@ -37,7 +40,6 @@ import type {
 } from '@/types'
 import { couponFormatter, priceFormatter } from '@/utils/formatter'
 import { priceCalculator } from '@/utils/price-calculator'
-import { gql } from '@apollo/client'
 
 const GET_PRODUCT = gql`
   query GetProduct($productInput: GetProductInput!) {
@@ -146,15 +148,24 @@ export async function generateMetadata({ params }: ProductPageProps) {
       description: 'Essa página não foi encontrada.',
     }
 
-  return {
+  const metadata: Metadata = {
     title: product.name,
-    description: `${product.category.name}${
-      product.subcategory?.name ? ` ${product.subcategory.name}` : ''
-    } - ${product.name}`,
+    description: `${product.category.name} | ${product.name}`,
     alternates: {
       canonical: `/${[product.category.slug]}/${product.slug}`,
     },
+    openGraph: {
+      type: 'website',
+      locale: 'pt_BR',
+      title: product.name,
+      description: `${product.category.name} | ${product.name}`,
+      url: siteConfig.url + `/${product.category.slug}/${product.slug}`,
+      images: [product.imageUrl],
+      siteName: siteConfig.name,
+    },
   }
+
+  return metadata
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {

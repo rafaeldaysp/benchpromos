@@ -1,7 +1,9 @@
 import { gql } from '@apollo/client'
+import { type Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
 import { Products } from '@/components/products'
+import { siteConfig } from '@/config/site'
 import { getClient } from '@/lib/apollo'
 import type {
   Cashback,
@@ -92,6 +94,7 @@ export async function generateMetadata({ params }: ProductsPageProps) {
     query GetCategory($categoryId: ID!) {
       category(id: $categoryId) {
         name
+        slug
       }
     }
   `
@@ -99,6 +102,7 @@ export async function generateMetadata({ params }: ProductsPageProps) {
   const { data: categoryData } = await getClient().query<{
     category: {
       name: string
+      slug: string
     }
   }>({
     query: GET_CATEGORY_METADATA,
@@ -117,10 +121,20 @@ export async function generateMetadata({ params }: ProductsPageProps) {
     }
   }
 
-  return {
+  const metadata: Metadata = {
     title: categoryName,
-    description: `Acompanhe os preços de ${categoryName}, veja históricos e crie alertas.`,
+    description: `Acompanhe os preços de ${categoryName}, veja os históricos dos produtos e crie seus alertas.`,
+    openGraph: {
+      type: 'website',
+      locale: 'pt_BR',
+      title: categoryName,
+      description: `Acompanhe os preços de ${categoryName}, veja os históricos dos produtos e crie seus alertas.`,
+      url: siteConfig.url + `/${categoryData.category.slug}`,
+      siteName: siteConfig.name,
+    },
   }
+
+  return metadata
 }
 
 export default async function ProductsPage({
