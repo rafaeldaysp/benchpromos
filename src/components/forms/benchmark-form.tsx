@@ -30,6 +30,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../ui/select'
+import { Checkbox } from '../ui/checkbox'
 
 const CREATE_BENCHMARK = gql`
   mutation CreateBenchmark($input: CreateBenchmarkInput!) {
@@ -108,13 +109,13 @@ export function BenchmarkForm({
     },
   )
 
-  async function onSubmit({ name, parentId }: Inputs) {
+  async function onSubmit({ parentId, ...data }: Inputs) {
     await mutateBenchmark({
       variables: {
         input: {
           id: benchmark?.id,
-          name,
           parentId: parentId === 'null' ? null : parentId,
+          ...data,
         },
       },
     })
@@ -163,6 +164,23 @@ export function BenchmarkForm({
                 </SelectContent>
               </Select>
               <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="hidden"
+          render={({ field }) => (
+            <FormItem className="flex flex-row items-start justify-between space-x-3 space-y-0">
+              <FormLabel>Privado</FormLabel>
+              <FormControl>
+                <Checkbox
+                  checked={field.value}
+                  // @ts-expect-error ...
+                  onCheckedChange={field.onChange}
+                />
+              </FormControl>
             </FormItem>
           )}
         />

@@ -129,6 +129,7 @@ export type Benchmark = {
   id: string
   name: string
   slug: string
+  hidden: boolean
   parentId?: string
 }
 

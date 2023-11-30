@@ -59,7 +59,7 @@ export async function generateMetadata({ params }: SalePageProps) {
       locale: 'pt_BR',
       title: sale.title,
       description: `${sale.category.name} | ${sale.title}`,
-      url: siteConfig.url + `/promocao/${[sale.slug]}/${sale.id}`,
+      url: siteConfig.url + `/promocao/${sale.slug}/${sale.id}`,
       images: [sale.imageUrl],
       siteName: siteConfig.name,
     },

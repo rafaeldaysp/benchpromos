@@ -15,6 +15,7 @@ const GET_BENCHMARKS = gql`
       name
       slug
       parentId
+      hidden
     }
     results(pagination: $pagination, benchmarksSlugs: $benchmarksSlugs) {
       count

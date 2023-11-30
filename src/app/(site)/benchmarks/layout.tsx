@@ -6,6 +6,7 @@ import { BenchmarkExplorer } from '@/components/benchmarks/benchmark-explorer'
 import { ProductSelect } from '@/components/benchmarks/product-select'
 import { Separator } from '@/components/ui/separator'
 import { type Benchmark, type Product } from '@/types'
+import { getCurrentUser } from '@/app/_actions/user'
 
 const GET_BENCHMARKS = gql`
   query GetBenchmarks(
@@ -17,6 +18,7 @@ const GET_BENCHMARKS = gql`
       name
       slug
       childrenCount
+      hidden
     }
     productsList: products(getProductsInput: $getProductsInput) {
       products {
@@ -47,6 +49,8 @@ export const metadata: Metadata = {
 export default async function BenchmarksLayout({
   children,
 }: SettingsLayoutProps) {
+  const user = await getCurrentUser()
+
   const { data } = await getClient().query<{
     benchmarks: (Benchmark & { childrenCount: number })[]
     productsList: {
@@ -72,6 +76,11 @@ export default async function BenchmarksLayout({
   const benchmarks = data?.benchmarks ?? []
   const products = data?.productsList.products ?? []
 
+  const filteredHiddenBenchmarks = benchmarks.filter(
+    (benchmark) =>
+      !benchmark.hidden || (benchmark.hidden && user?.role === 'ADMIN'),
+  )
+
   return (
     <div className="space-y-6 px-4 py-8 sm:container">
       <div className="space-y-0.5">
@@ -85,7 +94,9 @@ export default async function BenchmarksLayout({
         <aside className="space-y-4 sm:max-w-5xl">
           <ProductSelect products={products} />
           <Separator className="hidden lg:block" />
-          {benchmarks.length > 0 && <BenchmarkExplorer root={benchmarks} />}
+          {benchmarks.length > 0 && (
+            <BenchmarkExplorer root={filteredHiddenBenchmarks} />
+          )}
         </aside>
         {children}
       </div>
