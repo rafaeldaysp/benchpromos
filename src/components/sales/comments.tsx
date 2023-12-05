@@ -267,10 +267,15 @@ export function Comment({ saleId, comment, replyToId, user }: CommentProps) {
                 : `Editado ${dayjs(comment.updatedAt).fromNow()}`}
             </time>
           </header>
-          <div className="">
+          <div className="overflow-x-hidden">
             {mode === 'text' ? (
-              <p className="overflow-x-hidden text-sm leading-tight">
-                {comment.text}
+              <p className="break-words text-sm leading-tight">
+                {comment.text
+                  .split(' ')
+                  .map((word) =>
+                    word.length > 25 ? word.slice(0, 22) + '...' : word,
+                  )
+                  .join(' ')}
               </p>
             ) : (
               <div>
