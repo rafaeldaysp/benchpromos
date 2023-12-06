@@ -2,29 +2,48 @@ import { getClient } from '@/lib/apollo'
 import { gql } from '@apollo/client'
 import { type Metadata } from 'next'
 
+import { getCurrentUser } from '@/app/_actions/user'
 import { BenchmarkExplorer } from '@/components/benchmarks/benchmark-explorer'
+import { BenchmarkFilters } from '@/components/benchmarks/benchmark-filters'
 import { ProductSelect } from '@/components/benchmarks/product-select'
 import { Separator } from '@/components/ui/separator'
-import { type Benchmark, type Product } from '@/types'
-import { getCurrentUser } from '@/app/_actions/user'
+import { type Benchmark, type Filter, type Product } from '@/types'
 
 const GET_BENCHMARKS = gql`
   query GetBenchmarks(
     $getBenchmarksInput: GetBenchmarksInput
-    $getProductsInput: GetProductsInput
+    $includeProductsWithBenchmarks: Boolean
   ) {
     benchmarks(getBenchmarksInput: $getBenchmarksInput) {
       id
       name
       slug
       childrenCount
-      hidden
     }
-    productsList: products(getProductsInput: $getProductsInput) {
+    categories(includeProductsWithBenchmarks: $includeProductsWithBenchmarks) {
+      id
+      name
+      filters {
+        name
+        slug
+        options {
+          id
+          slug
+          priority
+          value
+        }
+      }
       products {
         name
         imageUrl
         slug
+        filters {
+          option {
+            id
+            slug
+            priority
+          }
+        }
         category {
           name
         }
@@ -53,28 +72,28 @@ export default async function BenchmarksLayout({
 
   const { data } = await getClient().query<{
     benchmarks: (Benchmark & { childrenCount: number })[]
-    productsList: {
+    categories: {
+      id: string
+      name: string
+      filters: Pick<Filter, 'name' | 'slug' | 'options'>[]
       products: (Pick<Product, 'name' | 'slug' | 'imageUrl'> & {
         category: { name: string }
         subcategory: { name: string }
       })[]
-    }
+    }[]
   }>({
     query: GET_BENCHMARKS,
     variables: {
       getBenchmarksInput: {
         parentId: null,
       },
-      getProductsInput: {
-        hasBenchmark: true,
-        sortBy: 'relevance',
-      },
+      includeProductsWithBenchmarks: true,
     },
     errorPolicy: 'all',
   })
 
   const benchmarks = data?.benchmarks ?? []
-  const products = data?.productsList.products ?? []
+  const categories = data?.categories ?? []
 
   const filteredHiddenBenchmarks = benchmarks.filter(
     (benchmark) =>
@@ -92,7 +111,17 @@ export default async function BenchmarksLayout({
       <Separator />
       <div className="space-y-4 lg:grid lg:grid-cols-5 lg:space-x-12 lg:space-y-0">
         <aside className="space-y-4 sm:max-w-5xl">
-          <ProductSelect products={products} />
+          {categories
+            .filter((category) => category.products.length > 0)
+            .map((category) => (
+              <div className="space-y-2" key={category.id}>
+                <ProductSelect
+                  products={category.products}
+                  categoryName={category.name}
+                />
+                <BenchmarkFilters filters={category.filters} />
+              </div>
+            ))}
           <Separator className="hidden lg:block" />
           {benchmarks.length > 0 && (
             <BenchmarkExplorer root={filteredHiddenBenchmarks} />

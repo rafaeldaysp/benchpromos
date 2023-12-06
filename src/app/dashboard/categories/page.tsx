@@ -17,6 +17,7 @@ const GET_CATEGORIES = gql`
       filters {
         id
         name
+        applyToBenchmarks
         options {
           id
           value

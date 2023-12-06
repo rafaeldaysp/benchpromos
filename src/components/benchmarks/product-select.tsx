@@ -42,9 +42,10 @@ interface ProductSelectProps {
     category: { name: string }
     subcategory: { name: string }
   }[]
+  categoryName: string
 }
 
-export function ProductSelect({ products }: ProductSelectProps) {
+export function ProductSelect({ products, categoryName }: ProductSelectProps) {
   const [isOpen, setIsOpen] = React.useState(false)
   const [query, setQuery] = React.useState('')
   const debouncedQuery = useDebounce(query, 200)
@@ -96,10 +97,10 @@ export function ProductSelect({ products }: ProductSelectProps) {
       <Button
         onClick={() => setIsOpen(true)}
         variant="outline"
-        className="w-full border-dashed lg:px-2"
+        className="w-full lg:px-2"
       >
-        <Icons.PlusCircle className="mr-2 h-4 w-4" />
-        Produtos
+        <Icons.Search className="mr-2 h-4 w-4" />
+        {categoryName}
         {selectedProducts.length > 0 && (
           <>
             <Separator orientation="vertical" className="mx-2 h-4" />
@@ -157,7 +158,7 @@ export function ProductSelect({ products }: ProductSelectProps) {
         }}
       >
         <CommandInput
-          placeholder="Selecionar produtos..."
+          placeholder="Selecionar..."
           value={query}
           onValueChange={setQuery}
         />

@@ -6,6 +6,7 @@ import * as React from 'react'
 import { toast } from 'sonner'
 
 import { DashboardItemCard } from '@/components/dashboard-item-card'
+import { FilterForm } from '@/components/forms/filter-form'
 import { Icons } from '@/components/icons'
 import {
   AlertDialog,
@@ -37,24 +38,9 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet'
 import { env } from '@/env.mjs'
+import { useFormStore } from '@/hooks/use-form-store'
 import { cn } from '@/lib/utils'
 import type { Category, Filter } from '@/types'
-
-const CREATE_FILTER = gql`
-  mutation CreateFilter($input: CreateFilterInput!) {
-    createFilter(createFilterInput: $input) {
-      id
-    }
-  }
-`
-
-const UPDATE_FILTER = gql`
-  mutation UpdateFilter($input: UpdateFilterInput!) {
-    updateFilter(updateFilterInput: $input) {
-      id
-    }
-  }
-`
 
 const DELETE_FILTER = gql`
   mutation DeleteFilter($filterId: ID!) {
@@ -178,36 +164,21 @@ interface FilterModalProps {
 }
 
 export function FilterModal({ categoryId, filter }: FilterModalProps) {
-  const [filterInput, setFilterInput] = React.useState(filter?.name ?? '')
-  const router = useRouter()
-
-  const [mutateFilter, { loading: isLoading }] = useMutation(
-    !filter ? CREATE_FILTER : UPDATE_FILTER,
-    {
-      context: {
-        headers: {
-          'api-key': env.NEXT_PUBLIC_API_KEY,
-        },
-      },
-      onError(error, _clientOptions) {
-        toast.error(error.message)
-      },
-      onCompleted(_data, _clientOptions) {
-        const message = !filter?.id
-          ? 'Filtro cadastrado com sucesso.'
-          : 'Filtro atualizado com sucesso.'
-
-        setFilterInput('')
-
-        toast.success(message)
-
-        router.refresh()
-      },
-    },
-  )
+  const { openDialogs, setOpenDialog } = useFormStore()
 
   return (
-    <Dialog>
+    <Dialog
+      open={
+        filter
+          ? openDialogs[`filterUpdateForm.${filter?.id}`]
+          : openDialogs['filterCreateForm']
+      }
+      onOpenChange={(open) =>
+        filter
+          ? setOpenDialog(`filterUpdateForm.${filter?.id}`, open)
+          : setOpenDialog('filterCreateForm', open)
+      }
+    >
       <DialogTrigger asChild>
         {!filter ? (
           <Button variant="outline">Adicionar</Button>
@@ -224,30 +195,11 @@ export function FilterModal({ categoryId, filter }: FilterModalProps) {
           </DialogTitle>
           <DialogDescription></DialogDescription>
         </DialogHeader>
-        <form className="flex gap-x-2">
-          <Input
-            placeholder="Processador"
-            value={filterInput}
-            onChange={(e) => setFilterInput(e.target.value)}
-          />
-          <Button
-            type="submit"
-            disabled={!filterInput || isLoading}
-            onClick={() =>
-              mutateFilter({
-                variables: {
-                  input: {
-                    id: filter?.id,
-                    name: filterInput,
-                    categoryId,
-                  },
-                },
-              })
-            }
-          >
-            {!filter ? 'Cadastrar' : 'Atualizar'}
-          </Button>
-        </form>
+        <FilterForm
+          categoryId={categoryId}
+          filter={filter}
+          mode={filter ? 'update' : 'create'}
+        />
       </DialogContent>
     </Dialog>
   )

@@ -108,12 +108,12 @@ function File({ file }: { file: Benchmark }) {
   const params = useSearchParams()
 
   const products = params.get('products')
-  const concated = products ? '?'.concat(createQueryString({ products })) : ''
+  const queryString = '?'.concat(createQueryString({ products }))
 
   return (
     <Link
       key={file.id}
-      href={`/benchmarks/${file.slug}`.concat(concated)}
+      href={`/benchmarks/${file.slug}`.concat(queryString)}
       className={cn(
         buttonVariants({ variant: 'ghost' }),
         'h-fit w-full justify-start space-x-2 px-2 pl-8',

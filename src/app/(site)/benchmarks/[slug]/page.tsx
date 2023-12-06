@@ -5,10 +5,15 @@ import { BenchmarkChart } from '@/components/benchmarks/benchmark-chart'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 const GET_BENCHMARK_RESULTS = gql`
-  query GetBenchmarks($benchmarkSlug: ID, $productsSlugs: [String]) {
+  query GetBenchmarks(
+    $benchmarkSlug: ID
+    $productsSlugs: [String]
+    $filters: [FilterInput!]
+  ) {
     benchmarkResults(
       benchmarkSlug: $benchmarkSlug
       productsSlugs: $productsSlugs
+      filters: $filters
     ) {
       result
       description
@@ -31,7 +36,7 @@ interface BenchmarkPageProps {
     slug: string
   }
   searchParams: {
-    products: string
+    [key: string]: string | undefined
   }
 }
 
@@ -39,7 +44,16 @@ export default async function BenchmarkPage({
   params: { slug },
   searchParams,
 }: BenchmarkPageProps) {
-  const { products: productsString } = searchParams
+  const { products: productsString, ...filters } = searchParams
+
+  const filtersInput = Object.entries(filters)
+    .filter(([, value]) => value)
+    .map(([key, value]) => {
+      return {
+        slug: key,
+        options: value!.split('.'),
+      }
+    })
 
   const productsArray = productsString?.split('.')
 
@@ -63,6 +77,7 @@ export default async function BenchmarkPage({
     variables: {
       productsSlugs: productsArray,
       benchmarkSlug: slug,
+      filters: filtersInput,
     },
     errorPolicy: 'ignore',
   })
