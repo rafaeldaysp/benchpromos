@@ -42,7 +42,7 @@ interface ProductSelectProps {
     category: { name: string }
     subcategory: { name: string }
   }[]
-  categoryName: string
+  categoryName?: string
 }
 
 export function ProductSelect({ products, categoryName }: ProductSelectProps) {
@@ -100,7 +100,7 @@ export function ProductSelect({ products, categoryName }: ProductSelectProps) {
         className="w-full lg:px-2"
       >
         <Icons.Search className="mr-2 h-4 w-4" />
-        {categoryName}
+        {categoryName ?? 'Buscar produtos...'}
         {selectedProducts.length > 0 && (
           <>
             <Separator orientation="vertical" className="mx-2 h-4" />
