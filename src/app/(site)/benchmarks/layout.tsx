@@ -114,12 +114,14 @@ export default async function BenchmarksLayout({
           {categories
             .filter((category) => category.products.length > 0)
             .map((category) => (
-              <div className="space-y-2" key={category.id}>
+              <div className="space-y-1" key={category.id}>
                 <ProductSelect
                   products={category.products}
                   categoryName={category.name}
                 />
-                <BenchmarkFilters filters={category.filters} />
+                {category.filters.length > 0 && (
+                  <BenchmarkFilters filters={category.filters} />
+                )}
               </div>
             ))}
           <Separator className="hidden lg:block" />

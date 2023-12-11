@@ -140,17 +140,27 @@ export function ProductSelect({ products, categoryName }: ProductSelectProps) {
         onOpenChange={(value) => {
           setIsOpen(value)
           handleSelect(() => {
-            if (selectedProducts.length === products.length) {
-              router.push(
-                `${pathname}?${createQueryString({ products: null })}`,
-              )
-              return
-            }
+            // if (
+            //   selectedProducts.length === products.length &&
+            //   products.length > 1
+            // ) {
+            //   router.push(
+            //     `${pathname}?${createQueryString({ products: null })}`,
+            //   )
+            //   return
+            // }
+            const currentProducts = (
+              searchParams.get('products')?.split('.') ?? []
+            ).filter((param) => !products.some((p) => p.slug === param))
+
             router.push(
               `${pathname}?${createQueryString({
                 products:
-                  selectedProducts.length > 0
-                    ? selectedProducts.map((s) => s.slug).join('.')
+                  selectedProducts.length + currentProducts.length > 0
+                    ? [
+                        ...currentProducts,
+                        ...selectedProducts.map((s) => s.slug),
+                      ].join('.')
                     : null,
               })}`,
             )
@@ -237,16 +247,7 @@ export function ProductSelect({ products, categoryName }: ProductSelectProps) {
               variant={'ghost'}
               className="px-2"
               size={'sm'}
-              onClick={() =>
-                setSelectedProducts((prev) => [
-                  ...prev,
-                  ...displayedProducts.filter((product) =>
-                    prev.filter(
-                      (previusProduct) => previusProduct.slug !== product.slug,
-                    ),
-                  ),
-                ])
-              }
+              onClick={() => setSelectedProducts(products)}
             >
               <Icons.PlusCircle className="mr-2 h-4 w-4" />
               Todos
@@ -268,17 +269,24 @@ export function ProductSelect({ products, categoryName }: ProductSelectProps) {
             size={'sm'}
             onClick={() =>
               handleSelect(() => {
-                if (selectedProducts.length === products.length) {
-                  router.push(
-                    `${pathname}?${createQueryString({ products: null })}`,
-                  )
-                  return
-                }
+                // if (selectedProducts.length === products.length) {
+                //   router.push(
+                //     `${pathname}?${createQueryString({ products: null })}`,
+                //   )
+                //   return
+                // }
+                const currentProducts = (
+                  searchParams.get('products')?.split('.') ?? []
+                ).filter((param) => !products.some((p) => p.slug === param))
+
                 router.push(
                   `${pathname}?${createQueryString({
                     products:
-                      selectedProducts.length > 0
-                        ? selectedProducts.map((s) => s.slug).join('.')
+                      selectedProducts.length + currentProducts.length > 0
+                        ? [
+                            ...currentProducts,
+                            ...selectedProducts.map((s) => s.slug),
+                          ].join('.')
                         : null,
                   })}`,
                 )
