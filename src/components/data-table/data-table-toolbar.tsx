@@ -44,12 +44,6 @@ interface DataTableToolbarProps<TData> {
 export function DataTableToolbar<TData>({
   table,
 }: DataTableToolbarProps<TData>) {
-  const params = useSearchParams()
-  const selectedProducts = params.get('products')?.split('.')
-  // const pathname = usePathname()
-  // const router = useRouter()
-  // const { createQueryString } = useQueryString()
-
   const { data } = useSuspenseQuery<{
     productsList: {
       products: (Pick<Product, 'name' | 'slug' | 'imageUrl'> & {
@@ -74,8 +68,6 @@ export function DataTableToolbar<TData>({
   const products = data?.productsList.products ?? []
   const benchmarks = data?.benchmarks ?? []
 
-  // const isFiltered = table.getState().columnFilters.length > 0
-
   const benchmarkOptions = benchmarks.map((benchmark) => {
     return {
       label: benchmark.name,
@@ -83,11 +75,6 @@ export function DataTableToolbar<TData>({
       count: benchmark.resultsCount,
     }
   })
-
-  React.useEffect(() => {
-    table.getColumn('product')?.setFilterValue(selectedProducts)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [params])
 
   return (
     <div className="flex items-center justify-between">
@@ -101,22 +88,6 @@ export function DataTableToolbar<TData>({
             options={benchmarkOptions}
           />
         )}
-        {/* {isFiltered && (
-          <Button
-            variant="ghost"
-            onClick={() => {
-              table.resetColumnFilters()
-              router.push(
-                `${pathname}?${createQueryString({ products: null })}`,
-              )
-            }}
-            className="px-2 lg:px-3"
-          >
-            <span className="hidden sm:block">Limpar</span>
-
-            <X className="h-4 w-4 sm:ml-2" />
-          </Button>
-        )} */}
       </div>
       <DataTableViewOptions table={table} />
     </div>

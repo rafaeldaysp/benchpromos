@@ -9,6 +9,7 @@ const GET_BENCHMARKS = gql`
   query GetBenchmarks(
     $pagination: PaginationInput
     $benchmarksSlugs: [String!]
+    $productsSlugs: [String!]
   ) {
     benchmarks {
       id
@@ -17,7 +18,11 @@ const GET_BENCHMARKS = gql`
       parentId
       hidden
     }
-    results(pagination: $pagination, benchmarksSlugs: $benchmarksSlugs) {
+    results(
+      pagination: $pagination
+      benchmarksSlugs: $benchmarksSlugs
+      productsSlugs: $productsSlugs
+    ) {
       count
       list {
         id
@@ -44,15 +49,17 @@ interface BenchmarksProps {
     page: string
     limit: string
     selected: string
+    products: string
   }
 }
 
 export default async function BenchmarksDashboardPage({
   searchParams,
 }: BenchmarksProps) {
-  const { page, limit, selected } = searchParams
+  const { page, limit, selected, products } = searchParams
 
   const benchmarksSlugs = selected?.split('.')
+  const productsSlugs = products?.split('.')
 
   const { data } = await getClient().query<{
     benchmarks: Benchmark[]
@@ -71,6 +78,7 @@ export default async function BenchmarksDashboardPage({
         limit: Number(limit ?? 10),
       },
       benchmarksSlugs,
+      productsSlugs,
     },
   })
   const benchmarks = data.benchmarks
