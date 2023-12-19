@@ -1,6 +1,6 @@
 'use client'
 
-import { gql, useMutation } from '@apollo/client'
+import { gql, useMutation, useSuspenseQuery } from '@apollo/client'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import * as React from 'react'
 import { toast } from 'sonner'
@@ -29,6 +29,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
+import { ScrollArea } from '@/components/ui/scroll-area'
 import {
   Select,
   SelectContent,
@@ -46,11 +47,20 @@ import {
 import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
 import { useQueryString } from '@/hooks/use-query-string'
+import { cn } from '@/lib/utils'
 import type { Category, Filter, Product } from '@/types'
 
 const DELETE_PRODUCT = gql`
   mutation DeleteProduct($productId: ID!) {
     removeProduct(id: $productId) {
+      id
+    }
+  }
+`
+
+const UPADTE_SUGGESTIONS = gql`
+  mutation ($updateProductInput: UpdateProductInput!) {
+    updateProduct(updateProductInput: $updateProductInput) {
       id
     }
   }
@@ -89,6 +99,10 @@ export function ProductsMain({ filters }: ProductsMainProps) {
     }
   >()
 
+  const [productSuggestions, setProductSuggestions] = React.useState<
+    (Product & { category: { name: string } })[]
+  >([])
+
   const [deleteProduct] = useMutation(DELETE_PRODUCT, {
     context: {
       headers: {
@@ -104,6 +118,24 @@ export function ProductsMain({ filters }: ProductsMainProps) {
     },
   })
 
+  const [updateSuggestions, { loading: isUpdatind }] = useMutation(
+    UPADTE_SUGGESTIONS,
+    {
+      context: {
+        headers: {
+          'api-key': env.NEXT_PUBLIC_API_KEY,
+        },
+      },
+      refetchQueries: ['GetProductSuggestions'],
+      onError(error, _clientOptions) {
+        toast.error(error.message)
+      },
+      onCompleted(_data, _clientOptions) {
+        toast.success('Sugestões atualizadas com sucesso.')
+      },
+    },
+  )
+
   const categoryFilters = React.useMemo(
     () =>
       filters.filter(
@@ -115,7 +147,7 @@ export function ProductsMain({ filters }: ProductsMainProps) {
   return (
     <div className="space-y-8">
       {/* Products Actions */}
-      <div className="flex justify-between gap-x-2">
+      <div className="flex flex-col justify-between gap-2 sm:flex-row">
         <Select
           defaultValue={
             selectOptions.find((option) => option.value === initialSorting)
@@ -131,10 +163,10 @@ export function ProductsMain({ filters }: ProductsMainProps) {
             })
           }}
         >
-          <SelectTrigger className="w-60">
+          <SelectTrigger className="w-full sm:w-60">
             <SelectValue placeholder="Selecione a ordem dos produtos" />
           </SelectTrigger>
-          <SelectContent className="w-60">
+          <SelectContent className="w-full sm:w-60">
             {selectOptions.map((option) => (
               <SelectItem key={option.value} value={option.value}>
                 {option.label}
@@ -143,26 +175,51 @@ export function ProductsMain({ filters }: ProductsMainProps) {
           </SelectContent>
         </Select>
 
-        <div className="flex justify-end gap-x-2">
+        <div className="flex flex-col justify-end gap-2 sm:flex-row">
           {selectedProduct && (
-            <Dialog
-              open={openDialogs['productFiltersForm']}
-              onOpenChange={(open) => setOpenDialog('productFiltersForm', open)}
-            >
-              <DialogTrigger asChild>
-                <Button variant="outline">Editar Filtros</Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>FILTROS</DialogTitle>
-                </DialogHeader>
-                <ProductFiltersForm
-                  categoryFilters={categoryFilters}
-                  productId={selectedProduct.id}
-                  productFilters={selectedProduct.filters}
-                />
-              </DialogContent>
-            </Dialog>
+            <>
+              <Button
+                variant="outline"
+                disabled={isUpdatind}
+                onClick={() =>
+                  updateSuggestions({
+                    variables: {
+                      updateProductInput: {
+                        id: selectedProduct.id,
+                        suggestionSlugs: productSuggestions.map(
+                          (product) => product.slug,
+                        ),
+                      },
+                    },
+                  })
+                }
+              >
+                Salvar Sugestões
+                {isUpdatind && (
+                  <Icons.Spinner className="h-4 w-4 animate-spin" />
+                )}
+              </Button>
+              <Dialog
+                open={openDialogs['productFiltersForm']}
+                onOpenChange={(open) =>
+                  setOpenDialog('productFiltersForm', open)
+                }
+              >
+                <DialogTrigger asChild>
+                  <Button variant="outline">Editar Filtros</Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>FILTROS</DialogTitle>
+                  </DialogHeader>
+                  <ProductFiltersForm
+                    categoryFilters={categoryFilters}
+                    productId={selectedProduct.id}
+                    productFilters={selectedProduct.filters}
+                  />
+                </DialogContent>
+              </Dialog>
+            </>
           )}
 
           <Sheet
@@ -205,6 +262,13 @@ export function ProductsMain({ filters }: ProductsMainProps) {
         </DashboardItemCard.Root>
       )}
 
+      {selectedProduct && (
+        <Suggestions
+          slug={selectedProduct?.slug}
+          suggestions={productSuggestions}
+          setSuggestions={setProductSuggestions}
+        />
+      )}
       <DashboardProducts>
         {({ products }) =>
           products.map((product) => (
@@ -229,6 +293,18 @@ export function ProductsMain({ filters }: ProductsMainProps) {
               </DashboardItemCard.Content>
 
               <DashboardItemCard.Actions>
+                {selectedProduct && product.id !== selectedProduct.id && (
+                  <DashboardItemCard.Action
+                    icon={Icons.Plus}
+                    onClick={() =>
+                      setProductSuggestions((prev) => [
+                        ...prev.filter((p) => p.id !== product.id),
+                        product,
+                      ])
+                    }
+                  />
+                )}
+
                 <Sheet
                   open={openDialogs[`productUpdateForm.${product.id}`]}
                   onOpenChange={(open) =>
@@ -282,6 +358,94 @@ export function ProductsMain({ filters }: ProductsMainProps) {
           ))
         }
       </DashboardProducts>
+    </div>
+  )
+}
+
+const GET_SUGGESTIONS = gql`
+  query GetProductSuggestions($slug: ID!) {
+    productSuggestions(slug: $slug) {
+      id
+      slug
+      imageUrl
+      name
+      category {
+        name
+      }
+    }
+  }
+`
+
+function Suggestions({
+  slug,
+  suggestions,
+  setSuggestions,
+}: {
+  slug: string
+  suggestions: (Product & {
+    category: {
+      name: string
+    }
+  })[]
+  setSuggestions: React.Dispatch<
+    React.SetStateAction<
+      (Product & {
+        category: {
+          name: string
+        }
+      })[]
+    >
+  >
+}) {
+  const { data } = useSuspenseQuery<{
+    productSuggestions: (Product & { category: { name: string } })[]
+  }>(GET_SUGGESTIONS, {
+    variables: {
+      slug,
+    },
+  })
+  const serverProducts = data.productSuggestions
+  const products = suggestions
+
+  React.useEffect(() => {
+    setSuggestions(serverProducts)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [serverProducts])
+
+  if (suggestions.length === 0) return
+
+  return (
+    <div className="space-y-2">
+      <h2 className="text-sm font-semibold  ">Sugeridos • {products.length}</h2>
+      <ScrollArea
+        className={cn('rounded-md border', {
+          'h-[400px]': products.length > 4,
+        })}
+      >
+        {products.map((product) => (
+          <DashboardItemCard.Root key={product.id} className="cursor-pointer">
+            <DashboardItemCard.Image src={product.imageUrl} alt="" />
+
+            <DashboardItemCard.Content>
+              <p className="text-sm leading-7">{product.name}</p>
+              <span className="text-xs text-muted-foreground">
+                {product.category.name}
+              </span>
+            </DashboardItemCard.Content>
+
+            <DashboardItemCard.Actions>
+              <DashboardItemCard.Action
+                icon={Icons.Minus}
+                onClick={() =>
+                  setSuggestions((prev) =>
+                    prev.filter((p) => p.slug !== product.slug),
+                  )
+                }
+              />
+            </DashboardItemCard.Actions>
+          </DashboardItemCard.Root>
+        ))}
+      </ScrollArea>
     </div>
   )
 }

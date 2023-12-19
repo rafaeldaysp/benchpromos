@@ -13,6 +13,7 @@ import { Icons } from '@/components/icons'
 import { ProductBenchmarks } from '@/components/product-benchmarks'
 import { ProductNavbar } from '@/components/product-navbar'
 import PriceChart from '@/components/product-price-chart'
+import { ProductSuggestions } from '@/components/product-suggestions'
 import { Badge } from '@/components/ui/badge'
 import { buttonVariants } from '@/components/ui/button'
 import {
@@ -23,7 +24,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { Label } from '@/components/ui/label'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
 import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table'
@@ -93,6 +93,7 @@ const GET_PRODUCT = gql`
           slug
         }
       }
+      suggestionSlugs
     }
   }
 `
@@ -381,7 +382,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
             token={token}
           />
 
-          <Card>
+          {/* <Card>
             <CardContent className="py-4">
               <div className="flex items-start space-x-2">
                 <Icons.LineChart className="h-4 w-4 text-auxiliary" />
@@ -401,7 +402,10 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 Ver histórico
               </Link>
             </CardFooter>
-          </Card>
+          </Card> */}
+          {product.suggestionSlugs.length > 0 && (
+            <ProductSuggestions slug={product.slug} />
+          )}
           {product.reviewUrl && (
             <Link
               href={'#review'}

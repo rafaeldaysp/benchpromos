@@ -50,6 +50,7 @@ const GET_PRODUCTS = gql`
             value
           }
         }
+        suggestionSlugs
       }
     }
   }

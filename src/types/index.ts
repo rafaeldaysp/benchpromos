@@ -32,6 +32,7 @@ export type Product = {
   slug: string
   recommended: boolean
   views: number
+  suggestionSlugs: string[]
   subcategoryId?: string
 }
 
