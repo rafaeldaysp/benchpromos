@@ -63,10 +63,10 @@ export default async function BenchmarkPage({
       productAlias: string
       unit: string
       description?: string
-      product: {
+      products: {
         name: string
         slug: string
-      }
+      }[]
       benchmark: {
         name: string
         slug: string

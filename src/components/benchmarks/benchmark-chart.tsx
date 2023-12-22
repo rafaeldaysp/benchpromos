@@ -1,7 +1,7 @@
 'use client'
 
 import { useTheme } from 'next-themes'
-import { useSearchParams } from 'next/navigation'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import * as React from 'react'
 import {
   Bar,
@@ -21,6 +21,7 @@ import Logo from '@/assets/full-logo-bench-promos.svg'
 import { useMediaQuery } from '@/hooks/use-media-query'
 import { cn } from '@/lib/utils'
 import Image from 'next/image'
+import { useQueryString } from '@/hooks/use-query-string'
 
 interface BenchmarkChartProps {
   results: {
@@ -28,15 +29,43 @@ interface BenchmarkChartProps {
     description?: string
     unit?: string
     productAlias: string
+    products: {
+      slug: string
+    }[]
   }[]
 }
 
 export function BenchmarkChart({ results }: BenchmarkChartProps) {
   const isSm = useMediaQuery('(max-width: 640px)')
   const { theme, systemTheme } = useTheme()
+  const productFromProductPage = useSearchParams().get('product')
+
+  const initialProductSelected = React.useMemo(() => {
+    if (!productFromProductPage) return undefined
+
+    return results.find((result) =>
+      result.products.some(
+        (product) => product.slug === productFromProductPage,
+      ),
+    )
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [productFromProductPage])
   const [selected, setSelected] = React.useState<
     { alias: string; result: number }[]
-  >([])
+  >(
+    initialProductSelected
+      ? [
+          {
+            alias: initialProductSelected.productAlias,
+            result: initialProductSelected.result,
+          },
+        ]
+      : [],
+  )
+
+  const { createQueryString } = useQueryString()
+  const router = useRouter()
+  const pathname = usePathname()
 
   const maxResult = Math.max(...results.map((obj) => obj.result))
 
@@ -83,15 +112,6 @@ export function BenchmarkChart({ results }: BenchmarkChartProps) {
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         />
       </div>
-      {/* <div className="absolute bottom-2 right-0 aspect-square w-16 -rotate-12 sm:w-20 md:w-24">
-        <Image
-          src={Logo}
-          alt={'Logo'}
-          className="rounded-lg object-contain"
-          fill
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-        />
-      </div> */}
 
       <ResponsiveContainer
         height={
@@ -157,6 +177,12 @@ export function BenchmarkChart({ results }: BenchmarkChartProps) {
             radius={[0, 4, 4, 0]}
             onClick={(data) => {
               const productAlias = data.productAlias as string
+              if (productAlias === initialProductSelected?.productAlias)
+                router.push(
+                  `${pathname}?${createQueryString({
+                    product: null,
+                  })}`,
+                )
               selected.some((item) => item.alias === productAlias)
                 ? setSelected((prev) =>
                     prev.filter((item) => item.alias !== productAlias),
@@ -193,17 +219,6 @@ export function BenchmarkChart({ results }: BenchmarkChartProps) {
                         selected.some(
                           (item) => item.alias === result.productAlias,
                         ),
-                      // 'fill-success hover:fill-success/80': selected.some(
-                      //   (item) =>
-                      //     item.alias === result.productAlias &&
-                      //     item.result > selected[0]?.result,
-                      // ),
-                      // 'fill-destructive hover:fill-destructive/80':
-                      //   selected.some(
-                      //     (item) =>
-                      //       item.alias === result.productAlias &&
-                      //       item.result < selected[0]?.result,
-                      //   ),
                     },
                   )}
                   key={`cell-${index}`}
