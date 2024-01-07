@@ -159,6 +159,8 @@ export const authOptions: NextAuthOptions = {
       cookies().set({
         name: 'bench-promos.session-token',
         value: token,
+        httpOnly: true,
+        secure: env.NODE_ENV === 'production',
         expires: dayjs().add(30, 'days').toDate(),
       })
     },
