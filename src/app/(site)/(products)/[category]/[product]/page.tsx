@@ -237,7 +237,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
                             bestDeal.coupon?.availability
                               ? bestDeal.coupon.discount
                               : undefined,
-                            bestDeal.cashback?.value,
                           ) / 100,
                         )}
                       </strong>{' '}
@@ -255,7 +254,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
                                 bestDeal.coupon?.availability
                                   ? bestDeal.coupon.discount
                                   : undefined,
-                                bestDeal.cashback?.value,
                               ) / 100,
                             )}
                           </strong>{' '}
@@ -271,7 +269,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
                                 bestDeal.coupon?.availability
                                   ? bestDeal.coupon.discount
                                   : undefined,
-                                bestDeal.cashback?.value,
                               ) /
                                 (100 * bestDeal.installments),
                             )}
@@ -279,53 +276,112 @@ export default async function ProductPage({ params }: ProductPageProps) {
                         </span>
                       )}
                     {bestDeal.cashback && (
-                      <div className="flex items-center gap-x-2 rounded-xl border p-2 text-sm text-muted-foreground">
-                        <div>
-                          <Icons.AlertCircle className="h-4 w-4 text-auxiliary" />
-                        </div>
-                        <div>
-                          Você paga{' '}
-                          <span className="font-bold text-foreground">
-                            {priceFormatter.format(
-                              priceCalculator(
-                                bestDeal.price,
-                                bestDeal.coupon?.availability
-                                  ? bestDeal.coupon.discount
-                                  : undefined,
-                                undefined,
-                              ) / 100,
-                            )}{' '}
-                          </span>
-                          à vista
-                          {bestDeal.installments &&
-                            bestDeal.totalInstallmentPrice && (
-                              <span>
-                                {' '}
+                      <div className="flex flex-col items-start rounded-xl border px-4 py-2 text-sm text-muted-foreground">
+                        <span className="flex items-center font-semibold">
+                          <Icons.AlertCircle className="mr-2 h-4 w-4 text-auxiliary" />
+                          Preço final com cashback
+                        </span>
+                        <span className="ml-1 text-foreground">
+                          <p>
+                            <strong className="text-xl">
+                              {priceFormatter.format(
+                                priceCalculator(
+                                  bestDeal.price,
+                                  bestDeal.coupon?.availability
+                                    ? bestDeal.coupon.discount
+                                    : undefined,
+                                  bestDeal.cashback?.value,
+                                ) / 100,
+                              )}
+                            </strong>{' '}
+                            <span className="text-muted-foreground">
+                              à vista{' '}
+                            </span>
+                          </p>
+
+                          {!!bestDeal.installments &&
+                            !!bestDeal.totalInstallmentPrice && (
+                              <span className="text-muted-foreground">
                                 ou{' '}
-                                <span className="font-bold text-foreground">
+                                <strong className="">
                                   {priceFormatter.format(
                                     priceCalculator(
                                       bestDeal.totalInstallmentPrice,
                                       bestDeal.coupon?.availability
                                         ? bestDeal.coupon.discount
                                         : undefined,
-                                      undefined,
+                                      bestDeal.cashback?.value,
                                     ) / 100,
                                   )}
-                                </span>{' '}
-                                em até{' '}
-                                <span className="font-bold text-foreground">
+                                </strong>{' '}
+                                em{' '}
+                                <strong className="">
                                   {bestDeal.installments}x
-                                </span>{' '}
-                                e recebe{' '}
-                                <span className="font-bold text-foreground">
-                                  {bestDeal.cashback.value}%
-                                </span>{' '}
-                                de cashback
+                                </strong>{' '}
+                                de{' '}
+                                <strong className="">
+                                  {priceFormatter.format(
+                                    priceCalculator(
+                                      bestDeal.totalInstallmentPrice,
+                                      bestDeal.coupon?.availability
+                                        ? bestDeal.coupon.discount
+                                        : undefined,
+                                      bestDeal.cashback?.value,
+                                    ) /
+                                      (100 * bestDeal.installments),
+                                  )}
+                                </strong>
                               </span>
                             )}
-                        </div>
+                        </span>
                       </div>
+                      // <div className="flex items-center gap-x-2 rounded-xl border p-2 text-sm text-muted-foreground">
+                      //   <div>
+                      //     <Icons.AlertCircle className="h-4 w-4 text-auxiliary" />
+                      //   </div>
+                      //   <div>
+                      //     Você paga{' '}
+                      //     <span className="font-bold text-foreground">
+                      //       {priceFormatter.format(
+                      //         priceCalculator(
+                      //           bestDeal.price,
+                      //           bestDeal.coupon?.availability
+                      //             ? bestDeal.coupon.discount
+                      //             : undefined,
+                      //           undefined,
+                      //         ) / 100,
+                      //       )}{' '}
+                      //     </span>
+                      //     à vista
+                      //     {bestDeal.installments &&
+                      //       bestDeal.totalInstallmentPrice && (
+                      //         <span>
+                      //           {' '}
+                      //           ou{' '}
+                      //           <span className="font-bold text-foreground">
+                      //             {priceFormatter.format(
+                      //               priceCalculator(
+                      //                 bestDeal.totalInstallmentPrice,
+                      //                 bestDeal.coupon?.availability
+                      //                   ? bestDeal.coupon.discount
+                      //                   : undefined,
+                      //                 undefined,
+                      //               ) / 100,
+                      //             )}
+                      //           </span>{' '}
+                      //           em até{' '}
+                      //           <span className="font-bold text-foreground">
+                      //             {bestDeal.installments}x
+                      //           </span>{' '}
+                      //           e recebe{' '}
+                      //           <span className="font-bold text-foreground">
+                      //             {bestDeal.cashback.value}%
+                      //           </span>{' '}
+                      //           de cashback
+                      //         </span>
+                      //       )}
+                      //   </div>
+                      // </div>
                     )}
                   </div>
                   {bestDeal.coupon?.availability && (
