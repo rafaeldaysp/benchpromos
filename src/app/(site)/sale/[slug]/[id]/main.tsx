@@ -2,6 +2,7 @@
 
 import { gql } from '@apollo/client'
 import { useSuspenseQuery } from '@apollo/experimental-nextjs-app-support/ssr'
+import dayjs from 'dayjs'
 import { type Session } from 'next-auth'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -42,6 +43,7 @@ const GET_SALE = gql`
       totalInstallmentPrice
       coupon
       expired
+      createdAt
       cashback {
         value
         provider
@@ -109,6 +111,12 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
         <strong className="line-clamp-4 leading-none tracking-tight md:text-xl">
           {sale.title}
         </strong>
+        <div className="space-x-1.5">
+          <Badge variant={'secondary'}>Bench Promos</Badge>
+          <time className="text-xs text-muted-foreground">
+            {dayjs(sale.createdAt).fromNow()}
+          </time>
+        </div>
         <section className="flex flex-col gap-y-2 md:flex-row">
           <div className="md:w-fit md:px-12">
             <div className="relative mx-auto aspect-square w-1/2 md:w-80 lg:w-72">
@@ -133,7 +141,9 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
             <div className="flex flex-col gap-1 text-sm">
               <div>
                 <strong className="text-3xl">
-                  {priceFormatter.format(sale.price / 100)}
+                  {priceFormatter.format(
+                    sale.price / (100 - (sale.cashback?.value ?? 0)),
+                  )}
                 </strong>{' '}
                 <span className="text-muted-foreground">à vista </span>
               </div>
@@ -142,53 +152,53 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
                 <span className="text-muted-foreground">
                   ou{' '}
                   <strong className="text-base">
-                    {priceFormatter.format(sale.totalInstallmentPrice / 100)}
+                    {priceFormatter.format(
+                      sale.totalInstallmentPrice /
+                        (100 - (sale.cashback?.value ?? 0)),
+                    )}
                   </strong>{' '}
                   em <strong className="text-base">{sale.installments}x</strong>{' '}
                   de{' '}
                   <strong className="text-base">
                     {priceFormatter.format(
-                      sale.totalInstallmentPrice / (100 * sale.installments),
+                      sale.totalInstallmentPrice /
+                        (100 - (sale.cashback?.value ?? 0)),
                     )}
                   </strong>
                 </span>
               )}
 
               {sale.cashback && (
-                <div className="flex items-center gap-x-2 rounded-xl border p-2 text-sm text-muted-foreground shadow-sm">
-                  <div>
-                    <Icons.AlertCircle className="h-4 w-4 text-auxiliary" />
-                  </div>
-                  <div>
-                    Você paga{' '}
-                    <span className="font-bold text-foreground">
-                      {priceFormatter.format(
-                        sale.price / (100 - sale.cashback.value),
-                      )}{' '}
-                    </span>
-                    à vista
-                    {sale.installments && sale.totalInstallmentPrice && (
-                      <span>
-                        {' '}
+                <div className="flex flex-col items-start rounded-xl bg-auxiliary/20 px-4 py-2 text-sm text-muted-foreground">
+                  <span className="flex items-center font-semibold">
+                    <Icons.AlertCircle className="mr-2 h-4 w-4 text-auxiliary" />
+                    Preço final com cashback
+                  </span>
+                  <span className="ml-1 text-foreground">
+                    <p>
+                      <strong className="text-xl">
+                        {priceFormatter.format(sale.price / 100)}
+                      </strong>{' '}
+                      <span className="text-muted-foreground">à vista </span>
+                    </p>
+
+                    {!!sale.installments && !!sale.totalInstallmentPrice && (
+                      <span className="text-muted-foreground">
                         ou{' '}
-                        <span className="font-bold text-foreground">
+                        <strong className="">
                           {priceFormatter.format(
-                            sale.totalInstallmentPrice /
-                              (100 - sale.cashback.value),
+                            sale.totalInstallmentPrice / 100,
                           )}
-                        </span>{' '}
-                        em até{' '}
-                        <span className="font-bold text-foreground">
-                          {sale.installments}x
-                        </span>{' '}
-                        e recebe{' '}
-                        <span className="font-bold text-foreground">
-                          {sale.cashback.value}%
-                        </span>{' '}
-                        de cashback
+                        </strong>{' '}
+                        em <strong className="">{sale.installments}x</strong> de{' '}
+                        <strong className="">
+                          {priceFormatter.format(
+                            sale.price / (100 * sale.installments),
+                          )}
+                        </strong>
                       </span>
                     )}
-                  </div>
+                  </span>
                 </div>
               )}
             </div>
@@ -292,8 +302,8 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
                   Mais informações do produto
                 </span>
                 <span className="text-muted-foreground">
-                  Acompanhe o histórico de preços, especificações técnicas,
-                  habilite alertas e muito mais
+                  Essa página é apenas uma postagem da promoção. Clique aqui e
+                  acesse as informações completas do produto.
                 </span>
               </p>
               <Icons.ChevronRight className="h-4 w-4" />
