@@ -5,6 +5,7 @@ import { type ApolloClient } from '@apollo/client'
 import { getCurrentUserToken } from '@/app/_actions/user'
 import { Toggle } from '@/components/ui/toggle'
 import { useReactions } from '@/hooks/use-reactions'
+import { emotes } from '@/constants'
 
 interface ReactionsProps {
   saleId: string
@@ -68,9 +69,38 @@ export function Reactions({
     [] as GroupedReaction[],
   )
 
+  const emotesSorted = emotes.map((emoteObj) => ({
+    ...emoteObj,
+    count: groupedReactions
+      .filter((reaction) => reaction.content === emoteObj.emote)
+      .reduce((total, reaction) => total + reaction.userIds.length, 0),
+  }))
+
+  emotesSorted.sort((a, b) => b.count - a.count)
+
   return (
     <div className="flex flex-wrap gap-1">
-      {groupedReactions.map((reaction) => {
+      {emotesSorted.map((emote) => {
+        const reaction = groupedReactions.find(
+          (reaction) => reaction.content === emote.emote,
+        )
+        const userReacted =
+          userId && reaction ? reaction.userIds.includes(userId) : false
+
+        return (
+          <Toggle
+            key={emote.emote}
+            pressed={userReacted}
+            className="h-fit rounded-full p-0 px-1.5 text-center"
+            variant="outline"
+            onClick={() => handleToggleReaction(emote.emote)}
+          >
+            {emote.emote}
+            <span className="ml-0.5 text-xs">{reaction?.userIds.length}</span>
+          </Toggle>
+        )
+      })}
+      {/* {groupedReactions.map((reaction) => {
         const userReacted = reaction.userIds.some((id) => id === userId)
 
         return (
@@ -85,7 +115,7 @@ export function Reactions({
             <span className="ml-0.5 text-xs">{reaction.userIds.length}</span>
           </Toggle>
         )
-      })}
+      })} */}
     </div>
   )
 }
