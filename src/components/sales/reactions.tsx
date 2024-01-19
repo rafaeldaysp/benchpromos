@@ -4,8 +4,8 @@ import { type ApolloClient } from '@apollo/client'
 
 import { getCurrentUserToken } from '@/app/_actions/user'
 import { Toggle } from '@/components/ui/toggle'
-import { useReactions } from '@/hooks/use-reactions'
 import { emotes } from '@/constants'
+import { useReactions } from '@/hooks/use-reactions'
 
 interface ReactionsProps {
   saleId: string
@@ -96,26 +96,12 @@ export function Reactions({
             onClick={() => handleToggleReaction(emote.emote)}
           >
             {emote.emote}
-            <span className="ml-0.5 text-xs">{reaction?.userIds.length}</span>
+            {reaction?.userIds.length && (
+              <span className="ml-0.5 text-xs">{reaction?.userIds.length}</span>
+            )}
           </Toggle>
         )
       })}
-      {/* {groupedReactions.map((reaction) => {
-        const userReacted = reaction.userIds.some((id) => id === userId)
-
-        return (
-          <Toggle
-            key={reaction.content}
-            pressed={userReacted}
-            className="h-fit rounded-full p-0 px-1.5"
-            variant="outline"
-            onClick={() => handleToggleReaction(reaction.content)}
-          >
-            {reaction.content}
-            <span className="ml-0.5 text-xs">{reaction.userIds.length}</span>
-          </Toggle>
-        )
-      })} */}
     </div>
   )
 }
