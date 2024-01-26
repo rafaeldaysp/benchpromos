@@ -162,7 +162,8 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
                   <strong className="text-base">
                     {priceFormatter.format(
                       sale.totalInstallmentPrice /
-                        (100 - (sale.cashback?.value ?? 0)),
+                        (100 - (sale.cashback?.value ?? 0)) /
+                        sale.installments,
                     )}
                   </strong>
                 </span>
