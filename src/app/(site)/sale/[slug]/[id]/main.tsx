@@ -194,7 +194,8 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
                         em <strong className="">{sale.installments}x</strong> de{' '}
                         <strong className="">
                           {priceFormatter.format(
-                            sale.price / (100 * sale.installments),
+                            sale.totalInstallmentPrice /
+                              (100 * sale.installments),
                           )}
                         </strong>
                       </span>

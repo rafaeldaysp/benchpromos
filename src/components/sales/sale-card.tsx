@@ -120,6 +120,10 @@ export function SaleCard({
   })
   const isSm = useMediaQuery('(max-width: 640px)')
 
+  const unapplyCashbackDenominator = sale.cashback
+    ? 1 - sale.cashback.value / 100
+    : 1
+
   return (
     <Sheet
       open={openDialogs[`saleUpdateForm.${sale.id}`]}
@@ -206,10 +210,25 @@ export function SaleCard({
                     </Badge>
                   )}
                   <div className="col-span-2 flex flex-col justify-center space-y-1.5 text-[14px] sm:space-y-2">
-                    <div className="flex flex-col">
-                      <p>
+                    <div
+                      className={cn('flex w-fit flex-col sm:w-full', {
+                        'rounded-xl border border-primary': sale.cashback,
+                      })}
+                    >
+                      {sale.cashback && (
+                        <div className="flex w-fit items-center rounded-br rounded-tl-lg bg-primary px-2 text-xs font-semibold text-primary-foreground">
+                          <Icons.Plus className="h-3 w-3" />
+                          <span className="">
+                            {sale.cashback.value}% CASHBACK
+                          </span>
+                        </div>
+                      )}
+
+                      <p className={sale.cashback ? 'px-2' : ''}>
                         <strong className="text-xl sm:text-2xl">
-                          {priceFormatter.format(sale.price / 100)}
+                          {priceFormatter.format(
+                            sale.price / 100 / unapplyCashbackDenominator,
+                          )}
                         </strong>{' '}
                         <span className="text-xs text-muted-foreground sm:text-sm">
                           à vista{' '}
@@ -217,11 +236,13 @@ export function SaleCard({
                       </p>
 
                       {!!sale.installments && !!sale.totalInstallmentPrice && (
-                        <span className="text-muted-foreground max-sm:text-xs">
+                        <span className="px-2 text-muted-foreground max-sm:text-xs">
                           ou{' '}
                           <strong className="max-sm:text-sm">
                             {priceFormatter.format(
-                              sale.totalInstallmentPrice / 100,
+                              sale.totalInstallmentPrice /
+                                100 /
+                                unapplyCashbackDenominator,
                             )}
                           </strong>{' '}
                           em{' '}
@@ -234,7 +255,8 @@ export function SaleCard({
                             <strong>
                               {priceFormatter.format(
                                 sale.totalInstallmentPrice /
-                                  (100 * sale.installments),
+                                  (100 * sale.installments) /
+                                  unapplyCashbackDenominator,
                               )}
                             </strong>
                           </p>
