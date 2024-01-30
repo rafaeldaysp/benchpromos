@@ -26,6 +26,10 @@ const nextConfig = {
         source: '/usuario/alertas',
         destination: '/user/alerts',
       },
+      {
+        source: '/politica-de-privacidade',
+        destination: '/privacy-policy',
+      },
     ]
   },
   output: 'standalone',

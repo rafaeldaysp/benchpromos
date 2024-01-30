@@ -70,6 +70,13 @@ export function UserAccountNav({ user }: UserAccountNavProps) {
           </>
         )}
 
+        <DropdownMenuItem className="cursor-pointer" asChild>
+          <Link href={'/politica-de-privacidade'}>
+            <Icons.MenuSquare className="mr-2 h-4 w-4" />
+            <span>Política de Privacidade</span>
+          </Link>
+        </DropdownMenuItem>
+
         <DropdownMenuSeparator />
 
         {!user.emailVerified && (
