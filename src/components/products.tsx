@@ -394,6 +394,7 @@ export function Products({
                 <Button
                   variant={'default'}
                   className="w-full"
+                  disabled={isPending}
                   onClick={() =>
                     startTransition(() => {
                       router.push(
@@ -406,11 +407,15 @@ export function Products({
                     })
                   }
                 >
+                  {isPending && (
+                    <Icons.Spinner className="mr-2 h-4 w-4 animate-spin" />
+                  )}
                   Aplicar
                 </Button>
                 <Button
                   className="w-full"
                   variant={'outline'}
+                  disabled={isPending}
                   onClick={() => {
                     startTransition(() => {
                       router.push(
@@ -567,8 +572,4 @@ export function Products({
       )}
     </div>
   )
-}
-
-function FiltersSheet() {
-  return
 }

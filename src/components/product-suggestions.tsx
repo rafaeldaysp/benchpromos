@@ -52,7 +52,7 @@ export function ProductSuggestions({ slug }: { slug: string }) {
   })
   const products = data?.productSuggestions
 
-  if (!products) return
+  if (!products || products.length == 0) return
 
   return (
     <Dialog>
@@ -69,9 +69,14 @@ export function ProductSuggestions({ slug }: { slug: string }) {
             </div>
           </div>
         </CardContent>
-        <CardFooter className="scroll-smooth pb-4">
+        <CardFooter className="pb-4">
           <DialogTrigger asChild>
-            <Button className={cn(buttonVariants({ variant: 'outline' }))}>
+            <Button
+              className={cn(
+                buttonVariants({ variant: 'outline' }),
+                'text-accent-foreground',
+              )}
+            >
               Ver sugestões
             </Button>
           </DialogTrigger>

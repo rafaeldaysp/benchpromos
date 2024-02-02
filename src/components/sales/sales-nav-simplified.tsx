@@ -35,7 +35,7 @@ export function SalesNavSimplified() {
     categories: Pick<Category, 'id' | 'name' | 'slug'>[]
   }>(GET_CATEGORIES)
 
-  const categories = data?.categories?.slice(0, 5) ?? []
+  const categories = data?.categories?.slice(0, 1) ?? []
 
   return (
     <div className="flex w-full flex-col justify-between gap-4 sm:flex-row">

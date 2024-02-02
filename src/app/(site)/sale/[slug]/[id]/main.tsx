@@ -29,6 +29,7 @@ import { Separator } from '@/components/ui/separator'
 import { cn } from '@/lib/utils'
 import type { Cashback, Category, Sale } from '@/types'
 import { priceFormatter } from '@/utils/formatter'
+import { ProductSuggestions } from '@/components/product-suggestions'
 
 const GET_SALE = gql`
   query Sale($saleId: ID!) {
@@ -290,7 +291,7 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
               productSlug={sale.productSlug}
               currentPrice={sale.price}
             />
-            <Separator className="my-4" />
+            <ProductSuggestions slug={sale.productSlug} />
             <Link
               href={`/${sale.category.slug}/${sale.productSlug}`}
               className={cn(
