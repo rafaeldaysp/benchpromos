@@ -1,11 +1,12 @@
 import { env } from '@/env.mjs'
 
+import 'react-notion-x/src/styles.css'
 import './globals.css'
 
 import dayjs from 'dayjs'
 import 'dayjs/locale/pt-br'
 import relativeTime from 'dayjs/plugin/relativeTime'
-import { type Viewport, type Metadata } from 'next'
+import { type Metadata, type Viewport } from 'next'
 import { Montserrat as FontSans } from 'next/font/google'
 import Script from 'next/script'
 import * as React from 'react'
