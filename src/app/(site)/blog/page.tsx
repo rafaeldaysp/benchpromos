@@ -93,11 +93,6 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
           })}
         </div>
       </main>
-
-      <span>
-        {JSON.stringify(pagesResponse)}
-        {category}
-      </span>
     </div>
   )
 }
