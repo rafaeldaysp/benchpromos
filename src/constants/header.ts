@@ -24,18 +24,18 @@ export function headerOptions({ categories }: HeaderOptionsProps) {
         { title: 'Controles', slug: 'controles' },
       ],
     },
-    {
-      title: 'Desktop',
-      icon: Icons.PcCase,
-      content: [
-        { title: 'Computadores', slug: 'computadores' },
-        { title: 'Placas de vídeo', slug: 'placas-de-video' },
-        { title: 'Processadores', slug: 'processadores' },
-        { title: 'Motherboards', slug: 'motherboards' },
-        { title: 'Gabinetes', slug: 'gabinetes' },
-        { title: 'Fontes', slug: 'fontes' },
-      ],
-    },
+    // {
+    //   title: 'Desktop',
+    //   icon: Icons.PcCase,
+    //   content: [
+    //     { title: 'Computadores', slug: 'computadores' },
+    //     { title: 'Placas de vídeo', slug: 'placas-de-video' },
+    //     { title: 'Processadores', slug: 'processadores' },
+    //     { title: 'Motherboards', slug: 'motherboards' },
+    //     { title: 'Gabinetes', slug: 'gabinetes' },
+    //     { title: 'Fontes', slug: 'fontes' },
+    //   ],
+    // },
   ]
   const usedCategoriesSlug: string[] = options.flatMap(
     (option) => option.content?.map((item) => item.slug) ?? [option.slug!],
@@ -60,13 +60,20 @@ export function headerOptions({ categories }: HeaderOptionsProps) {
 
   if (more.content.length > 0) options.push(more)
 
-  const benchmarks: headerOption = {
-    title: 'Benchmarks',
-    slug: 'benchmarks',
-    icon: Icons.BarChart4,
-  }
+  const moreHeaders: headerOption[] = [
+    {
+      title: 'Blog',
+      slug: 'blog',
+      icon: Icons.NotebookPen,
+    },
+    {
+      title: 'Benchmarks',
+      slug: 'benchmarks',
+      icon: Icons.BarChart4,
+    },
+  ]
 
-  options.push(benchmarks)
+  options.push(...moreHeaders)
 
   return options
 }

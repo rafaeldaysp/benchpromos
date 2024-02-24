@@ -12,6 +12,8 @@ export const env = createEnv({
     NEXTAUTH_SECRET: z.string().min(1),
     GOOGLE_CLIENT_ID: z.string().min(1),
     GOOGLE_CLIENT_SECRET: z.string().min(1),
+    NOTION_DATABASE_ID: z.string().min(1),
+    NOTION_TOKEN: z.string().min(1),
   },
   /*
    * Environment variables available on the client (and server).
@@ -42,5 +44,7 @@ export const env = createEnv({
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
     NEXT_PUBLIC_GTAG: process.env.NEXT_PUBLIC_GTAG,
     NEXT_PUBLIC_GTM: process.env.NEXT_PUBLIC_GTM,
+    NOTION_DATABASE_ID: process.env.NOTION_DATABASE_ID,
+    NOTION_TOKEN: process.env.NOTION_TOKEN,
   },
 })
