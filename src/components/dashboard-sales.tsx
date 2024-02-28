@@ -75,7 +75,7 @@ interface DashboardSalesProps {
         category: Pick<Category, 'id' | 'name'>
       }
       category: Pick<Category, 'id' | 'name'>
-      cashback: Cashback
+      cashback?: Cashback
     })[]
   }) => React.ReactNode
 }
@@ -93,7 +93,7 @@ export function DashboardSales({ children }: DashboardSalesProps) {
           category: Pick<Category, 'id' | 'name'>
         }
         category: Pick<Category, 'id' | 'name'>
-        cashback: Cashback
+        cashback?: Cashback
       })[]
     }
   }>(GET_SALES, {

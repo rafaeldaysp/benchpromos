@@ -120,10 +120,6 @@ export function SaleCard({
   })
   const isSm = useMediaQuery('(max-width: 640px)')
 
-  const unapplyCashbackDenominator = sale.cashback
-    ? 1 - sale.cashback.value / 100
-    : 1
-
   return (
     <Sheet
       open={openDialogs[`saleUpdateForm.${sale.id}`]}
@@ -226,9 +222,7 @@ export function SaleCard({
 
                       <p className={sale.cashback ? 'px-2' : ''}>
                         <strong className="text-xl sm:text-2xl">
-                          {priceFormatter.format(
-                            sale.price / 100 / unapplyCashbackDenominator,
-                          )}
+                          {priceFormatter.format(sale.price / 100)}
                         </strong>{' '}
                         <span className="text-xs text-muted-foreground sm:text-sm">
                           à vista{' '}
@@ -240,9 +234,7 @@ export function SaleCard({
                           ou{' '}
                           <strong className="max-sm:text-sm">
                             {priceFormatter.format(
-                              sale.totalInstallmentPrice /
-                                100 /
-                                unapplyCashbackDenominator,
+                              sale.totalInstallmentPrice / 100,
                             )}
                           </strong>{' '}
                           em{' '}
@@ -255,8 +247,7 @@ export function SaleCard({
                             <strong>
                               {priceFormatter.format(
                                 sale.totalInstallmentPrice /
-                                  (100 * sale.installments) /
-                                  unapplyCashbackDenominator,
+                                  (100 * sale.installments),
                               )}
                             </strong>
                           </p>

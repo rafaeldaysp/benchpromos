@@ -38,6 +38,7 @@ import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
 import type { Cashback, Category, Product, Sale } from '@/types'
 import { priceFormatter } from '@/utils/formatter'
+import { priceCalculator } from '@/utils/price-calculator'
 
 dayjs.extend(relativeTime)
 dayjs.locale('pt-br')
@@ -57,7 +58,7 @@ export function SalesMain() {
         category: Pick<Category, 'id' | 'name'>
       }
       category: Pick<Category, 'id' | 'name'>
-      cashback: Cashback
+      cashback?: Cashback
     }
   >()
   const [selectedProduct, setSelectedProduct] = React.useState<
@@ -138,7 +139,13 @@ export function SalesMain() {
               <span className="text-xs text-muted-foreground">
                 <Badge className="mr-2">Promoção</Badge>
                 {dayjs(selectedSale.createdAt).fromNow()} •{' '}
-                {priceFormatter.format(selectedSale.price / 100)}
+                {priceFormatter.format(
+                  priceCalculator(
+                    selectedSale.price,
+                    undefined,
+                    selectedSale.cashback?.value,
+                  ) / 100,
+                )}
               </span>
             </DashboardItemCard.Content>
 
@@ -230,7 +237,13 @@ export function SalesMain() {
                     <p className="text-sm leading-7">{sale.title}</p>
                     <span className="text-xs text-muted-foreground">
                       {dayjs(sale.createdAt).fromNow()} •{' '}
-                      {priceFormatter.format(sale.price / 100)}
+                      {priceFormatter.format(
+                        priceCalculator(
+                          sale.price,
+                          undefined,
+                          sale.cashback?.value,
+                        ) / 100,
+                      )}
                       {sale.coupon && ` • ${sale.coupon}`}
                       {sale.cashback &&
                         ` • ${sale.cashback.value}% ${sale.cashback.provider}`}

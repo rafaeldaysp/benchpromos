@@ -14,6 +14,7 @@ import { CouponModal } from '@/components/coupon-modal'
 import { Icons } from '@/components/icons'
 import { LoginPopup } from '@/components/login-popup'
 import PriceChart from '@/components/product-price-chart'
+import { ProductSuggestions } from '@/components/product-suggestions'
 import { Comments } from '@/components/sales/comments'
 import { ReactionPopover } from '@/components/sales/reaction-popover'
 import { Reactions } from '@/components/sales/reactions'
@@ -29,7 +30,7 @@ import { Separator } from '@/components/ui/separator'
 import { cn } from '@/lib/utils'
 import type { Cashback, Category, Sale } from '@/types'
 import { priceFormatter } from '@/utils/formatter'
-import { ProductSuggestions } from '@/components/product-suggestions'
+import { priceCalculator } from '@/utils/price-calculator'
 
 const GET_SALE = gql`
   query Sale($saleId: ID!) {
@@ -76,7 +77,7 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
   const { data, error, client } = useSuspenseQuery<{
     sale: Sale & {
       commentsCount: number
-      cashback: Omit<Cashback, 'id' | 'url'>
+      cashback?: Omit<Cashback, 'id' | 'url'>
       category: Pick<Category, 'slug'>
       reactions: { content: string; userId: string }[]
     }
@@ -142,9 +143,7 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
             <div className="flex flex-col gap-1 text-sm">
               <div>
                 <strong className="text-3xl">
-                  {priceFormatter.format(
-                    sale.price / (100 - (sale.cashback?.value ?? 0)),
-                  )}
+                  {priceFormatter.format(sale.price / 100)}
                 </strong>{' '}
                 <span className="text-muted-foreground">à vista </span>
               </div>
@@ -153,18 +152,13 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
                 <span className="text-muted-foreground">
                   ou{' '}
                   <strong className="text-base">
-                    {priceFormatter.format(
-                      sale.totalInstallmentPrice /
-                        (100 - (sale.cashback?.value ?? 0)),
-                    )}
+                    {priceFormatter.format(sale.totalInstallmentPrice / 100)}
                   </strong>{' '}
                   em <strong className="text-base">{sale.installments}x</strong>{' '}
                   de{' '}
                   <strong className="text-base">
                     {priceFormatter.format(
-                      sale.totalInstallmentPrice /
-                        (100 - (sale.cashback?.value ?? 0)) /
-                        sale.installments,
+                      sale.totalInstallmentPrice / (100 * sale.installments),
                     )}
                   </strong>
                 </span>
@@ -179,7 +173,13 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
                   <span className="ml-1 text-foreground">
                     <p>
                       <strong className="text-xl">
-                        {priceFormatter.format(sale.price / 100)}
+                        {priceFormatter.format(
+                          priceCalculator(
+                            sale.price,
+                            undefined,
+                            sale.cashback?.value,
+                          ) / 100,
+                        )}
                       </strong>{' '}
                       <span className="text-muted-foreground">à vista </span>
                     </p>
@@ -189,13 +189,21 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
                         ou{' '}
                         <strong className="">
                           {priceFormatter.format(
-                            sale.totalInstallmentPrice / 100,
+                            priceCalculator(
+                              sale.totalInstallmentPrice,
+                              undefined,
+                              sale.cashback?.value,
+                            ) / 100,
                           )}
                         </strong>{' '}
                         em <strong className="">{sale.installments}x</strong> de{' '}
                         <strong className="">
                           {priceFormatter.format(
-                            sale.totalInstallmentPrice /
+                            priceCalculator(
+                              sale.totalInstallmentPrice,
+                              undefined,
+                              sale.cashback?.value,
+                            ) /
                               (100 * sale.installments),
                           )}
                         </strong>
@@ -289,7 +297,11 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
             <Separator className="my-4" />
             <PriceChart
               productSlug={sale.productSlug}
-              currentPrice={sale.price}
+              currentPrice={priceCalculator(
+                sale.price,
+                undefined,
+                sale.cashback?.value,
+              )}
             />
             <ProductSuggestions slug={sale.productSlug} />
             <Link
