@@ -151,7 +151,9 @@ export function SaleCard({
                 </div>
               )}
               {sale.highlight && (
-                <BookmarkFilledIcon className="absolute -top-1 right-2 text-auxiliary sm:-top-0.5 sm:right-5" />
+                <div className="h-fit bg-auxiliary/20 py-1 text-center text-xs text-muted-foreground">
+                  <strong className="text-auxiliary">DESTAQUE</strong>
+                </div>
               )}
 
               <CardHeader className="flex-row items-baseline space-y-0 p-3 text-xs sm:p-6 sm:text-sm">
