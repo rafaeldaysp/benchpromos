@@ -389,7 +389,7 @@ const RenderCustomBarLabel = ({
   isSm: boolean
   maxValue: number
 }) => {
-  const textPositionThreshold = isSm ? (maxValue * 3) / 4 : maxValue / 2
+  const textPositionThreshold = (maxValue * 3) / 4
   return (
     <>
       <text
