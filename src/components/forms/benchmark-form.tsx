@@ -185,6 +185,23 @@ export function BenchmarkForm({
           )}
         />
 
+        <FormField
+          control={form.control}
+          name="lowerIsBetter"
+          render={({ field }) => (
+            <FormItem className="flex flex-row items-start justify-between space-x-3 space-y-0">
+              <FormLabel>Menor é melhor</FormLabel>
+              <FormControl>
+                <Checkbox
+                  checked={field.value}
+                  // @ts-expect-error ...
+                  onCheckedChange={field.onChange}
+                />
+              </FormControl>
+            </FormItem>
+          )}
+        />
+
         <Button type="submit" disabled={isLoading}>
           {isLoading && (
             <Icons.Spinner
