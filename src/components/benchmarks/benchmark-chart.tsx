@@ -33,6 +33,9 @@ interface BenchmarkChartProps {
     products: {
       slug: string
     }[]
+    benchmark: {
+      lowerIsBetter: boolean
+    }
   }[]
 }
 
@@ -124,13 +127,16 @@ export function BenchmarkChart({ results }: BenchmarkChartProps) {
   }, [results])
 
   const [selected, setSelected] = React.useState<
-    { alias: string; result: number }[]
+    { alias: string; result: number; benchmark: { lowerIsBetter: boolean } }[]
   >(
     initialProductSelected
       ? [
           {
             alias: initialProductSelected.productAlias,
             result: initialProductSelected.result,
+            benchmark: {
+              lowerIsBetter: initialProductSelected.benchmark.lowerIsBetter,
+            },
           },
         ]
       : [],
@@ -276,7 +282,13 @@ export function BenchmarkChart({ results }: BenchmarkChartProps) {
                   )
                 : setSelected((prev) => [
                     ...prev,
-                    { alias: productAlias, result: data.result },
+                    {
+                      alias: productAlias,
+                      result: data.result,
+                      benchmark: {
+                        lowerIsBetter: data.benchmark.lowerIsBetter,
+                      },
+                    },
                   ])
             }}
           >
@@ -329,7 +341,13 @@ export function BenchmarkChart({ results }: BenchmarkChartProps) {
                     )
                   : setSelected((prev) => [
                       ...prev,
-                      { alias: productAlias, result: data.result },
+                      {
+                        alias: productAlias,
+                        result: data.result,
+                        benchmark: {
+                          lowerIsBetter: data.benchmark.lowerIsBetter,
+                        },
+                      },
                     ])
               }}
             >
@@ -386,7 +404,11 @@ const RenderCustomBarLabel = ({
   isSm,
   maxValue,
 }: LabelProps & {
-  selected: { alias: string; result: number }[]
+  selected: {
+    alias: string
+    result: number
+    benchmark: { lowerIsBetter: boolean }
+  }[]
   isSm: boolean
   maxValue: number
 }) => {
@@ -425,13 +447,23 @@ const RenderCustomBarLabel = ({
           className={cn(
             'select-none fill-auxiliary text-[10px] font-bold sm:text-sm',
             {
-              'fill-success': Number(value) > selected[0].result,
-              'fill-destructive': Number(value) < selected[0].result,
+              'fill-success': selected[0].benchmark.lowerIsBetter
+                ? Number(value) < selected[0].result
+                : Number(value) > selected[0].result,
+              'fill-destructive': selected[0].benchmark.lowerIsBetter
+                ? Number(value) > selected[0].result
+                : Number(value) < selected[0].result,
             },
           )}
           textAnchor="right"
         >
-          {<>{Math.ceil((100 * Number(value)) / selected[0].result - 100)}%</>}
+          {
+            <>
+              {Math.ceil((100 * Number(value)) / selected[0].result - 100) *
+                (selected[0].benchmark.lowerIsBetter ? -1 : 1)}
+              %
+            </>
+          }
         </text>
       )}
     </>

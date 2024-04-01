@@ -22,6 +22,7 @@ import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
 import { filtersLinkSchema } from '@/lib/validations/product'
 import type { Filter } from '@/types'
+import { ScrollArea } from '../ui/scroll-area'
 
 const LINK_FILTERS = gql`
   mutation LinkFiltersToProduct($input: LinkProductFiltersInput!) {
@@ -112,55 +113,55 @@ export function ProductFiltersForm({
 
   return (
     <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="grid grid-cols-2 gap-x-4 gap-y-8"
-      >
-        {categoryFilters.map((filter, index) => (
-          <FormField
-            key={filter.id}
-            control={form.control}
-            name={`filters.${index}.optionId`}
-            render={({ field }) => (
-              <FormItem className="space-y-3">
-                <FormLabel>{filter.name}</FormLabel>
-                <FormControl>
-                  <RadioGroup
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                    className="flex flex-col space-y-1"
-                  >
-                    {filter.options.map((option) => (
-                      <FormItem
-                        key={option.id}
-                        className="flex items-center space-x-3 space-y-0"
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <ScrollArea>
+          <div className="grid max-h-[700px] grid-cols-2 gap-x-4 gap-y-8">
+            {categoryFilters.map((filter, index) => (
+              <FormField
+                key={filter.id}
+                control={form.control}
+                name={`filters.${index}.optionId`}
+                render={({ field }) => (
+                  <FormItem className="space-y-3">
+                    <FormLabel>{filter.name}</FormLabel>
+                    <FormControl>
+                      <RadioGroup
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                        className="flex flex-col space-y-1"
                       >
-                        <FormControl>
-                          <RadioGroupItem value={option.id} />
-                        </FormControl>
-                        <FormLabel className="font-normal">
-                          {option.value}
-                        </FormLabel>
-                      </FormItem>
-                    ))}
+                        {filter.options.map((option) => (
+                          <FormItem
+                            key={option.id}
+                            className="flex items-center space-x-3 space-y-0"
+                          >
+                            <FormControl>
+                              <RadioGroupItem value={option.id} />
+                            </FormControl>
+                            <FormLabel className="font-normal">
+                              {option.value}
+                            </FormLabel>
+                          </FormItem>
+                        ))}
 
-                    <FormItem className="flex items-center space-x-3 space-y-0">
-                      <FormControl>
-                        <RadioGroupItem value="none" />
-                      </FormControl>
-                      <FormLabel className="font-normal">Nenhum</FormLabel>
-                    </FormItem>
-                  </RadioGroup>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        ))}
-
-        <div className="col-span-2">
-          <Button type="submit">Salvar</Button>
-        </div>
+                        <FormItem className="flex items-center space-x-3 space-y-0">
+                          <FormControl>
+                            <RadioGroupItem value="none" />
+                          </FormControl>
+                          <FormLabel className="font-normal">Nenhum</FormLabel>
+                        </FormItem>
+                      </RadioGroup>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            ))}
+          </div>
+        </ScrollArea>
+        <Button type="submit" className="w-full">
+          Salvar
+        </Button>
       </form>
     </Form>
   )

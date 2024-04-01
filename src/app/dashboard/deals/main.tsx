@@ -88,6 +88,7 @@ interface DealsMainProps {
 }
 
 export function DealsMain({ deals, retailers, categories }: DealsMainProps) {
+  const [retailersQuery, setRetailersQuery] = React.useState('')
   const [selectedProduct, setSelectedProduct] =
     React.useState<(typeof deals)[number]['product']>()
   const [selectedRetailer, setSelectedRetailer] =
@@ -221,7 +222,7 @@ export function DealsMain({ deals, retailers, categories }: DealsMainProps) {
           </h2>
           <div className="">
             <ScrollArea className="w-full bg-background">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 p-1">
                 {selectedRetailer && (
                   <>
                     <Dialog
@@ -265,13 +266,15 @@ export function DealsMain({ deals, retailers, categories }: DealsMainProps) {
                       <SelectTrigger className="line-clamp-1 w-fit sm:w-[200px]">
                         <SelectValue placeholder="Selecione uma categoria" />
                       </SelectTrigger>
-                      <SelectContent className="max-h-[300px]">
-                        <SelectItem value="">Todas</SelectItem>
-                        {categories.map((category) => (
-                          <SelectItem key={category.id} value={category.id}>
-                            {category.name}
-                          </SelectItem>
-                        ))}
+                      <SelectContent>
+                        <ScrollArea className="h-80">
+                          <SelectItem value="">Todas</SelectItem>
+                          {categories.map((category) => (
+                            <SelectItem key={category.id} value={category.id}>
+                              {category.name}
+                            </SelectItem>
+                          ))}
+                        </ScrollArea>
                       </SelectContent>
                     </Select>
 
@@ -450,27 +453,41 @@ export function DealsMain({ deals, retailers, categories }: DealsMainProps) {
         <TabsContent value="retailers">
           {retailers.length > 0 ? (
             <div className="space-y-4">
-              <Input placeholder="Pesquise por um varejista..." />
+              <Input
+                placeholder="Pesquise por um varejista..."
+                value={retailersQuery}
+                onChange={(e) => setRetailersQuery(e.target.value)}
+              />
               <ScrollArea
                 className={cn('rounded-md border', {
                   'h-[600px]': retailers.length > 8,
                 })}
               >
-                {retailers.map((retailer) => (
-                  <DashboardItemCard.Root
-                    key={retailer.id}
-                    className="cursor-pointer"
-                    onClick={() => {
-                      setSelectedRetailer(retailer)
-                      setSelectedDealIds([])
-                      setSelectedCategory(undefined)
-                    }}
-                  >
-                    <DashboardItemCard.Content>
-                      <p className="text-sm leading-7">{retailer.name}</p>
-                    </DashboardItemCard.Content>
-                  </DashboardItemCard.Root>
-                ))}
+                {retailers
+                  .filter((retailer) =>
+                    retailersQuery
+                      .split(' ')
+                      .every((word) =>
+                        retailer.name
+                          .toLowerCase()
+                          .includes(word.toLowerCase()),
+                      ),
+                  )
+                  .map((retailer) => (
+                    <DashboardItemCard.Root
+                      key={retailer.id}
+                      className="cursor-pointer"
+                      onClick={() => {
+                        setSelectedRetailer(retailer)
+                        setSelectedDealIds([])
+                        setSelectedCategory(undefined)
+                      }}
+                    >
+                      <DashboardItemCard.Content>
+                        <p className="text-sm leading-7">{retailer.name}</p>
+                      </DashboardItemCard.Content>
+                    </DashboardItemCard.Root>
+                  ))}
               </ScrollArea>
             </div>
           ) : (

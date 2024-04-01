@@ -4,6 +4,7 @@ import { gql } from '@apollo/client'
 import { BenchmarkChart } from '@/components/benchmarks/benchmark-chart'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { notebooksCustomFilters } from '@/constants'
+import { type Benchmark } from '@/types'
 
 const GET_BENCHMARK_RESULTS = gql`
   query GetBenchmarks(
@@ -28,6 +29,7 @@ const GET_BENCHMARK_RESULTS = gql`
       benchmark {
         slug
         name
+        lowerIsBetter
       }
     }
   }
@@ -70,10 +72,7 @@ export default async function BenchmarkPage({
         name: string
         slug: string
       }[]
-      benchmark: {
-        name: string
-        slug: string
-      }
+      benchmark: Pick<Benchmark, 'name' | 'slug' | 'lowerIsBetter'>
     }[]
   }>({
     query: GET_BENCHMARK_RESULTS,

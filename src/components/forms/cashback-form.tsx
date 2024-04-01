@@ -32,6 +32,7 @@ import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
 import { cashbackSchema } from '@/lib/validations/cashback'
 import type { Retailer } from '@/types'
+import { ScrollArea } from '../ui/scroll-area'
 
 const CREATE_CASHBACK = gql`
   mutation CreateCashback($input: CreateCashbackInput!) {
@@ -155,14 +156,16 @@ export function CashbackForm({ mode = 'create', cashback }: CashbackFormProps) {
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {retailerItems?.map((retailerItem) => (
-                    <SelectItem
-                      key={retailerItem.value}
-                      value={retailerItem.value}
-                    >
-                      {retailerItem.label}
-                    </SelectItem>
-                  ))}
+                  <ScrollArea className="h-80">
+                    {retailerItems?.map((retailerItem) => (
+                      <SelectItem
+                        key={retailerItem.value}
+                        value={retailerItem.value}
+                      >
+                        {retailerItem.label}
+                      </SelectItem>
+                    ))}
+                  </ScrollArea>
                 </SelectContent>
               </Select>
               <FormMessage />

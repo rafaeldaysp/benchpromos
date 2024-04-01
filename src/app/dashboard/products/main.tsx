@@ -29,7 +29,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
-import { ScrollArea } from '@/components/ui/scroll-area'
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import {
   Select,
   SelectContent,
@@ -208,10 +208,12 @@ export function ProductsMain({ filters }: ProductsMainProps) {
                 <DialogTrigger asChild>
                   <Button variant="outline">Editar Filtros</Button>
                 </DialogTrigger>
-                <DialogContent>
+
+                <DialogContent className="">
                   <DialogHeader>
                     <DialogTitle>FILTROS</DialogTitle>
                   </DialogHeader>
+
                   <ProductFiltersForm
                     categoryFilters={categoryFilters}
                     productId={selectedProduct.id}
