@@ -200,6 +200,7 @@ export function BenchmarkChart({ results }: BenchmarkChartProps) {
           barSize={isSm ? 25 : 30}
           layout="vertical"
           barGap={isSm ? -25 : -30}
+          margin={{ top: 0 }}
         >
           <defs>
             <linearGradient id="primaryColor" x1="1" y1="0" x2="0" y2="0">
