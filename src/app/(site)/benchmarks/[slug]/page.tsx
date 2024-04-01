@@ -3,6 +3,7 @@ import { gql } from '@apollo/client'
 
 import { BenchmarkChart } from '@/components/benchmarks/benchmark-chart'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { notebooksCustomFilters } from '@/constants'
 
 const GET_BENCHMARK_RESULTS = gql`
   query GetBenchmarks(
@@ -15,6 +16,7 @@ const GET_BENCHMARK_RESULTS = gql`
       productsSlugs: $productsSlugs
       filters: $filters
     ) {
+      id
       result
       description
       productAlias
@@ -59,6 +61,7 @@ export default async function BenchmarkPage({
 
   const { data } = await getClient().query<{
     benchmarkResults: {
+      id: string
       result: number
       productAlias: string
       unit: string
@@ -82,7 +85,17 @@ export default async function BenchmarkPage({
     errorPolicy: 'ignore',
   })
 
-  const results = data?.benchmarkResults ?? []
+  const customFiltersApplied = notebooksCustomFilters.filter(
+    (customFilter) => filters[customFilter.slug],
+  )
+
+  const results = (data?.benchmarkResults ?? []).filter(
+    (result) =>
+      !customFiltersApplied.length ||
+      !customFiltersApplied.some(
+        (customFilter) => result.description?.includes(customFilter.value),
+      ),
+  )
 
   const benchmarkName =
     results.find((result) => result.benchmark.slug === slug)?.benchmark.name ??

@@ -131,6 +131,7 @@ export type Benchmark = {
   name: string
   slug: string
   hidden: boolean
+  lowerIsBetter: boolean
   parentId?: string
 }
 

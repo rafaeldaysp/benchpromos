@@ -3,11 +3,13 @@
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import * as React from 'react'
 
+import { notebooksCustomFilters } from '@/constants'
 import { useQueryString } from '@/hooks/use-query-string'
 import { type Filter } from '@/types'
 import { Icons } from '../icons'
 import { Badge } from '../ui/badge'
 import { Button } from '../ui/button'
+import { Label } from '../ui/label'
 import { ScrollArea } from '../ui/scroll-area'
 import { Separator } from '../ui/separator'
 import {
@@ -18,6 +20,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '../ui/sheet'
+import { Switch } from '../ui/switch'
 import { Toggle } from '../ui/toggle'
 
 interface BenchmarkFiltersProps {
@@ -139,6 +142,36 @@ export function BenchmarkFilters({ filters }: BenchmarkFiltersProps) {
                     </div>
                   )
                 })}
+              <div className="space-y-4">
+                <h3 className="font-medium tracking-wide text-foreground">
+                  Mais filtros
+                </h3>
+                {notebooksCustomFilters.map((customFilter) => (
+                  <div
+                    key={customFilter.slug}
+                    className="flex items-center justify-between gap-x-2"
+                  >
+                    <Label className="text-sm" htmlFor={customFilter.slug}>
+                      {customFilter.label}
+                    </Label>
+                    <Switch
+                      id={customFilter.slug}
+                      defaultChecked={
+                        searchParams.get(customFilter.slug) ? true : false
+                      }
+                      onCheckedChange={(value) =>
+                        startTransition(() => {
+                          router.push(
+                            `${pathname}?${createQueryString({
+                              [customFilter.slug]: value ? 'true' : null,
+                            })}`,
+                          )
+                        })
+                      }
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
           </ScrollArea>
           <Separator />

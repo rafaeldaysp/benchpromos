@@ -17,6 +17,7 @@ const GET_BENCHMARKS = gql`
       slug
       parentId
       hidden
+      lowerIsBetter
     }
     results(
       pagination: $pagination

@@ -247,7 +247,7 @@ export function ProductSelect({ products, categoryName }: ProductSelectProps) {
               variant={'ghost'}
               className="px-2"
               size={'sm'}
-              onClick={() => setSelectedProducts(products)}
+              onClick={() => setSelectedProducts(displayedProducts)}
             >
               <Icons.PlusCircle className="mr-2 h-4 w-4" />
               Todos
