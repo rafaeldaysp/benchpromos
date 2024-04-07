@@ -22,8 +22,9 @@ export function AdBanner({
   const adsLoaded = useRef(false)
   useEffect(() => {
     const loadAd = () => {
-      if (typeof window !== 'undefined' && window.adsbygoogle) {
+      if (typeof window !== 'undefined' && 'adsbygoogle' in window) {
         window.adsbygoogle = window.adsbygoogle || []
+        // @ts-expect-error ...
         window.adsbygoogle.push({})
         adsLoaded.current = true
       }
