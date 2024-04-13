@@ -80,12 +80,12 @@ export function Sales({ user, productSlug }: SalesProps) {
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {sales.map((sale, index) => {
-          if (index > 0 && index % 5 == 0)
+          if (index > 0 && index % 8 == 0)
             return (
               <div key={index} className="w-full rounded-xl border">
                 <AdBanner
                   dataAdFormat="auto"
-                  dataAdSlot="1544934153"
+                  dataAdSlot="2858015827"
                   dataFullWidthResponsive
                 />
               </div>
