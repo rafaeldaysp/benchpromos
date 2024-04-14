@@ -523,10 +523,10 @@ export default async function ProductPage({ params }: ProductPageProps) {
               productPrice={bestDeal.price}
               token={token}
             />
-            <div className="flex w-full items-center justify-center rounded-xl border">
+            <div className="h-full w-full rounded-xl border">
               <AdBanner
                 dataAdFormat="auto"
-                dataAdSlot="5246491546"
+                dataAdSlot="1544934153"
                 dataFullWidthResponsive
               />
             </div>

@@ -328,10 +328,10 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
         )}
       </main>
       <aside className="space-y-4 xl:col-span-2" id="comments">
-        <div className="flex h-32 w-full justify-center">
+        <div className="h-40 w-full">
           <AdBanner
             dataAdFormat="auto"
-            dataAdSlot="5246491546"
+            dataAdSlot="1544934153"
             dataFullWidthResponsive
           />
         </div>
