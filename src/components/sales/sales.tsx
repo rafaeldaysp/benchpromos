@@ -12,7 +12,7 @@ import ScrollToTopButton from '../scroll-to-top-button'
 import { SalesNavSimplified } from './sales-nav-simplified'
 import { AdBanner } from '../ad-banner'
 
-const SALES_PER_SCROLL = 12
+const SALES_PER_SCROLL = 11
 
 interface SalesProps {
   user?: { id: string; role: 'ADMIN' | 'MOD' | 'USER' }
@@ -82,13 +82,26 @@ export function Sales({ user, productSlug }: SalesProps) {
         {sales.map((sale, index) => {
           if (index > 0 && index % 8 == 0)
             return (
-              <div key={index} className="w-full rounded-xl border">
-                <AdBanner
-                  dataAdFormat="auto"
-                  dataAdSlot="2858015827"
-                  dataFullWidthResponsive
+              <>
+                <div key={index} className="w-full rounded-xl border">
+                  <AdBanner
+                    dataAdFormat="auto"
+                    dataAdSlot="1544934153"
+                    dataFullWidthResponsive
+                  />
+                  <AdBanner
+                    dataAdFormat="auto"
+                    dataAdSlot="1544934153"
+                    dataFullWidthResponsive
+                  />
+                </div>
+                <SaleCard
+                  key={sale.id}
+                  sale={sale}
+                  user={user}
+                  apolloClient={client}
                 />
-              </div>
+              </>
             )
 
           return (

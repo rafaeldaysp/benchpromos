@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 
 import { getCurrentUserToken } from '@/app/_actions/user'
+import { AdBanner } from '@/components/ad-banner'
 import { AlertCard } from '@/components/alert-price'
 import { CashbackModal } from '@/components/cashback-modal'
 import { CouponModal } from '@/components/coupon-modal'
@@ -522,6 +523,13 @@ export default async function ProductPage({ params }: ProductPageProps) {
               productPrice={bestDeal.price}
               token={token}
             />
+            <div className="flex w-full items-center justify-center rounded-xl border">
+              <AdBanner
+                dataAdFormat="auto"
+                dataAdSlot="5246491546"
+                dataFullWidthResponsive
+              />
+            </div>
           </aside>
         </article>
       </section>

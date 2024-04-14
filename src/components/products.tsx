@@ -37,6 +37,7 @@ import type {
   Product,
   Retailer,
 } from '@/types'
+import { AdBanner } from './ad-banner'
 import { CategoryFilterPopover } from './category-filters-popover'
 import { PriceInput } from './price-input'
 import { Badge } from './ui/badge'
@@ -537,7 +538,7 @@ export function Products({
           <Select
             defaultValue="20"
             value={limit}
-            onValueChange={(value) => setLimit(value)}
+            onValueChange={(value) => setLimit((Number(value) - 1).toString())}
             onOpenChange={(open) => {
               setTimeout(() => {
                 setSelectIsOpen(open)
@@ -563,9 +564,19 @@ export function Products({
           },
         )}
       >
-        {products?.map((product) => (
-          <ProductCard key={product.id} product={product} />
-        ))}
+        {products?.map((product, index) => {
+          if (index == 4)
+            return (
+              <div key={index} className="w-full rounded-xl border">
+                <AdBanner
+                  dataAdFormat="auto"
+                  dataAdSlot="1544934153"
+                  dataFullWidthResponsive
+                />
+              </div>
+            )
+          return <ProductCard key={product.id} product={product} />
+        })}
       </div>
       {products?.length && (
         <Pagination page={Number(page)} pageCount={pageCount} />
