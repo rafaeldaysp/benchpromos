@@ -852,10 +852,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
         </header>
         <Separator className="my-4" />
         {product.benchmarksResults.length > 0 ? (
-          <ProductBenchmarks
-            benchmarksResults={product.benchmarksResults}
-            productSlug={product.slug}
-          />
+          <ProductBenchmarks productSlug={product.slug} />
         ) : (
           <h3 className="text-sm text-muted-foreground">
             Esse produto não apresenta resultados em benchmarks.

@@ -170,6 +170,24 @@ export function BenchmarkForm({
 
         <FormField
           control={form.control}
+          name="imageUrl"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Imagem</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="https://image.png"
+                  aria-invalid={!!form.formState.errors.name}
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
           name="hidden"
           render={({ field }) => (
             <FormItem className="flex flex-row items-start justify-between space-x-3 space-y-0">

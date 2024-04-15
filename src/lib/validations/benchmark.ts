@@ -3,6 +3,7 @@ import * as z from 'zod'
 export const benchmarkSchema = z.object({
   name: z.string().min(1, 'Campo obrigatório'),
   parentId: z.string(),
+  imageUrl: z.string().optional(),
   hidden: z.boolean().default(false),
   lowerIsBetter: z.boolean().default(false),
 })

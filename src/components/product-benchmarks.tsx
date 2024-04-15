@@ -1,83 +1,75 @@
 'use client'
 
-import Link from 'next/link'
-
-import { cn } from '@/lib/utils'
 import { type Benchmark, type BenchmarkResult } from '@/types'
-import { Icons } from './icons'
-import { buttonVariants } from './ui/button'
+import { gql, useQuery } from '@apollo/client'
+
+import { ProductBenchmarkCard } from './product-benchmark-card'
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from './ui/dropdown-menu'
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from './ui/table'
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from './ui/carousel'
+
+const GET_GROUPED_BENCHMARKS = gql`
+  query GetGroupedBenchmarks($productSlug: String!) {
+    groupedBenchmarksForProduct(productSlug: $productSlug) {
+      name
+      id
+      imageUrl
+      children {
+        id
+        name
+        results {
+          id
+          result
+          description
+        }
+      }
+    }
+  }
+`
 
 interface ProductBenchmarksProps {
-  benchmarksResults: (Omit<BenchmarkResult, 'productId' | 'benchmarkId'> & {
-    benchmark: Omit<Benchmark, 'id'>
-  })[]
   productSlug: string
 }
 
-export function ProductBenchmarks({
-  benchmarksResults,
-  productSlug,
-}: ProductBenchmarksProps) {
+export function ProductBenchmarks({ productSlug }: ProductBenchmarksProps) {
+  const { data } = useQuery<{
+    groupedBenchmarksForProduct: (Benchmark & {
+      children: (Benchmark & { results: BenchmarkResult[] })[]
+    })[]
+  }>(GET_GROUPED_BENCHMARKS, {
+    variables: {
+      productSlug,
+    },
+  })
+
+  const groupedBenchmarks = data?.groupedBenchmarksForProduct
+
+  if (!groupedBenchmarks) return
+
   return (
-    <Table>
-      <TableCaption>Tabela de resultado por benchmark.</TableCaption>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Benchmark</TableHead>
-          <TableHead>Resultado</TableHead>
-          <TableHead className="max-sm:hidden">Descrição</TableHead>
-          <TableHead />
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {benchmarksResults.map((benchmarkResult) => (
-          <DropdownMenu key={benchmarkResult.id}>
-            <TableRow className="font-medium even:bg-muted">
-              <TableCell>{benchmarkResult.benchmark.name}</TableCell>
-              <TableCell>
-                {benchmarkResult.result} [{benchmarkResult.unit}]
-              </TableCell>
-              <TableCell className="max-sm:hidden">
-                {benchmarkResult.description ?? ''}
-              </TableCell>
-              <TableCell>
-                <DropdownMenuTrigger>
-                  <Icons.ChevronRight className="h-4 w-4" />
-                </DropdownMenuTrigger>
-              </TableCell>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem className="h-fit w-fit p-0">
-                  <Link
-                    href={`/benchmarks/${benchmarkResult.benchmark.slug}?product=${productSlug}`}
-                    className={cn(
-                      buttonVariants({ variant: 'ghost' }),
-                      'px-4 py-1 text-sm',
-                    )}
-                  >
-                    <Icons.BarChart4 className="mr-2 h-4 w-4" />
-                    Comparar
-                  </Link>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </TableRow>
-          </DropdownMenu>
+    <Carousel
+      opts={{
+        align: 'center',
+        dragFree: true,
+      }}
+      className="w-full"
+    >
+      <CarouselContent>
+        {groupedBenchmarks.map((benchmark) => (
+          <CarouselItem
+            key={benchmark.name}
+            className="sm:basis-1/2 lg:basis-1/3 xl:basis-1/4"
+          >
+            <ProductBenchmarkCard benchmark={benchmark} />
+          </CarouselItem>
         ))}
-      </TableBody>
-    </Table>
+      </CarouselContent>
+      <CarouselPrevious className="left-0" />
+      <CarouselNext className="right-0" />
+    </Carousel>
   )
 }
