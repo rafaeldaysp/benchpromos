@@ -16,6 +16,7 @@ const GET_BENCHMARKS = gql`
       name
       slug
       parentId
+      imageUrl
       hidden
       lowerIsBetter
     }
