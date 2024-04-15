@@ -10,8 +10,9 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { GET_SALES, type GetSalesQuery } from '@/queries'
 import ScrollToTopButton from '../scroll-to-top-button'
 import { SalesNavSimplified } from './sales-nav-simplified'
+import { AdBanner } from '../ad-banner'
 
-const SALES_PER_SCROLL = 12
+const SALES_PER_SCROLL = 11
 
 interface SalesProps {
   user?: { id: string; role: 'ADMIN' | 'MOD' | 'USER' }
@@ -78,14 +79,40 @@ export function Sales({ user, productSlug }: SalesProps) {
       <SalesNavSimplified />
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {sales.map((sale) => (
-          <SaleCard
-            key={sale.id}
-            sale={sale}
-            user={user}
-            apolloClient={client}
-          />
-        ))}
+        {sales.map((sale, index) => {
+          if (index > 0 && index % 8 == 0)
+            return (
+              <>
+                <div key={index} className="w-full rounded-xl border">
+                  <AdBanner
+                    dataAdFormat="auto"
+                    dataAdSlot="1544934153"
+                    dataFullWidthResponsive
+                  />
+                  <AdBanner
+                    dataAdFormat="auto"
+                    dataAdSlot="1544934153"
+                    dataFullWidthResponsive
+                  />
+                </div>
+                <SaleCard
+                  key={sale.id}
+                  sale={sale}
+                  user={user}
+                  apolloClient={client}
+                />
+              </>
+            )
+
+          return (
+            <SaleCard
+              key={sale.id}
+              sale={sale}
+              user={user}
+              apolloClient={client}
+            />
+          )
+        })}
         {isPending ? (
           Array.from({ length: SALES_PER_SCROLL }).map((_, i) => (
             <Skeleton key={i} className="h-full w-full" />
