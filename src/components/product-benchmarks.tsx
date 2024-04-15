@@ -1,28 +1,8 @@
 'use client'
 
-import Link from 'next/link'
-
-import { cn } from '@/lib/utils'
 import { type Benchmark, type BenchmarkResult } from '@/types'
-import { Icons } from './icons'
-import { buttonVariants } from './ui/button'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from './ui/dropdown-menu'
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from './ui/table'
 import { gql, useQuery } from '@apollo/client'
-import { Card, CardContent } from './ui/card'
+
 import { ProductBenchmarkCard } from './product-benchmark-card'
 import {
   Carousel,
@@ -52,16 +32,10 @@ const GET_GROUPED_BENCHMARKS = gql`
 `
 
 interface ProductBenchmarksProps {
-  benchmarksResults: (Omit<BenchmarkResult, 'productId' | 'benchmarkId'> & {
-    benchmark: Omit<Benchmark, 'id'>
-  })[]
   productSlug: string
 }
 
-export function ProductBenchmarks({
-  benchmarksResults,
-  productSlug,
-}: ProductBenchmarksProps) {
+export function ProductBenchmarks({ productSlug }: ProductBenchmarksProps) {
   const { data } = useQuery<{
     groupedBenchmarksForProduct: (Benchmark & {
       children: (Benchmark & { results: BenchmarkResult[] })[]

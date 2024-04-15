@@ -1,10 +1,11 @@
 'use client'
 
 import Image from 'next/image'
-import { Card, CardContent } from './ui/card'
 import { useState } from 'react'
-import { Badge } from './ui/badge'
+
 import { type Benchmark, type BenchmarkResult } from '@/types'
+import { Badge } from './ui/badge'
+import { Card, CardContent } from './ui/card'
 import { ScrollArea } from './ui/scroll-area'
 
 interface ProductBenchmarkCardProps {
