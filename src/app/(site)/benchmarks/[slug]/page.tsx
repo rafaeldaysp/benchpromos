@@ -52,12 +52,19 @@ export default async function BenchmarkPage({
 
   const filtersInput = Object.entries(filters)
     .filter(([, value]) => value)
+    .filter(
+      ([key]) =>
+        !notebooksCustomFilters.some(
+          (customFilter) => customFilter.slug === key,
+        ),
+    )
     .map(([key, value]) => {
       return {
         slug: key,
         options: value!.split('.'),
       }
     })
+  console.log(filtersInput)
 
   const productsArray = productsString?.split('.')
 
