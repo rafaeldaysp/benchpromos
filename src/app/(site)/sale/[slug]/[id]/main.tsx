@@ -9,7 +9,6 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import * as React from 'react'
 
-import { AdBanner } from '@/components/ad-banner'
 import { CashbackModal } from '@/components/cashback-modal'
 import { CouponModal } from '@/components/coupon-modal'
 import { Icons } from '@/components/icons'
@@ -327,14 +326,7 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
           </div>
         )}
       </main>
-      <aside className="space-y-4 xl:col-span-2" id="comments">
-        <div className="h-40 w-full">
-          <AdBanner
-            dataAdFormat="auto"
-            dataAdSlot="1544934153"
-            dataFullWidthResponsive
-          />
-        </div>
+      <aside className="xl:col-span-2" id="comments">
         <Comments saleId={sale.id} user={user} count={sale.commentsCount} />
       </aside>
     </div>
