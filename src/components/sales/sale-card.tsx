@@ -1,7 +1,7 @@
 'use client'
 
 import { gql, useMutation, type ApolloClient } from '@apollo/client'
-import { BookmarkFilledIcon, StarFilledIcon } from '@radix-ui/react-icons'
+import { StarFilledIcon } from '@radix-ui/react-icons'
 import dayjs from 'dayjs'
 import 'dayjs/locale/pt-br'
 import relativeTime from 'dayjs/plugin/relativeTime'
@@ -43,6 +43,7 @@ import { cn } from '@/lib/utils'
 import type { Cashback } from '@/types'
 import { removeNullValues } from '@/utils'
 import { priceFormatter } from '@/utils/formatter'
+import { priceCalculator } from '@/utils/price-calculator'
 import { SaleForm } from '../forms/sale-form'
 import { LoginPopup } from '../login-popup'
 import {
@@ -209,22 +210,19 @@ export function SaleCard({
                   )}
                   <div className="col-span-2 flex flex-col justify-center space-y-1.5 text-[14px] sm:space-y-2">
                     <div
-                      className={cn('flex w-fit flex-col sm:w-full', {
+                      className={cn('flex w-fit flex-col pt-1 sm:w-full', {
                         'rounded-xl border border-primary': sale.cashback,
                       })}
                     >
-                      {sale.cashback && (
-                        <div className="flex w-fit items-center rounded-br rounded-tl-lg bg-primary px-2 text-xs font-semibold text-primary-foreground">
-                          <Icons.Plus className="h-3 w-3" />
-                          <span className="">
-                            {sale.cashback.value}% CASHBACK
-                          </span>
-                        </div>
-                      )}
-
                       <p className={sale.cashback ? 'px-2' : ''}>
                         <strong className="text-xl sm:text-2xl">
-                          {priceFormatter.format(sale.price / 100)}
+                          {priceFormatter.format(
+                            priceCalculator(
+                              sale.price,
+                              undefined,
+                              sale.cashback?.value,
+                            ) / 100,
+                          )}
                         </strong>{' '}
                         <span className="text-xs text-muted-foreground sm:text-sm">
                           à vista{' '}
@@ -236,7 +234,11 @@ export function SaleCard({
                           ou{' '}
                           <strong className="max-sm:text-sm">
                             {priceFormatter.format(
-                              sale.totalInstallmentPrice / 100,
+                              priceCalculator(
+                                sale.totalInstallmentPrice,
+                                undefined,
+                                sale.cashback?.value,
+                              ) / 100,
                             )}
                           </strong>{' '}
                           em{' '}
@@ -248,12 +250,23 @@ export function SaleCard({
                             de{' '}
                             <strong>
                               {priceFormatter.format(
-                                sale.totalInstallmentPrice /
+                                priceCalculator(
+                                  sale.totalInstallmentPrice,
+                                  undefined,
+                                  sale.cashback?.value,
+                                ) /
                                   (100 * sale.installments),
                               )}
                             </strong>
                           </p>
                         </span>
+                      )}
+                      {sale.cashback && (
+                        <div className="mt-1 flex w-fit items-center rounded-bl-lg rounded-tr bg-primary px-2 text-xs font-semibold text-primary-foreground">
+                          <span className="max-sm:text-[10px]">
+                            COM {sale.cashback.value}% DE CASHBACK
+                          </span>
+                        </div>
                       )}
                     </div>
 
