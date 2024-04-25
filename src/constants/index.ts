@@ -24,6 +24,12 @@ export const notebooksCustomFilters = [
     label: 'Ocultar Frame Generation',
     slug: 'hide-frame-generation',
     value: 'Frame Generation',
+    type: 'hide',
   },
-  { label: 'Ocultar Modo Turbo', slug: 'hide-modo-turbo', value: 'Modo Turbo' },
+  {
+    label: 'Mostrar Modo Turbo',
+    slug: 'show-modo-turbo',
+    value: 'Modo Turbo',
+    type: 'show',
+  },
 ]

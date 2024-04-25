@@ -91,14 +91,24 @@ export default async function BenchmarkPage({
     errorPolicy: 'ignore',
   })
 
-  const customFiltersApplied = notebooksCustomFilters.filter(
-    (customFilter) => filters[customFilter.slug],
+  const toHideFromShowingCustomFilters = notebooksCustomFilters.filter(
+    (customFilter) =>
+      customFilter.type == 'show' && !filters[customFilter.slug],
   )
+
+  const toHideFromHidingCustomFilters = notebooksCustomFilters.filter(
+    (customFilter) => customFilter.type == 'hide' && filters[customFilter.slug],
+  )
+
+  const toHideFromCustomFilters = [
+    ...toHideFromShowingCustomFilters,
+    ...toHideFromHidingCustomFilters,
+  ]
 
   const results = (data?.benchmarkResults ?? []).filter(
     (result) =>
-      !customFiltersApplied.length ||
-      !customFiltersApplied.some(
+      !toHideFromCustomFilters.length ||
+      !toHideFromCustomFilters.some(
         (customFilter) => result.description?.includes(customFilter.value),
       ),
   )

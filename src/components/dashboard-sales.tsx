@@ -5,6 +5,7 @@ import { InView } from 'react-intersection-observer'
 
 import { Icons } from '@/components/icons'
 import { ScrollArea } from '@/components/ui/scroll-area'
+import { env } from '@/env.mjs'
 import { useDebounce } from '@/hooks/use-debounce'
 import { cn } from '@/lib/utils'
 import type { Cashback, Category, Product, Sale } from '@/types'
@@ -99,6 +100,11 @@ export function DashboardSales({ children }: DashboardSalesProps) {
   }>(GET_SALES, {
     fetchPolicy: 'cache-and-network',
     refetchWritePolicy: 'overwrite',
+    context: {
+      headers: {
+        'api-key': env.NEXT_PUBLIC_API_KEY,
+      },
+    },
     variables: {
       search: debouncedQuery,
       pagination: {

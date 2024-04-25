@@ -53,7 +53,8 @@ export function ProductBenchmarkCard({ benchmark }: ProductBenchmarkCardProps) {
                         .replace(new RegExp(benchmark.name, 'ig'), '')
                         .replace('-', '')
                         .trim()
-                        .concat(` [${resultData.result.toString()}]`)}
+                        .concat(` [${resultData.result.toString()}]`)
+                        .concat(` ${resultData.description?.toString()}`)}
                     </Badge>
                   ))
                 })}
