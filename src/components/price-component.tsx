@@ -127,7 +127,7 @@ export function PriceComponent({
                   <strong className="text-3xl">
                     {priceFormatter.format(
                       priceCalculator(
-                        bestInstallmentDeal.price,
+                        bestInstallmentDeal.totalInstallmentPrice,
                         bestInstallmentDeal.coupon?.availability
                           ? bestInstallmentDeal.coupon.discount
                           : undefined,
@@ -161,7 +161,7 @@ export function PriceComponent({
                         <strong className="text-xl">
                           {priceFormatter.format(
                             priceCalculator(
-                              bestInstallmentDeal.price,
+                              bestInstallmentDeal.totalInstallmentPrice,
                               bestInstallmentDeal.coupon?.availability
                                 ? bestInstallmentDeal.coupon.discount
                                 : undefined,
