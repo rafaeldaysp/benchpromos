@@ -29,15 +29,7 @@ import { Separator } from '@/components/ui/separator'
 import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table'
 import { siteConfig } from '@/config/site'
 import { cn } from '@/lib/utils'
-import type {
-  Benchmark,
-  BenchmarkResult,
-  Cashback,
-  Coupon,
-  Deal,
-  Product,
-  Retailer,
-} from '@/types'
+import type { Cashback, Coupon, Deal, Product, Retailer } from '@/types'
 import { couponFormatter, priceFormatter } from '@/utils/formatter'
 import { priceCalculator } from '@/utils/price-calculator'
 import { PriceComponent } from '@/components/price-component'

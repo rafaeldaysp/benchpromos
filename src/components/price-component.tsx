@@ -1,10 +1,10 @@
 import { type Cashback, type Coupon, type Deal, type Retailer } from '@/types'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs'
 import { couponFormatter, priceFormatter } from '@/utils/formatter'
 import { priceCalculator } from '@/utils/price-calculator'
-import { Icons } from './icons'
-import { CouponModal } from './coupon-modal'
 import { CashbackModal } from './cashback-modal'
+import { CouponModal } from './coupon-modal'
+import { Icons } from './icons'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs'
 
 interface PriceComponentProps {
   bestDeal: Deal & {
@@ -26,7 +26,6 @@ export function PriceComponent({
   bestDeal,
   bestInstallmentDeal,
 }: PriceComponentProps) {
-  console.log(bestInstallmentDeal)
   return (
     <Tabs defaultValue="1x" className="w-full">
       <TabsList className="w-full">
