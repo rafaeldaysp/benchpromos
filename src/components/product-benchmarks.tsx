@@ -48,7 +48,12 @@ export function ProductBenchmarks({ productSlug }: ProductBenchmarksProps) {
 
   const groupedBenchmarks = data?.groupedBenchmarksForProduct
 
-  if (!groupedBenchmarks) return
+  if (!groupedBenchmarks?.length)
+    return (
+      <h3 className="text-sm text-muted-foreground">
+        Esse produto não apresenta resultados em benchmarks.
+      </h3>
+    )
 
   return (
     <Carousel
