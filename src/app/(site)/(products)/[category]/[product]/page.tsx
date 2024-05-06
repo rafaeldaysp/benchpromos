@@ -216,7 +216,10 @@ export default async function ProductPage({ params }: ProductPageProps) {
     errorPolicy: 'all',
   })
 
-  if (errors || !data.product) notFound()
+  if (errors || !data.product) {
+    console.log(errors)
+    notFound()
+  }
 
   const product = data.product
   const bestDeal = product.deals[0]
