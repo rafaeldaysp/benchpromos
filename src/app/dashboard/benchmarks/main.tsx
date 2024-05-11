@@ -138,6 +138,12 @@ export function BenchmarksMain({ benchmarks, results }: BenchmarksMainProps) {
           >
             {filteredBenchmarks.map((benchmark) => (
               <DashboardItemCard.Root key={benchmark.id}>
+                {benchmark.imageUrl && (
+                  <DashboardItemCard.Image
+                    src={benchmark.imageUrl}
+                    alt={benchmark.name}
+                  />
+                )}
                 <DashboardItemCard.Content>
                   <p className="text-sm leading-7">{benchmark.name}</p>
                 </DashboardItemCard.Content>

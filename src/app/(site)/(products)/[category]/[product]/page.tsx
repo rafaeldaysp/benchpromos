@@ -29,20 +29,16 @@ import { Separator } from '@/components/ui/separator'
 import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table'
 import { siteConfig } from '@/config/site'
 import { cn } from '@/lib/utils'
-import type {
-  Benchmark,
-  BenchmarkResult,
-  Cashback,
-  Coupon,
-  Deal,
-  Product,
-  Retailer,
-} from '@/types'
+import type { Cashback, Coupon, Deal, Product, Retailer } from '@/types'
 import { couponFormatter, priceFormatter } from '@/utils/formatter'
 import { priceCalculator } from '@/utils/price-calculator'
+import { PriceComponent } from '@/components/price-component'
 
 const GET_PRODUCT = gql`
-  query GetProduct($productInput: GetProductInput!) {
+  query GetProduct(
+    $productInput: GetProductInput!
+    $productWithDealsSortedByInstallmentPrice: GetProductInput!
+  ) {
     product(getProductInput: $productInput) {
       id
       name
@@ -82,18 +78,33 @@ const GET_PRODUCT = gql`
           affiliatedUrl
         }
       }
-      benchmarksResults: benchmarks {
+      suggestionSlugs
+    }
+    productWithInstallmentDeals: product(
+      getProductInput: $productWithDealsSortedByInstallmentPrice
+    ) {
+      deals {
         id
-        result
-        unit
-        description
-        productAlias
-        benchmark {
+        installments
+        totalInstallmentPrice
+        price
+        url
+        availability
+        retailer {
           name
-          slug
+        }
+        coupon {
+          availability
+          discount
+          code
+        }
+        cashback {
+          value
+          provider
+          video
+          affiliatedUrl
         }
       }
-      suggestionSlugs
     }
   }
 `
@@ -181,9 +192,12 @@ export default async function ProductPage({ params }: ProductPageProps) {
         coupon: Coupon
         cashback: Cashback
       })[]
-
-      benchmarksResults: (Omit<BenchmarkResult, 'productId' | 'benchmarkId'> & {
-        benchmark: Omit<Benchmark, 'id'>
+    }
+    productWithInstallmentDeals: Product & {
+      deals: (Deal & {
+        retailer: Retailer
+        coupon: Coupon
+        cashback: Cashback
       })[]
     }
   }>({
@@ -193,14 +207,23 @@ export default async function ProductPage({ params }: ProductPageProps) {
         identifier: slug,
         hasDeals: true,
       },
+      productWithDealsSortedByInstallmentPrice: {
+        identifier: slug,
+        hasDeals: true,
+        sortDealsByInstallmentPrice: true,
+      },
     },
     errorPolicy: 'all',
   })
 
-  if (errors || !data.product) notFound()
+  if (errors || !data.product) {
+    console.log(errors)
+    notFound()
+  }
 
   const product = data.product
   const bestDeal = product.deals[0]
+  const bestInstallmentDeal = data.productWithInstallmentDeals.deals?.[0]
 
   return (
     <main className="relative mx-auto space-y-8 px-4 py-10 sm:container">
@@ -223,194 +246,10 @@ export default async function ProductPage({ params }: ProductPageProps) {
             </div>
             <div className="flex flex-col space-y-2 md:flex-1 md:pr-8 lg:pr-0">
               {bestDeal.availability ? (
-                <div className="flex w-full flex-col gap-y-2 text-sm">
-                  <div className="flex flex-col gap-y-1">
-                    <p className="text-muted-foreground">
-                      menor preço via <strong>{bestDeal.retailer.name}</strong>
-                    </p>
-
-                    <p>
-                      <strong className="text-3xl">
-                        {priceFormatter.format(
-                          priceCalculator(
-                            bestDeal.price,
-                            bestDeal.coupon?.availability
-                              ? bestDeal.coupon.discount
-                              : undefined,
-                          ) / 100,
-                        )}
-                      </strong>{' '}
-                      <span className="text-muted-foreground">à vista </span>
-                    </p>
-
-                    {!!bestDeal.installments &&
-                      !!bestDeal.totalInstallmentPrice && (
-                        <span className="text-muted-foreground">
-                          ou{' '}
-                          <strong className="text-base">
-                            {priceFormatter.format(
-                              priceCalculator(
-                                bestDeal.totalInstallmentPrice,
-                                bestDeal.coupon?.availability
-                                  ? bestDeal.coupon.discount
-                                  : undefined,
-                              ) / 100,
-                            )}
-                          </strong>{' '}
-                          em{' '}
-                          <strong className="text-base">
-                            {bestDeal.installments}x
-                          </strong>{' '}
-                          de{' '}
-                          <strong className="text-base">
-                            {priceFormatter.format(
-                              priceCalculator(
-                                bestDeal.totalInstallmentPrice,
-                                bestDeal.coupon?.availability
-                                  ? bestDeal.coupon.discount
-                                  : undefined,
-                              ) /
-                                (100 * bestDeal.installments),
-                            )}
-                          </strong>
-                        </span>
-                      )}
-                    {bestDeal.cashback && (
-                      <div className="flex flex-col items-start rounded-xl bg-auxiliary/20 px-4 py-2 text-sm text-muted-foreground">
-                        <span className="flex items-center font-semibold">
-                          <Icons.AlertCircle className="mr-2 h-4 w-4 text-auxiliary" />
-                          Preço final com cashback
-                        </span>
-                        <span className="ml-1 text-foreground">
-                          <p>
-                            <strong className="text-xl">
-                              {priceFormatter.format(
-                                priceCalculator(
-                                  bestDeal.price,
-                                  bestDeal.coupon?.availability
-                                    ? bestDeal.coupon.discount
-                                    : undefined,
-                                  bestDeal.cashback?.value,
-                                ) / 100,
-                              )}
-                            </strong>{' '}
-                            <span className="text-muted-foreground">
-                              à vista{' '}
-                            </span>
-                          </p>
-
-                          {!!bestDeal.installments &&
-                            !!bestDeal.totalInstallmentPrice && (
-                              <span className="text-muted-foreground">
-                                ou{' '}
-                                <strong className="">
-                                  {priceFormatter.format(
-                                    priceCalculator(
-                                      bestDeal.totalInstallmentPrice,
-                                      bestDeal.coupon?.availability
-                                        ? bestDeal.coupon.discount
-                                        : undefined,
-                                      bestDeal.cashback?.value,
-                                    ) / 100,
-                                  )}
-                                </strong>{' '}
-                                em{' '}
-                                <strong className="">
-                                  {bestDeal.installments}x
-                                </strong>{' '}
-                                de{' '}
-                                <strong className="">
-                                  {priceFormatter.format(
-                                    priceCalculator(
-                                      bestDeal.totalInstallmentPrice,
-                                      bestDeal.coupon?.availability
-                                        ? bestDeal.coupon.discount
-                                        : undefined,
-                                      bestDeal.cashback?.value,
-                                    ) /
-                                      (100 * bestDeal.installments),
-                                  )}
-                                </strong>
-                              </span>
-                            )}
-                        </span>
-                      </div>
-                      // <div className="flex items-center gap-x-2 rounded-xl border p-2 text-sm text-muted-foreground">
-                      //   <div>
-                      //     <Icons.AlertCircle className="h-4 w-4 text-auxiliary" />
-                      //   </div>
-                      //   <div>
-                      //     Você paga{' '}
-                      //     <span className="font-bold text-foreground">
-                      //       {priceFormatter.format(
-                      //         priceCalculator(
-                      //           bestDeal.price,
-                      //           bestDeal.coupon?.availability
-                      //             ? bestDeal.coupon.discount
-                      //             : undefined,
-                      //           undefined,
-                      //         ) / 100,
-                      //       )}{' '}
-                      //     </span>
-                      //     à vista
-                      //     {bestDeal.installments &&
-                      //       bestDeal.totalInstallmentPrice && (
-                      //         <span>
-                      //           {' '}
-                      //           ou{' '}
-                      //           <span className="font-bold text-foreground">
-                      //             {priceFormatter.format(
-                      //               priceCalculator(
-                      //                 bestDeal.totalInstallmentPrice,
-                      //                 bestDeal.coupon?.availability
-                      //                   ? bestDeal.coupon.discount
-                      //                   : undefined,
-                      //                 undefined,
-                      //               ) / 100,
-                      //             )}
-                      //           </span>{' '}
-                      //           em até{' '}
-                      //           <span className="font-bold text-foreground">
-                      //             {bestDeal.installments}x
-                      //           </span>{' '}
-                      //           e recebe{' '}
-                      //           <span className="font-bold text-foreground">
-                      //             {bestDeal.cashback.value}%
-                      //           </span>{' '}
-                      //           de cashback
-                      //         </span>
-                      //       )}
-                      //   </div>
-                      // </div>
-                    )}
-                  </div>
-                  {bestDeal.coupon?.availability && (
-                    <CouponModal
-                      coupon={bestDeal.coupon}
-                      description={
-                        <span className="text-muted-foreground">
-                          {couponFormatter(bestDeal.coupon.discount)} de
-                          desconto{' '}
-                          <span className="hidden sm:inline-flex">
-                            neste produto
-                          </span>
-                        </span>
-                      }
-                    />
-                  )}
-
-                  {bestDeal.cashback && (
-                    <CashbackModal
-                      cashback={bestDeal.cashback}
-                      description={
-                        <span className="text-muted-foreground">
-                          {bestDeal.cashback.value}% de volta com{' '}
-                          {bestDeal.cashback.provider}
-                        </span>
-                      }
-                    />
-                  )}
-                </div>
+                <PriceComponent
+                  bestDeal={bestDeal}
+                  bestInstallmentDeal={bestInstallmentDeal}
+                />
               ) : (
                 <strong className="text-xl text-destructive">
                   Indisponível
@@ -438,27 +277,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
             token={token}
           />
 
-          {/* <Card>
-            <CardContent className="py-4">
-              <div className="flex items-start space-x-2">
-                <Icons.LineChart className="h-4 w-4 text-auxiliary" />
-                <Label className="flex flex-1 flex-col space-y-1">
-                  <CardTitle>O preço está bom?</CardTitle>
-                  <CardDescription>
-                    Utilize nosso histórico para analisar o preço do produto
-                  </CardDescription>
-                </Label>
-              </div>
-            </CardContent>
-            <CardFooter className="scroll-smooth pb-4">
-              <Link
-                href={'#historico'}
-                className={cn(buttonVariants({ variant: 'outline' }))}
-              >
-                Ver histórico
-              </Link>
-            </CardFooter>
-          </Card> */}
           {product.suggestionSlugs.length > 0 && (
             <ProductSuggestions slug={product.slug} />
           )}
@@ -843,16 +661,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
           </p>
         </header>
         <Separator className="my-4" />
-        {product.benchmarksResults.length > 0 ? (
-          <ProductBenchmarks
-            benchmarksResults={product.benchmarksResults}
-            productSlug={product.slug}
-          />
-        ) : (
-          <h3 className="text-sm text-muted-foreground">
-            Esse produto não apresenta resultados em benchmarks.
-          </h3>
-        )}
+        <ProductBenchmarks productSlug={product.slug} />
       </section>
 
       <section id="review">

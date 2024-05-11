@@ -35,6 +35,7 @@ import { useFormStore } from '@/hooks/use-form-store'
 import { couponSchema } from '@/lib/validations/coupon'
 import type { Retailer } from '@/types'
 import { PriceInput } from '../price-input'
+import { ScrollArea } from '../ui/scroll-area'
 
 const CREATE_COUPON = gql`
   mutation CreateCoupon($input: CreateCouponInput!) {
@@ -158,14 +159,16 @@ export function CouponForm({ mode = 'create', coupon }: CouponFormProps) {
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {retailerItems?.map((retailerItem) => (
-                    <SelectItem
-                      key={retailerItem.value}
-                      value={retailerItem.value}
-                    >
-                      {retailerItem.label}
-                    </SelectItem>
-                  ))}
+                  <ScrollArea className="h-80">
+                    {retailerItems?.map((retailerItem) => (
+                      <SelectItem
+                        key={retailerItem.value}
+                        value={retailerItem.value}
+                      >
+                        {retailerItem.label}
+                      </SelectItem>
+                    ))}
+                  </ScrollArea>
                 </SelectContent>
               </Select>
               <FormMessage />

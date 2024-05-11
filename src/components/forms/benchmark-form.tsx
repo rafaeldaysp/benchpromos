@@ -170,10 +170,45 @@ export function BenchmarkForm({
 
         <FormField
           control={form.control}
+          name="imageUrl"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Imagem</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="https://image.png"
+                  aria-invalid={!!form.formState.errors.name}
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
           name="hidden"
           render={({ field }) => (
             <FormItem className="flex flex-row items-start justify-between space-x-3 space-y-0">
               <FormLabel>Privado</FormLabel>
+              <FormControl>
+                <Checkbox
+                  checked={field.value}
+                  // @ts-expect-error ...
+                  onCheckedChange={field.onChange}
+                />
+              </FormControl>
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="lowerIsBetter"
+          render={({ field }) => (
+            <FormItem className="flex flex-row items-start justify-between space-x-3 space-y-0">
+              <FormLabel>Menor é melhor</FormLabel>
               <FormControl>
                 <Checkbox
                   checked={field.value}

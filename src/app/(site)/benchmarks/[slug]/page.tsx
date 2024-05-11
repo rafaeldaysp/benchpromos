@@ -3,6 +3,8 @@ import { gql } from '@apollo/client'
 
 import { BenchmarkChart } from '@/components/benchmarks/benchmark-chart'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { notebooksCustomFilters } from '@/constants'
+import { type Benchmark } from '@/types'
 
 const GET_BENCHMARK_RESULTS = gql`
   query GetBenchmarks(
@@ -15,6 +17,7 @@ const GET_BENCHMARK_RESULTS = gql`
       productsSlugs: $productsSlugs
       filters: $filters
     ) {
+      id
       result
       description
       productAlias
@@ -26,6 +29,7 @@ const GET_BENCHMARK_RESULTS = gql`
       benchmark {
         slug
         name
+        lowerIsBetter
       }
     }
   }
@@ -48,17 +52,25 @@ export default async function BenchmarkPage({
 
   const filtersInput = Object.entries(filters)
     .filter(([, value]) => value)
+    .filter(
+      ([key]) =>
+        !notebooksCustomFilters.some(
+          (customFilter) => customFilter.slug === key,
+        ),
+    )
     .map(([key, value]) => {
       return {
         slug: key,
         options: value!.split('.'),
       }
     })
+  console.log(filtersInput)
 
   const productsArray = productsString?.split('.')
 
   const { data } = await getClient().query<{
     benchmarkResults: {
+      id: string
       result: number
       productAlias: string
       unit: string
@@ -67,10 +79,7 @@ export default async function BenchmarkPage({
         name: string
         slug: string
       }[]
-      benchmark: {
-        name: string
-        slug: string
-      }
+      benchmark: Pick<Benchmark, 'name' | 'slug' | 'lowerIsBetter'>
     }[]
   }>({
     query: GET_BENCHMARK_RESULTS,
@@ -82,7 +91,27 @@ export default async function BenchmarkPage({
     errorPolicy: 'ignore',
   })
 
-  const results = data?.benchmarkResults ?? []
+  const toHideFromShowingCustomFilters = notebooksCustomFilters.filter(
+    (customFilter) =>
+      customFilter.type == 'show' && !filters[customFilter.slug],
+  )
+
+  const toHideFromHidingCustomFilters = notebooksCustomFilters.filter(
+    (customFilter) => customFilter.type == 'hide' && filters[customFilter.slug],
+  )
+
+  const toHideFromCustomFilters = [
+    ...toHideFromShowingCustomFilters,
+    ...toHideFromHidingCustomFilters,
+  ]
+
+  const results = (data?.benchmarkResults ?? []).filter(
+    (result) =>
+      !toHideFromCustomFilters.length ||
+      !toHideFromCustomFilters.some(
+        (customFilter) => result.description?.includes(customFilter.value),
+      ),
+  )
 
   const benchmarkName =
     results.find((result) => result.benchmark.slug === slug)?.benchmark.name ??

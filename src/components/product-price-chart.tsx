@@ -18,10 +18,16 @@ import {
 import { cn } from '@/lib/utils'
 import { priceFormatter } from '@/utils/formatter'
 import { Icons } from './icons'
+import { PriceBar } from './product-history-price-bar'
 import { buttonVariants } from './ui/button'
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover'
-import { Toggle } from './ui/toggle'
-import { PriceBar } from './product-history-price-bar'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from './ui/select'
 
 dayjs.locale('pt-br')
 
@@ -49,17 +55,23 @@ const GET_PRODUCT_HISTORY = gql`
     productHistory(productHistoryInput: $input) {
       dailyHistory {
         lowestPrice
+        lowestInstallmentPrice
         date
       }
       minPeriodPriceDay {
         date
         lowestPrice
       }
+      minPeriodInstallmentPriceDay {
+        date
+        lowestInstallmentPrice
+      }
     }
   }
 `
 type DailyHistory = {
   lowestPrice: number
+  lowestInstallmentPrice: number
   date: string
 }
 interface PriceChartProps {
@@ -72,11 +84,13 @@ export default function PriceChart({
   currentPrice,
 }: PriceChartProps) {
   const [periodInDays, setPeriodInDays] = React.useState(30)
+  const [showInstallmentPrice, setShowInstallmentPrice] = React.useState(false)
 
   const { data, refetch } = useQuery<{
     productHistory: {
       dailyHistory: DailyHistory[]
       minPeriodPriceDay?: DailyHistory
+      minPeriodInstallmentPriceDay?: DailyHistory
     }
   }>(GET_PRODUCT_HISTORY, {
     variables: {
@@ -90,6 +104,8 @@ export default function PriceChart({
     errorPolicy: 'ignore',
   })
   const minPeriodPriceDay = data?.productHistory?.minPeriodPriceDay
+  const minPeriodInstallmentPriceDay =
+    data?.productHistory?.minPeriodInstallmentPriceDay
   const dailyHistory = data?.productHistory?.dailyHistory ?? []
 
   const { theme, systemTheme } = useTheme()
@@ -104,58 +120,94 @@ export default function PriceChart({
       {currentPrice && (
         <PriceBar
           data={dailyHistory
-            .filter((dayHistory) => dayHistory.lowestPrice)
-            .map((dayHistory) => dayHistory.lowestPrice)}
+            .filter((dayHistory) =>
+              showInstallmentPrice
+                ? dayHistory.lowestInstallmentPrice > 0
+                : dayHistory.lowestPrice,
+            )
+            .map((dayHistory) =>
+              showInstallmentPrice
+                ? dayHistory.lowestInstallmentPrice
+                : dayHistory.lowestPrice,
+            )}
           currentValue={currentPrice}
           dataRange={periodInDays}
         />
       )}
-      <section className="flex justify-between gap-2 font-medium">
-        <nav className="w-fit rounded-lg bg-muted p-1 sm:space-x-1">
-          {fromNowOptions.map((option) => (
-            <Toggle
-              variant={'primary'}
-              className="h-fit px-2 py-1 text-muted-foreground data-[state=on]:shadow"
-              key={option.value}
-              pressed={periodInDays === option.value}
-              onPressedChange={() => {
-                setPeriodInDays(option.value)
-                refetch({
-                  input: {
-                    periodInDays: option.value,
-                    productId: productSlug,
-                  },
-                })
-              }}
-            >
-              {option.label}
-            </Toggle>
-          ))}
-        </nav>
-        {minPeriodPriceDay && (
+      <section className="grid grid-cols-1 justify-between gap-2 font-medium sm:grid-cols-3">
+        <Select
+          value={periodInDays.toString()}
+          onValueChange={(value) => {
+            setPeriodInDays(Number(value))
+            refetch({
+              input: {
+                periodInDays: Number(value),
+                productId: productSlug,
+              },
+            })
+          }}
+        >
+          <SelectTrigger className="">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent side="top">
+            {fromNowOptions.map((option) => (
+              <SelectItem key={option.value} value={option.value.toString()}>
+                {option.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <Select
+          value={showInstallmentPrice ? 'true' : 'false'}
+          onValueChange={(value) => {
+            setShowInstallmentPrice(value == 'true')
+          }}
+        >
+          <SelectTrigger className="">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent side="top">
+            <SelectItem value="false">À vista</SelectItem>
+            <SelectItem value="true">Parcelado</SelectItem>
+          </SelectContent>
+        </Select>
+        {minPeriodPriceDay && minPeriodInstallmentPriceDay && (
           <Popover>
             <PopoverTrigger
               className={cn(
-                buttonVariants({ variant: 'outline' }),
+                buttonVariants({ variant: 'secondary' }),
                 'flex gap-x-2 px-2 py-1',
               )}
             >
-              <span className="hidden items-center gap-x-1 sm:flex">
-                <h3 className="text-center text-sm text-muted-foreground">
-                  Menor preço:
+              <span className="flex items-center gap-x-1">
+                <h3 className="hidden text-center text-sm text-muted-foreground md:block">
+                  Menor:
                 </h3>
                 <span className="text-center">
-                  {priceFormatter.format(minPeriodPriceDay?.lowestPrice / 100)}
+                  {priceFormatter.format(
+                    (showInstallmentPrice
+                      ? minPeriodInstallmentPriceDay.lowestInstallmentPrice
+                      : minPeriodPriceDay.lowestPrice) / 100,
+                  )}
                 </span>
               </span>
-              <Icons.HelpCircle className="h-4 w-4 text-foreground" />
+              <Icons.ChevronDown className="h-4 w-4 text-foreground" />
             </PopoverTrigger>
             <PopoverContent className="flex w-fit flex-col items-center justify-center">
               <h3 className="font-semibold">
-                {dayjs(minPeriodPriceDay.date).format('DD[ de] MMMM YYYY')}
+                {dayjs(
+                  showInstallmentPrice
+                    ? minPeriodInstallmentPriceDay?.date
+                    : minPeriodPriceDay.date,
+                ).format('DD[ de] MMMM YYYY')}
               </h3>
               <span className="font-medium text-muted-foreground">
-                {priceFormatter.format(minPeriodPriceDay.lowestPrice / 100)}
+                {priceFormatter.format(
+                  (showInstallmentPrice
+                    ? minPeriodInstallmentPriceDay?.lowestInstallmentPrice
+                    : minPeriodPriceDay?.lowestPrice) / 100,
+                )}
               </span>
               <h3 className="flex items-center pt-2 text-sm text-success sm:hidden">
                 <Icons.Check className="mr-1 h-4 w-4 text-success" />
@@ -201,7 +253,9 @@ export default function PriceChart({
             stroke={accentColor}
           />
           <YAxis
-            dataKey="lowestPrice"
+            dataKey={
+              showInstallmentPrice ? 'lowestInstallmentPrice' : 'lowestPrice'
+            }
             axisLine={false}
             tickMargin={6}
             tickLine={false}
@@ -223,7 +277,9 @@ export default function PriceChart({
           <Area
             connectNulls
             type="monotone"
-            dataKey="lowestPrice"
+            dataKey={
+              showInstallmentPrice ? 'lowestInstallmentPrice' : 'lowestPrice'
+            }
             stroke="#8884d8"
             strokeWidth={4}
             fill="url(#color)"

@@ -10,14 +10,15 @@ import { cn } from '@/lib/utils'
 import { GET_SALES, type GetSalesQuery } from '@/queries'
 import { type Product } from '@/types'
 import { priceFormatter } from '@/utils/formatter'
+import { priceCalculator } from '@/utils/price-calculator'
+import { CashbackModal } from './cashback-modal'
+import { CouponModal } from './coupon-modal'
 import { Icons } from './icons'
 import { Badge } from './ui/badge'
 import { buttonVariants } from './ui/button'
 import { Card, CardContent, CardFooter, CardHeader } from './ui/card'
-import { ScrollArea } from './ui/scroll-area'
 import { Dialog } from './ui/dialog'
-import { CouponModal } from './coupon-modal'
-import { CashbackModal } from './cashback-modal'
+import { ScrollArea } from './ui/scroll-area'
 
 dayjs.extend(relativeTime)
 dayjs.locale('pt-br')
@@ -87,7 +88,13 @@ export function ProductSales({ product }: ProductSalesProps) {
                 <div className="flex flex-1 flex-col text-xs">
                   <p>
                     <strong className="text-lg">
-                      {priceFormatter.format(sale.price / 100)}
+                      {priceFormatter.format(
+                        priceCalculator(
+                          sale.price,
+                          undefined,
+                          sale.cashback?.value,
+                        ) / 100,
+                      )}
                     </strong>{' '}
                     <span className="text-muted-foreground">à vista </span>
                   </p>
