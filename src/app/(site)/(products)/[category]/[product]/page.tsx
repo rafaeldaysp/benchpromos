@@ -341,7 +341,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
         </article>
       </section>
 
-      <section id="historico">
+      <section id="suggestions">
         <div className="space-y-1">
           <h2 className="font-semibold tracking-tight md:text-xl">
             Sugestões e upgrades
@@ -352,8 +352,13 @@ export default async function ProductPage({ params }: ProductPageProps) {
           </p>
         </div>
         <Separator className="my-4" />
-        {product.suggestionSlugs.length > 0 && (
+        {product.suggestionSlugs.length > 0 ? (
           <ProductSuggestions slug={product.slug} />
+        ) : (
+          <h3 className="text-sm text-muted-foreground">
+            Estamos trabalhando para trazer todas novas sugestões em breve.
+            Agradecemos sua paciência e interesse pelo produto.
+          </h3>
         )}
       </section>
 

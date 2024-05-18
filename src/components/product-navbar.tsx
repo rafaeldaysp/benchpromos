@@ -19,6 +19,11 @@ const options: {
     icon: Icons.LineChart,
   },
   {
+    label: 'Sugestões',
+    value: 'suggestions',
+    icon: Icons.TrendingUp,
+  },
+  {
     label: 'Ficha técnica',
     value: 'ficha-tecnica',
     icon: Icons.GanttChartSquare,

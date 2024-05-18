@@ -60,6 +60,7 @@ import {
   Tag,
   ThumbsUp,
   Trash2,
+  TrendingUp,
   User2,
   X,
   YoutubeIcon,
@@ -131,6 +132,7 @@ export const Icons = {
   Clock8,
   ShieldAlert,
   Play,
+  TrendingUp,
   Google: ({ ...props }: LucideProps) => (
     <svg
       aria-hidden="true"
