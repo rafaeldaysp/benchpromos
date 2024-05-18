@@ -277,9 +277,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
             token={token}
           />
 
-          {product.suggestionSlugs.length > 0 && (
-            <ProductSuggestions slug={product.slug} />
-          )}
           {product.reviewUrl && (
             <Link
               href={'#review'}
@@ -342,6 +339,22 @@ export default async function ProductPage({ params }: ProductPageProps) {
             />
           </aside>
         </article>
+      </section>
+
+      <section id="historico">
+        <div className="space-y-1">
+          <h2 className="font-semibold tracking-tight md:text-xl">
+            Sugestões e upgrades
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            Nossa equipe separou alguns produtos que podem te interessar com
+            essa compra
+          </p>
+        </div>
+        <Separator className="my-4" />
+        {product.suggestionSlugs.length > 0 && (
+          <ProductSuggestions slug={product.slug} />
+        )}
       </section>
 
       <section id="ficha-tecnica">
