@@ -305,7 +305,7 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
                 )}
               />
             </div>
-            <div className="space-y-2">
+            <div>
               <div className="space-y-1">
                 <h2 className="font-semibold tracking-tight md:text-xl">
                   Sugestões e upgrades
@@ -317,26 +317,26 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
               </div>
               <Separator className="my-4" />
               <ProductSuggestions slug={sale.productSlug} />
-              <Link
-                href={`/${sale.category.slug}/${sale.productSlug}`}
-                className={cn(
-                  buttonVariants({ variant: 'secondary' }),
-                  'flex h-fit justify-between rounded-xl px-6 py-4',
-                )}
-              >
-                <p className="flex flex-1 flex-col">
-                  <span className="flex items-center gap-x-2 font-semibold">
-                    <Icons.StarFilled className="h-4 w-4 text-auxiliary" />
-                    Mais informações do produto
-                  </span>
-                  <span className="text-muted-foreground">
-                    Essa página é apenas uma postagem da promoção. Clique aqui e
-                    acesse as informações completas do produto.
-                  </span>
-                </p>
-                <Icons.ChevronRight className="h-4 w-4" />
-              </Link>
             </div>
+            <Link
+              href={`/${sale.category.slug}/${sale.productSlug}`}
+              className={cn(
+                buttonVariants({ variant: 'secondary' }),
+                'flex h-fit justify-between rounded-xl px-6 py-4',
+              )}
+            >
+              <p className="flex flex-1 flex-col">
+                <span className="flex items-center gap-x-2 font-semibold">
+                  <Icons.StarFilled className="h-4 w-4 text-auxiliary" />
+                  Mais informações do produto
+                </span>
+                <span className="text-muted-foreground">
+                  Essa página é apenas uma postagem da promoção. Clique aqui e
+                  acesse as informações completas do produto.
+                </span>
+              </p>
+              <Icons.ChevronRight className="h-4 w-4" />
+            </Link>
           </div>
         )}
       </main>
