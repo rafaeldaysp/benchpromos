@@ -98,6 +98,7 @@ const GET_PRODUCT_DEAL = gql`
     product(getProductInput: $productInput) {
       id
       name
+      slug
       imageUrl
       category {
         slug
