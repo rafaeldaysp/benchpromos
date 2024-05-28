@@ -40,6 +40,15 @@ export const blogPageSchema = z.object({
         }),
       ),
     }),
+    productSlug: z
+      .object({
+        rich_text: z.array(
+          z.object({
+            plain_text: z.string(),
+          }),
+        ),
+      })
+      .optional(),
     tags: z.object({
       multi_select: z.array(
         z.object({
