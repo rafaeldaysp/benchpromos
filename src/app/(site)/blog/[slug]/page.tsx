@@ -79,6 +79,8 @@ export default async function PostPage({ params: { slug } }: PostPageProps) {
             </div>
           )}
         </div>
+
+        <NotionWrapper recordMap={recordMap} />
         {properties.productSlug && (
           <div className="flex w-full justify-center pb-4">
             <div className="max-w-xs">
@@ -86,8 +88,6 @@ export default async function PostPage({ params: { slug } }: PostPageProps) {
             </div>
           </div>
         )}
-
-        <NotionWrapper recordMap={recordMap} />
       </main>
     </div>
   )
