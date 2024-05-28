@@ -5,6 +5,7 @@ import { InView } from 'react-intersection-observer'
 
 import { Icons } from '@/components/icons'
 import { ScrollArea } from '@/components/ui/scroll-area'
+import { env } from '@/env.mjs'
 import { useDebounce } from '@/hooks/use-debounce'
 import { cn } from '@/lib/utils'
 import type { Cashback, Category, Product, Sale } from '@/types'
@@ -75,7 +76,7 @@ interface DashboardSalesProps {
         category: Pick<Category, 'id' | 'name'>
       }
       category: Pick<Category, 'id' | 'name'>
-      cashback: Cashback
+      cashback?: Cashback
     })[]
   }) => React.ReactNode
 }
@@ -93,12 +94,17 @@ export function DashboardSales({ children }: DashboardSalesProps) {
           category: Pick<Category, 'id' | 'name'>
         }
         category: Pick<Category, 'id' | 'name'>
-        cashback: Cashback
+        cashback?: Cashback
       })[]
     }
   }>(GET_SALES, {
     fetchPolicy: 'cache-and-network',
     refetchWritePolicy: 'overwrite',
+    context: {
+      headers: {
+        'api-key': env.NEXT_PUBLIC_API_KEY,
+      },
+    },
     variables: {
       search: debouncedQuery,
       pagination: {

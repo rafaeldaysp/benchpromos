@@ -71,12 +71,7 @@ export function ProductSuggestions({ slug }: { slug: string }) {
         </CardContent>
         <CardFooter className="pb-4">
           <DialogTrigger asChild>
-            <Button
-              className={cn(
-                buttonVariants({ variant: 'outline' }),
-                'text-accent-foreground',
-              )}
-            >
+            <Button className={cn(buttonVariants(), 'text-accent-foreground')}>
               Ver sugestões
             </Button>
           </DialogTrigger>

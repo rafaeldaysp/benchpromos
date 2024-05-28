@@ -65,7 +65,7 @@ export type GetSalesQuery = {
       category: Pick<Category, 'name' | 'slug'>
       commentsCount: number
       reactions: { content: string; userId: string }[]
-      cashback: Cashback
+      cashback?: Cashback
     })[]
   }
 }

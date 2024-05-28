@@ -89,11 +89,11 @@ export function UserRoleForm({ user }: UserRoleFormProps) {
           name="role"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Varejista</FormLabel>
+              <FormLabel>Cargo</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Selecione um varejista" />
+                    <SelectValue placeholder="Selecione um cargo" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>

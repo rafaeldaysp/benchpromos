@@ -26,6 +26,7 @@ export const env = createEnv({
     NEXT_PUBLIC_API_KEY: z.string().min(1),
     NEXT_PUBLIC_GTAG: z.string().min(1),
     NEXT_PUBLIC_GTM: z.string().min(1),
+    NEXT_PUBLIC_GOOGLE_ADSENSE_CLIENT: z.string().min(1),
   },
   /*
    * Due to how Next.js bundles environment variables on Edge and Client,
@@ -46,5 +47,7 @@ export const env = createEnv({
     NEXT_PUBLIC_GTM: process.env.NEXT_PUBLIC_GTM,
     NOTION_DATABASE_ID: process.env.NOTION_DATABASE_ID,
     NOTION_TOKEN: process.env.NOTION_TOKEN,
+    NEXT_PUBLIC_GOOGLE_ADSENSE_CLIENT:
+      process.env.NEXT_PUBLIC_GOOGLE_ADSENSE_CLIENT,
   },
 })
