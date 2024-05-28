@@ -22,7 +22,9 @@ import { Popover, PopoverContent, PopoverTrigger } from './ui/popover'
 import { Separator } from './ui/separator'
 
 interface CategoryFiltersPopoverProps {
-  categoryFilter: Filter
+  categoryFilter: Pick<Filter, 'name' | 'slug'> & {
+    options: Pick<Filter['options'][0], 'value' | 'slug'>[]
+  }
   initialFilterOptions: string[]
 }
 
