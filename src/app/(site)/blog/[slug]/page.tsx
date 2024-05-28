@@ -1,9 +1,9 @@
-import { ProductCard } from '@/components/product-card'
 import { gql } from '@apollo/client'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import { NotionWrapper } from './notion-wrapper'
 
+import { ProductCard } from '@/components/product-card'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { UserAvatar } from '@/components/user-avatar'
@@ -128,8 +128,8 @@ const GET_PRODUCT_DEAL = gql`
   }
 `
 
-export async function ProductBlogCard({ slug }: { slug: string }) {
-  const { data, errors } = await getClient().query<{
+async function ProductBlogCard({ slug }: { slug: string }) {
+  const { data } = await getClient().query<{
     product: Product & {
       category: Category
       deals: (Deal & {
