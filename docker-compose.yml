@@ -13,8 +13,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '4'
-          memory: '16'
+          cpus: '3.5'
+          memory: '14'
   nginx-web:
     image: nginx:latest
     volumes:
