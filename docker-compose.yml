@@ -14,7 +14,7 @@ services:
       resources:
         limits:
           cpus: '3.5'
-          memory: '14'
+          memory: '14GB'
   nginx-web:
     image: nginx:latest
     volumes:
