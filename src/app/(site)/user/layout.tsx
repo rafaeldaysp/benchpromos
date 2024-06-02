@@ -17,6 +17,10 @@ const userSidebarNavItems = [
     title: 'Alertas',
     href: '/user/alerts',
   },
+  {
+    title: 'Favoritos',
+    href: '/user/favorites',
+  },
 ]
 
 interface SettingsLayoutProps {

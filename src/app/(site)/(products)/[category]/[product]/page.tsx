@@ -14,6 +14,7 @@ import { ProductBenchmarks } from '@/components/product-benchmarks'
 import { ProductNavbar } from '@/components/product-navbar'
 import PriceChart from '@/components/product-price-chart'
 import { ProductSuggestions } from '@/components/product-suggestions'
+import { ToggleFavoriteCard } from '@/components/toggle-favorite-card'
 import { Badge } from '@/components/ui/badge'
 import { buttonVariants } from '@/components/ui/button'
 import {
@@ -270,6 +271,11 @@ export default async function ProductPage({ params }: ProductPageProps) {
           </div>
         </div>
         <aside className="flex w-full flex-col gap-y-2 xl:col-span-2">
+          <ToggleFavoriteCard
+            productId={product.id}
+            switchId="favorite"
+            token={token}
+          />
           <AlertCard
             productId={product.id}
             switchId="alert-top"
