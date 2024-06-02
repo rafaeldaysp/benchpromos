@@ -58,6 +58,12 @@ export function UserAccountNav({ user }: UserAccountNavProps) {
             <span>Alertas</span>
           </Link>
         </DropdownMenuItem>
+        <DropdownMenuItem className="cursor-pointer" asChild>
+          <Link href="/user/favorites">
+            <Icons.Heart className="mr-2 h-4 w-4" />
+            <span>Favoritos</span>
+          </Link>
+        </DropdownMenuItem>
 
         {user.role === 'ADMIN' && (
           <>
