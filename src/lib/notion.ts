@@ -41,7 +41,7 @@ export const getPages = cache((cursor?: string, limit?: number) => {
     sorts: [
       {
         timestamp: 'last_edited_time',
-        direction: 'ascending',
+        direction: 'descending',
       },
     ],
     database_id: env.NOTION_DATABASE_ID,
