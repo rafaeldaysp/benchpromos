@@ -71,13 +71,22 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
                     )}
                   </CardHeader>
 
-                  <CardContent>
-                    <h1 className="text-lg font-semibold">
-                      {properties.title}
-                    </h1>
-                    <span></span>
+                  <CardContent className="space-y-4">
+                    <div>
+                      <h1 className="text-lg font-semibold">
+                        {properties.title}
+                      </h1>
+                      <span></span>
+                      <p className="text-sm text-muted-foreground">
+                        {properties.description}
+                      </p>
+                    </div>
                     <p className="text-sm text-muted-foreground">
-                      {properties.description}
+                      {new Date(page.created_time).toLocaleDateString('pt-BR', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                      })}
                     </p>
                   </CardContent>
                   <CardFooter>

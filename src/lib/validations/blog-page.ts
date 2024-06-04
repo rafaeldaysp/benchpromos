@@ -2,6 +2,7 @@ import * as z from 'zod'
 
 export const blogPageSchema = z.object({
   id: z.string(),
+  created_time: z.string(),
   properties: z.object({
     thumbnail: z.object({
       files: z.array(
