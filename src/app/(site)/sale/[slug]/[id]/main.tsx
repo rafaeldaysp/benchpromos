@@ -28,7 +28,7 @@ import {
 } from '@/components/ui/popover'
 import { Separator } from '@/components/ui/separator'
 import { cn } from '@/lib/utils'
-import type { Cashback, Category, Sale } from '@/types'
+import type { Cashback, Category, Product, Sale } from '@/types'
 import { priceFormatter } from '@/utils/formatter'
 import { priceCalculator } from '@/utils/price-calculator'
 
@@ -51,6 +51,9 @@ const GET_SALE = gql`
         provider
         video
         affiliatedUrl
+      }
+      product {
+        reviewUrl
       }
       label
       caption
@@ -80,6 +83,7 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
       cashback?: Omit<Cashback, 'id' | 'url'>
       category: Pick<Category, 'slug'>
       reactions: { content: string; userId: string }[]
+      product: Product
     }
   }>(GET_SALE, {
     errorPolicy: 'all',
@@ -318,6 +322,36 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
               <Separator className="my-4" />
               <ProductSuggestions slug={sale.productSlug} />
             </div>
+
+            <section id="review">
+              <header className="space-y-1">
+                <h2 className="font-semibold tracking-tight md:text-xl">
+                  Review
+                </h2>
+                <p className="text-sm text-muted-foreground">
+                  Assista ao vídeo sobre este produto em nosso canal
+                </p>
+              </header>
+              <Separator className="my-4" />
+              {sale.product.reviewUrl ? (
+                <div className="aspect-video">
+                  <iframe
+                    width="100%"
+                    height="100%"
+                    src={sale.product.reviewUrl}
+                    className="rounded-xl border bg-background shadow"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen
+                  />
+                </div>
+              ) : (
+                <h3 className="text-sm text-muted-foreground">
+                  Este produto ainda não foi avaliado em nosso canal, mas fique
+                  atento! Assim que tivermos avaliações, você será o primeiro a
+                  saber.
+                </h3>
+              )}
+            </section>
             <Link
               href={`/${sale.category.slug}/${sale.productSlug}`}
               className={cn(
