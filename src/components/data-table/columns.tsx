@@ -15,6 +15,7 @@ export type BenchmarkData = {
   product: { alias: string; imageUrl: string }
   products: { id: string; name: string; imageUrl: string; slug: string }[]
   description?: string
+  video?: string
 }
 
 export const columns: ColumnDef<BenchmarkData>[] = [

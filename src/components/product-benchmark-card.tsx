@@ -4,8 +4,10 @@ import Image from 'next/image'
 import { useState } from 'react'
 
 import { type Benchmark, type BenchmarkResult } from '@/types'
+import { Icons } from './icons'
 import { Badge } from './ui/badge'
 import { Card, CardContent } from './ui/card'
+import { Dialog, DialogContent, DialogTrigger } from './ui/dialog'
 import { ScrollArea } from './ui/scroll-area'
 
 interface ProductBenchmarkCardProps {
@@ -43,20 +45,58 @@ export function ProductBenchmarkCard({ benchmark }: ProductBenchmarkCardProps) {
             <ScrollArea className="h-max w-full">
               <div className="flex flex-col items-center justify-center gap-y-2 px-2.5 text-center">
                 {benchmark.children?.map((chield) => {
-                  return chield.results?.map((resultData) => (
-                    <Badge
-                      variant={'secondary'}
-                      className="flex w-fit items-center justify-center"
-                      key={resultData.id.concat('1')}
-                    >
-                      {chield.name
-                        .replace(new RegExp(benchmark.name, 'ig'), '')
-                        .replace('-', '')
-                        .trim()
-                        .concat(` [${resultData.result.toString()}]`)
-                        .concat(` ${resultData.description?.toString()}`)}
-                    </Badge>
-                  ))
+                  return chield.results?.map((resultData) => {
+                    if (resultData.video)
+                      return (
+                        <Dialog key={resultData.id}>
+                          <DialogTrigger>
+                            <Badge
+                              variant={'secondary'}
+                              className="flex w-fit items-center justify-center"
+                              key={resultData.id.concat('1')}
+                            >
+                              {chield.name
+                                .replace(new RegExp(benchmark.name, 'ig'), '')
+                                .replace('-', '')
+                                .trim()
+                                .concat(` [${resultData.result.toString()}]`)
+                                .concat(
+                                  ` ${resultData.description?.toString()}`,
+                                )}
+
+                              <Icons.ExternalLink className="ml-2 h-4 w-4" />
+                            </Badge>
+                          </DialogTrigger>
+                          <DialogContent className="w-full sm:max-w-[1280px]">
+                            <div className="aspect-video p-2">
+                              <iframe
+                                width="100%"
+                                height="100%"
+                                src={resultData.video}
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                allowFullScreen
+                                className="rounded-lg"
+                              />
+                            </div>
+                          </DialogContent>
+                        </Dialog>
+                      )
+                    else
+                      return (
+                        <Badge
+                          variant={'secondary'}
+                          className="flex w-fit items-center justify-center"
+                          key={resultData.id.concat('1')}
+                        >
+                          {chield.name
+                            .replace(new RegExp(benchmark.name, 'ig'), '')
+                            .replace('-', '')
+                            .trim()
+                            .concat(` [${resultData.result.toString()}]`)
+                            .concat(` ${resultData.description?.toString()}`)}
+                        </Badge>
+                      )
+                  })
                 })}
               </div>
             </ScrollArea>

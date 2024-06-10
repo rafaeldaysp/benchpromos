@@ -85,6 +85,7 @@ export function BenchmarksMain({ benchmarks, results }: BenchmarksMainProps) {
     },
     result: result.result,
     description: result.description,
+    video: result.video,
     products: result.products,
     unit: result.unit,
   })) as BenchmarkData[]

@@ -6,7 +6,7 @@ import type { Benchmark, BenchmarkResult, Product } from '@/types'
 import { BenchmarksMain } from './main'
 
 const GET_BENCHMARKS = gql`
-  query GetBenchmarks(
+  query GetBenchmarksWithResults(
     $pagination: PaginationInput
     $benchmarksSlugs: [String!]
     $productsSlugs: [String!]
@@ -32,6 +32,7 @@ const GET_BENCHMARKS = gql`
         unit
         productAlias
         description
+        video
         products {
           id
           name

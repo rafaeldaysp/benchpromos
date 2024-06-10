@@ -143,6 +143,7 @@ export type BenchmarkResult = {
   unit: string
   productAlias: string
   description?: string
+  video?: string
 }
 
 export type headerOption = {

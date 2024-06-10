@@ -122,6 +122,7 @@ export function DataTableRowActions<TData>({
               id: benchmarkDataRow.id,
               benchmarkId: benchmarkDataRow.benchmark.id,
               description: benchmarkDataRow.description ?? undefined,
+              video: benchmarkDataRow.video ?? undefined,
               productAlias: benchmarkDataRow.product.alias,
               result: benchmarkDataRow.result,
               products: benchmarkDataRow.products,

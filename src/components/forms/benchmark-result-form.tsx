@@ -149,6 +149,7 @@ export function BenchmarkResultForm({
         toast.success(message)
         router.refresh()
       },
+      refetchQueries: ['GetBenchmarksWithResults'],
     },
   )
   async function onSubmit(data: Inputs) {
@@ -254,6 +255,24 @@ export function BenchmarkResultForm({
             )}
           />
         </div>
+
+        <FormField
+          control={form.control}
+          name="video"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Vídeo (opcional)</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="https://youtube.com/embed/<id>"
+                  aria-invalid={!!form.formState.errors.video}
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
         <FormField
           control={form.control}

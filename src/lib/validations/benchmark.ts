@@ -12,8 +12,9 @@ export const benchmarkResultSchema = z.object({
   benchmarkId: z.string({ required_error: 'Selecione um benchmark' }),
   result: z.coerce.number({ required_error: 'Campo obrigatório' }).int(),
   productAlias: z.string(),
-  description: z.string().optional(),
   unit: z.string(),
+  description: z.string().optional(),
+  video: z.string().optional(),
 })
 
 export const benchmarkDataRowSchema = z.object({
@@ -21,6 +22,7 @@ export const benchmarkDataRowSchema = z.object({
   result: z.number(),
   unit: z.string(),
   description: z.string().nullable(),
+  video: z.string().optional().nullable(),
   benchmark: z.object({
     id: z.string(),
     name: z.string(),
