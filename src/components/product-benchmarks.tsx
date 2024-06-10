@@ -25,6 +25,7 @@ const GET_GROUPED_BENCHMARKS = gql`
           id
           result
           description
+          video
         }
       }
     }

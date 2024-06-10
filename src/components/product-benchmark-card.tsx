@@ -81,21 +81,21 @@ export function ProductBenchmarkCard({ benchmark }: ProductBenchmarkCardProps) {
                           </DialogContent>
                         </Dialog>
                       )
-                    else
-                      return (
-                        <Badge
-                          variant={'secondary'}
-                          className="flex w-fit items-center justify-center"
-                          key={resultData.id.concat('1')}
-                        >
-                          {chield.name
-                            .replace(new RegExp(benchmark.name, 'ig'), '')
-                            .replace('-', '')
-                            .trim()
-                            .concat(` [${resultData.result.toString()}]`)
-                            .concat(` ${resultData.description?.toString()}`)}
-                        </Badge>
-                      )
+
+                    return (
+                      <Badge
+                        variant={'secondary'}
+                        className="flex w-fit items-center justify-center"
+                        key={resultData.id.concat('1')}
+                      >
+                        {chield.name
+                          .replace(new RegExp(benchmark.name, 'ig'), '')
+                          .replace('-', '')
+                          .trim()
+                          .concat(` [${resultData.result.toString()}]`)
+                          .concat(` ${resultData.description?.toString()}`)}
+                      </Badge>
+                    )
                   })
                 })}
               </div>
