@@ -18,91 +18,77 @@ interface ProductBenchmarkCardProps {
 
 export function ProductBenchmarkCard({ benchmark }: ProductBenchmarkCardProps) {
   const [showInfo, setShowInfo] = useState(false)
+  const [selectedVideo, setSelectedVideo] = useState<string>()
   const testImage = 'https://edu.ceskatelevize.cz/storage/video/placeholder.jpg'
   return (
-    <Card className="flex flex-1 cursor-pointer flex-col overflow-hidden border-none">
-      <CardContent
-        className="group relative p-0"
-        onMouseEnter={() => {
-          setShowInfo(true)
-        }}
-        onMouseLeave={() => {
-          setShowInfo(false)
-        }}
-      >
-        <div className="relative aspect-video w-full group-hover:opacity-30 group-hover:transition-opacity">
-          <Image
-            src={benchmark.imageUrl ?? testImage}
-            alt={benchmark.name}
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            fill
-            className="object-contain"
-          />
-        </div>
-        {showInfo && (
-          <div className="absolute left-0 top-0 flex h-full w-full flex-col items-center justify-center space-y-4 break-words p-2 text-center">
-            <Badge className="text-sm"> {benchmark.name}</Badge>
-            <ScrollArea className="h-max w-full">
-              <div className="flex flex-col items-center justify-center gap-y-2 px-2.5 text-center">
-                {benchmark.children?.map((chield) => {
-                  return chield.results?.map((resultData) => {
-                    if (resultData.video)
-                      return (
-                        <Dialog key={resultData.id}>
-                          <DialogTrigger>
-                            <Badge
-                              variant={'secondary'}
-                              className="flex w-fit items-center justify-center"
-                              key={resultData.id.concat('1')}
-                            >
-                              {chield.name
-                                .replace(new RegExp(benchmark.name, 'ig'), '')
-                                .replace('-', '')
-                                .trim()
-                                .concat(` [${resultData.result.toString()}]`)
-                                .concat(
-                                  ` ${resultData.description?.toString()}`,
-                                )}
-
-                              <Icons.ExternalLink className="ml-2 h-4 w-4" />
-                            </Badge>
-                          </DialogTrigger>
-                          <DialogContent className="w-full sm:max-w-[1280px]">
-                            <div className="aspect-video p-2">
-                              <iframe
-                                width="100%"
-                                height="100%"
-                                src={resultData.video}
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                                allowFullScreen
-                                className="rounded-lg"
-                              />
-                            </div>
-                          </DialogContent>
-                        </Dialog>
-                      )
-
-                    return (
-                      <Badge
-                        variant={'secondary'}
-                        className="flex w-fit items-center justify-center"
-                        key={resultData.id.concat('1')}
-                      >
-                        {chield.name
-                          .replace(new RegExp(benchmark.name, 'ig'), '')
-                          .replace('-', '')
-                          .trim()
-                          .concat(` [${resultData.result.toString()}]`)
-                          .concat(` ${resultData.description?.toString()}`)}
-                      </Badge>
-                    )
-                  })
-                })}
-              </div>
-            </ScrollArea>
+    <Dialog>
+      <Card className="flex flex-1 cursor-pointer flex-col overflow-hidden border-none">
+        <CardContent
+          className="group relative p-0"
+          onMouseEnter={() => {
+            setShowInfo(true)
+          }}
+          onMouseLeave={() => {
+            setShowInfo(false)
+          }}
+        >
+          <div className="relative aspect-video w-full group-hover:opacity-30 group-hover:transition-opacity">
+            <Image
+              src={benchmark.imageUrl ?? testImage}
+              alt={benchmark.name}
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              fill
+              className="object-contain"
+            />
           </div>
-        )}
-      </CardContent>
-    </Card>
+          {showInfo && (
+            <div className="absolute left-0 top-0 flex h-full w-full flex-col items-center justify-center space-y-4 break-words p-2 text-center">
+              <Badge className="text-sm"> {benchmark.name}</Badge>
+              <ScrollArea className="h-max w-full">
+                <div className="flex flex-col items-center justify-center gap-y-2 px-2.5 text-center">
+                  {benchmark.children?.map((chield) => {
+                    return chield.results?.map((resultData) => (
+                      <DialogTrigger key={resultData.id}>
+                        <Badge
+                          onClick={() => setSelectedVideo(resultData.video)}
+                          variant={'secondary'}
+                          className="flex w-fit items-center justify-center"
+                          key={resultData.id.concat('1')}
+                        >
+                          {chield.name
+                            .replace(new RegExp(benchmark.name, 'ig'), '')
+                            .replace('-', '')
+                            .trim()
+                            .concat(` [${resultData.result.toString()}]`)
+                            .concat(` ${resultData.description?.toString()}`)}
+                          {resultData.video && (
+                            <Icons.ExternalLink className="ml-2 h-4 w-4" />
+                          )}
+                        </Badge>
+                      </DialogTrigger>
+                    ))
+                  })}
+                </div>
+              </ScrollArea>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {selectedVideo && (
+        <DialogContent className="w-full sm:max-w-[1280px]">
+          <div className="aspect-video p-2">
+            <iframe
+              width="100%"
+              height="100%"
+              src={selectedVideo}
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowFullScreen
+              className="rounded-lg"
+            />
+          </div>
+        </DialogContent>
+      )}
+    </Dialog>
   )
 }
