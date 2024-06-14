@@ -349,7 +349,7 @@ export function SaleCard({
                     href={`/promocao/${sale.slug}/${sale.id}#comments`}
                     className={cn(
                       buttonVariants({ variant: 'ghost', size: 'sm' }),
-                      'shrink-0 px-0',
+                      'w-10 shrink-0 px-0',
                     )}
                   >
                     <span className="mr-1 text-sm">
