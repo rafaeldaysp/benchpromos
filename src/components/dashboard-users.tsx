@@ -7,9 +7,9 @@ import { Icons } from '@/components/icons'
 import { Input } from '@/components/ui/input'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { env } from '@/env.mjs'
-import { useDebounce } from '@/hooks/use-debounce'
 import { cn } from '@/lib/utils'
 import { removeNullValues } from '@/utils'
+import { Button } from './ui/button'
 
 const USERS_PER_PAGE = 12
 
@@ -42,10 +42,10 @@ interface DashboardUsersProps {
 
 export function DashboardUsers({ children }: DashboardUsersProps) {
   const [isPending, startTransition] = React.useTransition()
+  const [searchInput, setSearchInput] = React.useState('')
   const [query, setQuery] = React.useState('')
-  const debouncedQuery = useDebounce(query, 300)
 
-  const { data, refetch, fetchMore } = useSuspenseQuery<{
+  const { data, fetchMore } = useSuspenseQuery<{
     users: {
       count: number
       list: {
@@ -66,7 +66,7 @@ export function DashboardUsers({ children }: DashboardUsersProps) {
     refetchWritePolicy: 'overwrite',
     variables: {
       getUsersInput: {
-        search: debouncedQuery,
+        search: query,
         pagination: {
           limit: USERS_PER_PAGE,
           page: 1,
@@ -80,13 +80,6 @@ export function DashboardUsers({ children }: DashboardUsersProps) {
   const page = Math.ceil(users.length / USERS_PER_PAGE)
   const pageCount = Math.ceil(count / USERS_PER_PAGE)
 
-  React.useEffect(() => {
-    if (debouncedQuery.length > 0) {
-      refetch()
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedQuery])
-
   function onEntry() {
     startTransition(() => {
       fetchMore({
@@ -97,7 +90,7 @@ export function DashboardUsers({ children }: DashboardUsersProps) {
         },
         variables: {
           getUsersInput: {
-            search: debouncedQuery,
+            search: query,
             pagination: {
               limit: USERS_PER_PAGE,
               page: page + 1,
@@ -123,11 +116,21 @@ export function DashboardUsers({ children }: DashboardUsersProps) {
   return (
     <div className="space-y-4">
       <h3 className="font-medium tracking-tight">Usuários • {count}</h3>
-      <Input
-        placeholder="Pesquise por um usuário..."
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-      />
+      <div className="flex w-full items-center space-x-2">
+        <Input
+          placeholder="Pesquise por um usuário..."
+          className="w-full"
+          type="search"
+          value={searchInput}
+          onChange={(e) => setSearchInput(e.target.value)}
+          onKeyDown={(event) => {
+            if (event.key === 'Enter') {
+              setQuery(searchInput)
+            }
+          }}
+        />
+        <Button onClick={() => setQuery(searchInput)}>Pesquisar</Button>
+      </div>
       {users.length > 0 ? (
         <ScrollArea
           className={cn('rounded-md border', {

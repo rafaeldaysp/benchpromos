@@ -32,4 +32,10 @@ export const notebooksCustomFilters = [
     value: 'Modo Turbo',
     type: 'show',
   },
+  {
+    label: 'Mostrar Na Bateria',
+    slug: 'show-on-battery',
+    value: 'Na Bateria',
+    type: 'show',
+  },
 ]

@@ -7,10 +7,10 @@ import { InView } from 'react-intersection-observer'
 import { Icons } from '@/components/icons'
 import { Input } from '@/components/ui/input'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { useDebounce } from '@/hooks/use-debounce'
 import { cn } from '@/lib/utils'
 import type { Category, Product } from '@/types'
 import { removeNullValues } from '@/utils'
+import { Button } from './ui/button'
 
 const PRODUCTS_PER_PAGE = 12
 
@@ -67,14 +67,14 @@ interface DashboardProductsProps {
 
 export function DashboardProducts({ children }: DashboardProductsProps) {
   const [isPending, startTransition] = React.useTransition()
+  const [searchInput, setSearchInput] = React.useState('')
   const [query, setQuery] = React.useState('')
-  const debouncedQuery = useDebounce(query, 300)
 
   const searchParams = useSearchParams()
 
   const sortBy = searchParams.get('sort')
 
-  const { data, refetch, fetchMore } = useSuspenseQuery<{
+  const { data, fetchMore } = useSuspenseQuery<{
     productsList: {
       pages: number
       products: (Product & {
@@ -87,7 +87,7 @@ export function DashboardProducts({ children }: DashboardProductsProps) {
     refetchWritePolicy: 'overwrite',
     variables: {
       input: {
-        search: debouncedQuery,
+        search: query,
         pagination: {
           limit: PRODUCTS_PER_PAGE,
           page: 1,
@@ -103,19 +103,12 @@ export function DashboardProducts({ children }: DashboardProductsProps) {
   )
   const page = Math.ceil(products.length / PRODUCTS_PER_PAGE)
 
-  React.useEffect(() => {
-    if (debouncedQuery.length > 0) {
-      refetch()
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedQuery])
-
   function onEntry() {
     startTransition(() => {
       fetchMore({
         variables: {
           input: {
-            search: debouncedQuery,
+            search: query,
             pagination: {
               limit: PRODUCTS_PER_PAGE,
               page: page + 1,
@@ -144,11 +137,22 @@ export function DashboardProducts({ children }: DashboardProductsProps) {
 
   return (
     <div className="space-y-4">
-      <Input
-        placeholder="Pesquise por um produto..."
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-      />
+      <div className="flex w-full items-center space-x-2">
+        <Input
+          placeholder="Pesquise por um produto..."
+          className="w-full"
+          type="search"
+          value={searchInput}
+          onChange={(e) => setSearchInput(e.target.value)}
+          onKeyDown={(event) => {
+            if (event.key === 'Enter') {
+              setQuery(searchInput)
+            }
+          }}
+        />
+        <Button onClick={() => setQuery(searchInput)}>Pesquisar</Button>
+      </div>
+
       {products.length > 0 ? (
         <ScrollArea
           className={cn('rounded-md border', {

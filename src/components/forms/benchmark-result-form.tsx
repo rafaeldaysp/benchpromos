@@ -47,6 +47,7 @@ import {
 } from '../ui/command'
 import { Label } from '../ui/label'
 import { Skeleton } from '../ui/skeleton'
+import { ScrollArea } from '../ui/scroll-area'
 
 const CREATE_BENCHMARK_RESULT = gql`
   mutation CreateBenchmarkResult($input: CreateBenchmarkResultInput!) {
@@ -180,14 +181,16 @@ export function BenchmarkResultForm({
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {benchmarkItems?.map((benchmarkItem) => (
-                    <SelectItem
-                      key={benchmarkItem.value}
-                      value={benchmarkItem.value}
-                    >
-                      {benchmarkItem.label}
-                    </SelectItem>
-                  ))}
+                  <ScrollArea className="h-[600px]">
+                    {benchmarkItems?.map((benchmarkItem) => (
+                      <SelectItem
+                        key={benchmarkItem.value}
+                        value={benchmarkItem.value}
+                      >
+                        {benchmarkItem.label}
+                      </SelectItem>
+                    ))}
+                  </ScrollArea>
                 </SelectContent>
               </Select>
               <FormMessage />
