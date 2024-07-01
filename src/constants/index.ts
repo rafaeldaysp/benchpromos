@@ -23,19 +23,25 @@ export const notebooksCustomFilters = [
   {
     label: 'Ocultar Frame Generation',
     slug: 'hide-frame-generation',
-    value: 'Frame Generation',
+    values: ['Frame Generation'],
     type: 'hide',
   },
   {
-    label: 'Mostrar Modo Turbo',
-    slug: 'show-modo-turbo',
-    value: 'Modo Turbo',
+    label: 'Ocultar Modo Turbo',
+    slug: 'hide-modo-turbo',
+    values: ['Modo Turbo'],
+    type: 'hide',
+  },
+  {
+    label: 'Mostrar Modo Equilibrado',
+    slug: 'show-modo-equilibrado',
+    values: ['Modo Desempenho', 'Modo Equilibrado', 'Modo Balanceado'],
     type: 'show',
   },
   {
     label: 'Mostrar Na Bateria',
     slug: 'show-on-battery',
-    value: 'Na Bateria',
+    values: ['Na Bateria'],
     type: 'show',
   },
 ]

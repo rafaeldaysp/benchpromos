@@ -64,7 +64,6 @@ export default async function BenchmarkPage({
         options: value!.split('.'),
       }
     })
-  console.log(filtersInput)
 
   const productsArray = productsString?.split('.')
 
@@ -108,8 +107,10 @@ export default async function BenchmarkPage({
   const results = (data?.benchmarkResults ?? []).filter(
     (result) =>
       !toHideFromCustomFilters.length ||
-      !toHideFromCustomFilters.some(
-        (customFilter) => result.description?.includes(customFilter.value),
+      !toHideFromCustomFilters.some((customFilter) =>
+        customFilter.values.some(
+          (value) => result.description?.includes(value),
+        ),
       ),
   )
 
