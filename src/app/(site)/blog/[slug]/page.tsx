@@ -3,6 +3,7 @@ import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import { NotionWrapper } from './notion-wrapper'
 
+import { AdBanner } from '@/components/ad-banner'
 import { ProductCard } from '@/components/product-card'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
@@ -65,6 +66,14 @@ export default async function PostPage({ params: { slug } }: PostPageProps) {
             {pageDetails.properties.tags.multi_select.map((tag) => (
               <Badge key={tag.id}>{tag.name}</Badge>
             ))}
+          </div>
+          <Separator />
+          <div className="h-32 w-full rounded-xl border">
+            <AdBanner
+              dataAdFormat="auto"
+              dataAdSlot="1544934153"
+              dataFullWidthResponsive
+            />
           </div>
           <Separator />
           {properties.imageUrl && (
