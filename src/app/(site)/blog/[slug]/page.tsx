@@ -1,4 +1,5 @@
 import { gql } from '@apollo/client'
+import { type Metadata } from 'next'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import { NotionWrapper } from './notion-wrapper'
@@ -8,6 +9,7 @@ import { ProductCard } from '@/components/product-card'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { UserAvatar } from '@/components/user-avatar'
+import { siteConfig } from '@/config/site'
 import { getClient } from '@/lib/apollo'
 import { getPageBySlug, getRecordMap, getUser } from '@/lib/notion'
 import { blogPageSchema } from '@/lib/validations/blog-page'
@@ -26,6 +28,40 @@ interface PostPageProps {
     slug: string
   }
 }
+
+export async function generateMetadata({ params }: PostPageProps) {
+  const { slug } = params
+
+  const page = await getPageBySlug(slug)
+
+  if (!page)
+    return {
+      title: 'Não encontrado',
+      description: 'Essa página não foi encontrada.',
+    }
+  const pageDetails = blogPageSchema.parse(page)
+  const properties = getBlogPageProperties(pageDetails)
+
+  const metadata: Metadata = {
+    title: properties.title,
+    description: `${properties.tags.join(' - ')} | ${properties.title}`,
+    alternates: {
+      canonical: `/blog/${properties.slug}`,
+    },
+    openGraph: {
+      type: 'website',
+      locale: 'pt_BR',
+      title: properties.title,
+      description: `${properties.tags.join(' - ')} | ${properties.title}`,
+      url: siteConfig.url + `/blog/${properties.slug}`,
+      images: [properties.imageUrl ?? ''],
+      siteName: siteConfig.name,
+    },
+  }
+
+  return metadata
+}
+
 export default async function PostPage({ params: { slug } }: PostPageProps) {
   const page = await getPageBySlug(slug)
 
