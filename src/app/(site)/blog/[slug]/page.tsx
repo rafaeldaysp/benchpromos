@@ -44,7 +44,9 @@ export async function generateMetadata({ params }: PostPageProps) {
 
   const metadata: Metadata = {
     title: properties.title,
-    description: `${properties.tags.join(' - ')} | ${properties.title}`,
+    description: `${properties.tags.map((tag) => tag.name).join(' - ')} | ${
+      properties.title
+    }`,
     alternates: {
       canonical: `/blog/${properties.slug}`,
     },
