@@ -52,7 +52,9 @@ export async function generateMetadata({ params }: PostPageProps) {
       type: 'website',
       locale: 'pt_BR',
       title: properties.title,
-      description: `${properties.tags.join(' - ')} | ${properties.title}`,
+      description: `${properties.tags.map((tag) => tag.name).join(' - ')} | ${
+        properties.title
+      }`,
       url: siteConfig.url + `/blog/${properties.slug}`,
       images: [properties.imageUrl ?? ''],
       siteName: siteConfig.name,
