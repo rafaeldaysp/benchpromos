@@ -75,6 +75,7 @@ export type Deal = {
   id: string
   price: number
   availability: boolean
+  retailerIsSeller: boolean
   url: string
   priority: number
   installments?: number

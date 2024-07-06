@@ -331,6 +331,23 @@ export function DealForm({
 
         <FormField
           control={form.control}
+          name="retailerIsSeller"
+          render={({ field }) => (
+            <FormItem className="flex flex-row items-start justify-between space-x-3 space-y-0">
+              <FormLabel>Vendido pela própria loja</FormLabel>
+              <FormControl>
+                <Checkbox
+                  checked={field.value}
+                  // @ts-expect-error ...
+                  onCheckedChange={field.onChange}
+                />
+              </FormControl>
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
           name="sku"
           render={({ field }) => (
             <FormItem>

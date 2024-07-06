@@ -29,6 +29,7 @@ const GET_DEALS = gql`
       cashbackId
       createdAt
       updatedAt
+      retailerIsSeller
       cashback {
         provider
         value
