@@ -19,6 +19,7 @@ const GET_BENCHMARKS = gql`
       name
       slug
       childrenCount
+      hidden
     }
     categories(includeProductsWithBenchmarks: $includeProductsWithBenchmarks) {
       id
