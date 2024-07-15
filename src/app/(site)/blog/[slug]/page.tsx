@@ -117,15 +117,13 @@ export default async function PostPage({ params: { slug } }: PostPageProps) {
           </div>
           <Separator />
           {properties.imageUrl && (
-            <div className="relative aspect-video sm:w-full">
-              <Image
-                src={properties.imageUrl}
-                alt={pageDetails.id}
-                className="rounded-xl object-contain"
-                fill
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              />
-            </div>
+            <Image
+              src={properties.imageUrl}
+              alt={pageDetails.id}
+              width={1920}
+              height={1080}
+              className="w-full rounded-xl"
+            />
           )}
         </div>
 
