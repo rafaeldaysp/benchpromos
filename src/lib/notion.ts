@@ -40,7 +40,7 @@ export const getPages = cache((cursor?: string, limit?: number) => {
     start_cursor: cursor,
     sorts: [
       {
-        timestamp: 'last_edited_time',
+        timestamp: 'created_time',
         direction: 'descending',
       },
     ],
