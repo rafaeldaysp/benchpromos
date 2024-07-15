@@ -15,8 +15,9 @@ export function getBlogPageProperties(page: BlogPage) {
   const slug = page.properties.slug?.rich_text[0]?.plain_text ?? ''
   const tags = page.properties.tags.multi_select
   const category = page.properties.category.select.name
-  const productSlug =
+  const productSlug = (
     page.properties.productSlug?.rich_text[0]?.plain_text ?? ''
+  ).split(';')
 
   return {
     imageUrl,

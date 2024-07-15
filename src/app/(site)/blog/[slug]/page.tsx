@@ -131,10 +131,10 @@ export default async function PostPage({ params: { slug } }: PostPageProps) {
 
         <NotionWrapper recordMap={recordMap} />
         {properties.productSlug && (
-          <div className="flex w-full justify-center pb-4">
-            <div className="max-w-xs">
-              <ProductBlogCard slug={properties.productSlug} />
-            </div>
+          <div className="grid w-full justify-center gap-2 pb-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {properties.productSlug.map((slug) => (
+              <ProductBlogCard slug={slug} key={slug} />
+            ))}
           </div>
         )}
       </main>
