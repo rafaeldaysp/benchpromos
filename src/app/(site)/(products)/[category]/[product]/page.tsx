@@ -224,7 +224,9 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   const product = data.product
   const bestDeal = product.deals[0]
-  const bestInstallmentDeal = data.productWithInstallmentDeals.deals?.[0]
+  const bestInstallmentDeal = data.productWithInstallmentDeals.deals?.filter(
+    (deal) => deal.totalInstallmentPrice,
+  )?.[0]
 
   return (
     <main className="relative mx-auto space-y-8 px-4 py-10 sm:container">

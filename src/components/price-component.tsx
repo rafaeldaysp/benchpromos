@@ -35,7 +35,7 @@ export function PriceComponent({
         <TabsTrigger
           value="installment"
           className="w-1/2"
-          disabled={!bestInstallmentDeal}
+          disabled={!bestInstallmentDeal?.totalInstallmentPrice}
         >
           Parcelado
         </TabsTrigger>
