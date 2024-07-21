@@ -8,6 +8,11 @@ const nextConfig = {
       },
     ],
   },
+  experimental: {
+    serverActions: {
+      allowedOrigins: ['benchpromos.com.br'],
+    },
+  },
   async rewrites() {
     return [
       {
