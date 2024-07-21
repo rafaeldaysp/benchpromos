@@ -30,7 +30,10 @@ interface SalesByReactionsProps {
 export function SalesByReactions({ data }: SalesByReactionsProps) {
   const [currentPage, setCurrentPage] = useState(1)
   const pages = Math.ceil(data.length / 5)
-  const paginatedData = data.slice(currentPage - 1, currentPage + 5)
+  const paginatedData = data.slice(
+    (currentPage - 1) * 5,
+    (currentPage - 1) * 5 + 5,
+  )
   return (
     <Card id="#salesByReaction">
       <CardHeader>
