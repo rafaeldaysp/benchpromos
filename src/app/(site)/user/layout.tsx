@@ -4,7 +4,7 @@ import { UserSidebarNav } from '@/components/layouts/user-sidebar-nav'
 import { Separator } from '@/components/ui/separator'
 
 export const metadata: Metadata = {
-  title: 'Configuirações',
+  title: 'Configurações',
   description: 'Configurações de conta e alertas do usuário.',
 }
 
