@@ -9,6 +9,7 @@ import { DashboardItemCard } from '@/components/dashboard-item-card'
 import { DashboardProducts } from '@/components/dashboard-products'
 import { ProductFiltersForm } from '@/components/forms/product-filters-form'
 import { ProductForm } from '@/components/forms/product-form'
+import { RecommendedProductForm } from '@/components/forms/recommended-product-form'
 import { Icons } from '@/components/icons'
 import {
   AlertDialog,
@@ -29,7 +30,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
-import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
+import { ScrollArea } from '@/components/ui/scroll-area'
 import {
   Select,
   SelectContent,
@@ -178,6 +179,24 @@ export function ProductsMain({ filters }: ProductsMainProps) {
         <div className="flex flex-col justify-end gap-2 sm:flex-row">
           {selectedProduct && (
             <>
+              <Dialog
+                open={openDialogs['recommendedProductForm']}
+                onOpenChange={(open) =>
+                  setOpenDialog('recommendedProductForm', open)
+                }
+              >
+                <DialogTrigger asChild>
+                  <Button variant="outline">Recomendar</Button>
+                </DialogTrigger>
+
+                <DialogContent className="">
+                  <DialogHeader>
+                    <DialogTitle>RECOMENDAR</DialogTitle>
+                  </DialogHeader>
+
+                  <RecommendedProductForm productId={selectedProduct.id} />
+                </DialogContent>
+              </Dialog>
               <Button
                 variant="outline"
                 disabled={isUpdatind}
