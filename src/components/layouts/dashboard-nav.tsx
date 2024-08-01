@@ -47,6 +47,10 @@ const sidebarNavItems = [
     title: 'Benchmarks',
     href: '/dashboard/benchmarks',
   },
+  {
+    title: 'Recomendações',
+    href: '/dashboard/recommendation',
+  },
 ]
 
 interface DashboardNavProps extends React.HTMLAttributes<HTMLDivElement> {}
