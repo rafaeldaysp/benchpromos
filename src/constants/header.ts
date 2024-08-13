@@ -71,6 +71,11 @@ export function headerOptions({ categories }: HeaderOptionsProps) {
       slug: 'benchmarks',
       icon: Icons.BarChart4,
     },
+    {
+      title: 'Recomendações',
+      slug: 'recommendations',
+      icon: Icons.StarFilled,
+    },
   ]
 
   options.push(...moreHeaders)

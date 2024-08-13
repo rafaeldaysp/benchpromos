@@ -33,6 +33,7 @@ const GET_BENCHMARKS = gql`
         productAlias
         description
         video
+        hidden
         products {
           id
           name

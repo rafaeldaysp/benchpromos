@@ -47,6 +47,14 @@ export type Coupon = {
   updatedAt: string
 }
 
+export type RecommendedProduct = {
+  id: string
+  minPrice: number
+  maxPrice: number
+  productId: string
+  categoryId: string
+}
+
 export type Cashback = {
   id: string
   provider: string
@@ -142,6 +150,7 @@ export type BenchmarkResult = {
   benchmarkId: string
   result: number
   unit: string
+  hidden: boolean
   productAlias: string
   description?: string
   video?: string

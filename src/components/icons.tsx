@@ -42,6 +42,7 @@ import {
   Moon,
   MoreHorizontal,
   MoreVertical,
+  MoveRight,
   NotebookPen,
   PcCase,
   Play,
@@ -135,6 +136,7 @@ export const Icons = {
   ShieldAlert,
   Play,
   TrendingUp,
+  MoveRight,
   Google: ({ ...props }: LucideProps) => (
     <svg
       aria-hidden="true"

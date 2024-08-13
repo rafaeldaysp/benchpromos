@@ -15,6 +15,7 @@ export const benchmarkResultSchema = z.object({
   unit: z.string(),
   description: z.string().optional(),
   video: z.string().optional(),
+  hidden: z.boolean().default(false),
 })
 
 export const benchmarkDataRowSchema = z.object({
@@ -23,6 +24,7 @@ export const benchmarkDataRowSchema = z.object({
   unit: z.string(),
   description: z.string().nullable(),
   video: z.string().optional().nullable(),
+  hidden: z.boolean().default(false),
   benchmark: z.object({
     id: z.string(),
     name: z.string(),

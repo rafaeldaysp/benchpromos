@@ -11,11 +11,13 @@ const GET_BENCHMARK_RESULTS = gql`
     $benchmarkSlug: ID
     $productsSlugs: [String]
     $filters: [FilterInput!]
+    $hidden: Boolean
   ) {
     benchmarkResults(
       benchmarkSlug: $benchmarkSlug
       productsSlugs: $productsSlugs
       filters: $filters
+      hidden: $hidden
     ) {
       id
       result
@@ -86,6 +88,7 @@ export default async function BenchmarkPage({
       productsSlugs: productsArray,
       benchmarkSlug: slug,
       filters: filtersInput,
+      hidden: false,
     },
     errorPolicy: 'ignore',
   })

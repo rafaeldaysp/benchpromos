@@ -127,6 +127,7 @@ export function DataTableRowActions<TData>({
               result: benchmarkDataRow.result,
               products: benchmarkDataRow.products,
               unit: benchmarkDataRow.unit,
+              hidden: benchmarkDataRow.hidden,
             }}
           />
         </SheetContent>

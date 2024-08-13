@@ -37,6 +37,7 @@ import { benchmarkResultSchema } from '@/lib/validations/benchmark'
 import type { Benchmark, Product } from '@/types'
 import Image from 'next/image'
 import { DashboardItemCard } from '../dashboard-item-card'
+import { Checkbox } from '../ui/checkbox'
 import {
   Command,
   CommandEmpty,
@@ -46,8 +47,8 @@ import {
   CommandList,
 } from '../ui/command'
 import { Label } from '../ui/label'
-import { Skeleton } from '../ui/skeleton'
 import { ScrollArea } from '../ui/scroll-area'
+import { Skeleton } from '../ui/skeleton'
 
 const CREATE_BENCHMARK_RESULT = gql`
   mutation CreateBenchmarkResult($input: CreateBenchmarkResultInput!) {
@@ -273,6 +274,23 @@ export function BenchmarkResultForm({
                 />
               </FormControl>
               <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="hidden"
+          render={({ field }) => (
+            <FormItem className="flex flex-row items-start justify-between space-x-3 space-y-0">
+              <FormLabel>Privado</FormLabel>
+              <FormControl>
+                <Checkbox
+                  checked={field.value}
+                  // @ts-expect-error ...
+                  onCheckedChange={field.onChange}
+                />
+              </FormControl>
             </FormItem>
           )}
         />

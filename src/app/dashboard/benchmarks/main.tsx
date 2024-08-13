@@ -88,6 +88,7 @@ export function BenchmarksMain({ benchmarks, results }: BenchmarksMainProps) {
     video: result.video,
     products: result.products,
     unit: result.unit,
+    hidden: result.hidden,
   })) as BenchmarkData[]
 
   const filteredBenchmarks = benchmarks.filter((benchmark) =>
