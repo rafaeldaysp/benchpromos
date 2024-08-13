@@ -150,6 +150,7 @@ export type BenchmarkResult = {
   benchmarkId: string
   result: number
   unit: string
+  hidden: boolean
   productAlias: string
   description?: string
   video?: string
