@@ -1,29 +1,29 @@
 import { getClient } from '@/lib/apollo'
 import { gql } from '@apollo/client'
 
+import { getCurrentUser } from '@/app/_actions/user'
 import { BenchmarkChart } from '@/components/benchmarks/benchmark-chart'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { notebooksCustomFilters } from '@/constants'
-import { type Benchmark } from '@/types'
+import { type Benchmark, type BenchmarkResult } from '@/types'
 
 const GET_BENCHMARK_RESULTS = gql`
   query GetBenchmarks(
     $benchmarkSlug: ID
     $productsSlugs: [String]
     $filters: [FilterInput!]
-    $hidden: Boolean
   ) {
     benchmarkResults(
       benchmarkSlug: $benchmarkSlug
       productsSlugs: $productsSlugs
       filters: $filters
-      hidden: $hidden
     ) {
       id
       result
       description
       productAlias
       unit
+      hidden
       products {
         name
         slug
@@ -52,6 +52,8 @@ export default async function BenchmarkPage({
 }: BenchmarkPageProps) {
   const { products: productsString, ...filters } = searchParams
 
+  const user = await getCurrentUser()
+
   const filtersInput = Object.entries(filters)
     .filter(([, value]) => value)
     .filter(
@@ -70,25 +72,19 @@ export default async function BenchmarkPage({
   const productsArray = productsString?.split('.')
 
   const { data } = await getClient().query<{
-    benchmarkResults: {
-      id: string
-      result: number
-      productAlias: string
-      unit: string
-      description?: string
+    benchmarkResults: (BenchmarkResult & {
       products: {
         name: string
         slug: string
       }[]
       benchmark: Pick<Benchmark, 'name' | 'slug' | 'lowerIsBetter'>
-    }[]
+    })[]
   }>({
     query: GET_BENCHMARK_RESULTS,
     variables: {
       productsSlugs: productsArray,
       benchmarkSlug: slug,
       filters: filtersInput,
-      hidden: false,
     },
     errorPolicy: 'ignore',
   })
@@ -109,12 +105,13 @@ export default async function BenchmarkPage({
 
   const results = (data?.benchmarkResults ?? []).filter(
     (result) =>
-      !toHideFromCustomFilters.length ||
-      !toHideFromCustomFilters.some((customFilter) =>
-        customFilter.values.some(
-          (value) => result.description?.includes(value),
-        ),
-      ),
+      (!toHideFromCustomFilters.length ||
+        !toHideFromCustomFilters.some((customFilter) =>
+          customFilter.values.some(
+            (value) => result.description?.includes(value),
+          ),
+        )) &&
+      (!result.hidden || user?.role === 'ADMIN'),
   )
 
   const benchmarkName =
