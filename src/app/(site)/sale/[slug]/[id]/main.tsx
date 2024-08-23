@@ -236,7 +236,7 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
               <Link
                 href={`/${sale.category.slug}/${sale.productSlug}`}
                 className={cn(
-                  buttonVariants(),
+                  buttonVariants({ variant: 'auxiliary' }),
                   'flex h-10 rounded-xl font-semibold',
                 )}
                 id="product_view_from_sale_page"
@@ -309,19 +309,6 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
                 )}
               />
             </div>
-            <div>
-              <div className="space-y-1">
-                <h2 className="font-semibold tracking-tight md:text-xl">
-                  Sugestões e upgrades
-                </h2>
-                <p className="text-sm text-muted-foreground">
-                  Nossa equipe separou alguns produtos que podem te interessar
-                  com essa compra
-                </p>
-              </div>
-              <Separator className="my-4" />
-              <ProductSuggestions slug={sale.productSlug} />
-            </div>
 
             <section id="review">
               <header className="space-y-1">
@@ -374,7 +361,8 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
           </div>
         )}
       </main>
-      <aside className="xl:col-span-2" id="comments">
+      <aside className="space-y-10 xl:col-span-2" id="comments">
+        {sale.productSlug && <ProductSuggestions slug={sale.productSlug} />}
         <Comments saleId={sale.id} user={user} count={sale.commentsCount} />
       </aside>
     </div>

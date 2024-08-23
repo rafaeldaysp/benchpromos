@@ -19,7 +19,7 @@ const options: {
     icon: Icons.LineChart,
   },
   {
-    label: 'Sugestões',
+    label: 'Upgrades',
     value: 'suggestions',
     icon: Icons.TrendingUp,
   },
@@ -82,10 +82,13 @@ export function ProductNavbar() {
           <Button
             key={option.value}
             variant={'ghost'}
-            className={cn('h-fit font-medium text-muted-foreground', {
-              'bg-background text-foreground shadow':
-                option.value === activeSection,
-            })}
+            className={cn(
+              'h-fit text-base font-medium text-primary-foreground',
+              {
+                'bg-background text-foreground shadow':
+                  option.value === activeSection,
+              },
+            )}
             onClick={() =>
               window.scrollTo({
                 top:
