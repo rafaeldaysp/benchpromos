@@ -81,29 +81,39 @@ function reorganizeResults({ results }: BenchmarkChartProps) {
     return costs[s2.length]
   }
 
-  results.forEach((result) => {
-    if (result.description?.includes('Frame Generation')) {
-      const resultWithoutFG = results
-        .filter(
-          (findedResult) =>
-            findedResult.productAlias === result.productAlias &&
-            !findedResult.description?.includes('Frame Generation'),
-        )
-        .sort(
-          (a, b) =>
-            similarity(b.description ?? '', result.description ?? '') -
-            similarity(a.description ?? '', result.description ?? ''),
-        )
+  function setFrameGenerationResultObject(
+    result: BenchmarkChartProps['results'][number],
+  ) {
+    const resultWithoutFG = results
+      .filter(
+        (findedResult) =>
+          findedResult.productAlias === result.productAlias &&
+          !findedResult.description?.includes('Frame Generation'),
+      )
+      .sort(
+        (a, b) =>
+          similarity(b.description ?? '', result.description ?? '') -
+          similarity(a.description ?? '', result.description ?? ''),
+      )
 
-      newResults.push({
-        ...result,
-        resultNoFG: resultWithoutFG[0].result,
-      })
-      exludingIds.push(resultWithoutFG[0].id)
-    } else if (!exludingIds.includes(result.id)) newResults.push(result)
-  })
+    newResults.push({
+      ...result,
+      resultNoFG: resultWithoutFG[0]?.result,
+    })
+    exludingIds.push(resultWithoutFG[0].id)
+  }
+
+  results
+    .filter((result) => result.description?.includes('Frame Generation'))
+    .forEach(setFrameGenerationResultObject)
+
+  results
+    .filter((result) => !result.description?.includes('Frame Generation'))
+    .forEach((result) => {
+      if (!exludingIds.includes(result.id)) newResults.push(result)
+    })
   // @ts-expect-error ...
-  return newResults
+  return newResults.sort((a, b) => b.result - a.result)
 }
 
 export function BenchmarkChart({ results }: BenchmarkChartProps) {
@@ -382,7 +392,7 @@ export function BenchmarkChart({ results }: BenchmarkChartProps) {
   )
 }
 
-function CustomLegend({ unit, hasFG }: { unit: string; hasFG?: boolean }) {
+function CustomLegend({ unit }: { unit: string; hasFG?: boolean }) {
   return (
     <div className="flex w-full items-center justify-center gap-6">
       <div className="mb-2 flex items-center justify-center gap-x-2">
