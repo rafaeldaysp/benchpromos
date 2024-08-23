@@ -113,7 +113,11 @@ function reorganizeResults({ results }: BenchmarkChartProps) {
       if (!exludingIds.includes(result.id)) newResults.push(result)
     })
   // @ts-expect-error ...
-  return newResults.sort((a, b) => b.result - a.result)
+  return newResults.sort(
+    (a, b) =>
+      Math.max(b.result, b.resultNoFG ?? 0) -
+      Math.max(a.result, a.resultNoFG ?? 0),
+  )
 }
 
 export function BenchmarkChart({ results }: BenchmarkChartProps) {
