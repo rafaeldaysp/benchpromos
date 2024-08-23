@@ -25,6 +25,13 @@ import {
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import {
   Sheet,
   SheetContent,
   SheetHeader,
@@ -54,6 +61,14 @@ interface CashbacksMainProps {
 export function CashbacksMain({ cashbacks }: CashbacksMainProps) {
   const [selectedCashback, setSelectedCashback] =
     React.useState<(typeof cashbacks)[number]>()
+
+  const [selectedRetailer, setSelectedRetailer] = React.useState('Todos')
+  const retailers = React.useMemo(() => {
+    const distinctRetailers = Array.from(
+      new Set(cashbacks.map((cashback) => cashback.retailer.name)),
+    )
+    return ['Todos', ...distinctRetailers]
+  }, [cashbacks])
   const { openDialogs, setOpenDialog } = useFormStore()
   const router = useRouter()
 
@@ -75,7 +90,21 @@ export function CashbacksMain({ cashbacks }: CashbacksMainProps) {
   return (
     <div className="space-y-8">
       {/* Cashbacks Actions */}
-      <div className="flex justify-end gap-x-2">
+      <div className="flex justify-between gap-x-2">
+        <Select onValueChange={setSelectedRetailer} value={selectedRetailer}>
+          <SelectTrigger className="w-full sm:max-w-[200px]">
+            <SelectValue placeholder="Selecione um varejista" />
+          </SelectTrigger>
+          <SelectContent>
+            <ScrollArea className="h-80">
+              {retailers?.map((retailer) => (
+                <SelectItem key={retailer} value={retailer}>
+                  {retailer}
+                </SelectItem>
+              ))}
+            </ScrollArea>
+          </SelectContent>
+        </Select>
         <Sheet
           open={openDialogs['cashbackCreateForm']}
           onOpenChange={(open) => setOpenDialog('cashbackCreateForm', open)}
@@ -121,71 +150,77 @@ export function CashbacksMain({ cashbacks }: CashbacksMainProps) {
             'h-[600px]': cashbacks.length > 8,
           })}
         >
-          {cashbacks.map((cashback) => (
-            <DashboardItemCard.Root key={cashback.id}>
-              <DashboardItemCard.Content
-                className="cursor-pointer"
-                onClick={() => setSelectedCashback(cashback)}
-              >
-                <p className="text-sm leading-7">{cashback.provider}</p>
-                <span className="text-xs text-muted-foreground">
-                  {cashback.retailer.name} • {cashback.value}% • Atualizado{' '}
-                  {dayjs(cashback.updatedAt).fromNow()}
-                </span>
-              </DashboardItemCard.Content>
-
-              <DashboardItemCard.Actions>
-                <Sheet
-                  open={openDialogs[`cashbackUpdateForm.${cashback.id}`]}
-                  onOpenChange={(open) =>
-                    setOpenDialog(`cashbackUpdateForm.${cashback.id}`, open)
-                  }
+          {cashbacks
+            .filter(
+              (cashback) =>
+                cashback.retailer.name == selectedRetailer ||
+                selectedRetailer == 'Todos',
+            )
+            .map((cashback) => (
+              <DashboardItemCard.Root key={cashback.id}>
+                <DashboardItemCard.Content
+                  className="cursor-pointer"
+                  onClick={() => setSelectedCashback(cashback)}
                 >
-                  <SheetTrigger asChild>
-                    <DashboardItemCard.Action icon={Icons.Edit} />
-                  </SheetTrigger>
-                  <SheetContent
-                    className="w-full space-y-4 overflow-auto sm:max-w-xl"
-                    side="left"
-                  >
-                    <SheetHeader>
-                      <SheetTitle>EDITAR CASHBACK</SheetTitle>
-                    </SheetHeader>
-                    <CashbackForm mode="update" cashback={cashback} />
-                  </SheetContent>
-                </Sheet>
+                  <p className="text-sm leading-7">{cashback.provider}</p>
+                  <span className="text-xs text-muted-foreground">
+                    {cashback.retailer.name} • {cashback.value}% • Atualizado{' '}
+                    {dayjs(cashback.updatedAt).fromNow()}
+                  </span>
+                </DashboardItemCard.Content>
 
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <DashboardItemCard.Action
-                      variant="destructive"
-                      icon={Icons.Trash}
-                    />
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Você tem certeza?</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        Essa ação não pode ser desfeita.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                      <AlertDialogAction
-                        onClick={() =>
-                          deleteCashback({
-                            variables: { cashbackId: cashback.id },
-                          })
-                        }
-                      >
-                        Continuar
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-              </DashboardItemCard.Actions>
-            </DashboardItemCard.Root>
-          ))}
+                <DashboardItemCard.Actions>
+                  <Sheet
+                    open={openDialogs[`cashbackUpdateForm.${cashback.id}`]}
+                    onOpenChange={(open) =>
+                      setOpenDialog(`cashbackUpdateForm.${cashback.id}`, open)
+                    }
+                  >
+                    <SheetTrigger asChild>
+                      <DashboardItemCard.Action icon={Icons.Edit} />
+                    </SheetTrigger>
+                    <SheetContent
+                      className="w-full space-y-4 overflow-auto sm:max-w-xl"
+                      side="left"
+                    >
+                      <SheetHeader>
+                        <SheetTitle>EDITAR CASHBACK</SheetTitle>
+                      </SheetHeader>
+                      <CashbackForm mode="update" cashback={cashback} />
+                    </SheetContent>
+                  </Sheet>
+
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <DashboardItemCard.Action
+                        variant="destructive"
+                        icon={Icons.Trash}
+                      />
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Você tem certeza?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Essa ação não pode ser desfeita.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={() =>
+                            deleteCashback({
+                              variables: { cashbackId: cashback.id },
+                            })
+                          }
+                        >
+                          Continuar
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                </DashboardItemCard.Actions>
+              </DashboardItemCard.Root>
+            ))}
         </ScrollArea>
       ) : (
         <div className="flex justify-center">

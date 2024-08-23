@@ -1,12 +1,12 @@
 'use client'
 
 import { gql, useMutation } from '@apollo/client'
-import { useRouter } from 'next/navigation'
-import * as React from 'react'
-import { toast } from 'sonner'
 import dayjs from 'dayjs'
 import 'dayjs/locale/pt-br'
 import relativeTime from 'dayjs/plugin/relativeTime'
+import { useRouter } from 'next/navigation'
+import * as React from 'react'
+import { toast } from 'sonner'
 
 import { DashboardItemCard } from '@/components/dashboard-item-card'
 import { CouponForm } from '@/components/forms/coupon-form'
@@ -25,6 +25,13 @@ import {
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import {
   Sheet,
   SheetContent,
   SheetHeader,
@@ -33,9 +40,9 @@ import {
 } from '@/components/ui/sheet'
 import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
+import { cn } from '@/lib/utils'
 import { type Coupon, type Retailer } from '@/types'
 import { couponFormatter } from '@/utils/formatter'
-import { cn } from '@/lib/utils'
 
 dayjs.extend(relativeTime)
 dayjs.locale('pt-br')
@@ -55,6 +62,14 @@ interface CouponsMainProps {
 export function CouponsMain({ coupons }: CouponsMainProps) {
   const [selectedCoupon, setSelectedCoupon] =
     React.useState<(typeof coupons)[number]>()
+  const [selectedRetailer, setSelectedRetailer] = React.useState('Todos')
+  const retailers = React.useMemo(() => {
+    const distinctRetailers = Array.from(
+      new Set(coupons.map((coupon) => coupon.retailer.name)),
+    )
+    return ['Todos', ...distinctRetailers]
+  }, [coupons])
+
   const { openDialogs, setOpenDialog } = useFormStore()
   const router = useRouter()
 
@@ -76,7 +91,21 @@ export function CouponsMain({ coupons }: CouponsMainProps) {
   return (
     <div className="space-y-8">
       {/* Coupons Actions */}
-      <div className="flex justify-end gap-x-2">
+      <div className="flex justify-between gap-x-2">
+        <Select onValueChange={setSelectedRetailer} value={selectedRetailer}>
+          <SelectTrigger className="w-full sm:max-w-[200px]">
+            <SelectValue placeholder="Selecione um varejista" />
+          </SelectTrigger>
+          <SelectContent>
+            <ScrollArea className="h-80">
+              {retailers?.map((retailer) => (
+                <SelectItem key={retailer} value={retailer}>
+                  {retailer}
+                </SelectItem>
+              ))}
+            </ScrollArea>
+          </SelectContent>
+        </Select>
         <Sheet
           open={openDialogs['couponCreateForm']}
           onOpenChange={(open) => setOpenDialog('couponCreateForm', open)}
@@ -122,69 +151,75 @@ export function CouponsMain({ coupons }: CouponsMainProps) {
             'h-[600px]': coupons.length > 8,
           })}
         >
-          {coupons.map((coupon) => (
-            <DashboardItemCard.Root key={coupon.id}>
-              <DashboardItemCard.Content
-                className="cursor-pointer"
-                onClick={() => setSelectedCoupon(coupon)}
-              >
-                <p className="text-sm leading-7">{coupon.code}</p>
-                <span className="text-xs text-muted-foreground">
-                  {coupon.retailer.name} • {couponFormatter(coupon.discount)} •
-                  Atualizado {dayjs(coupon.updatedAt).fromNow()}
-                </span>
-              </DashboardItemCard.Content>
-
-              <DashboardItemCard.Actions>
-                <Sheet
-                  open={openDialogs[`couponUpdateForm.${coupon.id}`]}
-                  onOpenChange={(open) =>
-                    setOpenDialog(`couponUpdateForm.${coupon.id}`, open)
-                  }
+          {coupons
+            .filter(
+              (coupon) =>
+                coupon.retailer.name == selectedRetailer ||
+                selectedRetailer == 'Todos',
+            )
+            .map((coupon) => (
+              <DashboardItemCard.Root key={coupon.id}>
+                <DashboardItemCard.Content
+                  className="cursor-pointer"
+                  onClick={() => setSelectedCoupon(coupon)}
                 >
-                  <SheetTrigger asChild>
-                    <DashboardItemCard.Action icon={Icons.Edit} />
-                  </SheetTrigger>
-                  <SheetContent
-                    className="w-full space-y-4 overflow-auto sm:max-w-xl"
-                    side="left"
-                  >
-                    <SheetHeader>
-                      <SheetTitle>EDITAR CUPOM</SheetTitle>
-                    </SheetHeader>
-                    <CouponForm mode="update" coupon={coupon} />
-                  </SheetContent>
-                </Sheet>
+                  <p className="text-sm leading-7">{coupon.code}</p>
+                  <span className="text-xs text-muted-foreground">
+                    {coupon.retailer.name} • {couponFormatter(coupon.discount)}{' '}
+                    • Atualizado {dayjs(coupon.updatedAt).fromNow()}
+                  </span>
+                </DashboardItemCard.Content>
 
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <DashboardItemCard.Action
-                      variant="destructive"
-                      icon={Icons.Trash}
-                    />
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Você tem certeza?</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        Essa ação não pode ser desfeita.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                      <AlertDialogAction
-                        onClick={() =>
-                          deleteCoupon({ variables: { couponId: coupon.id } })
-                        }
-                      >
-                        Continuar
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-              </DashboardItemCard.Actions>
-            </DashboardItemCard.Root>
-          ))}
+                <DashboardItemCard.Actions>
+                  <Sheet
+                    open={openDialogs[`couponUpdateForm.${coupon.id}`]}
+                    onOpenChange={(open) =>
+                      setOpenDialog(`couponUpdateForm.${coupon.id}`, open)
+                    }
+                  >
+                    <SheetTrigger asChild>
+                      <DashboardItemCard.Action icon={Icons.Edit} />
+                    </SheetTrigger>
+                    <SheetContent
+                      className="w-full space-y-4 overflow-auto sm:max-w-xl"
+                      side="left"
+                    >
+                      <SheetHeader>
+                        <SheetTitle>EDITAR CUPOM</SheetTitle>
+                      </SheetHeader>
+                      <CouponForm mode="update" coupon={coupon} />
+                    </SheetContent>
+                  </Sheet>
+
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <DashboardItemCard.Action
+                        variant="destructive"
+                        icon={Icons.Trash}
+                      />
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Você tem certeza?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Essa ação não pode ser desfeita.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={() =>
+                            deleteCoupon({ variables: { couponId: coupon.id } })
+                          }
+                        >
+                          Continuar
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                </DashboardItemCard.Actions>
+              </DashboardItemCard.Root>
+            ))}
         </ScrollArea>
       ) : (
         <div className="flex justify-center">
