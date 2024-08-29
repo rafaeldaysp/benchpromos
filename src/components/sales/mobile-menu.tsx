@@ -9,6 +9,7 @@ import { Button, buttonVariants } from '../ui/button'
 import { Drawer, DrawerContent } from '../ui/drawer'
 import { ReactionDrawer } from './reaction-drawer'
 import { HighlightSaleToggle } from './sale-highlight'
+import { useSaleExpired } from '@/hooks/use-toggle-sale-expired'
 
 interface MobileMenuProps {
   open: boolean
@@ -23,6 +24,7 @@ interface MobileMenuProps {
       slug: string
     }
     highlight: boolean
+    expired: boolean
   }
   user?: { id: string; role: 'ADMIN' | 'MOD' | 'USER' }
   apolloClient: ApolloClient<unknown>
@@ -38,6 +40,10 @@ export function MobileMenu({
   setOpenLoginPopup,
 }: MobileMenuProps) {
   const [snap, setSnap] = React.useState<number | string | null>(0.7)
+  const { toggleSaleExpired } = useSaleExpired({
+    id: sale.id,
+    expired: sale.expired,
+  })
   return (
     <Drawer
       snapPoints={[0.7, 1]}
@@ -160,6 +166,24 @@ export function MobileMenu({
                   Excluir
                 </Button>
               </AlertDialogTrigger>
+
+              <Button
+                variant={'ghost'}
+                onClick={() => toggleSaleExpired()}
+                className="justify-start px-2"
+              >
+                {sale.expired ? (
+                  <>
+                    <Icons.Check className="mr-4 h-4 w-4" />
+                    Disponível
+                  </>
+                ) : (
+                  <>
+                    <Icons.Clock8 className="mr-4 h-4 w-4" />
+                    Expirado
+                  </>
+                )}
+              </Button>
             </>
           )}
         </main>
