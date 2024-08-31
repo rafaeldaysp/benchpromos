@@ -44,4 +44,10 @@ export const notebooksCustomFilters = [
     values: ['Na Bateria'],
     type: 'show',
   },
+  {
+    label: 'Mostrar descontinuados',
+    slug: 'descontinued',
+    values: ['Descontinuado'],
+    type: 'show',
+  },
 ]
