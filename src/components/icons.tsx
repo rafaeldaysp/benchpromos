@@ -18,6 +18,7 @@ import {
   Copy,
   Crown,
   DollarSign,
+  Download,
   Edit2,
   ExternalLink,
   Eye,
@@ -137,6 +138,7 @@ export const Icons = {
   Play,
   TrendingUp,
   MoveRight,
+  Download,
   Google: ({ ...props }: LucideProps) => (
     <svg
       aria-hidden="true"

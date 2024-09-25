@@ -34,6 +34,7 @@ import type { Cashback, Coupon, Deal, Product, Retailer } from '@/types'
 import { couponFormatter, priceFormatter } from '@/utils/formatter'
 import { priceCalculator } from '@/utils/price-calculator'
 import { PriceComponent } from '@/components/price-component'
+import { ProductFiles } from '@/components/files/product-files'
 
 const GET_PRODUCT = gql`
   query GetProduct(
@@ -671,6 +672,17 @@ export default async function ProductPage({ params }: ProductPageProps) {
         </header>
         <Separator className="my-4" />
         <ProductBenchmarks productSlug={product.slug} />
+      </section>
+
+      <section id="arquivos">
+        <header className="space-y-1">
+          <h2 className="font-semibold tracking-tight md:text-xl">Arquivos</h2>
+          <p className="text-sm text-muted-foreground">
+            Veja alguns arquivos relevantes para este produto
+          </p>
+        </header>
+        <Separator className="my-4" />
+        <ProductFiles productSlug={product.slug} />
       </section>
 
       <section id="review">
