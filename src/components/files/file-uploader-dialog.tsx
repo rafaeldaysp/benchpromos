@@ -78,9 +78,11 @@ export function FileUploaderDialog({ path }: FileUploadDialogProps) {
           fileArray.push(file)
         })
         .catch((error) => console.error('Error processing file:', error))
+        .finally(() => {
+          setFiles(fileArray)
+          setIsProcessingFiles(false)
+        })
     })
-    setFiles(fileArray)
-    setIsProcessingFiles(false)
   }, [uploadedFileUrls])
 
   const onUpload = async (files: File[]) => {
@@ -138,7 +140,7 @@ export function FileUploaderDialog({ path }: FileUploadDialogProps) {
           variant="outline"
           disabled={isFetchingFiles || isProcessingFiles}
         >
-          {isFetchingFiles && (
+          {(isFetchingFiles || isProcessingFiles) && (
             <Icons.Spinner
               className="mr-2 h-4 w-4 animate-spin"
               aria-hidden="true"
