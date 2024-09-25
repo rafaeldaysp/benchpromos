@@ -41,8 +41,10 @@ export function ProductFiles({ productSlug }: ProductFilesProps) {
           setFiles((prev) => [...prev, file])
         })
         .catch((error) => console.error('Error processing file:', error))
+        .finally(() => {
+          setIsProcessingFiles(false)
+        })
     })
-    setIsProcessingFiles(false)
   }, [uploadedFileUrls, isProcessingFiles])
 
   const onDownload = (file: File) => {
