@@ -45,7 +45,7 @@ export function ProductFiles({ productSlug }: ProductFilesProps) {
           setIsProcessingFiles(false)
         })
     })
-  }, [uploadedFileUrls, isProcessingFiles])
+  }, [uploadedFileUrls])
 
   const onDownload = (file: File) => {
     const url = URL.createObjectURL(file)
