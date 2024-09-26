@@ -66,6 +66,7 @@ export function FileUploaderDialog({ path }: FileUploadDialogProps) {
   })
 
   React.useEffect(() => {
+    if (!uploadedFileUrls?.productFiles.length) return
     setIsProcessingFiles(true)
     const fileArray: File[] = []
     uploadedFileUrls?.productFiles.forEach((url) => {
@@ -84,7 +85,7 @@ export function FileUploaderDialog({ path }: FileUploadDialogProps) {
         })
     })
   }, [uploadedFileUrls])
-
+  console.log(isProcessingFiles, isFetchingFiles)
   const onUpload = async (files: File[]) => {
     if (files.length === 0) return
     files.forEach(async (file) => {

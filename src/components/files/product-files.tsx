@@ -30,6 +30,7 @@ export function ProductFiles({ productSlug }: ProductFilesProps) {
     },
   })
   React.useEffect(() => {
+    if (!uploadedFileUrls?.productFiles.length) return
     setIsProcessingFiles(true)
     uploadedFileUrls?.productFiles.forEach((url) => {
       toDataURL(url)
