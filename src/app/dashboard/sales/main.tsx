@@ -220,7 +220,7 @@ export function SalesMain() {
           <TabsTrigger value="products">Produtos</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="sales">
+        <TabsContent value="sales" forceMount hidden={openTab !== 'sales'}>
           <DashboardSales>
             {({ sales }) =>
               sales.map((sale, i) => (
@@ -310,7 +310,11 @@ export function SalesMain() {
           </DashboardSales>
         </TabsContent>
 
-        <TabsContent value="products">
+        <TabsContent
+          value="products"
+          forceMount
+          hidden={openTab !== 'products'}
+        >
           <DashboardProducts>
             {({ products }) =>
               products.map((product, i) => (
