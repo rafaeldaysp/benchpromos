@@ -674,7 +674,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
         <ProductBenchmarks productSlug={product.slug} />
       </section>
 
-      <section id="arquivos">
+      <section id="files">
         <header className="space-y-1">
           <h2 className="font-semibold tracking-tight md:text-xl">Arquivos</h2>
           <p className="text-sm text-muted-foreground">
