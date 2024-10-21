@@ -50,6 +50,7 @@ import { useFormStore } from '@/hooks/use-form-store'
 import { useQueryString } from '@/hooks/use-query-string'
 import { cn } from '@/lib/utils'
 import type { Category, Filter, Product } from '@/types'
+import { FileUploaderDialog } from '@/components/files/file-uploader-dialog'
 
 const DELETE_PRODUCT = gql`
   mutation DeleteProduct($productId: ID!) {
@@ -179,6 +180,7 @@ export function ProductsMain({ filters }: ProductsMainProps) {
         <div className="flex flex-col justify-end gap-2 sm:flex-row">
           {selectedProduct && (
             <>
+              <FileUploaderDialog path={selectedProduct.slug} />
               <Dialog
                 open={openDialogs['recommendedProductForm']}
                 onOpenChange={(open) =>

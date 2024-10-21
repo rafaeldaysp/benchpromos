@@ -18,9 +18,11 @@ import {
   Copy,
   Crown,
   DollarSign,
+  Download,
   Edit2,
   ExternalLink,
   Eye,
+  File,
   Folder,
   GanttChartSquare,
   GitPullRequestDraft,
@@ -94,6 +96,7 @@ export const Icons = {
   MessageCircle,
   Heart,
   Eye,
+  File,
   GanttChartSquare,
   ChevronsLeft,
   ChevronsRight,
@@ -137,6 +140,7 @@ export const Icons = {
   Play,
   TrendingUp,
   MoveRight,
+  Download,
   Google: ({ ...props }: LucideProps) => (
     <svg
       aria-hidden="true"

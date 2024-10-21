@@ -49,6 +49,11 @@ const options: {
     icon: Icons.BarChart4,
   },
   {
+    label: 'Arquivos',
+    value: 'files',
+    icon: Icons.File,
+  },
+  {
     label: 'Review',
     value: 'review',
     icon: Icons.YoutubeIcon,
