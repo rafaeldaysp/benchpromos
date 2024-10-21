@@ -65,20 +65,26 @@ export function ProductAlertCard({
             <div className="col-span-1 flex flex-col justify-center space-y-1">
               <div className="flex flex-col">
                 <span>Preço atual</span>
-                {bestDeal.availability ? (
-                  <strong className="text-lg text-foreground">
-                    {priceFormatter.format(
-                      priceCalculator(
-                        bestDeal.price,
-                        bestDeal.coupon?.availability
-                          ? bestDeal.coupon.discount
-                          : undefined,
-                        bestDeal.cashback?.value,
-                      ) / 100,
+                {bestDeal ? (
+                  <>
+                    {bestDeal.availability ? (
+                      <strong className="text-lg text-foreground">
+                        {priceFormatter.format(
+                          priceCalculator(
+                            bestDeal.price,
+                            bestDeal.coupon?.availability
+                              ? bestDeal.coupon.discount
+                              : undefined,
+                            bestDeal.cashback?.value,
+                          ) / 100,
+                        )}
+                      </strong>
+                    ) : (
+                      <strong className="text-destructive">Indisponível</strong>
                     )}
-                  </strong>
+                  </>
                 ) : (
-                  <strong className="text-destructive">INDISPONÍVEL</strong>
+                  <strong className="text-warning">Não listado</strong>
                 )}
               </div>
 

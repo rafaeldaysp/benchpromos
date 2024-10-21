@@ -41,6 +41,8 @@ import { CategoryFilterPopover } from './category-filters-popover'
 import { PriceInput } from './price-input'
 import { Badge } from './ui/badge'
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover'
+import { Label } from './ui/label'
+import { Switch } from './ui/switch'
 
 interface ProductsProps {
   products: (Product & {
@@ -95,6 +97,12 @@ export function Products({
   >(clientPriceRange ?? serverPriceRange)
   // const debouncedPrice = useDebounce(currentPriceRange, 250)
 
+  const includeNoDealsSelected =
+    searchParams.get('includeNoDeals') === 'true' ||
+    searchParams.get('search') !== null
+  const includeUnavailableSelected =
+    searchParams.get('includeUnavailable') === 'true' ||
+    searchParams.get('search') !== null
   const page = searchParams.get('page') ?? '1'
 
   const filterSlugNullRecord: Record<string, null> = {}
@@ -251,6 +259,49 @@ export function Products({
                       </div>
                     </div>
                   )}
+                  <div className="space-y-4">
+                    <h3 className="font-medium tracking-wide text-foreground">
+                      Ofertas
+                    </h3>
+                    <div className="flex items-center justify-between gap-x-2">
+                      <Label className="text-sm" htmlFor="hasDeals">
+                        Mostrar não listados
+                      </Label>
+                      <Switch
+                        id="hasDeals"
+                        defaultChecked={includeNoDealsSelected}
+                        onCheckedChange={(value) =>
+                          startTransition(() => {
+                            router.push(
+                              `${pathname}?${createQueryString({
+                                includeNoDeals: value ? 'true' : null,
+                                page: null,
+                              })}`,
+                            )
+                          })
+                        }
+                      />
+                    </div>
+                    <div className="flex items-center justify-between gap-x-2">
+                      <Label className="text-sm" htmlFor="hasDeals">
+                        Mostrar indisponíveis
+                      </Label>
+                      <Switch
+                        id="hasDeals"
+                        defaultChecked={includeUnavailableSelected}
+                        onCheckedChange={(value) =>
+                          startTransition(() => {
+                            router.push(
+                              `${pathname}?${createQueryString({
+                                includeUnavailable: value ? 'true' : null,
+                                page: null,
+                              })}`,
+                            )
+                          })
+                        }
+                      />
+                    </div>
+                  </div>
                   {categoryFilters
                     .filter((categoryFilter) => categoryFilter.options.length)
                     .map((categoryFilter) => {

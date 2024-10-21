@@ -74,7 +74,7 @@ export default async function AlertsPage() {
     },
     variables: {
       input: {
-        hasDeals: true,
+        // hasDeals: true,
       },
     },
     errorPolicy: 'ignore',

@@ -148,7 +148,6 @@ export async function generateMetadata({ params }: ProductPageProps) {
     variables: {
       productInput: {
         identifier: slug,
-        hasDeals: true,
       },
     },
     errorPolicy: 'all',
@@ -207,11 +206,9 @@ export default async function ProductPage({ params }: ProductPageProps) {
     variables: {
       productInput: {
         identifier: slug,
-        hasDeals: true,
       },
       productWithDealsSortedByInstallmentPrice: {
         identifier: slug,
-        hasDeals: true,
         sortDealsByInstallmentPrice: true,
       },
     },
@@ -249,27 +246,38 @@ export default async function ProductPage({ params }: ProductPageProps) {
               </div>
             </div>
             <div className="flex flex-col space-y-2 md:flex-1 md:pr-8 lg:pr-0">
-              {bestDeal.availability ? (
-                <PriceComponent
-                  bestDeal={bestDeal}
-                  bestInstallmentDeal={bestInstallmentDeal}
-                />
+              {bestDeal ? (
+                <>
+                  {bestDeal.availability ? (
+                    <>
+                      <PriceComponent
+                        bestDeal={bestDeal}
+                        bestInstallmentDeal={bestInstallmentDeal}
+                      />
+                      <a
+                        className={cn(
+                          buttonVariants(),
+                          'flex h-10 w-full cursor-pointer rounded-xl',
+                        )}
+                        href={bestDeal.url}
+                        target="_blank"
+                      >
+                        <span className="mr-2 font-semibold">ACESSAR</span>
+                        <Icons.ExternalLink
+                          strokeWidth={3}
+                          className="h-4 w-4"
+                        />
+                      </a>
+                    </>
+                  ) : (
+                    <strong className="text-xl text-destructive">
+                      Indisponível
+                    </strong>
+                  )}
+                </>
               ) : (
-                <strong className="text-xl text-destructive">
-                  Indisponível
-                </strong>
+                <strong className="text-xl text-warning">Não listado</strong>
               )}
-              <a
-                className={cn(
-                  buttonVariants(),
-                  'flex h-10 w-full cursor-pointer rounded-xl',
-                )}
-                href={bestDeal.url}
-                target="_blank"
-              >
-                <span className="mr-2 font-semibold">ACESSAR</span>
-                <Icons.ExternalLink strokeWidth={3} className="h-4 w-4" />
-              </a>
             </div>
           </div>
         </div>
@@ -282,7 +290,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
           <AlertCard
             productId={product.id}
             switchId="alert-top"
-            productPrice={bestDeal.price}
+            productPrice={bestDeal?.price ?? 0}
             token={token}
           />
 
@@ -327,7 +335,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
             <PriceChart
               productSlug={slug}
               currentPrice={
-                bestDeal.availability
+                bestDeal && bestDeal.availability
                   ? priceCalculator(
                       bestDeal.price,
                       bestDeal.coupon?.availability
@@ -339,11 +347,12 @@ export default async function ProductPage({ params }: ProductPageProps) {
               }
             />
           </div>
+
           <aside className="flex flex-col gap-y-2 xl:col-span-2">
             <AlertCard
               productId={product.id}
               switchId="alert-middle"
-              productPrice={bestDeal.price}
+              productPrice={bestDeal?.price ?? 0}
               token={token}
             />
           </aside>
@@ -498,10 +507,18 @@ export default async function ProductPage({ params }: ProductPageProps) {
           </div>
         </div>
         <Separator className="my-4" />
+        {product.deals.length === 0 && (
+          <h3 className="text-sm text-muted-foreground">
+            Poxa, esse produto ainda não foi listado em nenhuma loja. Mas não se
+            procure! Estamos trabalhando para trazer as melhores ofertas para
+            você.
+          </h3>
+        )}
 
         <ScrollArea
           className={cn('rounded-xl border', {
             'h-[450px]': product.deals.length > 2,
+            hidden: product.deals.length == 0,
           })}
         >
           {product.deals.map((deal) => (

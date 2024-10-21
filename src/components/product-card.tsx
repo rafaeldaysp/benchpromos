@@ -103,81 +103,89 @@ export function ProductCard({
                 TESTADO NO CANAL
               </Badge>
             )}
-
-            {bestDeal.availability ? (
+            {bestDeal ? (
               <>
-                <div className="flex flex-col gap-1">
-                  <CardDescription className="hidden text-sm leading-none sm:block">
-                    Menor preço via <strong>{bestDeal.retailer.name}</strong>
-                  </CardDescription>
-                  <p>
-                    <strong className="text-xl">
-                      {priceFormatter.format(
-                        priceCalculator(
-                          bestDeal.price,
-                          bestDeal.coupon?.availability
-                            ? bestDeal.coupon.discount
-                            : undefined,
-                          bestDeal.cashback?.value,
-                        ) / 100,
-                      )}
-                    </strong>{' '}
-                    <span className="text-xs text-muted-foreground sm:text-sm">
-                      à vista{' '}
-                    </span>
-                  </p>
-
-                  {!!bestDeal.installments &&
-                    !!bestDeal.totalInstallmentPrice && (
-                      <span className="text-xs text-muted-foreground sm:text-sm">
-                        até{' '}
-                        <strong className="text-sm">
-                          {bestDeal.installments}x
-                        </strong>{' '}
-                        de{' '}
-                        <strong className="text-sm">
+                {bestDeal.availability ? (
+                  <>
+                    <div className="flex flex-col gap-1">
+                      <CardDescription className="hidden text-sm leading-none sm:block">
+                        Menor preço via{' '}
+                        <strong>{bestDeal.retailer.name}</strong>
+                      </CardDescription>
+                      <p>
+                        <strong className="text-xl">
                           {priceFormatter.format(
                             priceCalculator(
-                              bestDeal.totalInstallmentPrice,
+                              bestDeal.price,
                               bestDeal.coupon?.availability
                                 ? bestDeal.coupon.discount
                                 : undefined,
                               bestDeal.cashback?.value,
-                            ) /
-                              (100 * bestDeal.installments),
+                            ) / 100,
                           )}
-                        </strong>
-                      </span>
+                        </strong>{' '}
+                        <span className="text-xs text-muted-foreground sm:text-sm">
+                          à vista{' '}
+                        </span>
+                      </p>
+
+                      {!!bestDeal.installments &&
+                        !!bestDeal.totalInstallmentPrice && (
+                          <span className="text-xs text-muted-foreground sm:text-sm">
+                            até{' '}
+                            <strong className="text-sm">
+                              {bestDeal.installments}x
+                            </strong>{' '}
+                            de{' '}
+                            <strong className="text-sm">
+                              {priceFormatter.format(
+                                priceCalculator(
+                                  bestDeal.totalInstallmentPrice,
+                                  bestDeal.coupon?.availability
+                                    ? bestDeal.coupon.discount
+                                    : undefined,
+                                  bestDeal.cashback?.value,
+                                ) /
+                                  (100 * bestDeal.installments),
+                              )}
+                            </strong>
+                          </span>
+                        )}
+                    </div>
+                    {bestDeal.coupon?.availability && (
+                      <p className="flex flex-col text-sm">
+                        <span className="text-xs text-muted-foreground sm:text-sm">
+                          Com cupom
+                        </span>
+                        <strong>{bestDeal.coupon.code}</strong>
+                      </p>
                     )}
-                </div>
-                {bestDeal.coupon?.availability && (
-                  <p className="flex flex-col text-sm">
-                    <span className="text-xs text-muted-foreground sm:text-sm">
-                      Com cupom
-                    </span>
-                    <strong>{bestDeal.coupon.code}</strong>
-                  </p>
-                )}
-                {bestDeal.cashback && (
-                  <>
-                    <strong className="hidden text-sm sm:inline-flex">
-                      {bestDeal.cashback.value}% de cashback com{' '}
-                      {bestDeal.cashback.provider}
-                    </strong>
-                    <p className="flex flex-col text-sm sm:hidden">
-                      <span className="text-xs text-muted-foreground">
-                        Com cashback
-                      </span>
-                      <strong>
-                        {bestDeal.cashback.value}% com{' '}
-                        {bestDeal.cashback.provider}
-                      </strong>
-                    </p>
+                    {bestDeal.cashback && (
+                      <>
+                        <strong className="hidden text-sm sm:inline-flex">
+                          {bestDeal.cashback.value}% de cashback com{' '}
+                          {bestDeal.cashback.provider}
+                        </strong>
+                        <p className="flex flex-col text-sm sm:hidden">
+                          <span className="text-xs text-muted-foreground">
+                            Com cashback
+                          </span>
+                          <strong>
+                            {bestDeal.cashback.value}% com{' '}
+                            {bestDeal.cashback.provider}
+                          </strong>
+                        </p>
+                      </>
+                    )}
                   </>
+                ) : (
+                  <strong className="text-lg text-destructive">
+                    Indisponível
+                  </strong>
                 )}
               </>
             ) : (
-              <strong className="text-lg text-destructive">Indisponível</strong>
+              <strong className="text-lg text-warning">Não listado</strong>
             )}
           </main>
         </CardContent>

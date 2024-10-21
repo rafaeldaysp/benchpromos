@@ -344,19 +344,18 @@ export function SaleCard({
                       setOpenLoginPopup={setOpenLoginPopup}
                     />
                   </div>
-
-                  <Link
-                    href={`/promocao/${sale.slug}/${sale.id}#comments`}
-                    className={cn(
-                      buttonVariants({ variant: 'ghost', size: 'sm' }),
-                      'w-10 shrink-0 px-0',
-                    )}
-                  >
-                    <span className="mr-1 text-sm">
-                      {sale.commentsCount ?? 0}
-                    </span>
-                    <Icons.MessageCircle className="h-4 w-4" />
-                  </Link>
+                  {sale.commentsCount > 0 && (
+                    <Link
+                      href={`/promocao/${sale.slug}/${sale.id}#comments`}
+                      className={cn(
+                        buttonVariants({ variant: 'ghost', size: 'sm' }),
+                        'w-10 shrink-0 px-0',
+                      )}
+                    >
+                      <span className="mr-1 text-sm">sale.commentsCount</span>
+                      <Icons.MessageCircle className="h-4 w-4" />
+                    </Link>
+                  )}
                 </div>
                 <Link
                   href={`/promocao/${sale.slug}/${sale.id}`}

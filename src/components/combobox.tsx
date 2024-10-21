@@ -86,7 +86,6 @@ export function Combobox() {
       startTransition(async () => {
         const { data } = await refetch({
           input: {
-            hasDeals: true,
             search: debouncedQuery,
             sortBy: 'relevance',
             pagination: {
@@ -166,7 +165,9 @@ export function Combobox() {
                     onSelect={() => {
                       if (data?.categorySlug)
                         handleSelect(() =>
-                          router.push(`/${data.categorySlug}?search=${query}`),
+                          router.push(
+                            `/${data.categorySlug}?search=${query}&includeNoDeals=true&includeUnavailable=true`,
+                          ),
                         )
                     }}
                   >

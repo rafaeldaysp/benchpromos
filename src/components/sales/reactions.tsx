@@ -80,28 +80,32 @@ export function Reactions({
 
   return (
     <div className="flex flex-wrap gap-1">
-      {emotesSorted.map((emote) => {
-        const reaction = groupedReactions.find(
-          (reaction) => reaction.content === emote.emote,
-        )
-        const userReacted =
-          userId && reaction ? reaction.userIds.includes(userId) : false
+      {emotesSorted
+        .filter((emote) => emote.count > 0)
+        .map((emote) => {
+          const reaction = groupedReactions.find(
+            (reaction) => reaction.content === emote.emote,
+          )
+          const userReacted =
+            userId && reaction ? reaction.userIds.includes(userId) : false
 
-        return (
-          <Toggle
-            key={emote.emote}
-            pressed={userReacted}
-            className="h-fit rounded-full p-0 px-1.5 text-center"
-            variant="outline"
-            onClick={() => handleToggleReaction(emote.emote)}
-          >
-            {emote.emote}
-            {reaction?.userIds.length && (
-              <span className="ml-0.5 text-xs">{reaction?.userIds.length}</span>
-            )}
-          </Toggle>
-        )
-      })}
+          return (
+            <Toggle
+              key={emote.emote}
+              pressed={userReacted}
+              className="h-fit rounded-full p-0 px-1.5 text-center"
+              variant="outline"
+              onClick={() => handleToggleReaction(emote.emote)}
+            >
+              {emote.emote}
+              {reaction?.userIds.length && (
+                <span className="ml-0.5 text-xs">
+                  {reaction?.userIds.length}
+                </span>
+              )}
+            </Toggle>
+          )
+        })}
     </div>
   )
 }
