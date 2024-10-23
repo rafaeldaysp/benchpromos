@@ -352,7 +352,7 @@ export function SaleCard({
                         'w-10 shrink-0 px-0',
                       )}
                     >
-                      <span className="mr-1 text-sm">sale.commentsCount</span>
+                      <span className="mr-1 text-sm">{sale.commentsCount}</span>
                       <Icons.MessageCircle className="h-4 w-4" />
                     </Link>
                   )}
