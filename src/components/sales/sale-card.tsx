@@ -124,10 +124,16 @@ export function SaleCard({
   function handleShare() {
     const salePath = `/promocao/${sale.slug}/${sale.id}`
 
+    const text = `Se liga nessa promoção no Bench Promos\n\n${
+      sale.title
+    } - ${priceFormatter.format(
+      priceCalculator(sale.price, undefined, sale.cashback?.value) / 100,
+    )}`
+
     if (navigator.share) {
       navigator.share({
         title: sale.title,
-        text: sale.caption,
+        text,
         url: salePath,
       })
       return

@@ -101,10 +101,16 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
   const sale = data.sale
 
   function handleShare() {
+    const text = `Se liga nessa promoção no Bench Promos\n\n${
+      sale.title
+    } - ${priceFormatter.format(
+      priceCalculator(sale.price, undefined, sale.cashback?.value) / 100,
+    )}`
+
     if (navigator.share) {
       navigator.share({
         title: sale.title,
-        text: sale.caption,
+        text,
         url: pathname,
       })
       return
