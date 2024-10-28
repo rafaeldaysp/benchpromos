@@ -8,6 +8,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import * as React from 'react'
+import { toast } from 'sonner'
 
 import { CashbackModal } from '@/components/cashback-modal'
 import { CouponModal } from '@/components/coupon-modal'
@@ -97,6 +98,19 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
   }
 
   const sale = data.sale
+
+  function handleShare() {
+    if (navigator.share) {
+      navigator.share({
+        title: sale.title,
+        text: sale.caption,
+        url: sale.url,
+      })
+      return
+    }
+    navigator.clipboard.writeText(sale.url)
+    toast.success('Link copiado para a área de transferência.')
+  }
 
   return (
     <div className="space-y-10 px-4 py-10 sm:container lg:grid lg:grid-cols-3 lg:gap-8 lg:space-y-2 xl:grid-cols-5">
@@ -229,7 +243,7 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
                 id="access_sale_from_page"
               >
                 <span className="mr-2 font-semibold">ACESSAR</span>
-                <Icons.ExternalLink strokeWidth={3} className="h-4 w-4" />
+                {/* <Icons.ExternalLink strokeWidth={3} className="h-4 w-4" /> */}
               </a>
             </div>
             {sale.productSlug && (
@@ -264,6 +278,22 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
         )}
 
         <div className="flex items-center gap-1">
+          <Button
+            variant={'outline'}
+            size={'sm'}
+            className="rounded-full"
+            onClick={() => handleShare()}
+          >
+            <Icons.Share2 className="mr-2 h-4 w-4" />
+            Compartilhar
+          </Button>
+          <Reactions
+            apolloClient={client}
+            reactions={sale.reactions}
+            saleId={sale.id}
+            userId={user?.id}
+            setOpenLoginPopup={setOpenLoginPopup}
+          />
           <Popover>
             <PopoverTrigger asChild>
               <Button size={'icon'} variant={'ghost'}>
@@ -279,13 +309,6 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
               />
             </PopoverContent>
           </Popover>
-          <Reactions
-            apolloClient={client}
-            reactions={sale.reactions}
-            saleId={sale.id}
-            userId={user?.id}
-            setOpenLoginPopup={setOpenLoginPopup}
-          />
         </div>
 
         {sale.productSlug && (

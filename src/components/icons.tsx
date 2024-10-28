@@ -57,6 +57,7 @@ import {
   ScrollText,
   Search,
   Send,
+  Share2,
   ShieldAlert,
   SlidersHorizontal,
   SmilePlus,
@@ -141,6 +142,7 @@ export const Icons = {
   TrendingUp,
   MoveRight,
   Download,
+  Share2,
   Google: ({ ...props }: LucideProps) => (
     <svg
       aria-hidden="true"

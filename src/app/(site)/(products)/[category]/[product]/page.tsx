@@ -263,10 +263,10 @@ export default async function ProductPage({ params }: ProductPageProps) {
                         target="_blank"
                       >
                         <span className="mr-2 font-semibold">ACESSAR</span>
-                        <Icons.ExternalLink
+                        {/* <Icons.ExternalLink
                           strokeWidth={3}
                           className="h-4 w-4"
-                        />
+                        /> */}
                       </a>
                     </>
                   ) : (
@@ -658,7 +658,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                       target="_blank"
                     >
                       <span className="mr-2 font-semibold">ACESSAR</span>
-                      <Icons.ExternalLink strokeWidth={3} className="h-4 w-4" />
+                      {/* <Icons.ExternalLink strokeWidth={3} className="h-4 w-4" /> */}
                     </a>
                   </>
                 </CardFooter>

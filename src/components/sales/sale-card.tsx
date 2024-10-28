@@ -121,6 +121,19 @@ export function SaleCard({
   })
   const isSm = useMediaQuery('(max-width: 640px)')
 
+  function handleShare() {
+    if (navigator.share) {
+      navigator.share({
+        title: sale.title,
+        text: sale.caption,
+        url: sale.url,
+      })
+      return
+    }
+    navigator.clipboard.writeText(sale.url)
+    toast.success('Link copiado para a área de transferência.')
+  }
+
   return (
     <Sheet
       open={openDialogs[`saleUpdateForm.${sale.id}`]}
@@ -314,10 +327,10 @@ export function SaleCard({
                           )}
                         >
                           <span className="mr-2">ACESSAR</span>
-                          <Icons.ExternalLink
+                          {/* <Icons.ExternalLink
                             className="h-4 w-4"
                             strokeWidth={3}
-                          />
+                          /> */}
                         </a>
                       </div>
                     </footer>
@@ -344,19 +357,32 @@ export function SaleCard({
                       setOpenLoginPopup={setOpenLoginPopup}
                     />
                   </div>
-                  {sale.commentsCount > 0 && (
-                    <Link
-                      href={`/promocao/${sale.slug}/${sale.id}#comments`}
-                      className={cn(
-                        buttonVariants({ variant: 'ghost', size: 'sm' }),
-                        'w-10 shrink-0 px-0',
-                      )}
+                  <div className="flex items-center">
+                    {sale.commentsCount > 0 && (
+                      <Link
+                        href={`/promocao/${sale.slug}/${sale.id}#comments`}
+                        className={cn(
+                          buttonVariants({ variant: 'ghost', size: 'sm' }),
+                          'w-10 shrink-0 px-0',
+                        )}
+                      >
+                        <span className="mr-1 text-sm">
+                          {sale.commentsCount}
+                        </span>
+                        <Icons.MessageCircle className="h-4 w-4" />
+                      </Link>
+                    )}
+                    <Button
+                      variant={'ghost'}
+                      size={'sm'}
+                      className="w-10 shrink-0 px-0"
+                      onClick={() => handleShare()}
                     >
-                      <span className="mr-1 text-sm">{sale.commentsCount}</span>
-                      <Icons.MessageCircle className="h-4 w-4" />
-                    </Link>
-                  )}
+                      <Icons.Share2 className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
+
                 <Link
                   href={`/promocao/${sale.slug}/${sale.id}`}
                   className={cn(
