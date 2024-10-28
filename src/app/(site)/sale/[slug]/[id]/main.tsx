@@ -6,7 +6,7 @@ import dayjs from 'dayjs'
 import { type Session } from 'next-auth'
 import Image from 'next/image'
 import Link from 'next/link'
-import { notFound } from 'next/navigation'
+import { notFound, usePathname } from 'next/navigation'
 import * as React from 'react'
 import { toast } from 'sonner'
 
@@ -78,6 +78,7 @@ interface SaleMainProps {
 
 export function SaleMain({ saleId, user }: SaleMainProps) {
   const [openLoginPopup, setOpenLoginPopup] = React.useState(false)
+  const pathname = usePathname()
   const { data, error, client } = useSuspenseQuery<{
     sale: Sale & {
       commentsCount: number
@@ -104,11 +105,11 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
       navigator.share({
         title: sale.title,
         text: sale.caption,
-        url: sale.url,
+        url: pathname,
       })
       return
     }
-    navigator.clipboard.writeText(sale.url)
+    navigator.clipboard.writeText(pathname)
     toast.success('Link copiado para a área de transferência.')
   }
 

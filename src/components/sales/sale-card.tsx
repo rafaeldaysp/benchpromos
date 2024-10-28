@@ -122,15 +122,17 @@ export function SaleCard({
   const isSm = useMediaQuery('(max-width: 640px)')
 
   function handleShare() {
+    const salePath = `/promocao/${sale.slug}/${sale.id}`
+
     if (navigator.share) {
       navigator.share({
         title: sale.title,
         text: sale.caption,
-        url: sale.url,
+        url: salePath,
       })
       return
     }
-    navigator.clipboard.writeText(sale.url)
+    navigator.clipboard.writeText(salePath)
     toast.success('Link copiado para a área de transferência.')
   }
 
