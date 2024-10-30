@@ -326,7 +326,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
         <div className="space-y-1">
           <h2 className="font-semibold tracking-tight md:text-xl">Histórico</h2>
           <p className="text-sm text-muted-foreground">
-            Acompanhe o preço deste produto ao longo do tempo
+            Veja a evolução do preço deste produto ao longo do tempo
           </p>
         </div>
         <Separator className="my-4" />

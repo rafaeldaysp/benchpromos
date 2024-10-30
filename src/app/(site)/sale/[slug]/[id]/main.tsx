@@ -326,7 +326,7 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
                   Histórico
                 </h2>
                 <p className="text-sm text-muted-foreground">
-                  Acompanhe o preço deste produto ao longo do tempo
+                  Veja a evolução do preço deste produto ao longo do tempo
                 </p>
               </div>
               <Separator className="my-4" />

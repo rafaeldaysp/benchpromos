@@ -132,7 +132,7 @@ export default function PriceChart({
     ...dayHistory,
     lowestPrice: dayHistory.lowestPrice,
     lowestInstallmentPrice: [
-      dayHistory.lowestPrice,
+      dayHistory.lowestPrice ?? 0,
       dayHistory.lowestInstallmentPrice,
     ],
   }))
@@ -296,14 +296,14 @@ export default function PriceChart({
               />
               <Area
                 dataKey="lowestPrice"
-                type="natural"
+                type="monotone"
                 fill="url(#fillLowestPrice)"
                 stroke="var(--color-lowestPrice)"
                 // stackId="a"
               />
               <Area
                 dataKey="lowestInstallmentPrice"
-                type="natural"
+                type="monotone"
                 fill="url(#fillLowestInstallmentPrice)"
                 stroke="var(--color-lowestInstallmentPrice)"
                 // stackId="a"
