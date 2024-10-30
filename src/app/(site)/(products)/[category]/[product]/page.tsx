@@ -223,9 +223,9 @@ export default async function ProductPage({ params }: ProductPageProps) {
   const product = data.product
   const bestDeal = product.deals[0]
   const bestInstallmentDeal = data.productWithInstallmentDeals.deals?.filter(
-    (deal) => deal.totalInstallmentPrice,
+    (deal) => deal.totalInstallmentPrice && deal.availability,
   )?.[0]
-
+  console.log(product.reviewUrl)
   return (
     <main className="relative mx-auto space-y-8 px-4 py-10 sm:container">
       <section className="space-y-4 md:gap-x-8 lg:grid lg:grid-cols-3 lg:space-y-0 xl:grid-cols-5">
@@ -711,12 +711,21 @@ export default async function ProductPage({ params }: ProductPageProps) {
         </header>
         <Separator className="my-4" />
         {product.reviewUrl ? (
-          <div className="aspect-video">
+          <div
+            style={{
+              aspectRatio: product.reviewUrl.includes('instagram')
+                ? 9 / 16
+                : 16 / 9,
+            }}
+            className="flex w-full justify-center"
+          >
             <iframe
               width="100%"
               height="100%"
               src={product.reviewUrl}
-              className="rounded-xl border bg-background shadow"
+              className={cn('rounded-xl border bg-background shadow', {
+                'max-w-xl': product.reviewUrl.includes('instagram'),
+              })}
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
               allowFullScreen
             />

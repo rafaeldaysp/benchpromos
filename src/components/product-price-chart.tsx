@@ -3,24 +3,32 @@
 import { gql, useQuery } from '@apollo/client'
 import dayjs from 'dayjs'
 import 'dayjs/locale/pt-br'
-import { useTheme } from 'next-themes'
 import * as React from 'react'
 import {
   Area,
   AreaChart,
   CartesianGrid,
   Tooltip as ChartTooltip,
-  ResponsiveContainer,
   XAxis,
   YAxis,
 } from 'recharts'
 
-import { cn } from '@/lib/utils'
 import { priceFormatter } from '@/utils/formatter'
-import { Icons } from './icons'
 import { PriceBar } from './product-history-price-bar'
-import { buttonVariants } from './ui/button'
-import { Popover, PopoverContent, PopoverTrigger } from './ui/popover'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from './ui/card'
+import {
+  ChartContainer,
+  ChartLegend,
+  ChartLegendContent,
+  ChartTooltipContent,
+  type ChartConfig,
+} from './ui/chart'
 import {
   Select,
   SelectContent,
@@ -49,6 +57,20 @@ const fromNowOptions = [
     value: 365,
   },
 ]
+
+const chartConfig = {
+  visitors: {
+    label: 'Preço',
+  },
+  lowestPrice: {
+    label: 'À vista',
+    color: 'hsl(var(--chart-1))',
+  },
+  lowestInstallmentPrice: {
+    label: 'Parcelado',
+    color: 'hsl(var(--chart-3))',
+  },
+} satisfies ChartConfig
 
 const GET_PRODUCT_HISTORY = gql`
   query ($input: GetProductHistoryInput!) {
@@ -103,17 +125,17 @@ export default function PriceChart({
     refetchWritePolicy: 'overwrite',
     errorPolicy: 'ignore',
   })
-  const minPeriodPriceDay = data?.productHistory?.minPeriodPriceDay
-  const minPeriodInstallmentPriceDay =
-    data?.productHistory?.minPeriodInstallmentPriceDay
+
   const dailyHistory = data?.productHistory?.dailyHistory ?? []
 
-  const { theme, systemTheme } = useTheme()
-
-  const accentColor =
-    theme === 'dark' || (theme === 'system' && systemTheme === 'dark')
-      ? '#a3a3a3'
-      : '#737373'
+  const formattedData = dailyHistory.map((dayHistory) => ({
+    ...dayHistory,
+    lowestPrice: dayHistory.lowestPrice,
+    lowestInstallmentPrice: [
+      dayHistory.lowestPrice,
+      dayHistory.lowestInstallmentPrice,
+    ],
+  }))
 
   return (
     <main className="space-y-4">
@@ -134,180 +156,163 @@ export default function PriceChart({
           dataRange={periodInDays}
         />
       )}
-      <section className="grid grid-cols-1 justify-between gap-2 font-medium sm:grid-cols-3">
-        <Select
-          value={periodInDays.toString()}
-          onValueChange={(value) => {
-            setPeriodInDays(Number(value))
-            refetch({
-              input: {
-                periodInDays: Number(value),
-                productId: productSlug,
-              },
-            })
-          }}
-        >
-          <SelectTrigger className="">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent side="top">
-            {fromNowOptions.map((option) => (
-              <SelectItem key={option.value} value={option.value.toString()}>
-                {option.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <Select
-          value={showInstallmentPrice ? 'true' : 'false'}
-          onValueChange={(value) => {
-            setShowInstallmentPrice(value == 'true')
-          }}
-        >
-          <SelectTrigger className="">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent side="top">
-            <SelectItem value="false">À vista</SelectItem>
-            <SelectItem value="true">Parcelado</SelectItem>
-          </SelectContent>
-        </Select>
-        {minPeriodPriceDay && minPeriodInstallmentPriceDay && (
-          <Popover>
-            <PopoverTrigger
-              className={cn(
-                buttonVariants({ variant: 'secondary' }),
-                'flex gap-x-2 px-2 py-1',
-              )}
-            >
-              <span className="flex items-center gap-x-1">
-                <h3 className="hidden text-center text-sm text-muted-foreground md:block">
-                  Menor:
-                </h3>
-                <span className="text-center">
-                  {priceFormatter.format(
-                    (showInstallmentPrice
-                      ? minPeriodInstallmentPriceDay.lowestInstallmentPrice
-                      : minPeriodPriceDay.lowestPrice) / 100,
-                  )}
-                </span>
-              </span>
-              <Icons.ChevronDown className="h-4 w-4 text-foreground" />
-            </PopoverTrigger>
-            <PopoverContent className="flex w-fit flex-col items-center justify-center">
-              <h3 className="font-semibold">
-                {dayjs(
-                  showInstallmentPrice
-                    ? minPeriodInstallmentPriceDay?.date
-                    : minPeriodPriceDay.date,
-                ).format('DD[ de] MMMM YYYY')}
-              </h3>
-              <span className="font-medium text-muted-foreground">
-                {priceFormatter.format(
-                  (showInstallmentPrice
-                    ? minPeriodInstallmentPriceDay?.lowestInstallmentPrice
-                    : minPeriodPriceDay?.lowestPrice) / 100,
-                )}
-              </span>
-              <h3 className="flex items-center pt-2 text-sm text-success sm:hidden">
-                <Icons.Check className="mr-1 h-4 w-4 text-success" />
-                Menor preço
-              </h3>
-            </PopoverContent>
-          </Popover>
-        )}
-      </section>
-      <ResponsiveContainer width="100%" height={300}>
-        <AreaChart
-          width={500}
-          height={200}
-          data={dailyHistory}
-          margin={{
-            top: 10,
-            right: 5,
-            left: 40,
-            bottom: 0,
-          }}
-        >
-          <defs>
-            <linearGradient id="color" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#6d28d9" stopOpacity={0.4} />
-              <stop offset="75%" stopColor="#6d28d9" stopOpacity={0.05} />
-            </linearGradient>
-          </defs>
-          <CartesianGrid
-            stroke={accentColor}
-            strokeDasharray="6 4"
-            strokeWidth={0.5}
-            opacity={0.5}
-            vertical={false}
-          />
-          <XAxis
-            tickFormatter={(value) => dayjs(value).format('DD MMM')}
-            dataKey="date"
-            tickLine={false}
-            tickMargin={10}
-            minTickGap={14}
-            fontSize={14}
-            axisLine={false}
-            stroke={accentColor}
-          />
-          <YAxis
-            dataKey={
-              showInstallmentPrice ? 'lowestInstallmentPrice' : 'lowestPrice'
-            }
-            axisLine={false}
-            tickMargin={6}
-            tickLine={false}
-            fontSize={14}
-            tickFormatter={(value: number) =>
-              priceFormatter.format(value / 100)
-            }
-            stroke={accentColor}
-          />
-          <ChartTooltip
-            content={<CustomTooltip />}
-            cursor={{
-              stroke: accentColor,
-              strokeDasharray: '6 4',
-              strokeWidth: 0.5,
-              opacity: 0.5,
+
+      <Card>
+        <CardHeader className="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
+          <div className="grid flex-1 gap-1 text-center sm:text-left">
+            <CardTitle>Gráfico de Evolução de Preço</CardTitle>
+            <CardDescription>
+              Acompanhe as variações de preço à vista e parcelado ao longo dos
+              últimos <strong>{periodInDays}</strong> dias.
+            </CardDescription>
+          </div>
+
+          <Select
+            value={periodInDays.toString()}
+            onValueChange={(value) => {
+              setPeriodInDays(Number(value))
+              refetch({
+                input: {
+                  periodInDays: Number(value),
+                  productId: productSlug,
+                },
+              })
             }}
-          />
-          <Area
-            connectNulls
-            type="monotone"
-            dataKey={
-              showInstallmentPrice ? 'lowestInstallmentPrice' : 'lowestPrice'
-            }
-            stroke="#8884d8"
-            strokeWidth={4}
-            fill="url(#color)"
-          />
-        </AreaChart>
-      </ResponsiveContainer>
+          >
+            <SelectTrigger
+              className="w-[160px] rounded-lg sm:ml-auto"
+              aria-label="Select a value"
+            >
+              <SelectValue placeholder="Últimos 30 dias" />
+            </SelectTrigger>
+            <SelectContent className="rounded-xl">
+              {fromNowOptions.map((option) => (
+                <SelectItem
+                  key={option.value}
+                  value={option.value.toString()}
+                  className="rounded-lg"
+                >
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </CardHeader>
+        <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
+          <ChartContainer
+            config={chartConfig}
+            className="aspect-auto h-[300px] w-full"
+          >
+            <AreaChart data={formattedData} margin={{ left: 30, top: 10 }}>
+              <defs>
+                <linearGradient
+                  id="fillLowestPrice"
+                  x1="0"
+                  y1="0"
+                  x2="0"
+                  y2="1"
+                >
+                  <stop
+                    offset="5%"
+                    stopColor="var(--color-lowestPrice)"
+                    stopOpacity={0.8}
+                  />
+                  <stop
+                    offset="95%"
+                    stopColor="var(--color-lowestPrice)"
+                    stopOpacity={0.1}
+                  />
+                </linearGradient>
+                <linearGradient
+                  id="fillLowestInstallmentPrice"
+                  x1="0"
+                  y1="0"
+                  x2="0"
+                  y2="1"
+                >
+                  <stop
+                    offset="5%"
+                    stopColor="var(--color-lowestInstallmentPrice)"
+                    stopOpacity={0.8}
+                  />
+                  <stop
+                    offset="95%"
+                    stopColor="var(--color-lowestInstallmentPrice)"
+                    stopOpacity={0.1}
+                  />
+                </linearGradient>
+              </defs>
+              <CartesianGrid vertical={false} />
+              <XAxis
+                dataKey="date"
+                tickLine={false}
+                axisLine={false}
+                tickMargin={8}
+                minTickGap={32}
+                tickFormatter={(value) => dayjs(value).format('DD MMM')}
+              />
+
+              <YAxis
+                tickCount={5}
+                tickMargin={8}
+                tickLine={false}
+                axisLine={false}
+                tickFormatter={(value) => priceFormatter.format(value / 100)}
+              />
+
+              <ChartTooltip
+                cursor={false}
+                content={
+                  <ChartTooltipContent
+                    labelFormatter={(value) =>
+                      dayjs(value).format('DD[ de] MMMM YYYY')
+                    }
+                    formatter={(value, name, item, index) => (
+                      <>
+                        <div
+                          className="h-2.5 w-2.5 shrink-0 rounded-[2px] bg-[--color-bg]"
+                          style={
+                            {
+                              '--color-bg': `var(--color-${name})`,
+                            } as React.CSSProperties
+                          }
+                        />
+                        <span className="font-normal text-muted-foreground">
+                          {chartConfig[name as keyof typeof chartConfig]
+                            ?.label || name}
+                        </span>
+
+                        <div className="ml-auto flex items-baseline gap-0.5 font-mono font-medium tabular-nums text-foreground">
+                          {priceFormatter.format(
+                            Array.isArray(value)
+                              ? Number(value[value.length - 1]) / 100
+                              : Number(value) / 100,
+                          )}
+                        </div>
+                      </>
+                    )}
+                  />
+                }
+              />
+              <Area
+                dataKey="lowestPrice"
+                type="natural"
+                fill="url(#fillLowestPrice)"
+                stroke="var(--color-lowestPrice)"
+                // stackId="a"
+              />
+              <Area
+                dataKey="lowestInstallmentPrice"
+                type="natural"
+                fill="url(#fillLowestInstallmentPrice)"
+                stroke="var(--color-lowestInstallmentPrice)"
+                // stackId="a"
+              />
+              <ChartLegend content={<ChartLegendContent />} />
+            </AreaChart>
+          </ChartContainer>
+        </CardContent>
+      </Card>
     </main>
   )
-}
-
-interface CustomTooltipProps {
-  active?: boolean
-  payload?: { value: number }[]
-  label?: string
-}
-
-function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
-  if (active && payload && payload.length) {
-    return (
-      <div className="rounded-lg border bg-background p-2 text-center shadow">
-        <h4 className="text-lg font-bold">
-          {priceFormatter.format(payload[0].value / 100)}
-        </h4>
-        <p className="text-sm font-medium text-muted-foreground">
-          {dayjs(label).format('D MMM YYYY').toUpperCase()}
-        </p>
-      </div>
-    )
-  }
-  return null
 }
