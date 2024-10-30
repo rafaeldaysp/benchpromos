@@ -162,8 +162,8 @@ export default function PriceChart({
           <div className="grid flex-1 gap-1 text-center sm:text-left">
             <CardTitle>Gráfico de Evolução de Preço</CardTitle>
             <CardDescription>
-              Acompanhe as variações de preço à vista e parcelado ao longo dos
-              últimos <strong>{periodInDays}</strong> dias.
+              Acompanhe as variações de preço à vista e parcelado nos últimos{' '}
+              <strong>{periodInDays}</strong> dias
             </CardDescription>
           </div>
 
