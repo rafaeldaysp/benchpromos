@@ -5,6 +5,8 @@ import { CashbackModal } from './cashback-modal'
 import { CouponModal } from './coupon-modal'
 import { Icons } from './icons'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs'
+import { cn } from '@/lib/utils'
+import { buttonVariants } from './ui/button'
 
 interface PriceComponentProps {
   bestDeal: Deal & {
@@ -110,6 +112,17 @@ export function PriceComponent({
               }
             />
           )}
+
+          <a
+            className={cn(
+              buttonVariants(),
+              'flex h-10 w-full cursor-pointer rounded-xl',
+            )}
+            href={bestDeal.url}
+            target="_blank"
+          >
+            <span className="mr-2 font-semibold">ACESSAR</span>
+          </a>
         </div>
       </TabsContent>
       {bestInstallmentDeal &&
@@ -217,6 +230,16 @@ export function PriceComponent({
                   }
                 />
               )}
+              <a
+                className={cn(
+                  buttonVariants(),
+                  'flex h-10 w-full cursor-pointer rounded-xl',
+                )}
+                href={bestInstallmentDeal.url}
+                target="_blank"
+              >
+                <span className="mr-2 font-semibold">ACESSAR</span>
+              </a>
             </div>
           </TabsContent>
         )}

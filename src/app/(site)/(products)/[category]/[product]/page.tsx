@@ -249,26 +249,10 @@ export default async function ProductPage({ params }: ProductPageProps) {
               {bestDeal ? (
                 <>
                   {bestDeal.availability ? (
-                    <>
-                      <PriceComponent
-                        bestDeal={bestDeal}
-                        bestInstallmentDeal={bestInstallmentDeal}
-                      />
-                      <a
-                        className={cn(
-                          buttonVariants(),
-                          'flex h-10 w-full cursor-pointer rounded-xl',
-                        )}
-                        href={bestDeal.url}
-                        target="_blank"
-                      >
-                        <span className="mr-2 font-semibold">ACESSAR</span>
-                        {/* <Icons.ExternalLink
-                          strokeWidth={3}
-                          className="h-4 w-4"
-                        /> */}
-                      </a>
-                    </>
+                    <PriceComponent
+                      bestDeal={bestDeal}
+                      bestInstallmentDeal={bestInstallmentDeal}
+                    />
                   ) : (
                     <strong className="text-xl text-destructive">
                       Indisponível
