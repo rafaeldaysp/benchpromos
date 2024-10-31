@@ -349,12 +349,177 @@ export default async function ProductPage({ params }: ProductPageProps) {
           </div>
 
           <aside className="flex flex-col gap-y-2 xl:col-span-2">
-            <AlertCard
+            {/* <AlertCard
               productId={product.id}
               switchId="alert-middle"
               productPrice={bestDeal?.price ?? 0}
               token={token}
-            />
+            /> */}
+            <section id="precos" className="h-full">
+              <Card className="h-full">
+                <CardHeader className="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
+                  <div className="grid flex-1 gap-1 text-center sm:text-left">
+                    <CardTitle>Opções de compra</CardTitle>
+                    <CardDescription>
+                      Veja os preços deste produto em outras lojas
+                    </CardDescription>
+                  </div>
+                </CardHeader>
+                <CardContent className="p-0">
+                  <ScrollArea
+                    className={cn({
+                      'h-[450px]': product.deals.length > 2,
+                      hidden: product.deals.length == 0,
+                    })}
+                  >
+                    {product.deals.map((deal) => (
+                      <Card
+                        key={deal.id}
+                        className={cn(
+                          'border-transparent shadow-none transition-colors hover:bg-muted/50',
+                          {
+                            'border-primary':
+                              deal.id === bestDeal.id && deal.availability,
+                          },
+                        )}
+                      >
+                        <CardHeader className="relative p-4">
+                          <span className="h-fit w-20 break-words text-sm font-semibold text-muted-foreground">
+                            {deal.retailer.name}
+                          </span>
+                          {deal.id === bestDeal.id && deal.availability && (
+                            <Badge className="absolute left-1/2 top-2.5 w-fit -translate-x-1/2 px-1">
+                              MELHOR PREÇO
+                            </Badge>
+                          )}
+                        </CardHeader>
+                        <div>
+                          <CardContent className="flex-1 space-y-2 px-4 py-0">
+                            <main className="flex items-center gap-x-2 ">
+                              <div className="relative mx-auto aspect-square h-20">
+                                <Image
+                                  src={product.imageUrl}
+                                  alt={product.name}
+                                  className="rounded-lg object-contain"
+                                  fill
+                                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                />
+                              </div>
+
+                              <div className="flex flex-1 flex-col text-xs">
+                                {deal.availability ? (
+                                  <>
+                                    <p>
+                                      <strong className="text-lg">
+                                        {priceFormatter.format(
+                                          priceCalculator(
+                                            deal.price,
+                                            deal.coupon?.availability
+                                              ? deal.coupon.discount
+                                              : undefined,
+                                            deal.cashback?.value,
+                                          ) / 100,
+                                        )}
+                                      </strong>{' '}
+                                      <span className="text-muted-foreground">
+                                        à vista{' '}
+                                      </span>
+                                    </p>
+                                    {!!deal.installments &&
+                                      !!deal.totalInstallmentPrice && (
+                                        <span className="text-muted-foreground">
+                                          ou{' '}
+                                          <strong className="text-sm md:text-base">
+                                            {priceFormatter.format(
+                                              priceCalculator(
+                                                deal.totalInstallmentPrice,
+                                                deal.coupon?.availability
+                                                  ? deal.coupon.discount
+                                                  : undefined,
+                                                deal.cashback?.value,
+                                              ) / 100,
+                                            )}
+                                          </strong>{' '}
+                                          em{' '}
+                                          <strong className="text-sm md:text-base">
+                                            {deal.installments}x
+                                          </strong>{' '}
+                                          de{' '}
+                                          <strong className="text-sm md:text-base">
+                                            {priceFormatter.format(
+                                              priceCalculator(
+                                                deal.totalInstallmentPrice,
+                                                deal.coupon?.availability
+                                                  ? deal.coupon.discount
+                                                  : undefined,
+                                                deal.cashback?.value,
+                                              ) /
+                                                (100 * deal.installments),
+                                            )}
+                                          </strong>
+                                        </span>
+                                      )}
+                                  </>
+                                ) : (
+                                  <strong className="text-lg text-destructive">
+                                    Indisponível
+                                  </strong>
+                                )}
+                              </div>
+                            </main>
+                            <div
+                              className={cn('flex flex-col gap-2', {
+                                hidden: !deal.availability,
+                              })}
+                            >
+                              {deal.coupon?.availability && (
+                                <CouponModal
+                                  coupon={deal.coupon}
+                                  description={
+                                    <span className="text-muted-foreground">
+                                      {couponFormatter(deal.coupon.discount)} de
+                                      desconto neste produto
+                                    </span>
+                                  }
+                                />
+                              )}
+                              {deal.cashback && (
+                                <CashbackModal
+                                  cashback={deal.cashback}
+                                  description={
+                                    <span className="text-muted-foreground">
+                                      {deal.cashback.value}% de volta com{' '}
+                                      {deal.cashback.provider}
+                                    </span>
+                                  }
+                                />
+                              )}
+                            </div>
+                          </CardContent>
+                          <CardFooter className="flex flex-col space-y-1 p-4 pt-2">
+                            <>
+                              <a
+                                className={cn(
+                                  buttonVariants(),
+                                  'flex h-10 w-full cursor-pointer rounded-xl',
+                                )}
+                                href={deal.url}
+                                target="_blank"
+                              >
+                                <span className="mr-2 font-semibold">
+                                  ACESSAR
+                                </span>
+                                {/* <Icons.ExternalLink strokeWidth={3} className="h-4 w-4" /> */}
+                              </a>
+                            </>
+                          </CardFooter>
+                        </div>
+                      </Card>
+                    ))}
+                  </ScrollArea>
+                </CardContent>
+              </Card>
+            </section>
           </aside>
         </article>
       </section>
@@ -495,7 +660,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
         )}
       </section>
 
-      <section id="precos">
+      {/* <section id="precos">
         <div className="flex items-center justify-between">
           <div className="space-y-1">
             <h2 className="font-semibold tracking-tight md:text-xl">
@@ -658,7 +823,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
                       target="_blank"
                     >
                       <span className="mr-2 font-semibold">ACESSAR</span>
-                      {/* <Icons.ExternalLink strokeWidth={3} className="h-4 w-4" /> */}
                     </a>
                   </>
                 </CardFooter>
@@ -666,7 +830,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
             </Card>
           ))}
         </ScrollArea>
-      </section>
+      </section> */}
 
       {/* <section id="promocoes">
         <header className="space-y-1">
