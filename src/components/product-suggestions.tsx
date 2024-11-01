@@ -12,6 +12,7 @@ import { Separator } from './ui/separator'
 const GET_SUGGESTIONS = gql`
   query GetProductSuggestions($slug: ID!, $getProductsInput: GetProductsInput) {
     productSuggestions(slug: $slug, getProductsInput: $getProductsInput) {
+      id
       slug
       imageUrl
       name

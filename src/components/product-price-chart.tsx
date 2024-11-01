@@ -299,6 +299,7 @@ export default function PriceChart({
                 type="monotone"
                 fill="url(#fillLowestPrice)"
                 stroke="var(--color-lowestPrice)"
+                connectNulls
                 // stackId="a"
               />
               <Area
@@ -306,6 +307,7 @@ export default function PriceChart({
                 type="monotone"
                 fill="url(#fillLowestInstallmentPrice)"
                 stroke="var(--color-lowestInstallmentPrice)"
+                connectNulls
                 // stackId="a"
               />
               <ChartLegend content={<ChartLegendContent />} />
