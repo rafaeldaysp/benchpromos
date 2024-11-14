@@ -1,10 +1,15 @@
+import { cn } from '@/lib/utils'
 import '../assets/logo-black-friday/style.css'
 
-export function LogoBlackFriday() {
+export function LogoBlackFriday({
+  hideTextMobile,
+}: {
+  hideTextMobile?: boolean
+}) {
   return (
     <div>
       <svg
-        width="160"
+        width="162"
         height="36"
         viewBox="0 0 162 40"
         fill="none"
@@ -494,7 +499,12 @@ export function LogoBlackFriday() {
               </g>
             </g>
           </g>
-          <g id="text" className="showText2 max-sm:hidden">
+          <g
+            id="text"
+            className={cn('showText2', {
+              'max-sm:hidden': hideTextMobile,
+            })}
+          >
             <g id="black">
               <path
                 id="Black"
@@ -510,7 +520,12 @@ export function LogoBlackFriday() {
               />
             </g>
           </g>
-          <g id="bench-promos" className="showText max-sm:hidden">
+          <g
+            id="bench-promos"
+            className={cn('showText', {
+              'max-sm:hidden': hideTextMobile,
+            })}
+          >
             <g id="bench">
               <path
                 id="Bench"

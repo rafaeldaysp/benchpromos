@@ -36,21 +36,21 @@ export function MainNav({ categories }: MainNavProps) {
         href="/"
         className="flex items-center gap-x-1.5 sm:gap-x-2"
       >
-        <div className="relative aspect-square h-[36px] select-none">
-          {/* <Image --> old logo. do put it back, uncomment, remove logo-black-friday and set parent div h-[30px]
+        {/* <div className="relative aspect-square h-[30px] select-none">
+          <Image
             src={Logo}
             alt="Logo"
             className="object-contain"
             fill
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          /> */}
-          <LogoBlackFriday />
-        </div>
+          />
+        </div> */}
 
         {/* <Icons.Logo className="h-6 w-6" aria-hidden="true" /> */}
         {/* <strong className="hidden text-sm sm:inline-flex sm:text-base">
           {siteConfig.name}
-        </strong> */}
+          </strong> */}
+        <LogoBlackFriday hideTextMobile />
       </Link>
       <NavigationMenu className="max-lg:hidden">
         <NavigationMenuList>
