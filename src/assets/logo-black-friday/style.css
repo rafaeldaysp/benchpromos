@@ -1,0 +1,38 @@
+@keyframes rotateLogo {
+  from{
+      transform: rotateY(180deg);
+  }
+  to{
+      transform: rotateY(0deg);
+  }
+}
+
+.rotateLogo{
+  animation: rotateLogo 1.5s ease infinite alternate;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+@keyframes alternarTextos {
+0% {
+opacity: 1;
+}
+50% {
+opacity: 0;
+}
+70% {
+opacity: 0;
+}
+100% {
+opacity: 1;
+}
+}
+
+.showText{
+  animation: alternarTextos 8s infinite;
+}
+
+
+.showText2{
+  animation: alternarTextos 8s 4s infinite;
+}
