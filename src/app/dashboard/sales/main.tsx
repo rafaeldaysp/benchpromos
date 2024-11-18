@@ -109,6 +109,7 @@ export function SalesMain() {
             <Button variant="outline">Adicionar</Button>
           </SheetTrigger>
           <SheetContent
+            onInteractOutside={(e) => e.preventDefault()}
             className="w-full space-y-4 overflow-auto sm:max-w-xl"
             side="left"
           >
@@ -261,6 +262,7 @@ export function SalesMain() {
                         <DashboardItemCard.Action icon={Icons.Edit} />
                       </SheetTrigger>
                       <SheetContent
+                        onInteractOutside={(e) => e.preventDefault()}
                         className="w-full space-y-4 overflow-auto sm:max-w-xl"
                         side="left"
                       >
