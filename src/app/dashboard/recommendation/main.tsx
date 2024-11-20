@@ -138,8 +138,8 @@ export function DashboardRecommendationMain({
                 </p>
                 <span className="text-xs text-muted-foreground">
                   {priceFormatter.formatRange(
-                    recommendedProduct.minPrice,
-                    recommendedProduct.maxPrice,
+                    recommendedProduct.minPrice / 100,
+                    recommendedProduct.maxPrice / 100,
                   )}
                 </span>
               </DashboardItemCard.Content>
