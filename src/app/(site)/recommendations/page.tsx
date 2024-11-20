@@ -164,7 +164,7 @@ export default async function RecommendationsPage({
                           </div>
                         </CardHeader>
                         <CardContent className="flex aspect-square flex-1 select-none flex-col items-center justify-center gap-y-6">
-                          <div className="relative aspect-square w-[50%] max-w-xs">
+                          <div className="relative aspect-square w-[70%] max-w-xs">
                             <Image
                               src={recommendedPriceProduct.product.imageUrl}
                               alt={recommendedPriceProduct.product.name}
