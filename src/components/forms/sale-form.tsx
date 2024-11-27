@@ -485,12 +485,17 @@ export function SaleForm({
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="none">Nenhum</SelectItem>
-                  {couponItems?.map((couponItem) => (
-                    <SelectItem key={couponItem.value} value={couponItem.value}>
-                      {couponItem.label}
-                    </SelectItem>
-                  ))}
+                  <ScrollArea className="h-80">
+                    <SelectItem value="none">Nenhum</SelectItem>
+                    {couponItems?.map((couponItem) => (
+                      <SelectItem
+                        key={couponItem.value}
+                        value={couponItem.value}
+                      >
+                        {couponItem.label}
+                      </SelectItem>
+                    ))}
+                  </ScrollArea>
                 </SelectContent>
               </Select>
               <FormMessage />
@@ -511,15 +516,17 @@ export function SaleForm({
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="none">Nenhum</SelectItem>
-                  {cashbackItems?.map((cashbackItem) => (
-                    <SelectItem
-                      key={cashbackItem.value}
-                      value={cashbackItem.value}
-                    >
-                      {cashbackItem.label}
-                    </SelectItem>
-                  ))}
+                  <ScrollArea className="h-80">
+                    <SelectItem value="none">Nenhum</SelectItem>
+                    {cashbackItems?.map((cashbackItem) => (
+                      <SelectItem
+                        key={cashbackItem.value}
+                        value={cashbackItem.value}
+                      >
+                        {cashbackItem.label}
+                      </SelectItem>
+                    ))}
+                  </ScrollArea>
                 </SelectContent>
               </Select>
               <FormMessage />
