@@ -299,7 +299,7 @@ export function SaleCard({
                     </div>
 
                     <footer className="space-y-1.5">
-                      {sale.coupon && (
+                      {sale.couponSchema && (
                         <section className="text-xs sm:text-sm">
                           <p className="flex flex-col text-muted-foreground sm:hidden">
                             Com cupom
@@ -310,7 +310,7 @@ export function SaleCard({
 
                           <CouponModal
                             className="hidden sm:inline-flex"
-                            coupon={{ code: sale.coupon }}
+                            coupon={{ code: sale.couponSchema.code }}
                           />
                         </section>
                       )}
