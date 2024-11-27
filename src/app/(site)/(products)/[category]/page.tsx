@@ -38,6 +38,7 @@ const GET_PRODUCTS = gql`
           totalInstallmentPrice
           installments
           availability
+          saleId
           retailer {
             name
           }

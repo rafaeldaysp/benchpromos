@@ -79,6 +79,7 @@ const GET_PRODUCT = gql`
           video
           affiliatedUrl
         }
+        saleId
       }
       suggestionSlugs
     }
@@ -106,6 +107,7 @@ const GET_PRODUCT = gql`
           video
           affiliatedUrl
         }
+        saleId
       }
     }
   }
@@ -225,7 +227,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
   const bestInstallmentDeal = data.productWithInstallmentDeals.deals?.filter(
     (deal) => deal.totalInstallmentPrice && deal.availability,
   )?.[0]
-  console.log(product.reviewUrl)
+
   return (
     <main className="relative mx-auto space-y-8 px-4 py-10 sm:container">
       <section className="space-y-4 md:gap-x-8 lg:grid lg:grid-cols-3 lg:space-y-0 xl:grid-cols-5">
@@ -373,7 +375,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                           </span>
                           {deal.id === bestDeal.id && deal.availability && (
                             <Badge className="absolute left-1/2 top-2.5 w-fit -translate-x-1/2 px-1">
-                              MELHOR PREÇO
+                              {deal.saleId ? 'EM PROMOÇÃO' : 'MELHOR PREÇO'}
                             </Badge>
                           )}
                         </CardHeader>

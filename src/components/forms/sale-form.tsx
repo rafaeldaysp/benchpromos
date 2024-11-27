@@ -34,9 +34,12 @@ import { Textarea } from '@/components/ui/textarea'
 import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
 import { saleSchema } from '@/lib/validations/sale'
-import type { Cashback, Category } from '@/types'
+import type { Cashback, Category, Coupon } from '@/types'
 import { ScrollArea } from '../ui/scroll-area'
 import { Checkbox } from '../ui/checkbox'
+import { couponFormatter } from '@/utils/formatter'
+import { Switch } from '../ui/switch'
+import { Label } from '../ui/label'
 
 const saleLabels = ['LANÇAMENTO', 'BAIXOU', 'PREÇÃO', 'PARCELADO']
 
@@ -56,8 +59,8 @@ const UPDATE_SALE = gql`
   }
 `
 
-const GET_CATEGORIES_AND_CASHBACKS = gql`
-  query GetCategories {
+const GET_DATA = gql`
+  query GetData {
     categories {
       id
       name
@@ -69,6 +72,19 @@ const GET_CATEGORIES_AND_CASHBACKS = gql`
       retailer {
         name
       }
+    }
+    coupons {
+      id
+      code
+      discount
+      retailer {
+        name
+      }
+    }
+
+    retailers {
+      id
+      name
     }
   }
 `
@@ -111,7 +127,11 @@ export function SaleForm({
     cashbacks: (Pick<Cashback, 'id' | 'provider' | 'value'> & {
       retailer: { name: string }
     })[]
-  }>(GET_CATEGORIES_AND_CASHBACKS, {
+    coupons: (Pick<Coupon, 'id' | 'code' | 'discount'> & {
+      retailer: { name: string }
+    })[]
+    retailers: { id: string; name: string }[]
+  }>(GET_DATA, {
     fetchPolicy: 'network-only',
     context: {
       headers: {
@@ -119,6 +139,8 @@ export function SaleForm({
       },
     },
   })
+
+  const [createDealSwitch, setCreateDealSwitch] = React.useState(false)
 
   const categoryItems = React.useMemo(() => {
     const categoryItems = data?.categories.map((category) => ({
@@ -138,6 +160,26 @@ export function SaleForm({
     return cashbackItems
   }, [data])
 
+  const couponItems = React.useMemo(() => {
+    const couponItems = data?.coupons.map((coupon) => ({
+      label: `${coupon.code} • ${couponFormatter(coupon.discount)} • ${
+        coupon.retailer.name
+      }`,
+      value: coupon.id,
+    }))
+
+    return couponItems
+  }, [data])
+
+  const retailerItems = React.useMemo(() => {
+    const retailerItems = data?.retailers.map((retailer) => ({
+      label: retailer.name,
+      value: retailer.id,
+    }))
+
+    return retailerItems
+  }, [data])
+
   const [mutateSale, { loading: isLoading }] = useMutation(
     mode === 'create' ? CREATE_SALE : UPDATE_SALE,
     {
@@ -146,6 +188,7 @@ export function SaleForm({
           'api-key': env.NEXT_PUBLIC_API_KEY,
         },
       },
+      refetchQueries: ['GetDashboardSales', 'GetSales'],
       onError(error, _clientOptions) {
         toast.error(error.message)
       },
@@ -168,7 +211,7 @@ export function SaleForm({
     },
   )
 
-  async function onSubmit({ label, cashbackId, ...data }: Inputs) {
+  async function onSubmit({ label, cashbackId, couponId, ...data }: Inputs) {
     await mutateSale({
       variables: {
         input: {
@@ -176,6 +219,8 @@ export function SaleForm({
           productSlug,
           label: label === 'none' ? null : label,
           cashbackId: cashbackId === 'none' ? null : cashbackId,
+          couponId: couponId === 'none' ? null : couponId,
+          createDeal: createDealSwitch,
           ...data,
         },
       },
@@ -291,6 +336,36 @@ export function SaleForm({
 
         <FormField
           control={form.control}
+          name="retailerId"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Varejista</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione um varejista" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <ScrollArea className="h-80">
+                    {retailerItems?.map((retailerItem) => (
+                      <SelectItem
+                        key={retailerItem.value}
+                        value={retailerItem.value}
+                      >
+                        {retailerItem.label}
+                      </SelectItem>
+                    ))}
+                  </ScrollArea>
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
           name="totalInstallmentPrice"
           render={({ field }) => (
             <FormItem>
@@ -399,6 +474,32 @@ export function SaleForm({
 
         <FormField
           control={form.control}
+          name="couponId"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Cupom (opcional)</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione um cupom" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="none">Nenhum</SelectItem>
+                  {couponItems?.map((couponItem) => (
+                    <SelectItem key={couponItem.value} value={couponItem.value}>
+                      {couponItem.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
           name="cashbackId"
           render={({ field }) => (
             <FormItem>
@@ -460,6 +561,14 @@ export function SaleForm({
             </FormItem>
           )}
         />
+        {productSlug && (
+          <div className="flex w-full items-center justify-between gap-x-2 sm:w-fit">
+            <Switch id="createDeal" onCheckedChange={setCreateDealSwitch} />
+            <Label className="w-max text-sm" htmlFor="createDeal">
+              Criar oferta para o produto
+            </Label>
+          </div>
+        )}
 
         <Button type="submit" disabled={isLoading}>
           {isLoading && (

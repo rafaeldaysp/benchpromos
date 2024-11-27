@@ -52,6 +52,9 @@ export const GET_SALES = gql`
           content
           userId
         }
+        couponId
+        retailerId
+        cashbackId
       }
     }
   }

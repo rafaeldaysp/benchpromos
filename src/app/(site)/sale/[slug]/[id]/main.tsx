@@ -29,8 +29,8 @@ import {
 } from '@/components/ui/popover'
 import { Separator } from '@/components/ui/separator'
 import { cn } from '@/lib/utils'
-import type { Cashback, Category, Product, Sale } from '@/types'
-import { priceFormatter } from '@/utils/formatter'
+import type { Cashback, Category, Coupon, Product, Sale } from '@/types'
+import { couponFormatter, priceFormatter } from '@/utils/formatter'
 import { priceCalculator } from '@/utils/price-calculator'
 
 const GET_SALE = gql`
@@ -68,6 +68,12 @@ const GET_SALE = gql`
         content
         userId
       }
+      couponSchema {
+        availability
+        discount
+        code
+      }
+      couponId
     }
   }
 `
@@ -86,6 +92,7 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
       category: Pick<Category, 'slug'>
       reactions: { content: string; userId: string }[]
       product: Product
+      couponSchema: Coupon
     }
   }>(GET_SALE, {
     errorPolicy: 'all',
@@ -100,12 +107,32 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
 
   const sale = data.sale
 
+  const salePriceCents = priceCalculator(
+    sale.price,
+    sale.couponSchema?.discount,
+    sale.cashback?.value,
+  )
+
+  const salePriceWithouCashbackCents = priceCalculator(
+    sale.price,
+    sale.couponSchema?.discount,
+  )
+
+  const saleInstallmentPriceCents = priceCalculator(
+    sale.totalInstallmentPrice,
+    sale.couponSchema?.discount,
+    sale.cashback?.value,
+  )
+
+  const saleInstallmentPriceWithoutCashbackCents = priceCalculator(
+    sale.totalInstallmentPrice,
+    sale.couponSchema?.discount,
+  )
+
   function handleShare() {
     const text = `Se liga nessa promoção no Bench Promos!\n\n${
       sale.title
-    } - ${priceFormatter.format(
-      priceCalculator(sale.price, undefined, sale.cashback?.value) / 100,
-    )}\n\n`
+    } - ${priceFormatter.format(salePriceCents / 100)}\n\n`
 
     if (navigator.share) {
       navigator.share({
@@ -168,7 +195,7 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
             <div className="flex flex-col gap-1 text-sm">
               <div>
                 <strong className="text-3xl">
-                  {priceFormatter.format(sale.price / 100)}
+                  {priceFormatter.format(salePriceWithouCashbackCents / 100)}
                 </strong>{' '}
                 <span className="text-muted-foreground">à vista </span>
               </div>
@@ -177,13 +204,16 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
                 <span className="text-muted-foreground">
                   ou{' '}
                   <strong className="text-base">
-                    {priceFormatter.format(sale.totalInstallmentPrice / 100)}
+                    {priceFormatter.format(
+                      saleInstallmentPriceWithoutCashbackCents / 100,
+                    )}
                   </strong>{' '}
                   em <strong className="text-base">{sale.installments}x</strong>{' '}
                   de{' '}
                   <strong className="text-base">
                     {priceFormatter.format(
-                      sale.totalInstallmentPrice / (100 * sale.installments),
+                      saleInstallmentPriceWithoutCashbackCents /
+                        (100 * sale.installments),
                     )}
                   </strong>
                 </span>
@@ -198,13 +228,7 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
                   <span className="ml-1 text-foreground">
                     <p>
                       <strong className="text-xl">
-                        {priceFormatter.format(
-                          priceCalculator(
-                            sale.price,
-                            undefined,
-                            sale.cashback?.value,
-                          ) / 100,
-                        )}
+                        {priceFormatter.format(salePriceCents / 100)}
                       </strong>{' '}
                       <span className="text-muted-foreground">à vista </span>
                     </p>
@@ -214,21 +238,13 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
                         ou{' '}
                         <strong className="">
                           {priceFormatter.format(
-                            priceCalculator(
-                              sale.totalInstallmentPrice,
-                              undefined,
-                              sale.cashback?.value,
-                            ) / 100,
+                            saleInstallmentPriceCents / 100,
                           )}
                         </strong>{' '}
                         em <strong className="">{sale.installments}x</strong> de{' '}
                         <strong className="">
                           {priceFormatter.format(
-                            priceCalculator(
-                              sale.totalInstallmentPrice,
-                              undefined,
-                              sale.cashback?.value,
-                            ) /
+                            saleInstallmentPriceCents /
                               (100 * sale.installments),
                           )}
                         </strong>
@@ -239,9 +255,31 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
               )}
             </div>
 
+            {/* let this to not break the new stuff */}
             {sale.coupon && <CouponModal coupon={{ code: sale.coupon }} />}
 
-            {sale.cashback && <CashbackModal cashback={sale.cashback} />}
+            {sale.couponId && (
+              <CouponModal
+                coupon={sale.couponSchema}
+                description={
+                  <span className="text-muted-foreground">
+                    {couponFormatter(sale.couponSchema.discount)} de desconto{' '}
+                    <span className="hidden sm:inline-flex">neste produto</span>
+                  </span>
+                }
+              />
+            )}
+
+            {sale.cashback && (
+              <CashbackModal
+                cashback={sale.cashback}
+                description={
+                  <span className="text-muted-foreground">
+                    {sale.cashback.value}% de volta com {sale.cashback.provider}
+                  </span>
+                }
+              />
+            )}
             <div className="space-y-2">
               <a
                 className={cn(buttonVariants(), 'flex h-10 rounded-xl')}

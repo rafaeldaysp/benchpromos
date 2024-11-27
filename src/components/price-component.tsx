@@ -7,6 +7,7 @@ import { Icons } from './icons'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs'
 import { cn } from '@/lib/utils'
 import { buttonVariants } from './ui/button'
+import { Badge } from './ui/badge'
 
 interface PriceComponentProps {
   bestDeal: Deal & {
@@ -46,6 +47,11 @@ export function PriceComponent({
       <TabsContent value="1x">
         <div className="flex w-full flex-col gap-y-2 text-sm">
           <div className="flex flex-col gap-y-1">
+            {bestDeal.saleId && (
+              <div className="h-fit rounded-lg bg-auxiliary/20 py-1 text-center text-xs text-muted-foreground">
+                <strong className="text-auxiliary">EM PROMOÇÃO</strong>
+              </div>
+            )}
             <p className="text-muted-foreground">
               menor preço à vista via <strong>{bestDeal.retailer.name}</strong>
             </p>
@@ -131,6 +137,11 @@ export function PriceComponent({
           <TabsContent value="installment">
             <div className="flex w-full flex-col gap-y-2 text-sm">
               <div className="flex flex-col gap-y-1">
+                {bestInstallmentDeal.saleId && (
+                  <div className="h-fit rounded-lg bg-auxiliary/20 py-1 text-center text-xs text-muted-foreground">
+                    <strong className="text-auxiliary">EM PROMOÇÃO</strong>
+                  </div>
+                )}
                 <p className="text-muted-foreground">
                   menor preço parcelado via{' '}
                   <strong>{bestInstallmentDeal.retailer.name}</strong>

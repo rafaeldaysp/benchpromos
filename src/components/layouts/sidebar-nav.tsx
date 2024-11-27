@@ -26,7 +26,7 @@ export function SidebarNav({ options }: SideBarProps) {
   const optionsWithoutContent = options.filter((option) => !option.content)
 
   return (
-    <div className="lg:hidden">
+    <div className="xl:hidden">
       <Sheet>
         <SheetTrigger className="flex h-max items-center">
           <Icons.Menu />

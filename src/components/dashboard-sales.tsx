@@ -15,7 +15,7 @@ import { Input } from './ui/input'
 const SALES_PER_PAGE = 12
 
 const GET_SALES = gql`
-  query GetSales(
+  query GetDashboardSales(
     $pagination: PaginationInput
     $search: String
     $showExpired: Boolean
@@ -64,6 +64,8 @@ const GET_SALES = gql`
           value
           url
         }
+        couponId
+        retailerId
       }
     }
   }

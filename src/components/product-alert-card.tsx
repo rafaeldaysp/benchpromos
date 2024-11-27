@@ -26,22 +26,7 @@ export function ProductAlertCard({
   subscribedPrice,
   product,
 }: UserProductAlertCard) {
-  const deals = [...product.deals]
-  const bestDeal = deals
-    .sort(
-      (a, b) =>
-        priceCalculator(
-          a.price,
-          a.coupon?.availability ? a.coupon.discount : undefined,
-          a.cashback?.value,
-        ) -
-        priceCalculator(
-          b.price,
-          b.coupon?.availability ? b.coupon.discount : undefined,
-          b.cashback?.value,
-        ),
-    )
-    .sort((a, b) => Number(b.availability) - Number(a.availability))[0]
+  const bestDeal = product.deals[0]
   return (
     <Dialog>
       <Card className="relative flex select-none flex-col overflow-hidden transition-colors hover:bg-muted/50">
