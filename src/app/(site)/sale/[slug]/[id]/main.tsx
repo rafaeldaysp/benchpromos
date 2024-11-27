@@ -370,11 +370,7 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
               <Separator className="my-4" />
               <PriceChart
                 productSlug={sale.productSlug}
-                currentPrice={priceCalculator(
-                  sale.price,
-                  undefined,
-                  sale.cashback?.value,
-                )}
+                currentPrice={salePriceCents}
               />
             </div>
 
