@@ -315,6 +315,22 @@ export function SaleCard({
                         </section>
                       )}
 
+                      {sale.coupon && (
+                        <section className="text-xs sm:text-sm">
+                          <p className="flex flex-col text-muted-foreground sm:hidden">
+                            Com cupom
+                            <span className="text-sm font-bold text-foreground sm:hidden">
+                              {sale.coupon}
+                            </span>
+                          </p>
+
+                          <CouponModal
+                            className="hidden sm:inline-flex"
+                            coupon={{ code: sale.coupon }}
+                          />
+                        </section>
+                      )}
+
                       {sale.cashback && (
                         <section className="text-xs sm:text-sm">
                           <p className="flex flex-col text-muted-foreground sm:hidden">
