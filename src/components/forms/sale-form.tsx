@@ -100,6 +100,8 @@ type Inputs = z.infer<typeof saleSchema>
 const defaultValues: Partial<Inputs> = {
   caption: '',
   coupon: '',
+  couponId: 'none',
+  cashbackId: 'none',
   imageUrl: '',
   review: '',
   title: '',
