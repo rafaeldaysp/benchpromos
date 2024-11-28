@@ -34,12 +34,16 @@ import { Textarea } from '@/components/ui/textarea'
 import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
 import { saleSchema } from '@/lib/validations/sale'
-import type { Cashback, Category, Coupon } from '@/types'
-import { ScrollArea } from '../ui/scroll-area'
-import { Checkbox } from '../ui/checkbox'
+import type { Cashback, Category, Coupon, Retailer } from '@/types'
 import { couponFormatter } from '@/utils/formatter'
-import { Switch } from '../ui/switch'
+import { Checkbox } from '../ui/checkbox'
 import { Label } from '../ui/label'
+import { ScrollArea } from '../ui/scroll-area'
+import { Switch } from '../ui/switch'
+import { CashbackFormDialog } from './cashback-form'
+import { CategoryFormDialog } from './category-form'
+import { CouponFormDialog } from './coupon-form'
+import { RetailerFormDialog } from './retailer-form'
 
 const saleLabels = ['LANÇAMENTO', 'BAIXOU', 'PREÇÃO', 'PARCELADO']
 
@@ -60,7 +64,7 @@ const UPDATE_SALE = gql`
 `
 
 const GET_DATA = gql`
-  query GetData {
+  query GetSaleFormData {
     categories {
       id
       name
@@ -70,6 +74,7 @@ const GET_DATA = gql`
       provider
       value
       retailer {
+        id
         name
       }
     }
@@ -78,6 +83,7 @@ const GET_DATA = gql`
       code
       discount
       retailer {
+        id
         name
       }
     }
@@ -125,10 +131,10 @@ export function SaleForm({
   const { data } = useQuery<{
     categories: Omit<Category, 'subcategories'>[]
     cashbacks: (Pick<Cashback, 'id' | 'provider' | 'value'> & {
-      retailer: { name: string }
+      retailer: Retailer
     })[]
     coupons: (Pick<Coupon, 'id' | 'code' | 'discount'> & {
-      retailer: { name: string }
+      retailer: Retailer
     })[]
     retailers: { id: string; name: string }[]
   }>(GET_DATA, {
@@ -151,25 +157,50 @@ export function SaleForm({
     return categoryItems
   }, [data])
 
-  const cashbackItems = React.useMemo(() => {
-    const cashbackItems = data?.cashbacks.map((cashback) => ({
-      label: `${cashback.provider} • ${cashback.value}% • ${cashback.retailer.name}`,
-      value: cashback.id,
-    }))
+  const selectedRetailer = form.watch('retailerId')
+  const [couponsSelect, setCouponsSelect] = React.useState<
+    {
+      label: string
+      value: string
+    }[]
+  >()
+  const [cashbackSelect, setCashbackSelect] = React.useState<
+    {
+      label: string
+      value: string
+    }[]
+  >()
+  React.useEffect(() => {
+    setCouponsSelect(
+      data?.coupons
+        .filter(
+          (coupon) =>
+            !selectedRetailer || selectedRetailer == coupon.retailer.id,
+        )
+        .map((coupon) => ({
+          label: `${coupon.code} • ${couponFormatter(coupon.discount)} • ${
+            coupon.retailer.name
+          }`,
+          value: coupon.id,
+        })),
+    )
 
-    return cashbackItems
-  }, [data])
+    setCashbackSelect(
+      data?.cashbacks
+        .filter(
+          (cashback) =>
+            !selectedRetailer || selectedRetailer == cashback.retailer.id,
+        )
+        .map((cashback) => ({
+          label: `${cashback.provider} • ${cashback.value}% • ${cashback.retailer.name}`,
+          value: cashback.id,
+        })),
+    )
 
-  const couponItems = React.useMemo(() => {
-    const couponItems = data?.coupons.map((coupon) => ({
-      label: `${coupon.code} • ${couponFormatter(coupon.discount)} • ${
-        coupon.retailer.name
-      }`,
-      value: coupon.id,
-    }))
-
-    return couponItems
-  }, [data])
+    form.setValue('cashbackId', 'none')
+    form.setValue('couponId', 'none')
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedRetailer])
 
   const retailerItems = React.useMemo(() => {
     const retailerItems = data?.retailers.map((retailer) => ({
@@ -272,25 +303,31 @@ export function SaleForm({
           render={({ field }) => (
             <FormItem>
               <FormLabel>Categoria</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione uma categoria" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <ScrollArea className="h-80">
-                    {categoryItems?.map((categoryItem) => (
-                      <SelectItem
-                        key={categoryItem.value}
-                        value={categoryItem.value}
-                      >
-                        {categoryItem.label}
-                      </SelectItem>
-                    ))}
-                  </ScrollArea>
-                </SelectContent>
-              </Select>
+              <div className="flex gap-2">
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione uma categoria" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <ScrollArea className="h-80">
+                      {categoryItems?.map((categoryItem) => (
+                        <SelectItem
+                          key={categoryItem.value}
+                          value={categoryItem.value}
+                        >
+                          {categoryItem.label}
+                        </SelectItem>
+                      ))}
+                    </ScrollArea>
+                  </SelectContent>
+                </Select>
+                <CategoryFormDialog />
+              </div>
               <FormMessage />
             </FormItem>
           )}
@@ -340,25 +377,31 @@ export function SaleForm({
           render={({ field }) => (
             <FormItem>
               <FormLabel>Varejista</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione um varejista" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <ScrollArea className="h-80">
-                    {retailerItems?.map((retailerItem) => (
-                      <SelectItem
-                        key={retailerItem.value}
-                        value={retailerItem.value}
-                      >
-                        {retailerItem.label}
-                      </SelectItem>
-                    ))}
-                  </ScrollArea>
-                </SelectContent>
-              </Select>
+              <div className="flex gap-2">
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione um varejista" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <ScrollArea className="h-80">
+                      {retailerItems?.map((retailerItem) => (
+                        <SelectItem
+                          key={retailerItem.value}
+                          value={retailerItem.value}
+                        >
+                          {retailerItem.label}
+                        </SelectItem>
+                      ))}
+                    </ScrollArea>
+                  </SelectContent>
+                </Select>
+                <RetailerFormDialog />
+              </div>
               <FormMessage />
             </FormItem>
           )}
@@ -463,6 +506,7 @@ export function SaleForm({
               <FormControl>
                 <Input
                   placeholder="BENCHPROMOSGM"
+                  disabled
                   aria-invalid={!!form.formState.errors.coupon}
                   {...field}
                 />
@@ -478,26 +522,34 @@ export function SaleForm({
           render={({ field }) => (
             <FormItem>
               <FormLabel>Cupom (opcional)</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione um cupom" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <ScrollArea className="h-80">
-                    <SelectItem value="none">Nenhum</SelectItem>
-                    {couponItems?.map((couponItem) => (
-                      <SelectItem
-                        key={couponItem.value}
-                        value={couponItem.value}
-                      >
-                        {couponItem.label}
-                      </SelectItem>
-                    ))}
-                  </ScrollArea>
-                </SelectContent>
-              </Select>
+              <div className="flex gap-2">
+                <Select
+                  value={field.value}
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                  disabled={!selectedRetailer}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione um cupom" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <ScrollArea className="h-80">
+                      <SelectItem value="none">Nenhum</SelectItem>
+                      {couponsSelect?.map((couponItem) => (
+                        <SelectItem
+                          key={couponItem.value}
+                          value={couponItem.value}
+                        >
+                          {couponItem.label}
+                        </SelectItem>
+                      ))}
+                    </ScrollArea>
+                  </SelectContent>
+                </Select>
+                <CouponFormDialog />
+              </div>
               <FormMessage />
             </FormItem>
           )}
@@ -509,26 +561,34 @@ export function SaleForm({
           render={({ field }) => (
             <FormItem>
               <FormLabel>Cashback (opcional)</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione um cashback" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <ScrollArea className="h-80">
-                    <SelectItem value="none">Nenhum</SelectItem>
-                    {cashbackItems?.map((cashbackItem) => (
-                      <SelectItem
-                        key={cashbackItem.value}
-                        value={cashbackItem.value}
-                      >
-                        {cashbackItem.label}
-                      </SelectItem>
-                    ))}
-                  </ScrollArea>
-                </SelectContent>
-              </Select>
+              <div className="flex gap-2">
+                <Select
+                  value={field.value}
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                  disabled={!selectedRetailer}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione um cashback" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <ScrollArea className="h-80">
+                      <SelectItem value="none">Nenhum</SelectItem>
+                      {cashbackSelect?.map((cashbackItem) => (
+                        <SelectItem
+                          key={cashbackItem.value}
+                          value={cashbackItem.value}
+                        >
+                          {cashbackItem.label}
+                        </SelectItem>
+                      ))}
+                    </ScrollArea>
+                  </SelectContent>
+                </Select>
+                <CashbackFormDialog />
+              </div>
               <FormMessage />
             </FormItem>
           )}
