@@ -23,11 +23,10 @@ const GET_CATEGORIES = gql`
 
 const CHOOSEN_CATEGORIES = [
   'notebooks',
-  'muouses',
+  'mouses',
   'teclados',
   'headsets',
   'microfones',
-  'mousepads',
   'controles',
   'monitores',
   'processadores',
