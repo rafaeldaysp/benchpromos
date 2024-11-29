@@ -148,11 +148,12 @@ export function PriceBar({
                 {maxValueInstallmentObject && currentValueInstallment && (
                   <span>
                     {' '}
-                    e com o preço
+                    e o preço
                     <span className="font-semibold text-foreground">
                       {' '}
                       parcelado{' '}
                     </span>
+                    está{' '}
                     <span
                       className={cn(
                         'font-semibold',
