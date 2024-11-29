@@ -21,6 +21,20 @@ const GET_CATEGORIES = gql`
   }
 `
 
+const CHOOSEN_CATEGORIES = [
+  'notebooks',
+  'muouses',
+  'teclados',
+  'headsets',
+  'microfones',
+  'mousepads',
+  'controles',
+  'monitores',
+  'processadores',
+  'cadeiras',
+  'placas de vídeo',
+]
+
 export function SalesNavSimplified() {
   const [isPending, startTransition] = React.useTransition()
   const router = useRouter()
@@ -35,13 +49,15 @@ export function SalesNavSimplified() {
     categories: Pick<Category, 'id' | 'name' | 'slug'>[]
   }>(GET_CATEGORIES)
 
-  const categories = data?.categories?.slice(0, 1) ?? []
+  const categories = data?.categories?.filter((category) =>
+    CHOOSEN_CATEGORIES.includes(category.name.toLowerCase()),
+  )
 
   return (
     <div className="flex w-full flex-col justify-between gap-4 sm:flex-row">
       <div className="flex w-full items-center gap-x-2">
-        <ScrollArea className="w-full">
-          <div className="flex gap-x-2 ">
+        <ScrollArea className="flex-1">
+          <div className="flex w-fit gap-x-2 ">
             {categories.map((category) => (
               <Toggle
                 key={category.id}
@@ -77,25 +93,24 @@ export function SalesNavSimplified() {
           </div>
           <ScrollBar orientation="horizontal" />
         </ScrollArea>
-      </div>
-
-      <div className="flex items-center justify-between gap-x-2">
-        <Label className="w-max text-sm" htmlFor="showExpired">
-          Mostrar expiradas
-        </Label>
-        <Switch
-          id="showExpired"
-          defaultChecked={searchParams.get('expired') ? true : false}
-          onCheckedChange={(value) =>
-            startTransition(() => {
-              router.push(
-                `${pathname}?${createQueryString({
-                  expired: value ? 'true' : null,
-                })}`,
-              )
-            })
-          }
-        />
+        <div className="flex items-center justify-between gap-x-2">
+          <Label className="w-max text-sm" htmlFor="showExpired">
+            Mostrar expiradas
+          </Label>
+          <Switch
+            id="showExpired"
+            defaultChecked={searchParams.get('expired') ? true : false}
+            onCheckedChange={(value) =>
+              startTransition(() => {
+                router.push(
+                  `${pathname}?${createQueryString({
+                    expired: value ? 'true' : null,
+                  })}`,
+                )
+              })
+            }
+          />
+        </div>
       </div>
     </div>
   )
