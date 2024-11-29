@@ -271,13 +271,16 @@ export function DealForm({
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                <ScrollArea className="h-80">
-                  <SelectItem value="none">Nenhum</SelectItem>
-                  {couponItems?.map((couponItem) => (
-                    <SelectItem key={couponItem.value} value={couponItem.value}>
-                      {couponItem.label}
-                    </SelectItem>
-                  ))}
+                  <ScrollArea className="h-80">
+                    <SelectItem value="none">Nenhum</SelectItem>
+                    {couponItems?.map((couponItem) => (
+                      <SelectItem
+                        key={couponItem.value}
+                        value={couponItem.value}
+                      >
+                        {couponItem.label}
+                      </SelectItem>
+                    ))}
                   </ScrollArea>
                 </SelectContent>
               </Select>
