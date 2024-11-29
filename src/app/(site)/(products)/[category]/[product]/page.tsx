@@ -331,6 +331,17 @@ export default async function ProductPage({ params }: ProductPageProps) {
                     )
                   : null
               }
+              currentInstallmentPrice={
+                bestDeal.totalInstallmentPrice
+                  ? priceCalculator(
+                      bestDeal.totalInstallmentPrice,
+                      bestDeal.coupon?.availability
+                        ? bestDeal.coupon.discount
+                        : undefined,
+                      bestDeal.cashback?.value,
+                    )
+                  : null
+              }
             />
           </div>
 

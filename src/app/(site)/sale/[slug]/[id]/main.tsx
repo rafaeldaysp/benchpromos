@@ -371,6 +371,7 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
               <PriceChart
                 productSlug={sale.productSlug}
                 currentPrice={salePriceCents}
+                currentInstallmentPrice={saleInstallmentPriceCents ?? null}
               />
             </div>
 

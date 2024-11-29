@@ -21,7 +21,7 @@ const GET_CATEGORIES = gql`
   }
 `
 
-const CHOOSEN_CATEGORIES = [
+const CHOSEN_CATEGORIES = [
   'notebooks',
   'mouses',
   'teclados',
@@ -49,7 +49,7 @@ export function SalesNavSimplified() {
   }>(GET_CATEGORIES)
 
   const categories = data?.categories?.filter((category) =>
-    CHOOSEN_CATEGORIES.includes(category.name.toLowerCase()),
+    CHOSEN_CATEGORIES.includes(category.name.toLowerCase()),
   )
 
   return (
