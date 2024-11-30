@@ -60,6 +60,9 @@ export const GET_SALES = gql`
           discount
           code
         }
+        retailer {
+          name
+        }
       }
     }
   }

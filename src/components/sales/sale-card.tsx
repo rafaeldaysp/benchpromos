@@ -101,6 +101,9 @@ interface SaleCardProps extends React.HTMLAttributes<HTMLDivElement> {
       userId: string
     }[]
     couponSchema?: Coupon
+    retailer?: {
+      name: string
+    }
   }
   user?: { id: string; role: 'ADMIN' | 'MOD' | 'USER' }
   apolloClient: ApolloClient<unknown>
@@ -200,7 +203,9 @@ export function SaleCard({
               )}
 
               <CardHeader className="flex-row items-baseline space-y-0 p-3 text-xs sm:p-6 sm:text-sm">
-                <span className="flex-1">{sale.category.name}</span>
+                <span className="flex-1">
+                  {sale.retailer?.name ?? sale.category.name}
+                </span>
 
                 {sale.label && (
                   <Badge className="px-1 py-[1px] text-xs sm:hidden">
