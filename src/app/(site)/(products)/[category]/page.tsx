@@ -219,8 +219,8 @@ export default async function ProductsPage({
         category,
         subcategory,
         search,
-        hasDeals: includeNoDeals !== 'true' ? true : null,
-        availability: includeUnavailable !== 'true' ? true : undefined,
+        hasDeals: includeNoDeals !== 'true',
+        availability: includeUnavailable == 'true' ? undefined : true,
         pagination: {
           limit: limit ? Number(limit) : 20,
           page: page ? Number(page) : 1,
