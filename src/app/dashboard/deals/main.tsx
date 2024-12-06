@@ -24,6 +24,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -341,6 +342,11 @@ export function DealsMain({ deals, retailers, categories }: DealsMainProps) {
                     {deal.product.name} | {deal.product.category.name}
                   </p>
                   <span className="text-xs text-muted-foreground">
+                    {deal.saleId && (
+                      <Badge className="mr-2" variant="auxiliary">
+                        EM PROMOÇÃO
+                      </Badge>
+                    )}
                     {deal.retailer.name} •{' '}
                     {deal.availability ? (
                       <span>

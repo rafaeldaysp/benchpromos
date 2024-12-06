@@ -32,6 +32,13 @@ import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
 import { cashbackSchema } from '@/lib/validations/cashback'
 import type { Retailer } from '@/types'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '../ui/dialog'
 import { ScrollArea } from '../ui/scroll-area'
 
 const CREATE_CASHBACK = gql`
@@ -126,6 +133,7 @@ export function CashbackForm({ mode = 'create', cashback }: CashbackFormProps) {
         toast.success(message)
         router.refresh()
       },
+      refetchQueries: ['GetSaleFormData'],
     },
   )
 
@@ -267,7 +275,11 @@ export function CashbackForm({ mode = 'create', cashback }: CashbackFormProps) {
           )}
         />
 
-        <Button type="submit" disabled={isLoading}>
+        <Button
+          type="button"
+          onClick={form.handleSubmit(onSubmit)}
+          disabled={isLoading}
+        >
           {isLoading && (
             <Icons.Spinner
               className="mr-2 h-4 w-4 animate-spin"
@@ -278,5 +290,27 @@ export function CashbackForm({ mode = 'create', cashback }: CashbackFormProps) {
         </Button>
       </form>
     </Form>
+  )
+}
+
+export function CashbackFormDialog() {
+  const { openDialogs, setOpenDialog } = useFormStore()
+  return (
+    <Dialog
+      open={openDialogs['cashbackCreateForm']}
+      onOpenChange={(open) => setOpenDialog('cashbackCreateForm', open)}
+    >
+      <DialogTrigger type="button" asChild>
+        <Button type="button" size={'icon'}>
+          <Icons.Plus className="h-4 w-4" />
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="w-full space-y-4 overflow-auto sm:max-w-xl">
+        <DialogHeader>
+          <DialogTitle>ADICIONAR CASHBACK</DialogTitle>
+        </DialogHeader>
+        <CashbackForm />
+      </DialogContent>
+    </Dialog>
   )
 }

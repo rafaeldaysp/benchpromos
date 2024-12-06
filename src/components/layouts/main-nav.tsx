@@ -52,7 +52,7 @@ export function MainNav({ categories }: MainNavProps) {
           </strong> */}
         <LogoBlackFriday hideTextMobile />
       </Link>
-      <NavigationMenu className="max-lg:hidden">
+      <NavigationMenu className="max-xl:hidden">
         <NavigationMenuList>
           {options.map((option) => (
             <NavigationMenuItem key={option.title}>

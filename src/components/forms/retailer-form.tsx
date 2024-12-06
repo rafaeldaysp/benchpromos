@@ -21,6 +21,13 @@ import { Input } from '@/components/ui/input'
 import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
 import { retailerSchema } from '@/lib/validations/retailer'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '../ui/dialog'
 
 const CREATE_RETAILER = gql`
   mutation CreateRetailer($input: CreateRetailerInput!) {
@@ -89,6 +96,7 @@ export function RetailerForm({ mode = 'create', retailer }: RetailerFormProps) {
         toast.success(message)
         router.refresh()
       },
+      refetchQueries: ['GetSaleFormData'],
     },
   )
 
@@ -124,7 +132,11 @@ export function RetailerForm({ mode = 'create', retailer }: RetailerFormProps) {
           )}
         />
 
-        <Button type="submit" disabled={isLoading}>
+        <Button
+          type="button"
+          onClick={form.handleSubmit(onSubmit)}
+          disabled={isLoading}
+        >
           {isLoading && (
             <Icons.Spinner
               className="mr-2 h-4 w-4 animate-spin"
@@ -135,5 +147,27 @@ export function RetailerForm({ mode = 'create', retailer }: RetailerFormProps) {
         </Button>
       </form>
     </Form>
+  )
+}
+
+export function RetailerFormDialog() {
+  const { openDialogs, setOpenDialog } = useFormStore()
+  return (
+    <Dialog
+      open={openDialogs['retailerCreateForm']}
+      onOpenChange={(open) => setOpenDialog('retailerCreateForm', open)}
+    >
+      <DialogTrigger type="button" asChild>
+        <Button type="button" size={'icon'}>
+          <Icons.Plus className="h-4 w-4" />
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="w-full space-y-4 overflow-auto sm:max-w-xl">
+        <DialogHeader>
+          <DialogTitle>ADICIONAR VAREJISTA</DialogTitle>
+        </DialogHeader>
+        <RetailerForm />
+      </DialogContent>
+    </Dialog>
   )
 }

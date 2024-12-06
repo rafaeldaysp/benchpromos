@@ -60,8 +60,11 @@ export function DashboardNav({ className, ...props }: DashboardNavProps) {
 
   return (
     <div className="relative">
-      <ScrollArea className="max-w-[600px] lg:max-w-none">
-        <div className={cn('mb-4 flex items-center', className)} {...props}>
+      <ScrollArea className="w-full">
+        <div
+          className={cn('mb-4 flex w-full items-center', className)}
+          {...props}
+        >
           {sidebarNavItems.map((item, index) => (
             <Link
               href={item.href}
@@ -77,7 +80,7 @@ export function DashboardNav({ className, ...props }: DashboardNavProps) {
             </Link>
           ))}
         </div>
-        <ScrollBar orientation="horizontal" className="invisible" />
+        <ScrollBar orientation="horizontal" />
       </ScrollArea>
     </div>
   )
