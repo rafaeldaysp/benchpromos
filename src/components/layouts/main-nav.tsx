@@ -4,6 +4,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 
 import Logo from '@/assets/logo-benchpromos.svg'
+import LogoXmas from '@/assets/logo-natalina.svg'
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -20,7 +21,6 @@ import { headerOptions } from '@/constants/header'
 import { cn } from '@/lib/utils'
 import { type Category } from '@/types'
 import { SidebarNav } from './sidebar-nav'
-import { LogoBlackFriday } from '../logo-black-friday'
 
 interface MainNavProps {
   categories: Pick<Category, 'name' | 'slug'>[]
@@ -36,7 +36,7 @@ export function MainNav({ categories }: MainNavProps) {
         href="/"
         className="flex items-center gap-x-1.5 sm:gap-x-2"
       >
-        {/* <div className="relative aspect-square h-[30px] select-none">
+        <div className="relative aspect-square h-[30px] select-none">
           <Image
             src={Logo}
             alt="Logo"
@@ -44,13 +44,11 @@ export function MainNav({ categories }: MainNavProps) {
             fill
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
-        </div> */}
+        </div>
 
-        {/* <Icons.Logo className="h-6 w-6" aria-hidden="true" /> */}
-        {/* <strong className="hidden text-sm sm:inline-flex sm:text-base">
+        <strong className="hidden text-sm sm:inline-flex sm:text-base">
           {siteConfig.name}
-          </strong> */}
-        <LogoBlackFriday hideTextMobile />
+        </strong>
       </Link>
       <NavigationMenu className="max-xl:hidden">
         <NavigationMenuList>

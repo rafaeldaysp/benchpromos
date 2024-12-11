@@ -16,7 +16,6 @@ import {
 import { siteConfig } from '@/config/site'
 import { cn } from '@/lib/utils'
 import { type headerOption } from '@/types'
-import { LogoBlackFriday } from '../logo-black-friday'
 
 interface SideBarProps {
   options: headerOption[]
@@ -40,7 +39,7 @@ export function SidebarNav({ options }: SideBarProps) {
                 href="/"
                 className="flex items-center gap-2"
               >
-                {/* <div className="relative aspect-square h-[30px] select-none">
+                <div className="relative aspect-square h-[30px] select-none">
                   <Image
                     src={Logo}
                     alt="Logo"
@@ -48,12 +47,11 @@ export function SidebarNav({ options }: SideBarProps) {
                     fill
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   />
-                </div> */}
+                </div>
 
-                {/* <strong className="text-sm sm:text-base">
+                <strong className="text-sm sm:text-base">
                   {siteConfig.name}
-                </strong> */}
-                <LogoBlackFriday />
+                </strong>
               </Link>
             </SheetClose>
           </SheetHeader>
