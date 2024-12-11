@@ -332,7 +332,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                   : null
               }
               currentInstallmentPrice={
-                bestDeal.totalInstallmentPrice
+                bestDeal?.totalInstallmentPrice
                   ? priceCalculator(
                       bestDeal.totalInstallmentPrice,
                       bestDeal.coupon?.availability
