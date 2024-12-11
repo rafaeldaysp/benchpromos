@@ -30,6 +30,7 @@ interface ProductCardProps extends React.HTMLAttributes<HTMLDivElement> {
       availability: boolean
       installments?: number
       totalInstallmentPrice?: number
+      saleId?: string
       retailer: {
         name: string
       }
@@ -66,6 +67,11 @@ export function ProductCard({
         )}
         {...props}
       >
+        {bestDeal?.saleId && (
+          <div className="h-fit bg-auxiliary/20 py-1 text-center text-xs text-muted-foreground">
+            <strong className="text-auxiliary">EM PROMOÇÃO</strong>
+          </div>
+        )}
         <CardHeader className="relative flex flex-col justify-center p-3 pb-1.5 sm:hidden">
           {product.reviewUrl && (
             <span className="text-center">

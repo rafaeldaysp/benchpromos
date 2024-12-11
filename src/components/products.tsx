@@ -97,18 +97,24 @@ export function Products({
   >(clientPriceRange ?? serverPriceRange)
   // const debouncedPrice = useDebounce(currentPriceRange, 250)
 
-  const includeNoDealsSelected =
-    searchParams.get('includeNoDeals') === 'true' ||
-    searchParams.get('search') !== null
-  const includeUnavailableSelected =
-    searchParams.get('includeUnavailable') === 'true' ||
-    searchParams.get('search') !== null
   const page = searchParams.get('page') ?? '1'
+
+  const [noDealSwitch, setNoDealSwitch] = React.useState(false)
+  const [unavailableSwitch, setUnavailableSwitch] = React.useState(false)
 
   const filterSlugNullRecord: Record<string, null> = {}
   categoryFilters.forEach((filter) => {
     filterSlugNullRecord[filter.slug] = null
   })
+
+  React.useEffect(() => {
+    const includeNoDealsSelected = searchParams.get('includeNoDeals') === 'true'
+    const includeUnavailableSelected =
+      searchParams.get('includeUnavailable') === 'true'
+
+    setUnavailableSwitch(includeUnavailableSelected)
+    setNoDealSwitch(includeNoDealsSelected)
+  }, [searchParams])
 
   React.useEffect(() => {
     setFilters(initialFilters)
@@ -269,9 +275,10 @@ export function Products({
                       </Label>
                       <Switch
                         id="hasDeals"
-                        defaultChecked={includeNoDealsSelected}
+                        checked={noDealSwitch}
                         onCheckedChange={(value) =>
                           startTransition(() => {
+                            setNoDealSwitch(value)
                             router.push(
                               `${pathname}?${createQueryString({
                                 includeNoDeals: value ? 'true' : null,
@@ -283,14 +290,15 @@ export function Products({
                       />
                     </div>
                     <div className="flex items-center justify-between gap-x-2">
-                      <Label className="text-sm" htmlFor="hasDeals">
+                      <Label className="text-sm" htmlFor="unavailable">
                         Mostrar indisponíveis
                       </Label>
                       <Switch
-                        id="hasDeals"
-                        defaultChecked={includeUnavailableSelected}
+                        id="unavailable"
+                        checked={unavailableSwitch}
                         onCheckedChange={(value) =>
                           startTransition(() => {
+                            setUnavailableSwitch(value)
                             router.push(
                               `${pathname}?${createQueryString({
                                 includeUnavailable: value ? 'true' : null,

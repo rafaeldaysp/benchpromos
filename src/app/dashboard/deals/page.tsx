@@ -47,6 +47,7 @@ const GET_DEALS = gql`
           name
         }
       }
+      saleId
     }
     retailers {
       id

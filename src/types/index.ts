@@ -95,6 +95,7 @@ export type Deal = {
   cashbackId?: string
   createdAt: string
   updatedAt: string
+  saleId?: string
 }
 
 export type Sale = {
@@ -117,6 +118,8 @@ export type Sale = {
   productSlug?: string
   sponsored: boolean
   expired: boolean
+  retailerId?: string
+  couponId?: string
 }
 
 export type Comment = {
