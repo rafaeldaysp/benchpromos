@@ -32,6 +32,7 @@ interface CategoryProps {
   getWinner: (
     category: EnhancedAwardsCategory,
   ) => EnhancedAwardsCategory['options'][0] | null
+  isVoting: boolean
 }
 
 export function Category({
@@ -39,6 +40,7 @@ export function Category({
   onVote,
   currentUserId,
   getWinner,
+  isVoting,
 }: CategoryProps) {
   const isExpired = new Date(category.expiredAt) <= new Date()
 
@@ -105,7 +107,7 @@ export function Category({
                   (vote) => vote.userId === currentUserId,
                 )}
                 onVote={() => onVote(option.id)}
-                disabled={userVoted}
+                disabled={userVoted || isVoting}
               />
             ))}
           </div>

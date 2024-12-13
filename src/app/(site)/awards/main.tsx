@@ -45,7 +45,7 @@ export function AwardsMain({
   const router = useRouter()
   const [openLoginPopup, setOpenLoginPopup] = React.useState(false)
 
-  const [toggleVote] = useMutation(TOGGLE_VOTE, {
+  const [toggleVote, { loading: isVoting }] = useMutation(TOGGLE_VOTE, {
     onCompleted: () => {
       router.refresh()
     },
@@ -85,6 +85,7 @@ export function AwardsMain({
           onVote={handleToggleVote}
           currentUserId={userId}
           getWinner={getWinner}
+          isVoting={isVoting}
         />
       ))}
     </div>
