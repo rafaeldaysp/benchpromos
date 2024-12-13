@@ -44,6 +44,9 @@ export function Category({
 
   const winner = getWinner(category)
 
+  const userVoted = category.options.some((option) => {
+    return option.votes.some((vote) => vote.userId === currentUserId)
+  })
   return (
     <Card>
       <CardHeader>
@@ -93,7 +96,7 @@ export function Category({
             </div>
           )
         ) : (
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
             {category.options.map((option) => (
               <VoteOption
                 key={option.id}
@@ -102,6 +105,7 @@ export function Category({
                   (vote) => vote.userId === currentUserId,
                 )}
                 onVote={() => onVote(option.id)}
+                disabled={userVoted}
               />
             ))}
           </div>

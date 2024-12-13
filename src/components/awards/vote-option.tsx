@@ -1,3 +1,7 @@
+'use client'
+
+import * as React from 'react'
+
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import {
@@ -20,9 +24,15 @@ interface VoteOptionProps {
   option: EnhancedAwardsCategory['options'][0]
   isSelected: boolean
   onVote: () => void
+  disabled?: boolean
 }
 
-export function VoteOption({ option, isSelected, onVote }: VoteOptionProps) {
+export function VoteOption({
+  option,
+  isSelected,
+  onVote,
+  disabled,
+}: VoteOptionProps) {
   return (
     <Card
       className={`overflow-hidden transition-all duration-200 ${
@@ -58,7 +68,7 @@ export function VoteOption({ option, isSelected, onVote }: VoteOptionProps) {
           <Button
             variant={isSelected ? 'secondary' : 'default'}
             size="sm"
-            disabled={isSelected}
+            disabled={disabled}
             onClick={onVote}
           >
             {isSelected ? 'Voted' : 'Vote'}
