@@ -48,7 +48,9 @@ export function VoteOption({ option, isSelected, onVote }: VoteOptionProps) {
         )}
       </CardHeader>
       <CardContent className="p-4">
-        <CardTitle className="mb-2 text-lg">{option.product.name}</CardTitle>
+        <CardTitle className="mb-2 text-lg">
+          {option.title ?? option.product.name}
+        </CardTitle>
         <div className="flex items-center justify-between">
           <span className="text-sm text-gray-500">
             Votes: {option._count.votes}

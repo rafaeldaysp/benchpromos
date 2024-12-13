@@ -79,7 +79,7 @@ export function Category({
                 />
                 <div>
                   <h3 className="text-lg font-semibold">
-                    {winner.product.name}
+                    {winner.title ?? winner.product.name}
                   </h3>
                   <p className="text-sm text-gray-600 dark:text-gray-300">
                     Votes: {winner.votes.length}
