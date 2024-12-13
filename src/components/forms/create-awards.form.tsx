@@ -41,18 +41,20 @@ import { Skeleton } from '../ui/skeleton'
 import { DateTimePicker } from '../ui/datetime-picker'
 
 const CREATE_AWARDS_CATEGORY = gql`
-  mutation CreateAwardsCategory(
-    $createAwardsCategoryInput: CreateAwardsCategoryInput!
-  ) {
-    createAwardsCategory(
-      createAwardsCategoryInput: $createAwardsCategoryInput
-    ) {
+  mutation CreateAwardsCategory($input: CreateAwardsCategoryInput!) {
+    createAwardsCategory(createAwardsCategoryInput: $input) {
       title
     }
   }
 `
 
-const UPDATE_AWARDS_CATEGORY = CREATE_AWARDS_CATEGORY
+const UPDATE_AWARDS_CATEGORY = gql`
+  mutation UpdateAwardsCategory($input: UpdateAwardsCategoryInput!) {
+    updateAwardsCategory(updateAwardsCategoryInput: $input) {
+      id
+    }
+  }
+`
 
 type Inputs = z.infer<typeof awardsCategorySchema>
 
@@ -130,7 +132,7 @@ export function AwardsCategoryForm({
     console.log(data)
     await mutateAwardsCategory({
       variables: {
-        createAwardsCategoryInput: {
+        input: {
           id: awardsCategory?.id,
           productOptions: selectedProducts.map((product) => ({
             productId: product.id,
@@ -193,50 +195,53 @@ export function AwardsCategoryForm({
             </FormItem>
           )}
         />
+        {mode === 'create' && (
+          <>
+            <div className="space-y-2">
+              <Label>
+                Selecionar opções (produtos) • {selectedProducts.length}
+              </Label>
 
-        <div className="space-y-2">
-          <Label>
-            Selecionar opções (produtos) • {selectedProducts.length}
-          </Label>
+              {selectedProducts.map((product) => (
+                <DashboardItemCard.Root className="border" key={product.id}>
+                  <DashboardItemCard.Image src={product.imageUrl} alt="" />
 
-          {selectedProducts.map((product) => (
-            <DashboardItemCard.Root className="border" key={product.id}>
-              <DashboardItemCard.Image src={product.imageUrl} alt="" />
+                  <DashboardItemCard.Content>
+                    <p className="text-sm leading-7">{product.name}</p>
+                    <Input
+                      placeholder="Nome do modelo resumido"
+                      value={product.title ?? ''}
+                      onChange={(e) =>
+                        setSelectedProducts((prev) =>
+                          prev.map((current) =>
+                            current.id == product.id
+                              ? { ...current, title: e.target.value }
+                              : current,
+                          ),
+                        )
+                      }
+                    ></Input>
+                  </DashboardItemCard.Content>
 
-              <DashboardItemCard.Content>
-                <p className="text-sm leading-7">{product.name}</p>
-                <Input
-                  placeholder="Nome do modelo resumido"
-                  value={product.title ?? ''}
-                  onChange={(e) =>
-                    setSelectedProducts((prev) =>
-                      prev.map((current) =>
-                        current.id == product.id
-                          ? { ...current, title: e.target.value }
-                          : current,
-                      ),
-                    )
-                  }
-                ></Input>
-              </DashboardItemCard.Content>
+                  <DashboardItemCard.Actions>
+                    <DashboardItemCard.Action
+                      variant="destructive"
+                      icon={Icons.X}
+                      onClick={() =>
+                        setSelectedProducts((prev) =>
+                          prev.filter((selected) => selected.id !== product.id),
+                        )
+                      }
+                      type="button"
+                    />
+                  </DashboardItemCard.Actions>
+                </DashboardItemCard.Root>
+              ))}
+            </div>
 
-              <DashboardItemCard.Actions>
-                <DashboardItemCard.Action
-                  variant="destructive"
-                  icon={Icons.X}
-                  onClick={() =>
-                    setSelectedProducts((prev) =>
-                      prev.filter((selected) => selected.id !== product.id),
-                    )
-                  }
-                  type="button"
-                />
-              </DashboardItemCard.Actions>
-            </DashboardItemCard.Root>
-          ))}
-        </div>
-
-        <Combobox setSelectedProducts={setSelectedProducts} />
+            <Combobox setSelectedProducts={setSelectedProducts} />
+          </>
+        )}
 
         <Button type="submit" disabled={isLoading}>
           {isLoading && (
