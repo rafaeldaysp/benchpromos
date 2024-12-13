@@ -62,11 +62,6 @@ export function headerOptions({ categories }: HeaderOptionsProps) {
 
   const moreHeaders: headerOption[] = [
     {
-      title: 'Blog',
-      slug: 'blog',
-      icon: Icons.NotebookPen,
-    },
-    {
       title: 'Benchmarks',
       slug: 'benchmarks',
       icon: Icons.BarChart4,
@@ -75,6 +70,11 @@ export function headerOptions({ categories }: HeaderOptionsProps) {
       title: 'Recomendações',
       slug: 'recommendations',
       icon: Icons.StarFilled,
+    },
+    {
+      title: 'Awards',
+      slug: 'awards',
+      icon: Icons.Award,
     },
   ]
 
