@@ -63,7 +63,7 @@ export function VoteOption({
         </CardTitle>
         <div className="flex items-center justify-between">
           <span className="text-sm text-gray-500">
-            Votes: {option._count.votes}
+            Votos: {option._count.votes}
           </span>
           <Button
             variant={isSelected ? 'secondary' : 'default'}

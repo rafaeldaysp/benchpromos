@@ -71,7 +71,7 @@ export function Category({
               <CardHeader className="pb-2">
                 <CardTitle className="flex items-center text-xl">
                   <Trophy className="mr-2 h-6 w-6 text-yellow-500" />
-                  Winner
+                  Vencedor
                 </CardTitle>
               </CardHeader>
               <CardContent className="flex items-center space-x-4">
@@ -87,7 +87,7 @@ export function Category({
                     {winner.title ?? winner.product.name}
                   </h3>
                   <p className="text-sm text-gray-600 dark:text-gray-300">
-                    Votes: {winner.votes.length}
+                    Votos: {winner.votes.length}
                   </p>
                 </div>
               </CardContent>
