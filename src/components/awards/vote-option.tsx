@@ -34,7 +34,7 @@ export function VoteOption({ option, isSelected, onVote }: VoteOptionProps) {
           <div className="relative aspect-square w-[70%] max-w-xs">
             <Image
               src={option.product.imageUrl}
-              alt={option.product.name}
+              alt={option.title ?? option.product.name}
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               fill
               className="object-contain"
