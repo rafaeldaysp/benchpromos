@@ -48,7 +48,11 @@ export function Category({
     <Card>
       <CardHeader>
         <CardTitle className="text-2xl">{category.title}</CardTitle>
-        {category.description && <p className="text-sm text-muted-foreground">{category.description}</p>}
+        {category.description && (
+          <p className="text-sm text-muted-foreground">
+            {category.description}
+          </p>
+        )}
         {!isExpired && (
           <div className="text-sm font-medium text-auxiliary">
             Expira em: {dayjs(category.expiredAt).format('HH:mm')}
@@ -74,21 +78,29 @@ export function Category({
                   className="rounded-md"
                 />
                 <div>
-                  <h3 className="text-lg font-semibold">{winner.product.name}</h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-300">Votes: {winner.votes.length}</p>
+                  <h3 className="text-lg font-semibold">
+                    {winner.product.name}
+                  </h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">
+                    Votes: {winner.votes.length}
+                  </p>
                 </div>
               </CardContent>
             </Card>
           ) : (
-            <div className="text-xl font-bold text-center py-8">No votes were cast</div>
+            <div className="py-8 text-center text-xl font-bold">
+              No votes were cast
+            </div>
           )
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {category.options.map((option) => (
               <VoteOption
                 key={option.id}
                 option={option}
-                isSelected={option.votes.some(vote => vote.userId === currentUserId)}
+                isSelected={option.votes.some(
+                  (vote) => vote.userId === currentUserId,
+                )}
                 onVote={() => onVote(option.id)}
               />
             ))}
