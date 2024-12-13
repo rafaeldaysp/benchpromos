@@ -1,8 +1,9 @@
 export const priceCalculator = (
-  fullPrice: number,
+  fullPrice?: number,
   couponDiscountStr?: string,
   cashbackPercent?: number,
 ) => {
+  if (!fullPrice) return 0
   let couponDiscount = 0
   if (couponDiscountStr)
     couponDiscount = couponDiscountStr.includes('%')

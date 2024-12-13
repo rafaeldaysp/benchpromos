@@ -40,7 +40,7 @@ import { useFormStore } from '@/hooks/use-form-store'
 import { useMediaQuery } from '@/hooks/use-media-query'
 import { useSaleExpired } from '@/hooks/use-toggle-sale-expired'
 import { cn } from '@/lib/utils'
-import type { Cashback } from '@/types'
+import type { Cashback, Coupon } from '@/types'
 import { removeNullValues } from '@/utils'
 import { priceFormatter } from '@/utils/formatter'
 import { priceCalculator } from '@/utils/price-calculator'
@@ -100,6 +100,10 @@ interface SaleCardProps extends React.HTMLAttributes<HTMLDivElement> {
       content: string
       userId: string
     }[]
+    couponSchema?: Coupon
+    retailer?: {
+      name: string
+    }
   }
   user?: { id: string; role: 'ADMIN' | 'MOD' | 'USER' }
   apolloClient: ApolloClient<unknown>
@@ -121,14 +125,34 @@ export function SaleCard({
   })
   const isSm = useMediaQuery('(max-width: 640px)')
 
+  const salePriceCents = priceCalculator(
+    sale.price,
+    sale.couponSchema?.discount,
+    sale.cashback?.value,
+  )
+
+  const salePriceWithouCashbackCents = priceCalculator(
+    sale.price,
+    sale.couponSchema?.discount,
+  )
+
+  const saleInstallmentPriceCents = priceCalculator(
+    sale.totalInstallmentPrice,
+    sale.couponSchema?.discount,
+    sale.cashback?.value,
+  )
+
+  const saleInstallmentPriceWithoutCashbackCents = priceCalculator(
+    sale.totalInstallmentPrice,
+    sale.couponSchema?.discount,
+  )
+
   function handleShare() {
     const salePath = `/promocao/${sale.slug}/${sale.id}`
 
     const text = `Se liga nessa promoção no Bench Promos!\n\n${
       sale.title
-    } - ${priceFormatter.format(
-      priceCalculator(sale.price, undefined, sale.cashback?.value) / 100,
-    )}\n\n`
+    } - ${priceFormatter.format(salePriceCents / 100)}\n\n`
 
     if (navigator.share) {
       navigator.share({
@@ -179,7 +203,9 @@ export function SaleCard({
               )}
 
               <CardHeader className="flex-row items-baseline space-y-0 p-3 text-xs sm:p-6 sm:text-sm">
-                <span className="flex-1">{sale.category.name}</span>
+                <span className="flex-1">
+                  {sale.retailer?.name ?? sale.category.name}
+                </span>
 
                 {sale.label && (
                   <Badge className="px-1 py-[1px] text-xs sm:hidden">
@@ -237,13 +263,7 @@ export function SaleCard({
                     >
                       <p className={sale.cashback ? 'px-2' : ''}>
                         <strong className="text-xl sm:text-2xl">
-                          {priceFormatter.format(
-                            priceCalculator(
-                              sale.price,
-                              undefined,
-                              sale.cashback?.value,
-                            ) / 100,
-                          )}
+                          {priceFormatter.format(salePriceCents / 100)}
                         </strong>{' '}
                         <span className="text-xs text-muted-foreground sm:text-sm">
                           à vista{' '}
@@ -255,11 +275,7 @@ export function SaleCard({
                           ou{' '}
                           <strong className="max-sm:text-sm">
                             {priceFormatter.format(
-                              priceCalculator(
-                                sale.totalInstallmentPrice,
-                                undefined,
-                                sale.cashback?.value,
-                              ) / 100,
+                              saleInstallmentPriceCents / 100,
                             )}
                           </strong>{' '}
                           em{' '}
@@ -271,11 +287,7 @@ export function SaleCard({
                             de{' '}
                             <strong>
                               {priceFormatter.format(
-                                priceCalculator(
-                                  sale.totalInstallmentPrice,
-                                  undefined,
-                                  sale.cashback?.value,
-                                ) /
+                                saleInstallmentPriceCents /
                                   (100 * sale.installments),
                               )}
                             </strong>
@@ -292,6 +304,22 @@ export function SaleCard({
                     </div>
 
                     <footer className="space-y-1.5">
+                      {sale.couponSchema && (
+                        <section className="text-xs sm:text-sm">
+                          <p className="flex flex-col text-muted-foreground sm:hidden">
+                            Com cupom
+                            <span className="text-sm font-bold text-foreground sm:hidden">
+                              {sale.coupon}
+                            </span>
+                          </p>
+
+                          <CouponModal
+                            className="hidden sm:inline-flex"
+                            coupon={{ code: sale.couponSchema.code }}
+                          />
+                        </section>
+                      )}
+
                       {sale.coupon && (
                         <section className="text-xs sm:text-sm">
                           <p className="flex flex-col text-muted-foreground sm:hidden">

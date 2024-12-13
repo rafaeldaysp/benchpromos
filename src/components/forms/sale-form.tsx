@@ -34,9 +34,16 @@ import { Textarea } from '@/components/ui/textarea'
 import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
 import { saleSchema } from '@/lib/validations/sale'
-import type { Cashback, Category } from '@/types'
-import { ScrollArea } from '../ui/scroll-area'
+import type { Cashback, Category, Coupon, Retailer } from '@/types'
+import { couponFormatter } from '@/utils/formatter'
 import { Checkbox } from '../ui/checkbox'
+import { Label } from '../ui/label'
+import { ScrollArea } from '../ui/scroll-area'
+import { Switch } from '../ui/switch'
+import { CashbackFormDialog } from './cashback-form'
+import { CategoryFormDialog } from './category-form'
+import { CouponFormDialog } from './coupon-form'
+import { RetailerFormDialog } from './retailer-form'
 
 const saleLabels = ['LANÇAMENTO', 'BAIXOU', 'PREÇÃO', 'PARCELADO']
 
@@ -56,8 +63,8 @@ const UPDATE_SALE = gql`
   }
 `
 
-const GET_CATEGORIES_AND_CASHBACKS = gql`
-  query GetCategories {
+const GET_DATA = gql`
+  query GetSaleFormData {
     categories {
       id
       name
@@ -67,8 +74,23 @@ const GET_CATEGORIES_AND_CASHBACKS = gql`
       provider
       value
       retailer {
+        id
         name
       }
+    }
+    coupons {
+      id
+      code
+      discount
+      retailer {
+        id
+        name
+      }
+    }
+
+    retailers {
+      id
+      name
     }
   }
 `
@@ -78,6 +100,8 @@ type Inputs = z.infer<typeof saleSchema>
 const defaultValues: Partial<Inputs> = {
   caption: '',
   coupon: '',
+  couponId: 'none',
+  cashbackId: 'none',
   imageUrl: '',
   review: '',
   title: '',
@@ -106,12 +130,16 @@ export function SaleForm({
   const { setOpenDialog } = useFormStore()
   const router = useRouter()
 
-  const { data } = useQuery<{
+  const { data, loading: isSaleFormDataLoading } = useQuery<{
     categories: Omit<Category, 'subcategories'>[]
     cashbacks: (Pick<Cashback, 'id' | 'provider' | 'value'> & {
-      retailer: { name: string }
+      retailer: Retailer
     })[]
-  }>(GET_CATEGORIES_AND_CASHBACKS, {
+    coupons: (Pick<Coupon, 'id' | 'code' | 'discount'> & {
+      retailer: Retailer
+    })[]
+    retailers: { id: string; name: string }[]
+  }>(GET_DATA, {
     fetchPolicy: 'network-only',
     context: {
       headers: {
@@ -119,6 +147,8 @@ export function SaleForm({
       },
     },
   })
+
+  const [createDealSwitch, setCreateDealSwitch] = React.useState(false)
 
   const categoryItems = React.useMemo(() => {
     const categoryItems = data?.categories.map((category) => ({
@@ -129,13 +159,69 @@ export function SaleForm({
     return categoryItems
   }, [data])
 
+  const couponItems = React.useMemo(() => {
+    const selectedRetailer = form.getValues('retailerId')
+    return data?.coupons
+      .filter(
+        (coupon) => !selectedRetailer || selectedRetailer == coupon.retailer.id,
+      )
+      .map((coupon) => ({
+        label: `${coupon.code} • ${couponFormatter(coupon.discount)} • ${
+          coupon.retailer.name
+        }`,
+        value: coupon.id,
+      }))
+  }, [data, form])
+
   const cashbackItems = React.useMemo(() => {
-    const cashbackItems = data?.cashbacks.map((cashback) => ({
-      label: `${cashback.provider} • ${cashback.value}% • ${cashback.retailer.name}`,
-      value: cashback.id,
+    const selectedRetailer = form.getValues('retailerId')
+    return data?.cashbacks
+      .filter(
+        (cashback) =>
+          !selectedRetailer || selectedRetailer == cashback.retailer.id,
+      )
+      .map((cashback) => ({
+        label: `${cashback.provider} • ${cashback.value}% • ${cashback.retailer.name}`,
+        value: cashback.id,
+      }))
+  }, [data, form])
+
+  function handleRetailerChangeChildren() {
+    const selectedRetailer = form.getValues('retailerId')
+    const canSetIncomingCouponFromRetailer = data?.coupons
+      .filter(
+        (coupon) => !selectedRetailer || selectedRetailer == coupon.retailer.id,
+      )
+      .some((coupon) => coupon.id === sale?.couponId)
+
+    const canSetIncomingCashbackFromRetailer = data?.coupons
+      .filter(
+        (cashback) =>
+          !selectedRetailer || selectedRetailer == cashback.retailer.id,
+      )
+      .some((cashback) => cashback.retailer.id === selectedRetailer)
+
+    form.setValue(
+      'couponId',
+      canSetIncomingCouponFromRetailer
+        ? sale?.couponId
+        : defaultValues.couponId,
+    )
+    form.setValue(
+      'cashbackId',
+      canSetIncomingCashbackFromRetailer
+        ? sale?.cashbackId
+        : defaultValues.cashbackId,
+    )
+  }
+
+  const retailerItems = React.useMemo(() => {
+    const retailerItems = data?.retailers.map((retailer) => ({
+      label: retailer.name,
+      value: retailer.id,
     }))
 
-    return cashbackItems
+    return retailerItems
   }, [data])
 
   const [mutateSale, { loading: isLoading }] = useMutation(
@@ -146,6 +232,7 @@ export function SaleForm({
           'api-key': env.NEXT_PUBLIC_API_KEY,
         },
       },
+      refetchQueries: ['GetDashboardSales', 'GetSales'],
       onError(error, _clientOptions) {
         toast.error(error.message)
       },
@@ -168,7 +255,7 @@ export function SaleForm({
     },
   )
 
-  async function onSubmit({ label, cashbackId, ...data }: Inputs) {
+  async function onSubmit({ label, cashbackId, couponId, ...data }: Inputs) {
     await mutateSale({
       variables: {
         input: {
@@ -176,6 +263,8 @@ export function SaleForm({
           productSlug,
           label: label === 'none' ? null : label,
           cashbackId: cashbackId === 'none' ? null : cashbackId,
+          couponId: couponId === 'none' ? null : couponId,
+          createDeal: createDealSwitch,
           ...data,
         },
       },
@@ -227,25 +316,38 @@ export function SaleForm({
           render={({ field }) => (
             <FormItem>
               <FormLabel>Categoria</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione uma categoria" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <ScrollArea className="h-80">
-                    {categoryItems?.map((categoryItem) => (
-                      <SelectItem
-                        key={categoryItem.value}
-                        value={categoryItem.value}
-                      >
-                        {categoryItem.label}
-                      </SelectItem>
-                    ))}
-                  </ScrollArea>
-                </SelectContent>
-              </Select>
+              <div className="flex gap-2">
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                  disabled={isSaleFormDataLoading}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      {isSaleFormDataLoading && (
+                        <Icons.Spinner
+                          className="mr-2 h-4 w-4 animate-spin"
+                          aria-hidden="true"
+                        />
+                      )}
+                      <SelectValue placeholder="Selecione uma categoria" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <ScrollArea className="h-80">
+                      {categoryItems?.map((categoryItem) => (
+                        <SelectItem
+                          key={categoryItem.value}
+                          value={categoryItem.value}
+                        >
+                          {categoryItem.label}
+                        </SelectItem>
+                      ))}
+                    </ScrollArea>
+                  </SelectContent>
+                </Select>
+                <CategoryFormDialog />
+              </div>
               <FormMessage />
             </FormItem>
           )}
@@ -284,6 +386,52 @@ export function SaleForm({
                   {...field}
                 />
               </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="retailerId"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Varejista</FormLabel>
+              <div className="flex gap-2">
+                <Select
+                  onValueChange={(e) => {
+                    field.onChange(e)
+                    handleRetailerChangeChildren()
+                  }}
+                  defaultValue={field.value}
+                  disabled={isSaleFormDataLoading}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      {isSaleFormDataLoading && (
+                        <Icons.Spinner
+                          className="mr-2 h-4 w-4 animate-spin"
+                          aria-hidden="true"
+                        />
+                      )}
+                      <SelectValue placeholder="Selecione um varejista" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <ScrollArea className="h-80">
+                      {retailerItems?.map((retailerItem) => (
+                        <SelectItem
+                          key={retailerItem.value}
+                          value={retailerItem.value}
+                        >
+                          {retailerItem.label}
+                        </SelectItem>
+                      ))}
+                    </ScrollArea>
+                  </SelectContent>
+                </Select>
+                <RetailerFormDialog />
+              </div>
               <FormMessage />
             </FormItem>
           )}
@@ -384,10 +532,12 @@ export function SaleForm({
           name="coupon"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Cupom (opcional)</FormLabel>
+              <FormLabel className="flex text-warning">
+                <Icons.AlertCircle className="mr-2 h-3 w-3" /> Cupom (antigo)
+              </FormLabel>
               <FormControl>
                 <Input
-                  placeholder="BENCHPROMOSGM"
+                  placeholder="NÃO USE ESSE CAMPO"
                   aria-invalid={!!form.formState.errors.coupon}
                   {...field}
                 />
@@ -399,28 +549,93 @@ export function SaleForm({
 
         <FormField
           control={form.control}
+          name="couponId"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Cupom (opcional)</FormLabel>
+              <div className="flex gap-2">
+                <Select
+                  value={field.value}
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                  disabled={
+                    !form.getValues('retailerId') || isSaleFormDataLoading
+                  }
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      {isSaleFormDataLoading && (
+                        <Icons.Spinner
+                          className="mr-2 h-4 w-4 animate-spin"
+                          aria-hidden="true"
+                        />
+                      )}
+                      <SelectValue placeholder="Selecione um cupom" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <ScrollArea className="h-80">
+                      <SelectItem value="none">Nenhum</SelectItem>
+                      {couponItems?.map((couponItem) => (
+                        <SelectItem
+                          key={couponItem.value}
+                          value={couponItem.value}
+                        >
+                          {couponItem.label}
+                        </SelectItem>
+                      ))}
+                    </ScrollArea>
+                  </SelectContent>
+                </Select>
+                <CouponFormDialog />
+              </div>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
           name="cashbackId"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Cashback (opcional)</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione um cashback" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem value="none">Nenhum</SelectItem>
-                  {cashbackItems?.map((cashbackItem) => (
-                    <SelectItem
-                      key={cashbackItem.value}
-                      value={cashbackItem.value}
-                    >
-                      {cashbackItem.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <div className="flex gap-2">
+                <Select
+                  value={field.value}
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                  disabled={
+                    !form.getValues('retailerId') || isSaleFormDataLoading
+                  }
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      {isSaleFormDataLoading && (
+                        <Icons.Spinner
+                          className="mr-2 h-4 w-4 animate-spin"
+                          aria-hidden="true"
+                        />
+                      )}
+                      <SelectValue placeholder="Selecione um cashback" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <ScrollArea className="h-80">
+                      <SelectItem value="none">Nenhum</SelectItem>
+                      {cashbackItems?.map((cashbackItem) => (
+                        <SelectItem
+                          key={cashbackItem.value}
+                          value={cashbackItem.value}
+                        >
+                          {cashbackItem.label}
+                        </SelectItem>
+                      ))}
+                    </ScrollArea>
+                  </SelectContent>
+                </Select>
+                <CashbackFormDialog />
+              </div>
               <FormMessage />
             </FormItem>
           )}
@@ -460,6 +675,14 @@ export function SaleForm({
             </FormItem>
           )}
         />
+        {productSlug && (
+          <div className="flex w-full items-center justify-between gap-x-2 sm:w-fit">
+            <Switch id="createDeal" onCheckedChange={setCreateDealSwitch} />
+            <Label className="w-max text-sm" htmlFor="createDeal">
+              Criar oferta para o produto
+            </Label>
+          </div>
+        )}
 
         <Button type="submit" disabled={isLoading}>
           {isLoading && (

@@ -21,6 +21,13 @@ import { Input } from '@/components/ui/input'
 import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
 import { categorySchema } from '@/lib/validations/category'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '../ui/dialog'
 
 const CREATE_CATEGORY = gql`
   mutation CreateCategory($input: CreateCategoryInput!) {
@@ -89,6 +96,7 @@ export function CategoryForm({ mode = 'create', category }: CategoryFormProps) {
         toast.success(message)
         router.refresh()
       },
+      refetchQueries: ['GetSaleFormData'],
     },
   )
 
@@ -124,7 +132,11 @@ export function CategoryForm({ mode = 'create', category }: CategoryFormProps) {
           )}
         />
 
-        <Button type="submit" disabled={isLoading}>
+        <Button
+          type="button"
+          onClick={form.handleSubmit(onSubmit)}
+          disabled={isLoading}
+        >
           {isLoading && (
             <Icons.Spinner
               className="mr-2 h-4 w-4 animate-spin"
@@ -135,5 +147,27 @@ export function CategoryForm({ mode = 'create', category }: CategoryFormProps) {
         </Button>
       </form>
     </Form>
+  )
+}
+
+export function CategoryFormDialog() {
+  const { openDialogs, setOpenDialog } = useFormStore()
+  return (
+    <Dialog
+      open={openDialogs['categoryCreateForm']}
+      onOpenChange={(open) => setOpenDialog('categoryCreateForm', open)}
+    >
+      <DialogTrigger asChild>
+        <Button type="button" size={'icon'}>
+          <Icons.Plus className="h-4 w-4" />
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="w-full space-y-4 overflow-auto sm:max-w-xl">
+        <DialogHeader>
+          <DialogTitle>ADICIONAR CATEGORIA</DialogTitle>
+        </DialogHeader>
+        <CategoryForm />
+      </DialogContent>
+    </Dialog>
   )
 }

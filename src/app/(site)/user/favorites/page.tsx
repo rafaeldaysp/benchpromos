@@ -31,6 +31,7 @@ const GET_USER_FAVORITED_PRODUCTS = gql`
           totalInstallmentPrice
           installments
           availability
+          saleId
           retailer {
             name
           }
@@ -43,6 +44,7 @@ const GET_USER_FAVORITED_PRODUCTS = gql`
             value
             provider
           }
+          saleId
         }
       }
     }
@@ -59,7 +61,11 @@ export default async function AlertsPage() {
         category: Pick<Category, 'slug'>
         deals: (Pick<
           Deal,
-          'price' | 'availability' | 'installments' | 'totalInstallmentPrice'
+          | 'price'
+          | 'availability'
+          | 'installments'
+          | 'totalInstallmentPrice'
+          | 'saleId'
         > & { retailer: Pick<Retailer, 'name'> } & {
           coupon: Pick<Coupon, 'code' | 'discount' | 'availability'>
         } & { cashback: Pick<Cashback, 'value' | 'provider'> })[]

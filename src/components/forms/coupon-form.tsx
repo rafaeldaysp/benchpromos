@@ -35,6 +35,13 @@ import { useFormStore } from '@/hooks/use-form-store'
 import { couponSchema } from '@/lib/validations/coupon'
 import type { Retailer } from '@/types'
 import { PriceInput } from '../price-input'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '../ui/dialog'
 import { ScrollArea } from '../ui/scroll-area'
 
 const CREATE_COUPON = gql`
@@ -129,6 +136,7 @@ export function CouponForm({ mode = 'create', coupon }: CouponFormProps) {
         toast.success(message)
         router.refresh()
       },
+      refetchQueries: ['GetSaleFormData'],
     },
   )
 
@@ -270,7 +278,11 @@ export function CouponForm({ mode = 'create', coupon }: CouponFormProps) {
           )}
         />
 
-        <Button type="submit" disabled={isLoading}>
+        <Button
+          type="button"
+          onClick={form.handleSubmit(onSubmit)}
+          disabled={isLoading}
+        >
           {isLoading && (
             <Icons.Spinner
               className="mr-2 h-4 w-4 animate-spin"
@@ -281,5 +293,27 @@ export function CouponForm({ mode = 'create', coupon }: CouponFormProps) {
         </Button>
       </form>
     </Form>
+  )
+}
+
+export function CouponFormDialog() {
+  const { openDialogs, setOpenDialog } = useFormStore()
+  return (
+    <Dialog
+      open={openDialogs['couponCreateForm']}
+      onOpenChange={(open) => setOpenDialog('couponCreateForm', open)}
+    >
+      <DialogTrigger asChild>
+        <Button type="button" size={'icon'}>
+          <Icons.Plus className="h-4 w-4" />
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="w-full space-y-4 overflow-auto sm:max-w-xl">
+        <DialogHeader>
+          <DialogTitle>ADICIONAR CUPOM</DialogTitle>
+        </DialogHeader>
+        <CouponForm />
+      </DialogContent>
+    </Dialog>
   )
 }

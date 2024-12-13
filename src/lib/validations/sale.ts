@@ -7,6 +7,7 @@ export const saleSchema = z.object({
     .transform((str) => str.replace(/[^\x00-\xFF]/g, '').trim()),
   imageUrl: z.string().min(1, 'Campo obrigatório'),
   categoryId: z.string({ required_error: 'Selecione uma categoria' }),
+  retailerId: z.string({ required_error: 'Selecione um varejista' }),
   price: z.coerce.number().int().gt(0),
   url: z.string().min(1, 'Campo obrigatório').url('Endereço inválido'),
   installments: z.coerce.number().int().optional(),
@@ -21,6 +22,7 @@ export const saleSchema = z.object({
     .optional(),
   label: z.string().optional(),
   coupon: z.string().optional(),
+  couponId: z.string().optional(),
   cashbackId: z.string().optional(),
   sponsored: z.boolean(),
 })

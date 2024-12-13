@@ -37,6 +37,7 @@ import { dealSchema } from '@/lib/validations/deal'
 import type { Cashback, Coupon } from '@/types'
 import { couponFormatter } from '@/utils/formatter'
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
+import { ScrollArea } from '../ui/scroll-area'
 
 const CREATE_DEAL = gql`
   mutation CreateDeal($input: CreateDealInput!) {
@@ -270,12 +271,17 @@ export function DealForm({
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="none">Nenhum</SelectItem>
-                  {couponItems?.map((couponItem) => (
-                    <SelectItem key={couponItem.value} value={couponItem.value}>
-                      {couponItem.label}
-                    </SelectItem>
-                  ))}
+                  <ScrollArea className="h-80">
+                    <SelectItem value="none">Nenhum</SelectItem>
+                    {couponItems?.map((couponItem) => (
+                      <SelectItem
+                        key={couponItem.value}
+                        value={couponItem.value}
+                      >
+                        {couponItem.label}
+                      </SelectItem>
+                    ))}
+                  </ScrollArea>
                 </SelectContent>
               </Select>
               <FormMessage />

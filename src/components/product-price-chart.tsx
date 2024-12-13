@@ -99,14 +99,15 @@ type DailyHistory = {
 interface PriceChartProps {
   productSlug: string
   currentPrice: number | null
+  currentInstallmentPrice: number | null
 }
 
 export default function PriceChart({
   productSlug,
   currentPrice,
+  currentInstallmentPrice,
 }: PriceChartProps) {
   const [periodInDays, setPeriodInDays] = React.useState(30)
-  const [showInstallmentPrice, setShowInstallmentPrice] = React.useState(false)
 
   const { data, refetch } = useQuery<{
     productHistory: {
@@ -142,17 +143,13 @@ export default function PriceChart({
       {currentPrice && (
         <PriceBar
           data={dailyHistory
-            .filter((dayHistory) =>
-              showInstallmentPrice
-                ? dayHistory.lowestInstallmentPrice > 0
-                : dayHistory.lowestPrice,
-            )
-            .map((dayHistory) =>
-              showInstallmentPrice
-                ? dayHistory.lowestInstallmentPrice
-                : dayHistory.lowestPrice,
-            )}
+            .filter((dayHistory) => dayHistory.lowestPrice)
+            .map((dayHistory) => dayHistory.lowestPrice)}
           currentValue={currentPrice}
+          installmentData={dailyHistory
+            .filter((dayHistory) => dayHistory.lowestInstallmentPrice)
+            .map((dayHistory) => dayHistory.lowestInstallmentPrice)}
+          currentValueInstallment={currentInstallmentPrice}
           dataRange={periodInDays}
         />
       )}

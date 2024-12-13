@@ -70,7 +70,19 @@ export function UserAccountNav({ user }: UserAccountNavProps) {
             <DropdownMenuItem className="cursor-pointer" asChild>
               <Link href="/dashboard">
                 <Icons.Lock className="mr-2 h-4 w-4" />
-                <span>Dashboard</span>
+                <span>Dashboard (Admin)</span>
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem className="cursor-pointer" asChild>
+              <Link href="/dashboard/sales">
+                <Icons.DollarSign className="mr-2 h-4 w-4" />
+                <span>Promoções (Admin)</span>
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem className="cursor-pointer" asChild>
+              <Link href="/dashboard/benchmarks">
+                <Icons.BarChart4 className="mr-2 h-4 w-4" />
+                <span>Benchmarks (Admin)</span>
               </Link>
             </DropdownMenuItem>
           </>

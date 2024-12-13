@@ -21,6 +21,7 @@ export function useSaleExpired({ id, expired }: SaleExpired) {
         'api-key': env.NEXT_PUBLIC_API_KEY,
       },
     },
+    refetchQueries: ['GetSales'],
     variables: {
       updateSaleInput: {
         id,
