@@ -37,7 +37,11 @@ interface AwardsMainProps {
   token?: string
 }
 
-export function AwardsMain({ awardsCategories, userId, token }: AwardsMainProps) {
+export function AwardsMain({
+  awardsCategories,
+  userId,
+  token,
+}: AwardsMainProps) {
   const router = useRouter()
   const [openLoginPopup, setOpenLoginPopup] = React.useState(false)
 
@@ -62,7 +66,7 @@ export function AwardsMain({ awardsCategories, userId, token }: AwardsMainProps)
       return
     }
 
-    toggleVote({  variables: { awardsCategoryOptionId: optionId } })
+    toggleVote({ variables: { awardsCategoryOptionId: optionId } })
   }
 
   const getWinner = (category: EnhancedAwardsCategory) => {

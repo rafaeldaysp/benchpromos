@@ -56,8 +56,14 @@ export default async function AwardsPage() {
 
   return (
     <div className="my-10 px-4 sm:container">
-      <h1 className="mb-8 text-center text-3xl font-bold tracking-widest uppercase">Bench Awards 2024</h1>
-      <AwardsMain awardsCategories={awardsCategories} userId={user?.id} token={token} />
+      <h1 className="mb-8 text-center text-3xl font-bold uppercase tracking-widest">
+        Bench Awards 2024
+      </h1>
+      <AwardsMain
+        awardsCategories={awardsCategories}
+        userId={user?.id}
+        token={token}
+      />
     </div>
   )
 }
