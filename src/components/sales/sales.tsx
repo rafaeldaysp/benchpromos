@@ -12,6 +12,7 @@ import ScrollToTopButton from '../scroll-to-top-button'
 import { SalesNavSimplified } from './sales-nav-simplified'
 
 const SALES_PER_SCROLL = 12
+const MIN_DT = new Date().getTime() - 30 * 24 * 60 * 60 * 1000
 
 interface SalesProps {
   user?: { id: string; role: 'ADMIN' | 'MOD' | 'USER' }
@@ -37,6 +38,7 @@ export function Sales({ user, productSlug }: SalesProps) {
         productSlug,
         showExpired,
         categories,
+        minDt: MIN_DT,
       },
     },
   )
@@ -55,6 +57,8 @@ export function Sales({ user, productSlug }: SalesProps) {
           },
           productSlug,
           showExpired,
+          categories,
+          minDt: MIN_DT,
         },
         updateQuery(previousResult, { fetchMoreResult }) {
           const previousSales = previousResult.sales

@@ -262,7 +262,9 @@ export function DashboardRecommendationMain({
         </ScrollArea>
       ) : (
         <div className="flex justify-center">
-          <p className="text-muted-foreground">Nenhum cupom encontrado.</p>
+          <p className="text-muted-foreground">
+            Nenhuma recomendação encontrado.
+          </p>
         </div>
       )}
     </div>

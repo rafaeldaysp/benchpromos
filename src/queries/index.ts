@@ -8,12 +8,14 @@ export const GET_SALES = gql`
     $paginationInput: PaginationInput
     $showExpired: Boolean
     $categories: [String]
+    $minDt: Date
   ) {
     sales(
       productSlug: $productSlug
       paginationInput: $paginationInput
       showExpired: $showExpired
       categories: $categories
+      minDt: $minDt
     ) {
       pages
       count

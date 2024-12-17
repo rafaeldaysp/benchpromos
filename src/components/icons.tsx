@@ -3,6 +3,7 @@ import {
   AlertCircle,
   AlignLeft,
   ArrowUpDown,
+  Award,
   BarChart4,
   Bell,
   BellRing,
@@ -73,6 +74,7 @@ import {
 } from 'lucide-react'
 
 export const Icons = {
+  Award,
   Spinner: Loader2,
   User: User2,
   Lock,
