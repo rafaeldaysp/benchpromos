@@ -276,7 +276,11 @@ export function SaleCard({
                       })}
                     >
                       <p className={sale.cashback ? 'px-2' : ''}>
-                        <strong className="text-xl sm:text-2xl">
+                        <strong
+                          className={cn('text-xl sm:text-2xl', {
+                            'text-success': sale.price === 0,
+                          })}
+                        >
                           {priceFormatter.format(salePriceCents / 100)}
                         </strong>{' '}
                         <span className="text-xs text-muted-foreground sm:text-sm">
