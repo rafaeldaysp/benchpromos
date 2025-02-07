@@ -196,20 +196,16 @@ export function SaleCard({
                   <strong>PATROCINADO</strong>
                 </div>
               )}
-              {(sale.highlight || sale.label === "SORTEIO") && (
+              {(sale.highlight || sale.label === 'SORTEIO') && (
                 <div
-                  className={
-                    sale.label === "SORTEIO"
-                      ? "h-fit py-1 text-center text-xs text-muted-foreground bg-success/20"
-                      : "h-fit py-1 text-center text-xs text-muted-foreground bg-auxiliary/20"
-                  }
+                  className={`h-fit py-1 text-center text-xs text-muted-foreground ${
+                    sale.label === 'SORTEIO' ? 'bg-success/20' : 'bg-auxiliary/20'
+                  }`}
                 >
                   <strong
-                    className={
-                      sale.label === "SORTEIO" ? "text-success" : "text-auxiliary"
-                    }
+                    className={sale.label === 'SORTEIO' ? 'text-success' : 'text-auxiliary'}
                   >
-                    {sale.label === "SORTEIO" ? "SORTEIO" : "DESTAQUE"}
+                    {sale.label === 'SORTEIO' ? 'SORTEIO' : 'DESTAQUE'}
                   </strong>
                 </div>
               )}
