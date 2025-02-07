@@ -199,13 +199,21 @@ export function SaleCard({
               {(sale.highlight || sale.label === 'SORTEIO') && (
                 <div
                   className={`h-fit py-1 text-center text-xs text-muted-foreground ${
-                    sale.label === 'SORTEIO' ? 'bg-success/20' : 'bg-auxiliary/20'
+                    sale.label === 'SORTEIO' 
+                      ? 'bg-success/20' 
+                      : 'bg-auxiliary/20'
                   }`}
                 >
                   <strong
-                    className={sale.label === 'SORTEIO' ? 'text-success' : 'text-auxiliary'}
+                    className={
+                      sale.label === 'SORTEIO' 
+                        ? 'text-success' 
+                        : 'text-auxiliary'
+                    }
                   >
-                    {sale.label === 'SORTEIO' ? 'SORTEIO' : 'DESTAQUE'}
+                    {sale.label === 'SORTEIO' 
+                      ? 'SORTEIO' 
+                      : 'DESTAQUE'}
                   </strong>
                 </div>
               )}
