@@ -8,7 +8,7 @@ export const saleSchema = z.object({
   imageUrl: z.string().min(1, 'Campo obrigatório'),
   categoryId: z.string({ required_error: 'Selecione uma categoria' }),
   retailerId: z.string({ required_error: 'Selecione um varejista' }),
-  price: z.coerce.number().int().gt(0),
+  price: z.coerce.number().int().gt(-1),
   url: z.string().min(1, 'Campo obrigatório').url('Endereço inválido'),
   installments: z.coerce.number().int().optional(),
   totalInstallmentPrice: z.coerce.number().int().optional(),
