@@ -45,7 +45,7 @@ import { CategoryFormDialog } from './category-form'
 import { CouponFormDialog } from './coupon-form'
 import { RetailerFormDialog } from './retailer-form'
 
-const saleLabels = ['LANÇAMENTO', 'BAIXOU', 'PREÇÃO', 'PARCELADO']
+const saleLabels = ['LANÇAMENTO', 'BAIXOU', 'PREÇÃO', 'PARCELADO', 'SORTEIO']
 
 const CREATE_SALE = gql`
   mutation ($input: CreateSaleInput!) {
