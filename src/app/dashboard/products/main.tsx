@@ -7,6 +7,7 @@ import { toast } from 'sonner'
 
 import { DashboardItemCard } from '@/components/dashboard-item-card'
 import { DashboardProducts } from '@/components/dashboard-products'
+import { FileUploaderDialog } from '@/components/files/file-uploader-dialog'
 import { ProductFiltersForm } from '@/components/forms/product-filters-form'
 import { ProductForm } from '@/components/forms/product-form'
 import { RecommendedProductForm } from '@/components/forms/recommended-product-form'
@@ -50,7 +51,6 @@ import { useFormStore } from '@/hooks/use-form-store'
 import { useQueryString } from '@/hooks/use-query-string'
 import { cn } from '@/lib/utils'
 import type { Category, Filter, Product } from '@/types'
-import { FileUploaderDialog } from '@/components/files/file-uploader-dialog'
 
 const DELETE_PRODUCT = gql`
   mutation DeleteProduct($productId: ID!) {
@@ -81,9 +81,10 @@ const selectOptions = [
 
 interface ProductsMainProps {
   filters: Filter[]
+  categories: Category[]
 }
 
-export function ProductsMain({ filters }: ProductsMainProps) {
+export function ProductsMain({ filters, categories }: ProductsMainProps) {
   const [isLoading, startTransition] = React.useTransition()
   const router = useRouter()
   const pathname = usePathname()
@@ -93,6 +94,7 @@ export function ProductsMain({ filters }: ProductsMainProps) {
   const searchParams = useSearchParams()
 
   const initialSorting = searchParams.get('sort')
+  const initialCategory = searchParams.get('category')
 
   const [selectedProduct, setSelectedProduct] = React.useState<
     Product & {
@@ -104,6 +106,8 @@ export function ProductsMain({ filters }: ProductsMainProps) {
   const [productSuggestions, setProductSuggestions] = React.useState<
     (Product & { category: { name: string } })[]
   >([])
+
+  const [selectedCategory, setSelectedCategory] = React.useState<Category>()
 
   const [deleteProduct] = useMutation(DELETE_PRODUCT, {
     context: {
@@ -150,32 +154,59 @@ export function ProductsMain({ filters }: ProductsMainProps) {
     <div className="space-y-8">
       {/* Products Actions */}
       <div className="flex flex-col justify-between gap-2 sm:flex-row">
-        <Select
-          defaultValue={
-            selectOptions.find((option) => option.value === initialSorting)
-              ?.value ?? 'lastUpdate'
-          }
-          onValueChange={(value) => {
-            startTransition(() => {
-              router.push(
-                `${pathname}?${createQueryString({
-                  sort: value === 'relevance' ? value : null,
-                })}`,
-              )
-            })
-          }}
-        >
-          <SelectTrigger className="w-full sm:w-60">
-            <SelectValue placeholder="Selecione a ordem dos produtos" />
-          </SelectTrigger>
-          <SelectContent className="w-full sm:w-60">
-            {selectOptions.map((option) => (
-              <SelectItem key={option.value} value={option.value}>
-                {option.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <div className="flex flex-col gap-2 sm:flex-row">
+          <Select
+            defaultValue={
+              selectOptions.find((option) => option.value === initialSorting)
+                ?.value ?? 'lastUpdate'
+            }
+            onValueChange={(value) => {
+              startTransition(() => {
+                router.push(
+                  `${pathname}?${createQueryString({
+                    sort: value === 'relevance' ? value : null,
+                  })}`,
+                )
+              })
+            }}
+          >
+            <SelectTrigger className="w-full sm:w-60">
+              <SelectValue placeholder="Selecione a ordem dos produtos" />
+            </SelectTrigger>
+            <SelectContent className="w-full sm:w-60">
+              {selectOptions.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          <Select
+            defaultValue={selectedCategory?.slug ?? initialCategory ?? 'none'}
+            onValueChange={(value) => {
+              startTransition(() => {
+                router.push(
+                  `${pathname}?${createQueryString({
+                    category: value === 'none' ? null : value,
+                  })}`,
+                )
+              })
+            }}
+          >
+            <SelectTrigger className="w-full sm:w-60">
+              <SelectValue placeholder="Categoria" />
+            </SelectTrigger>
+            <SelectContent className="w-full sm:w-60">
+              <SelectItem value={'none'}>Todos</SelectItem>
+              {categories.map((option) => (
+                <SelectItem key={option.slug} value={option.slug}>
+                  {option.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
 
         <div className="flex flex-col justify-end gap-2 sm:flex-row">
           {selectedProduct && (

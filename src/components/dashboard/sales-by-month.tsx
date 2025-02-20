@@ -31,6 +31,8 @@ const chartConfig = {
 } satisfies ChartConfig
 
 export function SalesByMonth({ data }: SalesByMonthProps) {
+  if (!data.length) return null
+
   const periodStart = data[0].date
   const periodEnd = data[data.length - 1].date
   return (
