@@ -52,6 +52,7 @@ const saleLabels = [
   'PARCELADO',
   'SORTEIO',
   'HISTÓRICO',
+  'PREÇO HISTÓRICO',
 ]
 
 const CREATE_SALE = gql`
