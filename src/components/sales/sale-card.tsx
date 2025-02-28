@@ -216,7 +216,7 @@ export function SaleCard({
                   <div
                     className={`h-fit py-1 text-center text-xs text-muted-foreground ${
                       // @ts-expect-error ...
-                      specialLabelColorsByLabel[sale.label]
+                      specialLabelColorsByLabel[sale.label].bg
                     }`}
                   >
                     <strong
