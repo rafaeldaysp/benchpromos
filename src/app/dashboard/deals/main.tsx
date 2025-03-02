@@ -384,7 +384,8 @@ export function DealsMain({ deals, retailers, categories }: DealsMainProps) {
                     ) : (
                       <strong className="text-destructive">Indisponível</strong>
                     )}{' '}
-                    • Atualizado {dayjs(deal.lastScrapedAt).fromNow()}
+                    • Atualizado{' '}
+                    {dayjs(deal.lastScrapedAt ?? deal.updatedAt).fromNow()}
                   </span>
                   {deal.scrapingStatus && (
                     <div className="flex items-center gap-2 text-xs text-muted-foreground">
