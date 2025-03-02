@@ -96,6 +96,9 @@ export type Deal = {
   createdAt: string
   updatedAt: string
   saleId?: string
+  lastScrapedAt?: string
+  lastScrapedMessage?: string
+  scrapingStatus?: string
 }
 
 export type Sale = {
