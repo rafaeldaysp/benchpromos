@@ -109,6 +109,13 @@ interface SaleCardProps extends React.HTMLAttributes<HTMLDivElement> {
   apolloClient: ApolloClient<unknown>
 }
 
+const specialLabelColorsByLabel = {
+  SORTEIO: { bg: 'bg-success/20', text: 'text-success' },
+  DESTAQUE: { bg: 'bg-auxiliary/20', text: 'text-auxiliary' },
+  HISTÓRICO: { bg: 'bg-destructive/20', text: 'text-destructive' },
+  'PREÇO HISTÓRICO': { bg: 'bg-destructive/20', text: 'text-destructive' },
+}
+
 export function SaleCard({
   sale,
   user,
@@ -196,25 +203,30 @@ export function SaleCard({
                   <strong>PATROCINADO</strong>
                 </div>
               )}
-              {(sale.highlight || sale.label === 'SORTEIO') && (
+              {sale.highlight && (
                 <div
-                  className={`h-fit py-1 text-center text-xs text-muted-foreground ${
-                    sale.label === 'SORTEIO'
-                      ? 'bg-success/20'
-                      : 'bg-auxiliary/20'
-                  }`}
+                  className="h-fit bg-auxiliary/20 py-1 text-center text-xs
+                     text-muted-foreground"
                 >
-                  <strong
-                    className={
-                      sale.label === 'SORTEIO'
-                        ? 'text-success'
-                        : 'text-auxiliary'
-                    }
-                  >
-                    {sale.label === 'SORTEIO' ? 'SORTEIO' : 'DESTAQUE'}
-                  </strong>
+                  <strong className={'text-auxiliary'}>DESTAQUE</strong>
                 </div>
               )}
+              {sale.label &&
+                Object.keys(specialLabelColorsByLabel).includes(sale.label) && (
+                  <div
+                    className={`h-fit py-1 text-center text-xs text-muted-foreground ${
+                      // @ts-expect-error ...
+                      specialLabelColorsByLabel[sale.label].bg
+                    }`}
+                  >
+                    <strong
+                      // @ts-expect-error ...
+                      className={specialLabelColorsByLabel[sale.label].text}
+                    >
+                      {sale.label}
+                    </strong>
+                  </div>
+                )}
 
               <CardHeader className="flex-row items-baseline space-y-0 p-3 text-xs sm:p-6 sm:text-sm">
                 <span className="flex-1">

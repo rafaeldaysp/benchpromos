@@ -31,8 +31,8 @@ export function ProductAlertCard({
     <Dialog>
       <Card className="relative flex select-none flex-col overflow-hidden transition-colors hover:bg-muted/50">
         <CardContent className="p-3 sm:space-y-3">
-          <CardTitle className="line-clamp-2 space-x-1 p-2 text-sm font-semibold">
-            {product.name}
+          <CardTitle className="space-x-1 p-2 text-sm font-semibold">
+            <p className="line-clamp-2 ">{product.name}</p>
           </CardTitle>
           <div className="grid grid-cols-2 gap-x-3 text-sm text-muted-foreground">
             <div className="flex h-full items-center">
