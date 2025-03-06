@@ -30,6 +30,9 @@ const GET_DEALS = gql`
       createdAt
       updatedAt
       retailerIsSeller
+      lastScrapedAt
+      lastScrapedMessage
+      scrapingStatus
       cashback {
         provider
         value

@@ -45,7 +45,15 @@ import { CategoryFormDialog } from './category-form'
 import { CouponFormDialog } from './coupon-form'
 import { RetailerFormDialog } from './retailer-form'
 
-const saleLabels = ['LANÇAMENTO', 'BAIXOU', 'PREÇÃO', 'PARCELADO']
+const saleLabels = [
+  'LANÇAMENTO',
+  'BAIXOU',
+  'PREÇÃO',
+  'PARCELADO',
+  'SORTEIO',
+  'HISTÓRICO',
+  'PREÇO HISTÓRICO',
+]
 
 const CREATE_SALE = gql`
   mutation ($input: CreateSaleInput!) {
@@ -159,11 +167,13 @@ export function SaleForm({
     return categoryItems
   }, [data])
 
-  const couponItems = React.useMemo(() => {
-    const selectedRetailer = form.getValues('retailerId')
+  const selectedRetailerId = form.watch('retailerId')
+
+  function getCouponsByRetailerId() {
     return data?.coupons
       .filter(
-        (coupon) => !selectedRetailer || selectedRetailer == coupon.retailer.id,
+        (coupon) =>
+          !selectedRetailerId || selectedRetailerId == coupon.retailer.id,
       )
       .map((coupon) => ({
         label: `${coupon.code} • ${couponFormatter(coupon.discount)} • ${
@@ -171,48 +181,18 @@ export function SaleForm({
         }`,
         value: coupon.id,
       }))
-  }, [data, form])
+  }
 
-  const cashbackItems = React.useMemo(() => {
-    const selectedRetailer = form.getValues('retailerId')
+  function getCashbacksByRetailerId() {
     return data?.cashbacks
       .filter(
         (cashback) =>
-          !selectedRetailer || selectedRetailer == cashback.retailer.id,
+          !selectedRetailerId || selectedRetailerId == cashback.retailer.id,
       )
       .map((cashback) => ({
         label: `${cashback.provider} • ${cashback.value}% • ${cashback.retailer.name}`,
         value: cashback.id,
       }))
-  }, [data, form])
-
-  function handleRetailerChangeChildren() {
-    const selectedRetailer = form.getValues('retailerId')
-    const canSetIncomingCouponFromRetailer = data?.coupons
-      .filter(
-        (coupon) => !selectedRetailer || selectedRetailer == coupon.retailer.id,
-      )
-      .some((coupon) => coupon.id === sale?.couponId)
-
-    const canSetIncomingCashbackFromRetailer = data?.coupons
-      .filter(
-        (cashback) =>
-          !selectedRetailer || selectedRetailer == cashback.retailer.id,
-      )
-      .some((cashback) => cashback.retailer.id === selectedRetailer)
-
-    form.setValue(
-      'couponId',
-      canSetIncomingCouponFromRetailer
-        ? sale?.couponId
-        : defaultValues.couponId,
-    )
-    form.setValue(
-      'cashbackId',
-      canSetIncomingCashbackFromRetailer
-        ? sale?.cashbackId
-        : defaultValues.cashbackId,
-    )
   }
 
   const retailerItems = React.useMemo(() => {
@@ -401,7 +381,8 @@ export function SaleForm({
                 <Select
                   onValueChange={(e) => {
                     field.onChange(e)
-                    handleRetailerChangeChildren()
+                    form.setValue('couponId', 'none')
+                    form.setValue('cashbackId', 'none')
                   }}
                   defaultValue={field.value}
                   disabled={isSaleFormDataLoading}
@@ -576,7 +557,7 @@ export function SaleForm({
                   <SelectContent>
                     <ScrollArea className="h-80">
                       <SelectItem value="none">Nenhum</SelectItem>
-                      {couponItems?.map((couponItem) => (
+                      {getCouponsByRetailerId()?.map((couponItem) => (
                         <SelectItem
                           key={couponItem.value}
                           value={couponItem.value}
@@ -623,7 +604,7 @@ export function SaleForm({
                   <SelectContent>
                     <ScrollArea className="h-80">
                       <SelectItem value="none">Nenhum</SelectItem>
-                      {cashbackItems?.map((cashbackItem) => (
+                      {getCashbacksByRetailerId()?.map((cashbackItem) => (
                         <SelectItem
                           key={cashbackItem.value}
                           value={cashbackItem.value}

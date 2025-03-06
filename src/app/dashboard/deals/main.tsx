@@ -25,7 +25,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
 import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
+import { Button, buttonVariants } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
@@ -36,6 +36,11 @@ import {
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import {
   Select,
@@ -339,8 +344,20 @@ export function DealsMain({ deals, retailers, categories }: DealsMainProps) {
                   onClick={() => onDealSelect(deal.id)}
                 >
                   <p className="text-sm leading-7">
-                    {deal.product.name} | {deal.product.category.name}
+                    {deal.product.name} | {deal.product.category.name} |{' '}
+                    <a
+                      id="access_sale_from_card"
+                      href={deal.url}
+                      target="_blank"
+                      className={cn(
+                        buttonVariants({ variant: 'link', size: 'sm' }),
+                        'px-0',
+                      )}
+                    >
+                      Acessar
+                    </a>
                   </p>
+
                   <span className="text-xs text-muted-foreground">
                     {deal.saleId && (
                       <Badge className="mr-2" variant="auxiliary">
@@ -367,8 +384,43 @@ export function DealsMain({ deals, retailers, categories }: DealsMainProps) {
                     ) : (
                       <strong className="text-destructive">Indisponível</strong>
                     )}{' '}
-                    • Atualizado {dayjs(deal.updatedAt).fromNow()}
+                    • Atualizado{' '}
+                    {dayjs(deal.lastScrapedAt ?? deal.updatedAt).fromNow()}
                   </span>
+                  {deal.scrapingStatus && (
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <Icons.AlertCircle className="h-4 w-4" />
+                      <span>
+                        Scraping status:{' '}
+                        <Badge
+                          className="px-1.5 py-0"
+                          variant={
+                            deal.scrapingStatus === 'SUCCESS'
+                              ? 'success'
+                              : 'destructive'
+                          }
+                        >
+                          {deal.scrapingStatus}
+                        </Badge>
+                        {deal.scrapingStatus === 'FAILED' && (
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <Button
+                                variant="link"
+                                size={'sm'}
+                                className="px-1"
+                              >
+                                Detalhes
+                              </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-80 text-sm">
+                              <p>{deal.lastScrapedMessage}</p>
+                            </PopoverContent>
+                          </Popover>
+                        )}
+                      </span>
+                    </div>
+                  )}
                 </DashboardItemCard.Content>
 
                 <DashboardItemCard.Actions>

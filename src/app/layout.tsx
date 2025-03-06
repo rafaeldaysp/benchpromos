@@ -39,16 +39,16 @@ export const metadata: Metadata = {
     'Server Components',
     'Server Actions',
   ],
-  authors: [
-    {
-      name: 'mmpdrosa',
-      url: 'https://github.com/mmpdrosa',
-    },
-    {
-      name: 'rafaeldaysp',
-      url: 'https://github.com/rafaeldaysp',
-    },
-  ],
+  // authors: [
+  //   {
+  //     name: 'mmpdrosa',
+  //     url: 'https://github.com/mmpdrosa',
+  //   },
+  //   {
+  //     name: 'rafaeldaysp',
+  //     url: 'https://github.com/rafaeldaysp',
+  //   },
+  // ],
   openGraph: {
     type: 'website',
     locale: 'pt_BR',

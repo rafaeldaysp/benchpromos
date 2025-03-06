@@ -2,7 +2,7 @@ import { gql } from '@apollo/client'
 
 import { Separator } from '@/components/ui/separator'
 import { getClient } from '@/lib/apollo'
-import type { Filter } from '@/types'
+import type { Category, Filter } from '@/types'
 import { ProductsMain } from './main'
 
 const GET_FILTERS = gql`
@@ -19,6 +19,16 @@ const GET_FILTERS = gql`
   }
 `
 
+const GET_CATEGORIES = gql`
+  query GetCategories {
+    categories {
+      id
+      name
+      slug
+    }
+  }
+`
+
 export default async function ProductsDashboardPage() {
   const { data } = await getClient().query<{
     filters: Filter[]
@@ -27,6 +37,16 @@ export default async function ProductsDashboardPage() {
   })
 
   const filters = data.filters
+
+  const { data: categoriesData } = await getClient().query<{
+    categories: Category[]
+  }>({
+    query: GET_CATEGORIES,
+  })
+
+  const categories = categoriesData.categories
+
+  console.log(categories)
 
   return (
     <div className="space-y-6">
@@ -37,7 +57,7 @@ export default async function ProductsDashboardPage() {
         </p>
       </div>
       <Separator />
-      <ProductsMain filters={filters} />
+      <ProductsMain filters={filters} categories={categories} />
     </div>
   )
 }

@@ -109,6 +109,13 @@ interface SaleCardProps extends React.HTMLAttributes<HTMLDivElement> {
   apolloClient: ApolloClient<unknown>
 }
 
+const specialLabelColorsByLabel = {
+  SORTEIO: { bg: 'bg-success/20', text: 'text-success' },
+  DESTAQUE: { bg: 'bg-auxiliary/20', text: 'text-auxiliary' },
+  HISTÓRICO: { bg: 'bg-destructive/20', text: 'text-destructive' },
+  'PREÇO HISTÓRICO': { bg: 'bg-destructive/20', text: 'text-destructive' },
+}
+
 export function SaleCard({
   sale,
   user,
@@ -197,10 +204,29 @@ export function SaleCard({
                 </div>
               )}
               {sale.highlight && (
-                <div className="h-fit bg-auxiliary/20 py-1 text-center text-xs text-muted-foreground">
-                  <strong className="text-auxiliary">DESTAQUE</strong>
+                <div
+                  className="h-fit bg-auxiliary/20 py-1 text-center text-xs
+                     text-muted-foreground"
+                >
+                  <strong className={'text-auxiliary'}>DESTAQUE</strong>
                 </div>
               )}
+              {sale.label &&
+                Object.keys(specialLabelColorsByLabel).includes(sale.label) && (
+                  <div
+                    className={`h-fit py-1 text-center text-xs text-muted-foreground ${
+                      // @ts-expect-error ...
+                      specialLabelColorsByLabel[sale.label].bg
+                    }`}
+                  >
+                    <strong
+                      // @ts-expect-error ...
+                      className={specialLabelColorsByLabel[sale.label].text}
+                    >
+                      {sale.label}
+                    </strong>
+                  </div>
+                )}
 
               <CardHeader className="flex-row items-baseline space-y-0 p-3 text-xs sm:p-6 sm:text-sm">
                 <span className="flex-1">
@@ -262,7 +288,11 @@ export function SaleCard({
                       })}
                     >
                       <p className={sale.cashback ? 'px-2' : ''}>
-                        <strong className="text-xl sm:text-2xl">
+                        <strong
+                          className={cn('text-xl sm:text-2xl', {
+                            'text-success': sale.price === 0,
+                          })}
+                        >
                           {priceFormatter.format(salePriceCents / 100)}
                         </strong>{' '}
                         <span className="text-xs text-muted-foreground sm:text-sm">
@@ -309,7 +339,7 @@ export function SaleCard({
                           <p className="flex flex-col text-muted-foreground sm:hidden">
                             Com cupom
                             <span className="text-sm font-bold text-foreground sm:hidden">
-                              {sale.coupon}
+                              {sale.couponSchema.code}
                             </span>
                           </p>
 

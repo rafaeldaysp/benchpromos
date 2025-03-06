@@ -2,8 +2,6 @@
 
 import { gql, useSuspenseQuery } from '@apollo/client'
 import { type Table } from '@tanstack/react-table'
-import { useSearchParams } from 'next/navigation'
-import * as React from 'react'
 
 import { DataTableFacetedFilter } from '@/components/data-table/data-table-faceted-filter'
 import { DataTableViewOptions } from '@/components/data-table/data-table-view-options'

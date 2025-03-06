@@ -73,6 +73,7 @@ export function DashboardProducts({ children }: DashboardProductsProps) {
   const searchParams = useSearchParams()
 
   const sortBy = searchParams.get('sort')
+  const category = searchParams.get('category')
 
   const { data, fetchMore } = useSuspenseQuery<{
     productsList: {
@@ -93,6 +94,7 @@ export function DashboardProducts({ children }: DashboardProductsProps) {
           page: 1,
         },
         sortBy,
+        category,
       },
     },
   })
@@ -114,6 +116,7 @@ export function DashboardProducts({ children }: DashboardProductsProps) {
               page: page + 1,
             },
             sortBy,
+            category,
           },
         },
         updateQuery(previousResult, { fetchMoreResult }) {

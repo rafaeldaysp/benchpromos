@@ -96,6 +96,9 @@ export type Deal = {
   createdAt: string
   updatedAt: string
   saleId?: string
+  lastScrapedAt?: string
+  lastScrapedMessage?: string
+  scrapingStatus?: string
 }
 
 export type Sale = {
@@ -164,4 +167,29 @@ export type headerOption = {
   slug?: string
   content?: { title: string; slug: string }[]
   icon?: React.ComponentType<{ className?: string }>
+}
+
+export type AwardsCategory = {
+  id: string
+  title: string
+  expiredAt: string
+  description?: string
+}
+
+export type AwardsCategoryOption = {
+  id: string
+  title?: string
+
+  productId: string
+  awardsCategoryId: string
+
+  _count: {
+    votes: number
+  }
+}
+
+export type AwardsCategoryOptionVote = {
+  id: string
+  userId: string
+  awardsCategoryOptionId: string
 }
