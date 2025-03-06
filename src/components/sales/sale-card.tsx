@@ -339,7 +339,7 @@ export function SaleCard({
                           <p className="flex flex-col text-muted-foreground sm:hidden">
                             Com cupom
                             <span className="text-sm font-bold text-foreground sm:hidden">
-                              {sale.coupon}
+                              {sale.couponSchema.code}
                             </span>
                           </p>
 
