@@ -68,6 +68,7 @@ import type {
   Deal,
   Product,
   Retailer,
+  Sale,
 } from '@/types'
 import { couponFormatter, priceFormatter } from '@/utils/formatter'
 import { priceCalculator } from '@/utils/price-calculator'
@@ -90,6 +91,7 @@ interface DealsMainProps {
     product: Pick<Product, 'id' | 'name' | 'imageUrl'> & {
       category: Pick<Category, 'id' | 'name'>
     }
+    sale?: Pick<Sale, 'expired'>
   })[]
   retailers: Retailer[]
   categories: Pick<Category, 'id' | 'name'>[]
@@ -360,8 +362,11 @@ export function DealsMain({ deals, retailers, categories }: DealsMainProps) {
 
                   <span className="text-xs text-muted-foreground">
                     {deal.saleId && (
-                      <Badge className="mr-2" variant="auxiliary">
-                        EM PROMOÇÃO
+                      <Badge
+                        className="mr-2"
+                        variant={deal.sale?.expired ? 'auxiliary' : 'default'}
+                      >
+                        {deal.sale?.expired ? 'EXPIRADO' : 'PROMOÇÃO'}
                       </Badge>
                     )}
                     {deal.retailer.name} •{' '}

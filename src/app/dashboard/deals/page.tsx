@@ -9,6 +9,7 @@ import type {
   Deal,
   Product,
   Retailer,
+  Sale,
 } from '@/types'
 import { removeNullValues } from '@/utils'
 import { DealsMain } from './main'
@@ -51,6 +52,9 @@ const GET_DEALS = gql`
         }
       }
       saleId
+      sale {
+        expired
+      }
     }
     retailers {
       id
@@ -74,6 +78,7 @@ export default async function DealsDashboardPage() {
     })[]
     retailers: Retailer[]
     categories: Pick<Category, 'id' | 'name'>[]
+    sales: Pick<Sale, 'expired'>[]
   }>({
     query: GET_DEALS,
   })

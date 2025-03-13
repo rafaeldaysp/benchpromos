@@ -93,6 +93,7 @@ export function ProductFiltersForm({
       toast.success('Filtros atualizados com sucesso.')
       router.refresh()
     },
+    refetchQueries: ['GetProducts'],
   })
 
   // mudar para optionIds no back
