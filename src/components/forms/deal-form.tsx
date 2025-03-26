@@ -302,15 +302,17 @@ export function DealForm({
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="none">Nenhum</SelectItem>
-                  {cashbackItems?.map((cashbackItem) => (
-                    <SelectItem
-                      key={cashbackItem.value}
-                      value={cashbackItem.value}
-                    >
-                      {cashbackItem.label}
-                    </SelectItem>
-                  ))}
+                  <ScrollArea className="h-80">
+                    <SelectItem value="none">Nenhum</SelectItem>
+                    {cashbackItems?.map((cashbackItem) => (
+                      <SelectItem
+                        key={cashbackItem.value}
+                        value={cashbackItem.value}
+                      >
+                        {cashbackItem.label}
+                      </SelectItem>
+                    ))}
+                  </ScrollArea>
                 </SelectContent>
               </Select>
               <FormMessage />

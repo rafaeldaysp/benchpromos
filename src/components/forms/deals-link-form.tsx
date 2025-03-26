@@ -31,6 +31,7 @@ import { useFormStore } from '@/hooks/use-form-store'
 import { dealsLinkSchema } from '@/lib/validations/deal'
 import type { Cashback, Coupon } from '@/types'
 import { couponFormatter } from '@/utils/formatter'
+import { ScrollArea } from '../ui/scroll-area'
 
 const UPDATE_DEALS = gql`
   mutation UpdateDeals($input: AssignCouponAndCashbackToManyInput!) {
@@ -146,12 +147,17 @@ export default function DealsLinkForm({
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="none">Nenhum</SelectItem>
-                  {couponItems?.map((couponItem) => (
-                    <SelectItem key={couponItem.value} value={couponItem.value}>
-                      {couponItem.label}
-                    </SelectItem>
-                  ))}
+                  <ScrollArea className="h-80">
+                    <SelectItem value="none">Nenhum</SelectItem>
+                    {couponItems?.map((couponItem) => (
+                      <SelectItem
+                        key={couponItem.value}
+                        value={couponItem.value}
+                      >
+                        {couponItem.label}
+                      </SelectItem>
+                    ))}
+                  </ScrollArea>
                 </SelectContent>
               </Select>
               <FormMessage />
@@ -172,15 +178,17 @@ export default function DealsLinkForm({
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="none">Nenhum</SelectItem>
-                  {cashbackItems?.map((cashbackItem) => (
-                    <SelectItem
-                      key={cashbackItem.value}
-                      value={cashbackItem.value}
-                    >
-                      {cashbackItem.label}
-                    </SelectItem>
-                  ))}
+                  <ScrollArea className="h-80">
+                    <SelectItem value="none">Nenhum</SelectItem>
+                    {cashbackItems?.map((cashbackItem) => (
+                      <SelectItem
+                        key={cashbackItem.value}
+                        value={cashbackItem.value}
+                      >
+                        {cashbackItem.label}
+                      </SelectItem>
+                    ))}
+                  </ScrollArea>
                 </SelectContent>
               </Select>
               <FormMessage />
