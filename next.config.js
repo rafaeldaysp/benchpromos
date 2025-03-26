@@ -20,6 +20,10 @@ const nextConfig = {
         destination: '/sale/:slug/:id',
       },
       {
+        source: '/promocao/:slug',
+        destination: '/sale/:slug',
+      },
+      {
         source: '/usuario',
         destination: '/user',
       },
