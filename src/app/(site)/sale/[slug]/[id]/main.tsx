@@ -186,7 +186,7 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
             </div>
 
             {sale.caption && (
-              <p className="text-sm text-muted-foreground md:hidden">
+              <p className="mt-2 text-sm text-muted-foreground md:hidden">
                 {sale.caption}
               </p>
             )}
