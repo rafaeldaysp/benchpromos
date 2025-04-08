@@ -57,16 +57,16 @@ export function ProductCard({
   const bestDeal = product.deals[0]
 
   let price = priceCalculator(
-    bestDeal.price,
-    bestDeal.coupon?.availability ? bestDeal.coupon.discount : undefined,
-    bestDeal.cashback?.value,
+    bestDeal?.price,
+    bestDeal?.coupon?.availability ? bestDeal.coupon.discount : undefined,
+    bestDeal?.cashback?.value,
   )
 
-  if (onlyInstallments && bestDeal.installments) {
+  if (onlyInstallments && bestDeal?.installments) {
     price = priceCalculator(
-      bestDeal.totalInstallmentPrice,
-      bestDeal.coupon?.availability ? bestDeal.coupon.discount : undefined,
-      bestDeal.cashback?.value,
+      bestDeal?.totalInstallmentPrice,
+      bestDeal?.coupon?.availability ? bestDeal.coupon.discount : undefined,
+      bestDeal?.cashback?.value,
     )
   }
 
