@@ -152,6 +152,7 @@ export default async function ProductsPage({
     search,
     includeNoDeals,
     includeUnavailable,
+    sortByInstallmentPrice,
     ...filters
   } = searchParams
 
@@ -231,6 +232,7 @@ export default async function ProductsPage({
           max: Number(max),
         },
         sortBy: sort ?? 'relevance',
+        sortByInstallmentPrice: sortByInstallmentPrice == 'true',
       },
     },
     errorPolicy: 'ignore',
@@ -257,6 +259,7 @@ export default async function ProductsPage({
           serverPriceRange={serverPriceRange}
           sort={sort}
           limit={limit}
+          onlyInstallments={sortByInstallmentPrice == 'true'}
         />
       </div>
     </div>

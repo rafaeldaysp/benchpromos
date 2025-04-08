@@ -40,8 +40,8 @@ import type {
 import { CategoryFilterPopover } from './category-filters-popover'
 import { PriceInput } from './price-input'
 import { Badge } from './ui/badge'
-import { Popover, PopoverContent, PopoverTrigger } from './ui/popover'
 import { Label } from './ui/label'
+import { Popover, PopoverContent, PopoverTrigger } from './ui/popover'
 import { Switch } from './ui/switch'
 
 interface ProductsProps {
@@ -63,6 +63,7 @@ interface ProductsProps {
   subcategory?: string
   sort?: string
   limit?: string
+  onlyInstallments?: boolean
 }
 
 export function Products({
@@ -75,6 +76,7 @@ export function Products({
   sort: initialSort,
   limit: initialLimit,
   subcategories,
+  onlyInstallments: initialOnlyInstallments = false,
 }: ProductsProps) {
   const searchParams = useSearchParams()
   const [isPending, startTransition] = React.useTransition()
@@ -100,6 +102,9 @@ export function Products({
   const page = searchParams.get('page') ?? '1'
 
   const [noDealSwitch, setNoDealSwitch] = React.useState(false)
+  const [installmentSwitch, setInstallmentSwitch] = React.useState(
+    initialOnlyInstallments,
+  )
   const [unavailableSwitch, setUnavailableSwitch] = React.useState(false)
 
   const filterSlugNullRecord: Record<string, null> = {}
@@ -169,7 +174,7 @@ export function Products({
   }, [limit])
   return (
     <div className="space-y-6">
-      <ScrollArea className="w-full bg-background">
+      <ScrollArea className="w-full bg-background pb-2.5">
         <div className="flex items-center space-x-2 ">
           <Sheet>
             <SheetTrigger asChild>
@@ -566,29 +571,52 @@ export function Products({
       <Separator />
 
       <div className="flex justify-between">
-        <div className="flex flex-1 items-center justify-between gap-x-4 lg:justify-normal">
-          <h3 className="text-sm">
-            {productCount ?? 0} resultado{productCount > 1 && 's'}
-          </h3>
-          <Select
-            defaultValue="relevance"
-            value={sort}
-            onValueChange={(value) => setSort(value)}
-            onOpenChange={(open) => {
-              setTimeout(() => {
-                setSelectIsOpen(open)
-              }, 100)
-            }}
-          >
-            <SelectTrigger className="w-40">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="relevance">Relevância</SelectItem>
-              <SelectItem value="lowest">Menor preço</SelectItem>
-              <SelectItem value="highest">Maior preço</SelectItem>
-            </SelectContent>
-          </Select>
+        <div className="flex flex-col items-center justify-between gap-4 max-sm:w-full sm:flex-row lg:justify-normal">
+          <div className="flex w-full items-center justify-between gap-x-4 sm:justify-normal">
+            <h3 className="whitespace-nowrap text-sm">
+              {productCount ?? 0} resultado{productCount > 1 && 's'}
+            </h3>
+            <Select
+              defaultValue="relevance"
+              value={sort}
+              onValueChange={(value) => setSort(value)}
+              onOpenChange={(open) => {
+                setTimeout(() => {
+                  setSelectIsOpen(open)
+                }, 100)
+              }}
+            >
+              <SelectTrigger className="w-40">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="relevance">Relevância</SelectItem>
+                <SelectItem value="lowest">Menor preço</SelectItem>
+                <SelectItem value="highest">Maior preço</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex w-full items-center justify-between gap-x-4 sm:justify-normal">
+            <Label className="text-sm" htmlFor="installmentSwitch">
+              Apenas parcelado
+            </Label>
+            <Switch
+              id="installmentSwitch"
+              checked={installmentSwitch}
+              disabled={isPending}
+              onCheckedChange={(value) =>
+                startTransition(() => {
+                  setInstallmentSwitch(value)
+                  router.push(
+                    `${pathname}?${createQueryString({
+                      sortByInstallmentPrice: value ? 'true' : null,
+                      page: null,
+                    })}`,
+                  )
+                })
+              }
+            />
+          </div>
         </div>
 
         <div className="hidden items-center gap-x-4 lg:flex">
@@ -623,7 +651,11 @@ export function Products({
         )}
       >
         {products?.map((product) => (
-          <ProductCard key={product.id} product={product} />
+          <ProductCard
+            key={product.id}
+            product={product}
+            onlyInstallments={installmentSwitch}
+          />
         ))}
       </div>
       {products?.length && (

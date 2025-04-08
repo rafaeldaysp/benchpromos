@@ -45,14 +45,30 @@ interface ProductCardProps extends React.HTMLAttributes<HTMLDivElement> {
       }
     }[]
   }
+  onlyInstallments?: boolean
 }
 
 export function ProductCard({
   product,
   className,
+  onlyInstallments = false,
   ...props
 }: ProductCardProps) {
   const bestDeal = product.deals[0]
+
+  let price = priceCalculator(
+    bestDeal.price,
+    bestDeal.coupon?.availability ? bestDeal.coupon.discount : undefined,
+    bestDeal.cashback?.value,
+  )
+
+  if (onlyInstallments && bestDeal.installments) {
+    price = priceCalculator(
+      bestDeal.totalInstallmentPrice,
+      bestDeal.coupon?.availability ? bestDeal.coupon.discount : undefined,
+      bestDeal.cashback?.value,
+    )
+  }
 
   return (
     <Link
@@ -120,25 +136,17 @@ export function ProductCard({
                       </CardDescription>
                       <p>
                         <strong className="text-xl">
-                          {priceFormatter.format(
-                            priceCalculator(
-                              bestDeal.price,
-                              bestDeal.coupon?.availability
-                                ? bestDeal.coupon.discount
-                                : undefined,
-                              bestDeal.cashback?.value,
-                            ) / 100,
-                          )}
+                          {priceFormatter.format(price / 100)}
                         </strong>{' '}
                         <span className="text-xs text-muted-foreground sm:text-sm">
-                          à vista{' '}
+                          {onlyInstallments ? 'à prazo' : 'à vista'}{' '}
                         </span>
                       </p>
 
                       {!!bestDeal.installments &&
                         !!bestDeal.totalInstallmentPrice && (
                           <span className="text-xs text-muted-foreground sm:text-sm">
-                            até{' '}
+                            {onlyInstallments ? 'até' : 'ou'}{' '}
                             <strong className="text-sm">
                               {bestDeal.installments}x
                             </strong>{' '}
