@@ -7,32 +7,18 @@ import * as React from 'react'
 import { useQueryString } from '@/hooks/use-query-string'
 import { type Category } from '@/types'
 import { Label } from '../ui/label'
+import { ScrollArea, ScrollBar } from '../ui/scroll-area'
 import { Switch } from '../ui/switch'
 import { Toggle } from '../ui/toggle'
-import { ScrollArea, ScrollBar } from '../ui/scroll-area'
 
-const GET_CATEGORIES = gql`
-  query GetCategories {
-    categories {
-      slug
+const GET_CATEGORIES_RANK = gql`
+  query getCategoriesRank {
+    salesCategoryRank {
       name
-      id
+      slug
     }
   }
 `
-
-const CHOSEN_CATEGORIES = [
-  'notebooks',
-  'mouses',
-  'teclados',
-  'headsets',
-  'microfones',
-  'controles',
-  'monitores',
-  'processadores',
-  'cadeiras',
-  'placas de vídeo',
-]
 
 export function SalesNavSimplified() {
   const [isPending, startTransition] = React.useTransition()
@@ -45,12 +31,10 @@ export function SalesNavSimplified() {
   const { createQueryString } = useQueryString()
 
   const { data } = useSuspenseQuery<{
-    categories: Pick<Category, 'id' | 'name' | 'slug'>[]
-  }>(GET_CATEGORIES)
+    salesCategoryRank: Pick<Category, 'name' | 'slug'>[]
+  }>(GET_CATEGORIES_RANK)
 
-  const categories = data?.categories?.filter((category) =>
-    CHOSEN_CATEGORIES.includes(category.name.toLowerCase()),
-  )
+  const categories = data.salesCategoryRank
 
   return (
     <div className="flex w-full flex-col justify-between gap-4 sm:flex-row">
@@ -59,7 +43,7 @@ export function SalesNavSimplified() {
           <div className="flex w-fit gap-x-2 ">
             {categories.map((category) => (
               <Toggle
-                key={category.id}
+                key={category.slug}
                 variant={'outline'}
                 size={'sm'}
                 className="min-w-max"
