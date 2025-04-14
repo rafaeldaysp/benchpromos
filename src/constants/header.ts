@@ -71,11 +71,11 @@ export function headerOptions({ categories }: HeaderOptionsProps) {
       slug: 'recommendations',
       icon: Icons.StarFilled,
     },
-    {
-      title: 'Awards',
-      slug: 'awards',
-      icon: Icons.Award,
-    },
+    // {
+    //   title: 'Awards',
+    //   slug: 'awards',
+    //   icon: Icons.Award,
+    // },
   ]
 
   options.push(...moreHeaders)
