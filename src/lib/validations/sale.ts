@@ -24,5 +24,6 @@ export const saleSchema = z.object({
   coupon: z.string().optional(),
   couponId: z.string().optional(),
   cashbackId: z.string().optional(),
+  discountIds: z.array(z.string()).optional(),
   sponsored: z.boolean(),
 })

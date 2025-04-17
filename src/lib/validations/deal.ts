@@ -10,6 +10,7 @@ export const dealSchema = z.object({
   sku: z.string().optional(),
   couponId: z.string().optional(),
   cashbackId: z.string().optional(),
+  discountIds: z.array(z.string()).optional(),
 })
 
 export const dealsLinkSchema = z.object({

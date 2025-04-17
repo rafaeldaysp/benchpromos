@@ -18,6 +18,7 @@ import {
   type Category,
   type Coupon,
   type Deal,
+  type Discount,
   type Product,
   type Retailer,
 } from '@/types'
@@ -171,6 +172,12 @@ const GET_PRODUCT_DEAL = gql`
           video
           affiliatedUrl
         }
+        discounts {
+          id
+          discount
+          label
+          description
+        }
       }
     }
   }
@@ -184,6 +191,7 @@ async function ProductBlogCard({ slug }: { slug: string }) {
         retailer: Retailer
         coupon: Coupon
         cashback: Cashback
+        discounts: Discount[]
       })[]
     }
   }>({

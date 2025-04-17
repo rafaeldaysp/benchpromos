@@ -10,6 +10,7 @@ import type {
   Category,
   Coupon,
   Deal,
+  Discount,
   Filter,
   Product,
   Retailer,
@@ -50,6 +51,12 @@ const GET_PRODUCTS = gql`
           cashback {
             value
             provider
+          }
+          discounts {
+            id
+            discount
+            label
+            description
           }
         }
       }
@@ -210,7 +217,9 @@ export default async function ProductsPage({
           'price' | 'availability' | 'installments' | 'totalInstallmentPrice'
         > & { retailer: Pick<Retailer, 'name'> } & {
           coupon: Pick<Coupon, 'code' | 'discount' | 'availability'>
-        } & { cashback: Pick<Cashback, 'value' | 'provider'> })[]
+        } & { cashback: Pick<Cashback, 'value' | 'provider'> } & {
+          discounts: Discount[]
+        })[]
       })[]
     }
   }>({

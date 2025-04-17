@@ -7,6 +7,7 @@ import type {
   Category,
   Coupon,
   Deal,
+  Discount,
   Product,
   Retailer,
   Sale,
@@ -42,6 +43,12 @@ const GET_DEALS = gql`
         discount
         code
       }
+      discounts {
+        id
+        label
+        discount
+        retailerId
+      }
       product {
         id
         name
@@ -72,6 +79,7 @@ export default async function DealsDashboardPage() {
     deals: (Deal & {
       cashback?: Pick<Cashback, 'value' | 'provider'>
       coupon?: Pick<Coupon, 'discount' | 'code'>
+      discounts: Discount[]
       product: Pick<Product, 'id' | 'name' | 'imageUrl'> & {
         category: Pick<Category, 'id' | 'name'>
       }

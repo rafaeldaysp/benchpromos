@@ -29,7 +29,14 @@ import {
 } from '@/components/ui/popover'
 import { Separator } from '@/components/ui/separator'
 import { cn } from '@/lib/utils'
-import type { Cashback, Category, Coupon, Product, Sale } from '@/types'
+import type {
+  Cashback,
+  Category,
+  Coupon,
+  Discount,
+  Product,
+  Sale,
+} from '@/types'
 import { couponFormatter, priceFormatter } from '@/utils/formatter'
 import { priceCalculator } from '@/utils/price-calculator'
 
@@ -52,6 +59,12 @@ const GET_SALE = gql`
         provider
         video
         affiliatedUrl
+      }
+      discounts {
+        id
+        discount
+        label
+        description
       }
       product {
         reviewUrl
@@ -89,6 +102,7 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
     sale: Sale & {
       commentsCount: number
       cashback?: Omit<Cashback, 'id' | 'url'>
+      discounts: Discount[]
       category: Pick<Category, 'slug'>
       reactions: { content: string; userId: string }[]
       product: Product
@@ -111,22 +125,28 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
     sale.price,
     sale.couponSchema?.discount,
     sale.cashback?.value,
+    sale.discounts.map((discount) => discount.discount),
   )
 
   const salePriceWithouCashbackCents = priceCalculator(
     sale.price,
     sale.couponSchema?.discount,
+    undefined,
+    sale.discounts.map((discount) => discount.discount),
   )
 
   const saleInstallmentPriceCents = priceCalculator(
     sale.totalInstallmentPrice,
     sale.couponSchema?.discount,
     sale.cashback?.value,
+    sale.discounts.map((discount) => discount.discount),
   )
 
   const saleInstallmentPriceWithoutCashbackCents = priceCalculator(
     sale.totalInstallmentPrice,
     sale.couponSchema?.discount,
+    undefined,
+    sale.discounts.map((discount) => discount.discount),
   )
 
   function handleShare() {
@@ -217,6 +237,20 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
                     )}
                   </strong>
                 </span>
+              )}
+
+              {sale.discounts.length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                  {sale.discounts.map((discount) => (
+                    <Badge
+                      key={discount.id}
+                      variant="success"
+                      className="uppercase"
+                    >
+                      {couponFormatter(discount.discount)} {discount.label}
+                    </Badge>
+                  ))}
+                </div>
               )}
 
               {sale.cashback && (
