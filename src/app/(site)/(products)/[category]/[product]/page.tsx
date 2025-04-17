@@ -30,7 +30,14 @@ import { Separator } from '@/components/ui/separator'
 import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table'
 import { siteConfig } from '@/config/site'
 import { cn } from '@/lib/utils'
-import type { Cashback, Coupon, Deal, Product, Retailer } from '@/types'
+import type {
+  Cashback,
+  Coupon,
+  Deal,
+  Discount,
+  Product,
+  Retailer,
+} from '@/types'
 import { couponFormatter, priceFormatter } from '@/utils/formatter'
 import { priceCalculator } from '@/utils/price-calculator'
 import { PriceComponent } from '@/components/price-component'
@@ -73,6 +80,13 @@ const GET_PRODUCT = gql`
           discount
           code
         }
+        discounts {
+          id
+          discount
+          label
+          description
+          retailerId
+        }
         cashback {
           value
           provider
@@ -108,6 +122,12 @@ const GET_PRODUCT = gql`
           affiliatedUrl
         }
         saleId
+        discounts {
+          id
+          discount
+          label
+          description
+        }
       }
     }
   }
@@ -194,6 +214,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
         retailer: Retailer
         coupon: Coupon
         cashback: Cashback
+        discounts: Discount[]
       })[]
     }
     productWithInstallmentDeals: Product & {
@@ -201,6 +222,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
         retailer: Retailer
         coupon: Coupon
         cashback: Cashback
+        discounts: Discount[]
       })[]
     }
   }>({
@@ -328,6 +350,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                         ? bestDeal.coupon.discount
                         : undefined,
                       bestDeal.cashback?.value,
+                      bestDeal.discounts.map((discount) => discount.discount),
                     )
                   : null
               }
@@ -339,6 +362,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                         ? bestDeal.coupon.discount
                         : undefined,
                       bestDeal.cashback?.value,
+                      bestDeal.discounts.map((discount) => discount.discount),
                     )
                   : null
               }
@@ -415,6 +439,9 @@ export default async function ProductPage({ params }: ProductPageProps) {
                                               ? deal.coupon.discount
                                               : undefined,
                                             deal.cashback?.value,
+                                            deal.discounts.map(
+                                              (discount) => discount.discount,
+                                            ),
                                           ) / 100,
                                         )}
                                       </strong>{' '}
@@ -434,6 +461,10 @@ export default async function ProductPage({ params }: ProductPageProps) {
                                                   ? deal.coupon.discount
                                                   : undefined,
                                                 deal.cashback?.value,
+                                                deal.discounts.map(
+                                                  (discount) =>
+                                                    discount.discount,
+                                                ),
                                               ) / 100,
                                             )}
                                           </strong>{' '}
@@ -450,6 +481,10 @@ export default async function ProductPage({ params }: ProductPageProps) {
                                                   ? deal.coupon.discount
                                                   : undefined,
                                                 deal.cashback?.value,
+                                                deal.discounts.map(
+                                                  (discount) =>
+                                                    discount.discount,
+                                                ),
                                               ) /
                                                 (100 * deal.installments),
                                             )}

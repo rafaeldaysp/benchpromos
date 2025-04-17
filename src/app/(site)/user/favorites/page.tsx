@@ -10,6 +10,7 @@ import type {
   Category,
   Coupon,
   Deal,
+  Discount,
   Product,
   Retailer,
 } from '@/types'
@@ -44,6 +45,12 @@ const GET_USER_FAVORITED_PRODUCTS = gql`
             value
             provider
           }
+          discounts {
+            id
+            discount
+            label
+            description
+          }
           saleId
         }
       }
@@ -68,7 +75,9 @@ export default async function AlertsPage() {
           | 'saleId'
         > & { retailer: Pick<Retailer, 'name'> } & {
           coupon: Pick<Coupon, 'code' | 'discount' | 'availability'>
-        } & { cashback: Pick<Cashback, 'value' | 'provider'> })[]
+        } & { cashback: Pick<Cashback, 'value' | 'provider'> } & {
+          discounts: Discount[]
+        })[]
       })[]
     }
   }>({

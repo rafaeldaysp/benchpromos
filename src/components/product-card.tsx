@@ -15,7 +15,7 @@ import { cn } from '@/lib/utils'
 import { priceFormatter } from '@/utils/formatter'
 import { priceCalculator } from '@/utils/price-calculator'
 import { buttonVariants } from './ui/button'
-
+import { type Discount } from '@/types'
 interface ProductCardProps extends React.HTMLAttributes<HTMLDivElement> {
   product: {
     name: string
@@ -43,6 +43,7 @@ interface ProductCardProps extends React.HTMLAttributes<HTMLDivElement> {
         value: number
         provider: string
       }
+      discounts: Discount[]
     }[]
   }
   onlyInstallments?: boolean
@@ -60,6 +61,7 @@ export function ProductCard({
     bestDeal?.price,
     bestDeal?.coupon?.availability ? bestDeal.coupon.discount : undefined,
     bestDeal?.cashback?.value,
+    bestDeal?.discounts.map((discount) => discount.discount),
   )
 
   if (onlyInstallments && bestDeal?.installments) {
@@ -67,6 +69,7 @@ export function ProductCard({
       bestDeal?.totalInstallmentPrice,
       bestDeal?.coupon?.availability ? bestDeal.coupon.discount : undefined,
       bestDeal?.cashback?.value,
+      bestDeal?.discounts.map((discount) => discount.discount),
     )
   }
 
@@ -159,6 +162,9 @@ export function ProductCard({
                                     ? bestDeal.coupon.discount
                                     : undefined,
                                   bestDeal.cashback?.value,
+                                  bestDeal.discounts.map(
+                                    (discount) => discount.discount,
+                                  ),
                                 ) /
                                   (100 * bestDeal.installments),
                               )}

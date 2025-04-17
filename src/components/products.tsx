@@ -33,6 +33,7 @@ import type {
   Category,
   Coupon,
   Deal,
+  Discount,
   Filter,
   Product,
   Retailer,
@@ -52,7 +53,9 @@ interface ProductsProps {
       'price' | 'availability' | 'installments' | 'totalInstallmentPrice'
     > & { retailer: Pick<Retailer, 'name'> } & {
       coupon: Pick<Coupon, 'code' | 'discount' | 'availability'>
-    } & { cashback: Pick<Cashback, 'value' | 'provider'> })[]
+    } & { cashback: Pick<Cashback, 'value' | 'provider'> } & {
+      discounts: Discount[]
+    })[]
   })[]
   pageCount: number
   productCount: number

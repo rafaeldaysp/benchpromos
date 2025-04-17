@@ -36,8 +36,15 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
-import type { Cashback, Category, Product, Sale } from '@/types'
-import { priceFormatter } from '@/utils/formatter'
+import type {
+  Cashback,
+  Category,
+  Coupon,
+  Discount,
+  Product,
+  Sale,
+} from '@/types'
+import { couponFormatter, priceFormatter } from '@/utils/formatter'
 import { priceCalculator } from '@/utils/price-calculator'
 
 dayjs.extend(relativeTime)
@@ -59,6 +66,8 @@ export function SalesMain() {
       }
       category: Pick<Category, 'id' | 'name'>
       cashback?: Cashback
+      discounts?: Discount[]
+      couponSchema?: Coupon
     }
   >()
   const [selectedProduct, setSelectedProduct] = React.useState<
@@ -143,10 +152,16 @@ export function SalesMain() {
                 {priceFormatter.format(
                   priceCalculator(
                     selectedSale.price,
-                    undefined,
+                    selectedSale.couponSchema?.discount,
                     selectedSale.cashback?.value,
                   ) / 100,
                 )}
+                {selectedSale.discounts?.map((discount) => (
+                  <span key={discount.id}>
+                    {' '}
+                    • {couponFormatter(discount.discount)} {discount.label}
+                  </span>
+                ))}
               </span>
             </DashboardItemCard.Content>
 
@@ -241,13 +256,22 @@ export function SalesMain() {
                       {priceFormatter.format(
                         priceCalculator(
                           sale.price,
-                          undefined,
+                          sale.couponSchema?.discount,
                           sale.cashback?.value,
                         ) / 100,
                       )}
                       {sale.coupon && ` • ${sale.coupon}`}
+                      {sale.couponSchema && ` • ${sale.couponSchema.code}`}
                       {sale.cashback &&
                         ` • ${sale.cashback.value}% ${sale.cashback.provider}`}
+                      {sale.discounts &&
+                        sale.discounts.map((discount) => (
+                          <span key={discount.id}>
+                            {' '}
+                            • {couponFormatter(discount.discount)}{' '}
+                            {discount.label}
+                          </span>
+                        ))}
                     </span>
                   </DashboardItemCard.Content>
 

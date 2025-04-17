@@ -2,7 +2,12 @@
 
 import { gql, useSuspenseQuery } from '@apollo/client'
 
-import { type Cashback, type Coupon, type Product } from '@/types'
+import {
+  type Cashback,
+  type Coupon,
+  type Discount,
+  type Product,
+} from '@/types'
 import { ProductAlertCard } from './product-alert-card'
 
 const GET_PRODUCTS_ALERTS = gql`
@@ -25,6 +30,12 @@ const GET_PRODUCTS_ALERTS = gql`
             cashback {
               value
             }
+            discounts {
+              id
+              discount
+              label
+              description
+            }
             saleId
           }
         }
@@ -46,6 +57,7 @@ export function ProductsAlerts({ token }: ProductsAlertsProps) {
             availability: boolean
             coupon: Coupon
             cashback: Cashback
+            discounts: Discount[]
           }[]
         }
       }[]

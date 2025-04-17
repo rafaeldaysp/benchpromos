@@ -7,7 +7,14 @@ import { Icons } from '@/components/icons'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { env } from '@/env.mjs'
 import { cn } from '@/lib/utils'
-import type { Cashback, Category, Product, Sale } from '@/types'
+import type {
+  Cashback,
+  Category,
+  Discount,
+  Coupon,
+  Product,
+  Sale,
+} from '@/types'
 import { removeNullValues } from '@/utils'
 import { Button } from './ui/button'
 import { Input } from './ui/input'
@@ -64,6 +71,18 @@ const GET_SALES = gql`
           value
           url
         }
+        discounts {
+          id
+          label
+          discount
+          retailerId
+        }
+        couponSchema {
+          id
+          code
+          discount
+          retailerId
+        }
         couponId
         retailerId
       }
@@ -79,6 +98,8 @@ interface DashboardSalesProps {
       }
       category: Pick<Category, 'id' | 'name'>
       cashback?: Cashback
+      discounts?: Discount[]
+      couponSchema?: Coupon
     })[]
   }) => React.ReactNode
 }
@@ -97,6 +118,8 @@ export function DashboardSales({ children }: DashboardSalesProps) {
         }
         category: Pick<Category, 'id' | 'name'>
         cashback?: Cashback
+        discounts?: Discount[]
+        couponSchema?: Coupon
       })[]
     }
   }>(GET_SALES, {

@@ -6,7 +6,12 @@ import { AlertPrice } from '@/components/alert-price'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardFooter, CardTitle } from '@/components/ui/card'
 import { Dialog, DialogTrigger } from '@/components/ui/dialog'
-import { type Cashback, type Coupon, type Product } from '@/types'
+import {
+  type Discount,
+  type Cashback,
+  type Coupon,
+  type Product,
+} from '@/types'
 import { priceFormatter } from '@/utils/formatter'
 import { priceCalculator } from '@/utils/price-calculator'
 
@@ -18,6 +23,7 @@ interface UserProductAlertCard {
       availability: boolean
       coupon: Coupon
       cashback: Cashback
+      discounts: Discount[]
     }[]
   }
 }
@@ -61,6 +67,9 @@ export function ProductAlertCard({
                               ? bestDeal.coupon.discount
                               : undefined,
                             bestDeal.cashback?.value,
+                            bestDeal.discounts.map(
+                              (discount) => discount.discount,
+                            ),
                           ) / 100,
                         )}
                       </strong>

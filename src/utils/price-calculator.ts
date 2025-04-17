@@ -2,17 +2,27 @@ export const priceCalculator = (
   fullPrice?: number,
   couponDiscountStr?: string,
   cashbackPercent?: number,
+  discountValues?: string[],
 ) => {
   if (!fullPrice) return 0
+  let price = fullPrice
   let couponDiscount = 0
   if (couponDiscountStr)
     couponDiscount = couponDiscountStr.includes('%')
       ? (parseFloat(couponDiscountStr.split('%', 1)[0]) / 100) * fullPrice
       : parseFloat(couponDiscountStr) * 100
 
-  let cashbackDiscount = 0
-  if (cashbackPercent)
-    cashbackDiscount = ((fullPrice - couponDiscount) * cashbackPercent) / 100
+  price = fullPrice - couponDiscount
 
-  return fullPrice - couponDiscount - cashbackDiscount
+  discountValues?.forEach((discount) => {
+    if (discount.includes('%')) {
+      price -= (parseFloat(discount.split('%', 1)[0]) / 100) * price
+    } else {
+      price -= parseFloat(discount) * 100
+    }
+  })
+
+  if (cashbackPercent) price -= (price * cashbackPercent) / 100
+
+  return Math.round(price)
 }

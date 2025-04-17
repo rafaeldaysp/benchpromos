@@ -66,6 +66,7 @@ import type {
   Category,
   Coupon,
   Deal,
+  Discount,
   Product,
   Retailer,
   Sale,
@@ -88,6 +89,7 @@ interface DealsMainProps {
   deals: (Deal & {
     cashback?: Pick<Cashback, 'value' | 'provider'>
     coupon?: Pick<Coupon, 'discount' | 'code'>
+    discounts: Discount[]
     product: Pick<Product, 'id' | 'name' | 'imageUrl'> & {
       category: Pick<Category, 'id' | 'name'>
     }
@@ -377,6 +379,7 @@ export function DealsMain({ deals, retailers, categories }: DealsMainProps) {
                             deal.price,
                             deal.coupon?.discount,
                             deal.cashback?.value,
+                            deal.discounts.map((discount) => discount.discount),
                           ) / 100,
                         )}
                         {deal.coupon &&
@@ -385,6 +388,11 @@ export function DealsMain({ deals, retailers, categories }: DealsMainProps) {
                           }`}
                         {deal.cashback &&
                           ` • ${deal.cashback.value}% ${deal.cashback.provider}`}
+                        {deal.discounts.map((discount) => (
+                          <span key={discount.id}>
+                            {` • ${discount.label} ${discount.description}`}
+                          </span>
+                        ))}
                       </span>
                     ) : (
                       <strong className="text-destructive">Indisponível</strong>
