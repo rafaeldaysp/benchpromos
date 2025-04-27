@@ -21,6 +21,7 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { type Discount } from '@/types'
 import { couponFormatter } from '@/utils/formatter'
+import { ScrollArea } from './ui/scroll-area'
 
 interface DiscountSelectorProps {
   discounts: Discount[]
@@ -96,29 +97,32 @@ export function DiscountSelector({
             <CommandList>
               <CommandEmpty>Nenhum desconto encontrado.</CommandEmpty>
               <CommandGroup>
-                {discounts.map((discount) => {
-                  const isSelected = selectedDiscounts.some(
-                    (item) => item.id === discount.id,
-                  )
-                  return (
-                    <CommandItem
-                      key={discount.id}
-                      value={discount.id}
-                      onSelect={() => handleSelect(discount)}
-                    >
-                      <Check
-                        className={cn(
-                          'mr-2 h-4 w-4',
-                          isSelected ? 'opacity-100' : 'opacity-0',
-                        )}
-                      />
-                      <span className="flex-1">{discount.label}</span>
-                      <span className="text-sm text-muted-foreground">
-                        {couponFormatter(discount.discount)}
-                      </span>
-                    </CommandItem>
-                  )
-                })}
+                <ScrollArea className="h-80">
+                  {discounts.map((discount) => {
+                    const isSelected = selectedDiscounts.some(
+                      (item) => item.id === discount.id,
+                    )
+                    return (
+                      <CommandItem
+                        key={discount.id}
+                        value={discount.id}
+                        onSelect={() => handleSelect(discount)}
+                        className="mr-1 cursor-pointer"
+                      >
+                        <Check
+                          className={cn(
+                            'mr-2 h-4 w-4',
+                            isSelected ? 'opacity-100' : 'opacity-0',
+                          )}
+                        />
+                        <span className="flex-1">{discount.label}</span>
+                        <span className="text-sm text-muted-foreground">
+                          {couponFormatter(discount.discount)}
+                        </span>
+                      </CommandItem>
+                    )
+                  })}
+                </ScrollArea>
               </CommandGroup>
             </CommandList>
           </Command>
