@@ -1,25 +1,39 @@
-import { type Cashback, type Coupon, type Deal, type Retailer } from '@/types'
+import { cn } from '@/lib/utils'
+import {
+  type Cashback,
+  type Coupon,
+  type Deal,
+  type Discount,
+  type Retailer,
+} from '@/types'
 import { couponFormatter, priceFormatter } from '@/utils/formatter'
 import { priceCalculator } from '@/utils/price-calculator'
 import { CashbackModal } from './cashback-modal'
 import { CouponModal } from './coupon-modal'
 import { Icons } from './icons'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs'
-import { cn } from '@/lib/utils'
-import { buttonVariants } from './ui/button'
 import { Badge } from './ui/badge'
+import { buttonVariants } from './ui/button'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from './ui/tooltip'
 
 interface PriceComponentProps {
   bestDeal: Deal & {
     cashback: Cashback
     coupon: Coupon
     retailer: Retailer
+    discounts: Discount[]
   }
   bestInstallmentDeal:
     | (Deal & {
         cashback: Cashback
         coupon: Coupon
         retailer: Retailer
+        discounts: Discount[]
       })
     | null
     | undefined
@@ -64,11 +78,34 @@ export function PriceComponent({
                     bestDeal.coupon?.availability
                       ? bestDeal.coupon.discount
                       : undefined,
+                    undefined,
+                    bestDeal.discounts.map((discount) => discount.discount),
                   ) / 100,
                 )}
               </strong>{' '}
               <span className="text-muted-foreground">à vista </span>
             </p>
+
+            {bestDeal.discounts.length > 0 && (
+              <div className="flex flex-wrap gap-2 pb-1">
+                {bestDeal.discounts.map((discount) => (
+                  <TooltipProvider key={discount.id} delayDuration={100}>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <Badge variant="success" className="uppercase">
+                          {couponFormatter(discount.discount)} {discount.label}
+                        </Badge>
+                      </TooltipTrigger>
+                      {discount.description && (
+                        <TooltipContent>
+                          <p>{discount.description}</p>
+                        </TooltipContent>
+                      )}
+                    </Tooltip>
+                  </TooltipProvider>
+                ))}
+              </div>
+            )}
 
             {bestDeal.cashback && (
               <div className="flex flex-col items-start rounded-xl bg-auxiliary/20 px-4 py-2 text-sm text-muted-foreground">
@@ -86,6 +123,9 @@ export function PriceComponent({
                             ? bestDeal.coupon.discount
                             : undefined,
                           bestDeal.cashback?.value,
+                          bestDeal.discounts.map(
+                            (discount) => discount.discount,
+                          ),
                         ) / 100,
                       )}
                     </strong>{' '}
@@ -155,6 +195,10 @@ export function PriceComponent({
                         bestInstallmentDeal.coupon?.availability
                           ? bestInstallmentDeal.coupon.discount
                           : undefined,
+                        undefined,
+                        bestInstallmentDeal.discounts.map(
+                          (discount) => discount.discount,
+                        ),
                       ) / 100,
                     )}
                   </strong>{' '}
@@ -167,6 +211,10 @@ export function PriceComponent({
                           bestInstallmentDeal.coupon?.availability
                             ? bestInstallmentDeal.coupon.discount
                             : undefined,
+                          undefined,
+                          bestInstallmentDeal.discounts.map(
+                            (discount) => discount.discount,
+                          ),
                         ) /
                           (100 * bestInstallmentDeal.installments),
                       )}
@@ -190,6 +238,9 @@ export function PriceComponent({
                                 ? bestInstallmentDeal.coupon.discount
                                 : undefined,
                               bestInstallmentDeal.cashback?.value,
+                              bestInstallmentDeal.discounts.map(
+                                (discount) => discount.discount,
+                              ),
                             ) / 100,
                           )}
                         </strong>{' '}
@@ -205,6 +256,9 @@ export function PriceComponent({
                                   ? bestInstallmentDeal.coupon.discount
                                   : undefined,
                                 bestInstallmentDeal.cashback?.value,
+                                bestInstallmentDeal.discounts.map(
+                                  (discount) => discount.discount,
+                                ),
                               ) /
                                 (100 * bestInstallmentDeal.installments),
                             )}

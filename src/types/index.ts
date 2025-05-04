@@ -47,6 +47,15 @@ export type Coupon = {
   updatedAt: string
 }
 
+export type Discount = {
+  id: string
+  discount: string
+  retailerId: string
+  description?: string
+  label?: string
+  updatedAt: string
+}
+
 export type RecommendedProduct = {
   id: string
   minPrice: number

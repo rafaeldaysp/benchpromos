@@ -40,7 +40,7 @@ import { useFormStore } from '@/hooks/use-form-store'
 import { useMediaQuery } from '@/hooks/use-media-query'
 import { useSaleExpired } from '@/hooks/use-toggle-sale-expired'
 import { cn } from '@/lib/utils'
-import type { Cashback, Coupon } from '@/types'
+import type { Cashback, Coupon, Discount } from '@/types'
 import { removeNullValues } from '@/utils'
 import { priceFormatter } from '@/utils/formatter'
 import { priceCalculator } from '@/utils/price-calculator'
@@ -89,6 +89,7 @@ interface SaleCardProps extends React.HTMLAttributes<HTMLDivElement> {
     label?: string
     coupon?: string
     cashback?: Omit<Cashback, 'id' | 'url'>
+    discounts: Discount[]
     createdAt: string
     productSlug?: string
     category: {
@@ -136,6 +137,7 @@ export function SaleCard({
     sale.price,
     sale.couponSchema?.discount,
     sale.cashback?.value,
+    sale.discounts.map((discount) => discount.discount),
   )
 
   const salePriceWithouCashbackCents = priceCalculator(
@@ -147,6 +149,7 @@ export function SaleCard({
     sale.totalInstallmentPrice,
     sale.couponSchema?.discount,
     sale.cashback?.value,
+    sale.discounts.map((discount) => discount.discount),
   )
 
   const saleInstallmentPriceWithoutCashbackCents = priceCalculator(
@@ -345,7 +348,10 @@ export function SaleCard({
 
                           <CouponModal
                             className="hidden sm:inline-flex"
-                            coupon={{ code: sale.couponSchema.code }}
+                            coupon={{
+                              code: sale.couponSchema.code,
+                              description: sale.couponSchema.description,
+                            }}
                           />
                         </section>
                       )}

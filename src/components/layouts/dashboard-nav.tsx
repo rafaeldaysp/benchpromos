@@ -40,6 +40,10 @@ const sidebarNavItems = [
     href: '/dashboard/cashbacks',
   },
   {
+    title: 'Descontos',
+    href: '/dashboard/discounts',
+  },
+  {
     title: 'Usuários',
     href: '/dashboard/users',
   },

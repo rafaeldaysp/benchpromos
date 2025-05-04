@@ -46,8 +46,6 @@ export default async function ProductsDashboardPage() {
 
   const categories = categoriesData.categories
 
-  console.log(categories)
-
   return (
     <div className="space-y-6">
       <div>

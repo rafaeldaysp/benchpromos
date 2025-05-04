@@ -34,10 +34,12 @@ import {
 import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
 import { dealSchema } from '@/lib/validations/deal'
-import type { Cashback, Coupon } from '@/types'
+import type { Cashback, Coupon, Discount } from '@/types'
 import { couponFormatter } from '@/utils/formatter'
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
 import { ScrollArea } from '../ui/scroll-area'
+import { DiscountFormDialog } from './discount-form'
+import { DiscountSelector } from '../discount-selector'
 
 const CREATE_DEAL = gql`
   mutation CreateDeal($input: CreateDealInput!) {
@@ -67,6 +69,12 @@ const GET_COUPONS_AND_CASHBACKS_BY_RETAILER = gql`
       provider
       value
     }
+    discounts(retailerId: $retailerId) {
+      id
+      label
+      discount
+      retailerId
+    }
   }
 `
 
@@ -82,7 +90,9 @@ interface DealFormProps {
   mode?: 'create' | 'update'
   productId: string
   retailerId: string
-  deal?: { id?: string } & Partial<Inputs>
+  deal?: { id?: string } & Partial<Inputs> & {
+      discounts?: Discount[]
+    }
 }
 
 export function DealForm({
@@ -104,6 +114,7 @@ export function DealForm({
   const { data } = useQuery<{
     coupons: Pick<Coupon, 'id' | 'code' | 'discount'>[]
     cashbacks: Pick<Cashback, 'id' | 'provider' | 'value'>[]
+    discounts: Discount[]
   }>(GET_COUPONS_AND_CASHBACKS_BY_RETAILER, {
     fetchPolicy: 'network-only',
     variables: {
@@ -128,6 +139,23 @@ export function DealForm({
 
     return cashbackItems
   }, [data])
+
+  const discountItems = React.useMemo(() => {
+    const discountItems = data?.discounts.map((discount) => ({
+      label: `${discount.discount} ${discount.label}`,
+      value: discount.id,
+    }))
+
+    return discountItems
+  }, [data])
+
+  const [selectedDiscounts, setSelectedDiscounts] = React.useState<Discount[]>(
+    deal?.discounts ?? [],
+  )
+
+  function handleDiscountChange(discountIds: string[]) {
+    form.setValue('discountIds', discountIds)
+  }
 
   const [mutateDeal, { loading: isLoading }] = useMutation(
     mode === 'create' ? CREATE_DEAL : UPDATE_DEAL,
@@ -315,6 +343,31 @@ export function DealForm({
                   </ScrollArea>
                 </SelectContent>
               </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="discountIds"
+          render={() => (
+            <FormItem>
+              <FormLabel>Descontos</FormLabel>
+              <div className="flex w-full gap-2">
+                <FormControl className="w-full">
+                  <DiscountSelector
+                    discounts={data?.discounts ?? []}
+                    onSelectionChange={handleDiscountChange}
+                    selectedDiscounts={selectedDiscounts}
+                    setSelectedDiscounts={setSelectedDiscounts}
+                  />
+                </FormControl>
+                <DiscountFormDialog />
+              </div>
+              <FormDescription>
+                Selecione todos os descontos que se aplicam a este produto.
+              </FormDescription>
               <FormMessage />
             </FormItem>
           )}

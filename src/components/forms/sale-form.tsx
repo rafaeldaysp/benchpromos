@@ -34,7 +34,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
 import { saleSchema } from '@/lib/validations/sale'
-import type { Cashback, Category, Coupon, Retailer } from '@/types'
+import type { Cashback, Category, Coupon, Discount, Retailer } from '@/types'
 import { couponFormatter } from '@/utils/formatter'
 import { Checkbox } from '../ui/checkbox'
 import { Label } from '../ui/label'
@@ -44,6 +44,8 @@ import { CashbackFormDialog } from './cashback-form'
 import { CategoryFormDialog } from './category-form'
 import { CouponFormDialog } from './coupon-form'
 import { RetailerFormDialog } from './retailer-form'
+import { DiscountSelector } from '../discount-selector'
+import { DiscountFormDialog } from './discount-form'
 
 const saleLabels = [
   'LANÇAMENTO',
@@ -67,6 +69,12 @@ const UPDATE_SALE = gql`
   mutation ($input: UpdateSaleInput!) {
     updateSale(updateSaleInput: $input) {
       id
+      discounts {
+        id
+        label
+        discount
+        retailerId
+      }
     }
   }
 `
@@ -95,6 +103,12 @@ const GET_DATA = gql`
         name
       }
     }
+    discounts {
+      id
+      label
+      discount
+      retailerId
+    }
 
     retailers {
       id
@@ -120,7 +134,9 @@ const defaultValues: Partial<Inputs> = {
 interface SaleFormProps {
   mode?: 'create' | 'update'
   productSlug?: string | null
-  sale?: { id?: string } & Partial<Inputs>
+  sale?: { id?: string } & Partial<Inputs> & {
+      discounts?: Discount[]
+    }
 }
 
 export function SaleForm({
@@ -146,6 +162,7 @@ export function SaleForm({
     coupons: (Pick<Coupon, 'id' | 'code' | 'discount'> & {
       retailer: Retailer
     })[]
+    discounts: Discount[]
     retailers: { id: string; name: string }[]
   }>(GET_DATA, {
     fetchPolicy: 'network-only',
@@ -157,6 +174,13 @@ export function SaleForm({
   })
 
   const [createDealSwitch, setCreateDealSwitch] = React.useState(false)
+  const [selectedDiscounts, setSelectedDiscounts] = React.useState<Discount[]>(
+    sale?.discounts ?? [],
+  )
+
+  function handleDiscountChange(discountIds: string[]) {
+    form.setValue('discountIds', discountIds)
+  }
 
   const categoryItems = React.useMemo(() => {
     const categoryItems = data?.categories.map((category) => ({
@@ -195,6 +219,15 @@ export function SaleForm({
       }))
   }
 
+  function getDiscountsByRetailerId() {
+    return (
+      data?.discounts.filter(
+        (discount) =>
+          !selectedRetailerId || selectedRetailerId == discount.retailerId,
+      ) ?? []
+    )
+  }
+
   const retailerItems = React.useMemo(() => {
     const retailerItems = data?.retailers.map((retailer) => ({
       label: retailer.name,
@@ -203,6 +236,13 @@ export function SaleForm({
 
     return retailerItems
   }, [data])
+
+  function onRetailerChange(_retailerId: string) {
+    form.setValue('discountIds', [])
+    form.setValue('couponId', 'none')
+    form.setValue('cashbackId', 'none')
+    setSelectedDiscounts([])
+  }
 
   const [mutateSale, { loading: isLoading }] = useMutation(
     mode === 'create' ? CREATE_SALE : UPDATE_SALE,
@@ -244,6 +284,7 @@ export function SaleForm({
           label: label === 'none' ? null : label,
           cashbackId: cashbackId === 'none' ? null : cashbackId,
           couponId: couponId === 'none' ? null : couponId,
+          discountIds: selectedDiscounts.map((discount) => discount.id),
           createDeal: createDealSwitch,
           ...data,
         },
@@ -381,8 +422,7 @@ export function SaleForm({
                 <Select
                   onValueChange={(e) => {
                     field.onChange(e)
-                    form.setValue('couponId', 'none')
-                    form.setValue('cashbackId', 'none')
+                    onRetailerChange(e)
                   }}
                   defaultValue={field.value}
                   disabled={isSaleFormDataLoading}
@@ -617,6 +657,34 @@ export function SaleForm({
                 </Select>
                 <CashbackFormDialog />
               </div>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="discountIds"
+          render={() => (
+            <FormItem>
+              <FormLabel>Descontos</FormLabel>
+              <div className="flex w-full gap-2">
+                <FormControl className="w-full">
+                  <DiscountSelector
+                    discounts={getDiscountsByRetailerId()}
+                    onSelectionChange={handleDiscountChange}
+                    disabled={
+                      !form.getValues('retailerId') || isSaleFormDataLoading
+                    }
+                    selectedDiscounts={selectedDiscounts}
+                    setSelectedDiscounts={setSelectedDiscounts}
+                  />
+                </FormControl>
+                <DiscountFormDialog />
+              </div>
+              <FormDescription>
+                Selecione todos os descontos que se aplicam a este produto.
+              </FormDescription>
               <FormMessage />
             </FormItem>
           )}

@@ -93,6 +93,7 @@ export function ProductSales({ product }: ProductSalesProps) {
                           sale.price,
                           undefined,
                           sale.cashback?.value,
+                          sale.discounts.map((discount) => discount.discount),
                         ) / 100,
                       )}
                     </strong>{' '}

@@ -1,6 +1,6 @@
 import { gql } from '@apollo/client'
 
-import type { Cashback, Category, Coupon, Sale } from '@/types'
+import type { Cashback, Category, Coupon, Discount, Sale } from '@/types'
 
 export const GET_SALES = gql`
   query GetSales(
@@ -48,6 +48,12 @@ export const GET_SALES = gql`
           video
           affiliatedUrl
         }
+        discounts {
+          id
+          discount
+          label
+          description
+        }
         commentsCount
         reactions {
           id
@@ -61,6 +67,7 @@ export const GET_SALES = gql`
           availability
           discount
           code
+          description
         }
         retailer {
           name
@@ -80,6 +87,7 @@ export type GetSalesQuery = {
       reactions: { content: string; userId: string }[]
       cashback?: Cashback
       couponSchema?: Coupon
+      discounts: Discount[]
     })[]
   }
 }

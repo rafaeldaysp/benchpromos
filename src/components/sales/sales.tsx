@@ -3,7 +3,7 @@
 import { useSuspenseQuery } from '@apollo/experimental-nextjs-app-support/ssr'
 import { useSearchParams } from 'next/navigation'
 import * as React from 'react'
-import { InView } from 'react-intersection-observer'
+import { useInView } from 'react-intersection-observer'
 
 import { SaleCard } from '@/components/sales/sale-card'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -21,6 +21,10 @@ interface SalesProps {
 
 export function Sales({ user, productSlug }: SalesProps) {
   const [isPending, startTransition] = React.useTransition()
+  const { ref, inView } = useInView({
+    threshold: 0,
+    delay: 500,
+  })
   const searchParams = useSearchParams()
 
   const showExpired = searchParams.get('expired') ? true : false
@@ -75,6 +79,13 @@ export function Sales({ user, productSlug }: SalesProps) {
     })
   }
 
+  React.useEffect(() => {
+    if (inView) {
+      onEntry()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [inView])
+
   const hasMoreSales = page < pageCount
 
   return (
@@ -95,14 +106,7 @@ export function Sales({ user, productSlug }: SalesProps) {
             <Skeleton key={i} className="h-full w-full" />
           ))
         ) : (
-          <InView
-            as="div"
-            delay={500}
-            hidden={!hasMoreSales}
-            onChange={(_, entry) => {
-              if (entry.isIntersecting) onEntry()
-            }}
-          />
+          <div ref={ref} hidden={!hasMoreSales} />
         )}
         <ScrollToTopButton />
       </div>

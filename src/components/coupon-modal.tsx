@@ -28,6 +28,7 @@ interface CouponDialogProps {
   coupon: {
     code: string
     discount?: string
+    description?: string
   }
   description?: React.ReactNode
 }
@@ -86,6 +87,16 @@ export function CouponDialog({
         <DialogTitle className="text-center">Cupom disponível</DialogTitle>
       </DialogHeader>
       <div className="space-y-4">
+        {coupon.description && (
+          <div className="flex items-center rounded-lg bg-auxiliary/20 p-2 text-sm text-auxiliary">
+            <div className="flex items-center">
+              <Icons.AlertCircle className="mr-2 h-4 w-4 text-auxiliary" />
+            </div>
+            <p>
+              {coupon.description}
+            </p>
+          </div>
+        )}
         <CopyButton value={coupon.code} />
         <p className="inline-flex items-center text-xs">
           <Icons.AlertCircle className="mr-2 h-6 w-6 text-auxiliary" />
@@ -128,6 +139,16 @@ export function CouponSheet({ open, setOpen, coupon }: CouponDialogProps) {
           <SheetTitle className="text-center">Cupom disponível</SheetTitle>
         </SheetHeader>
         <div className="flex-1 space-y-4">
+          {coupon.description && (
+            <div className="flex items-center rounded-lg bg-auxiliary/20 p-2 text-sm text-auxiliary">
+              <div className="flex items-center">
+                <Icons.AlertCircle className="mr-2 h-4 w-4 text-auxiliary" />
+              </div>
+              <p>
+                {coupon.description}
+              </p>
+            </div>
+          )}
           <CopyButton value={coupon.code} />
           <p className="inline-flex items-center text-xs">
             <Icons.AlertCircle className="mr-2 h-6 w-6 text-auxiliary" />
