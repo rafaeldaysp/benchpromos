@@ -93,9 +93,7 @@ export function CouponDialog({
               <Icons.AlertCircle className="mr-2 h-4 w-4 text-auxiliary" />
             </div>
             <p>
-              {coupon.description}djfisdjifsdfij fisdjifsdi jsidfjisdfjifdsdj
-              foisdjfoi soifs odifodis oijfosijf odsj foisjfoisdjfofoisoifjsdoi
-              joioi ois jofjios
+              {coupon.description}
             </p>
           </div>
         )}
@@ -147,9 +145,7 @@ export function CouponSheet({ open, setOpen, coupon }: CouponDialogProps) {
                 <Icons.AlertCircle className="mr-2 h-4 w-4 text-auxiliary" />
               </div>
               <p>
-                {coupon.description}djfisdjifsdfij fisdjifsdi jsidfjisdfjifdsdj
-                foisdjfoi soifs odifodis oijfosijf odsj
-                foisjfoisdjfofoisoifjsdoi joioi ois jofjios
+                {coupon.description}
               </p>
             </div>
           )}
