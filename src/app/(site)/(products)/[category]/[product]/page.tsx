@@ -79,6 +79,7 @@ const GET_PRODUCT = gql`
           availability
           discount
           code
+          description
         }
         discounts {
           id
@@ -114,6 +115,7 @@ const GET_PRODUCT = gql`
           availability
           discount
           code
+          description
         }
         cashback {
           value

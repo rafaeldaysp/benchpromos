@@ -28,6 +28,12 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover'
 import { Separator } from '@/components/ui/separator'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
 import { cn } from '@/lib/utils'
 import type {
   Cashback,
@@ -85,6 +91,7 @@ const GET_SALE = gql`
         availability
         discount
         code
+        description
       }
       couponId
     }
@@ -242,13 +249,24 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
               {sale.discounts.length > 0 && (
                 <div className="flex flex-wrap gap-2">
                   {sale.discounts.map((discount) => (
-                    <Badge
-                      key={discount.id}
-                      variant="success"
-                      className="uppercase"
-                    >
-                      {couponFormatter(discount.discount)} {discount.label}
-                    </Badge>
+                    <TooltipProvider key={discount.id} delayDuration={100}>
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <Badge variant="success" className="uppercase">
+                            {discount.description && (
+                              <Icons.AlertCircle className="mr-1.5 h-4 w-4" />
+                            )}
+                            {couponFormatter(discount.discount)}{' '}
+                            {discount.label}
+                          </Badge>
+                        </TooltipTrigger>
+                        {discount.description && (
+                          <TooltipContent className="bg-primary font-semibold text-foreground">
+                            <p>{discount.description}</p>
+                          </TooltipContent>
+                        )}
+                      </Tooltip>
+                    </TooltipProvider>
                   ))}
                 </div>
               )}

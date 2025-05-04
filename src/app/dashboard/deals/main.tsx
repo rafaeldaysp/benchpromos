@@ -390,7 +390,7 @@ export function DealsMain({ deals, retailers, categories }: DealsMainProps) {
                           ` • ${deal.cashback.value}% ${deal.cashback.provider}`}
                         {deal.discounts.map((discount) => (
                           <span key={discount.id}>
-                            {` • ${discount.label} ${discount.description}`}
+                            {` • ${discount.discount} ${discount.label ?? ''}`}
                           </span>
                         ))}
                       </span>

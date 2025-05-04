@@ -348,7 +348,10 @@ export function SaleCard({
 
                           <CouponModal
                             className="hidden sm:inline-flex"
-                            coupon={{ code: sale.couponSchema.code }}
+                            coupon={{
+                              code: sale.couponSchema.code,
+                              description: sale.couponSchema.description,
+                            }}
                           />
                         </section>
                       )}

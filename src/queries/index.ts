@@ -67,6 +67,7 @@ export const GET_SALES = gql`
           availability
           discount
           code
+          description
         }
         retailer {
           name

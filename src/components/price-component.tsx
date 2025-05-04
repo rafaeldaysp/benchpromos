@@ -1,8 +1,9 @@
+import { cn } from '@/lib/utils'
 import {
-  type Discount,
   type Cashback,
   type Coupon,
   type Deal,
+  type Discount,
   type Retailer,
 } from '@/types'
 import { couponFormatter, priceFormatter } from '@/utils/formatter'
@@ -10,10 +11,15 @@ import { priceCalculator } from '@/utils/price-calculator'
 import { CashbackModal } from './cashback-modal'
 import { CouponModal } from './coupon-modal'
 import { Icons } from './icons'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs'
-import { cn } from '@/lib/utils'
-import { buttonVariants } from './ui/button'
 import { Badge } from './ui/badge'
+import { buttonVariants } from './ui/button'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from './ui/tooltip'
 
 interface PriceComponentProps {
   bestDeal: Deal & {
@@ -83,13 +89,20 @@ export function PriceComponent({
             {bestDeal.discounts.length > 0 && (
               <div className="flex flex-wrap gap-2 pb-1">
                 {bestDeal.discounts.map((discount) => (
-                  <Badge
-                    key={discount.id}
-                    variant="success"
-                    className="uppercase"
-                  >
-                    {couponFormatter(discount.discount)} {discount.label}
-                  </Badge>
+                  <TooltipProvider key={discount.id} delayDuration={100}>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <Badge variant="success" className="uppercase">
+                          {couponFormatter(discount.discount)} {discount.label}
+                        </Badge>
+                      </TooltipTrigger>
+                      {discount.description && (
+                        <TooltipContent>
+                          <p>{discount.description}</p>
+                        </TooltipContent>
+                      )}
+                    </Tooltip>
+                  </TooltipProvider>
                 ))}
               </div>
             )}
