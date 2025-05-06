@@ -92,7 +92,7 @@ export function CouponDialog({
             <div className="flex items-center">
               <Icons.AlertCircle className="mr-2 h-4 w-4 text-auxiliary" />
             </div>
-            <p>{coupon.description}</p>
+            <p className="font-semibold">{coupon.description}</p>
           </div>
         )}
         <CopyButton value={coupon.code} />
@@ -142,7 +142,7 @@ export function CouponSheet({ open, setOpen, coupon }: CouponDialogProps) {
               <div className="flex items-center">
                 <Icons.AlertCircle className="mr-2 h-4 w-4 text-auxiliary" />
               </div>
-              <p>{coupon.description}</p>
+              <p className="font-semibold">{coupon.description}</p>
             </div>
           )}
           <CopyButton value={coupon.code} />
