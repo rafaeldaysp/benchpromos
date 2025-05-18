@@ -1,30 +1,44 @@
-import Link from 'next/link'
 import * as React from 'react'
 
-import { Icons } from '@/components/icons'
-import { DashboardNav } from '@/components/layouts/dashboard-nav'
-import { buttonVariants } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
+import { AppSidebar } from '@/components/app-sidebar'
+import { DashboardBreadcrumb } from '@/components/dashboard-breadcrumb'
+import { Separator } from '@/components/ui/separator'
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from '@/components/ui/sidebar'
+import { getCurrentUser } from '../_actions/user'
 
 interface DashboardLayoutProps {
   children: React.ReactNode
 }
 
-export default function DashboardLayout({ children }: DashboardLayoutProps) {
+export default async function DashboardLayout({
+  children,
+}: DashboardLayoutProps) {
+  const user = await getCurrentUser()
   return (
-    <div className="min-h-screen space-y-6 px-4 py-10 sm:container">
-      <Link href="/" className={cn(buttonVariants({ variant: 'ghost' }), '')}>
-        <>
-          <Icons.ChevronLeft className="mr-2 h-4 w-4" />
-          Início
-        </>
-      </Link>
-      <div className="flex flex-col gap-6">
-        <aside className="overflow-x-auto">
-          <DashboardNav />
-        </aside>
-        <div className="flex-1">{children}</div>
-      </div>
-    </div>
+    <SidebarProvider>
+      <AppSidebar
+        user={{
+          avatar: user?.image ?? '',
+          name: user?.name ?? '',
+          email: user?.email ?? '',
+        }}
+      />
+      <SidebarInset>
+        <header className="flex h-16 shrink-0 items-center gap-2">
+          <div className="flex items-center gap-2 px-4">
+            <SidebarTrigger className="-ml-1" />
+            <Separator orientation="vertical" className="mr-2 h-4" />
+            <DashboardBreadcrumb />
+          </div>
+        </header>
+        <div className="h-full space-y-6 px-4 py-10">
+          <div className="flex-1">{children}</div>
+        </div>
+      </SidebarInset>
+    </SidebarProvider>
   )
 }
