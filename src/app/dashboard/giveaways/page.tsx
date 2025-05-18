@@ -1,3 +1,9 @@
+import GiveawaysMain from './main'
+
 export default function GiveawaysPage() {
-  return <main></main>
+  return (
+    <main>
+      <GiveawaysMain />
+    </main>
+  )
 }
