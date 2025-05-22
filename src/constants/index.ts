@@ -45,6 +45,12 @@ export const notebooksCustomFilters = [
     type: 'show',
   },
   {
+    label: 'Mostrar Desktops',
+    slug: 'show-desktops',
+    values: ['Desktop', 'PC'],
+    type: 'show',
+  },
+  {
     label: 'Mostrar descontinuados',
     slug: 'descontinued',
     values: ['Descontinuado'],
