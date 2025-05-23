@@ -55,8 +55,8 @@ export function ProductFiltersForm({
 
     return categoryFilters?.map(
       (filter) =>
-        filter.options.find((option) =>
-          productFilterOptionIds?.includes(option.id),
+        filter.options.find(
+          (option) => productFilterOptionIds?.includes(option.id),
         )?.id ?? 'none',
     )
   }, [categoryFilters, productFilters])

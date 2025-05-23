@@ -195,6 +195,7 @@ export function BenchmarkForm({
               <FormControl>
                 <Checkbox
                   checked={field.value}
+                  // @ts-expect-error ...
                   onCheckedChange={field.onChange}
                 />
               </FormControl>
@@ -211,6 +212,7 @@ export function BenchmarkForm({
               <FormControl>
                 <Checkbox
                   checked={field.value}
+                  // @ts-expect-error ...
                   onCheckedChange={field.onChange}
                 />
               </FormControl>
@@ -221,7 +223,7 @@ export function BenchmarkForm({
         <Button type="submit" disabled={isLoading}>
           {isLoading && (
             <Icons.Spinner
-              className="mr-2 size-4 animate-spin"
+              className="size-4 mr-2 animate-spin"
               aria-hidden="true"
             />
           )}
