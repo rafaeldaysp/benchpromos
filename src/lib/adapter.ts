@@ -6,6 +6,7 @@ import { getClient } from './apollo'
 
 export function BenchAdapter(): Adapter {
   return {
+    // @ts-expect-error ...
     async createUser(user) {
       const { data } = await getClient().mutate({
         mutation: gql`
@@ -164,6 +165,7 @@ export function BenchAdapter(): Adapter {
 
       return data.deleteUser
     },
+    // @ts-expect-error ...
     async linkAccount(account) {
       const { data } = await getClient().mutate({
         mutation: gql`
@@ -198,6 +200,7 @@ export function BenchAdapter(): Adapter {
 
       return data.linkAccount
     },
+    // @ts-expect-error ...
     async unlinkAccount({ providerAccountId, provider }) {
       const { data } = await getClient().mutate({
         mutation: gql`

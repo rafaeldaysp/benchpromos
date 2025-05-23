@@ -347,7 +347,7 @@ export function SaleForm({
                     <SelectTrigger>
                       {isSaleFormDataLoading && (
                         <Icons.Spinner
-                          className="mr-2 h-4 w-4 animate-spin"
+                          className="mr-2 size-4 animate-spin"
                           aria-hidden="true"
                         />
                       )}
@@ -431,7 +431,7 @@ export function SaleForm({
                     <SelectTrigger>
                       {isSaleFormDataLoading && (
                         <Icons.Spinner
-                          className="mr-2 h-4 w-4 animate-spin"
+                          className="mr-2 size-4 animate-spin"
                           aria-hidden="true"
                         />
                       )}
@@ -554,7 +554,7 @@ export function SaleForm({
           render={({ field }) => (
             <FormItem>
               <FormLabel className="flex text-warning">
-                <Icons.AlertCircle className="mr-2 h-3 w-3" /> Cupom (antigo)
+                <Icons.AlertCircle className="mr-2 size-3" /> Cupom (antigo)
               </FormLabel>
               <FormControl>
                 <Input
@@ -587,7 +587,7 @@ export function SaleForm({
                     <SelectTrigger>
                       {isSaleFormDataLoading && (
                         <Icons.Spinner
-                          className="mr-2 h-4 w-4 animate-spin"
+                          className="mr-2 size-4 animate-spin"
                           aria-hidden="true"
                         />
                       )}
@@ -634,7 +634,7 @@ export function SaleForm({
                     <SelectTrigger>
                       {isSaleFormDataLoading && (
                         <Icons.Spinner
-                          className="mr-2 h-4 w-4 animate-spin"
+                          className="mr-2 size-4 animate-spin"
                           aria-hidden="true"
                         />
                       )}
@@ -699,7 +699,6 @@ export function SaleForm({
               <FormControl>
                 <Checkbox
                   checked={field.value}
-                  // @ts-expect-error ...
                   onCheckedChange={field.onChange}
                 />
               </FormControl>
@@ -736,7 +735,7 @@ export function SaleForm({
         <Button type="submit" disabled={isLoading}>
           {isLoading && (
             <Icons.Spinner
-              className="mr-2 h-4 w-4 animate-spin"
+              className="mr-2 size-4 animate-spin"
               aria-hidden="true"
             />
           )}
