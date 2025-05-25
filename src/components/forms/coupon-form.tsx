@@ -285,7 +285,7 @@ export function CouponForm({ mode = 'create', coupon }: CouponFormProps) {
         >
           {isLoading && (
             <Icons.Spinner
-              className="mr-2 h-4 w-4 animate-spin"
+              className="size-4 mr-2 animate-spin"
               aria-hidden="true"
             />
           )}
@@ -305,7 +305,7 @@ export function CouponFormDialog() {
     >
       <DialogTrigger asChild>
         <Button type="button" size={'icon'}>
-          <Icons.Plus className="h-4 w-4" />
+          <Icons.Plus className="size-4" />
         </Button>
       </DialogTrigger>
       <DialogContent className="w-full space-y-4 overflow-auto sm:max-w-xl">

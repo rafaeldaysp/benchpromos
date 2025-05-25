@@ -22,7 +22,7 @@ import { dashboardSidebarItems } from '@/constants/dashboard-sidebar-nav'
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar className="border-r" variant="inset" {...props}>
-      <SidebarHeader>
+      <SidebarHeader className="bg-background">
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
@@ -47,7 +47,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
-      <SidebarContent>
+      <SidebarContent className="bg-background">
         <NavMain items={dashboardSidebarItems} />
       </SidebarContent>
       <SidebarFooter>

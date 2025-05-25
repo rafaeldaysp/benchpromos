@@ -1,8 +1,6 @@
 'use client'
 
-import React from 'react'
-
-import { useState, useEffect } from 'react'
+import { format, parseISO } from 'date-fns'
 import { motion } from 'framer-motion'
 import {
   CalendarIcon,
@@ -16,8 +14,11 @@ import {
   Trophy,
   Users,
 } from 'lucide-react'
-import { format, parseISO } from 'date-fns'
+import { useEffect, useState, useTransition } from 'react'
 
+import { GiveawayForm } from '@/components/forms/giveaway-form'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Calendar } from '@/components/ui/calendar'
 import {
@@ -37,22 +38,49 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { Switch } from '@/components/ui/switch'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Textarea } from '@/components/ui/textarea'
-import { toast } from 'sonner'
+import { env } from '@/env.mjs'
 import { cn } from '@/lib/utils'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import { Badge } from '@/components/ui/badge'
+import { type Giveaway } from '@/types'
+import { gql, useMutation } from '@apollo/client'
+import { type User } from 'next-auth'
+import { usePathname, useRouter } from 'next/navigation'
+import { toast } from 'sonner'
+import { useQueryString } from '@/hooks/use-query-string'
+import { useFormStore } from '@/hooks/use-form-store'
 
+const UPDATE_GIVEAWAY = gql`
+  mutation UpdateGiveaway($input: UpdateGiveawayInput!) {
+    updateGiveaway(updateGiveawayInput: $input) {
+      id
+      name
+      status
+    }
+  }
+`
+
+const SET_GIVEAWAY_WINNER = gql`
+  mutation SetGiveawayWinner($giveawayId: ID!, $index: Int!) {
+    setGiveawayWinnerByIndex(giveawayId: $giveawayId, index: $index) {
+      id
+      winner {
+        id
+        name
+        email
+        image
+      }
+    }
+  }
+`
 // Generate a larger mock dataset for subscribers
 const generateMockUsers = (count: number) => {
   const firstNames = [
@@ -166,54 +194,37 @@ type UserDetailsProps = {
   onClose: () => void
 }
 
-export default function GiveawaysMain() {
-  const [prizes, setPrizes] = useState<Prize[]>([
-    {
-      id: '1',
-      name: 'Premium Subscription',
-      description: '1 year of premium subscription',
-      isOpen: true,
-      subscribers: Array.from({ length: 35 }, (_, i) => i + 1), // 35 subscribers
-      drawDate: '2025-05-15', // Yesterday
-    },
-    {
-      id: '2',
-      name: 'Gift Card',
-      description: '$50 Amazon gift card',
-      isOpen: true,
-      subscribers: Array.from({ length: 42 }, (_, i) => i + 20), // 42 subscribers
-      drawDate: '2025-05-16', // Today
-      winner: 25, // Set a winner for this prize
-    },
-    {
-      id: '3',
-      name: 'Wireless Headphones',
-      description: 'Premium noise-cancelling headphones',
-      isOpen: true,
-      subscribers: Array.from({ length: 28 }, (_, i) => i + 15), // 28 subscribers
-      drawDate: '2025-05-16', // Today
-    },
-    {
-      id: '4',
-      name: 'Smart Watch',
-      description: 'Latest model smart watch',
-      isOpen: true,
-      subscribers: Array.from({ length: 50 }, (_, i) => i + 10), // 50 subscribers
-      drawDate: '2025-05-20', // Future date
-    },
-  ])
+interface GiveawaysMainProps {
+  giveaways: (Giveaway & {
+    participants: User[]
+    participantsCount: number
+    winner: User | null
+  })[]
+  drawDate: string
+  token?: string
+  distinctDates: string[]
+  statusCounts: {
+    status: string
+    count: number
+  }[]
+}
 
+export default function GiveawaysMain({
+  giveaways,
+  token,
+  drawDate,
+  distinctDates,
+  statusCounts,
+}: GiveawaysMainProps) {
+  const router = useRouter()
   const [isDrawing, setIsDrawing] = useState(false)
   const [currentPrizeId, setCurrentPrizeId] = useState<string | null>(null)
   const [showConfetti, setShowConfetti] = useState(false)
-  const [drawingUsers, setDrawingUsers] = useState<number[]>([])
-
-  // User details dialog state
-  const [selectedUserId, setSelectedUserId] = useState<number | null>(null)
-  const [userDetailsOpen, setUserDetailsOpen] = useState(false)
-
+  const [drawingUsers, setDrawingUsers] = useState<User[]>([])
+  const [winner, setWinner] = useState<User | null>(null)
+  const { openDialogs, setOpenDialog } = useFormStore()
   // Date selection state
-  const [selectedDate, setSelectedDate] = useState<string>('')
+  const [selectedDate, setSelectedDate] = useState<string>(drawDate)
 
   // Pagination state for subscribers
   const [subscriberSearch, setSubscriberSearch] = useState('')
@@ -221,56 +232,43 @@ export default function GiveawaysMain() {
   const [currentPage, setCurrentPage] = useState(1)
   const subscribersPerPage = 12
 
+  // transition state for date selection
+  const [_isPending, startTransition] = useTransition()
+  const pathname = usePathname()
+  const { createQueryString } = useQueryString()
+
   // Find all unique dates that have prizes
-  const uniqueDates = Array.from(
-    new Set(prizes.map((prize) => prize.drawDate)),
-  ).sort()
+  const uniqueDates = distinctDates
 
-  // Initialize with the most recent date that has prizes
-  useEffect(() => {
-    if (uniqueDates.length > 0 && !selectedDate) {
-      setSelectedDate(uniqueDates[uniqueDates.length - 1])
-    }
-  }, [uniqueDates, selectedDate])
-
-  // Filter prizes by the selected date
-  const filteredPrizes = prizes.filter(
-    (prize) => prize.drawDate === selectedDate,
-  )
-
-  // Reset pagination when changing date or prize
-  useEffect(() => {
-    setCurrentPage(1)
-    if (filteredPrizes.length > 0) {
-      setCurrentPrizeIndex(0)
-    }
-  }, [selectedDate, filteredPrizes.length])
-
-  // Get current prize for subscribers view
-  const currentPrize = filteredPrizes[currentPrizeIndex]
-
-  // Open user details dialog
-  const handleOpenUserDetails = (userId: number) => {
-    setSelectedUserId(userId)
-    setUserDetailsOpen(true)
-  }
-
-  // Filter and paginate subscribers
-  const getFilteredSubscribers = (prize: Prize) => {
-    if (!prize) return []
-
-    const filtered = prize.subscribers.filter((subscriberId) => {
-      const user = mockSubscribedUsers.find((u) => u.id === subscriberId)
-      if (!user) return false
-
-      const searchLower = subscriberSearch.toLowerCase()
-      return (
-        user.name.toLowerCase().includes(searchLower) ||
-        user.email.toLowerCase().includes(searchLower)
+  function onDateSelect(date: string) {
+    startTransition(() => {
+      router.push(
+        `${pathname}?${createQueryString({
+          drawDate: format(date, 'yyyy-MM-dd'),
+        })}`,
       )
     })
+  }
 
-    return filtered
+  // Get current prize for subscribers view
+  // const currentPrize = filteredPrizes[currentPrizeIndex]
+
+  // Filter and paginate subscribers
+  const getFilteredSubscribers = (prize: Giveaway) => {
+    if (!prize) return []
+
+    // const filtered = prize.participants.filter((participant) => {
+    //   const user = mockSubscribedUsers.find((u) => u.id === participant.id)
+    //   if (!user) return false
+
+    //   const searchLower = subscriberSearch.toLowerCase()
+    //   return (
+    //     user.name.toLowerCase().includes(searchLower) ||
+    //     user.email.toLowerCase().includes(searchLower)
+    //   )
+    // })
+
+    return []
   }
 
   const getPaginatedSubscribers = (subscribers: number[]) => {
@@ -286,7 +284,7 @@ export default function GiveawaysMain() {
   const goToPreviousDate = () => {
     const currentIndex = uniqueDates.indexOf(selectedDate)
     if (currentIndex > 0) {
-      setSelectedDate(uniqueDates[currentIndex - 1])
+      onDateSelect(uniqueDates[currentIndex - 1])
     }
   }
 
@@ -294,86 +292,95 @@ export default function GiveawaysMain() {
   const goToNextDate = () => {
     const currentIndex = uniqueDates.indexOf(selectedDate)
     if (currentIndex < uniqueDates.length - 1) {
-      setSelectedDate(uniqueDates[currentIndex + 1])
+      onDateSelect(uniqueDates[currentIndex + 1])
     }
   }
 
-  const handleCreatePrize = (
-    name: string,
-    description: string,
-    drawDate: string,
-  ) => {
-    const newPrize: Prize = {
-      id: Date.now().toString(),
-      name,
-      description,
-      isOpen: true,
-      subscribers: [],
-      drawDate,
-    }
-    setPrizes([...prizes, newPrize])
+  const [updateGiveaway, { loading: isLoading }] = useMutation(
+    UPDATE_GIVEAWAY,
+    {
+      onCompleted: (data) => {
+        if (data.updateGiveaway.status === 'OPEN') {
+          toast.success(
+            `Inscrições para ${data?.updateGiveaway.name} estão abertas agora.`,
+          )
+        } else {
+          toast.error(
+            `Subscriptions for ${data?.updateGiveaway.name} are now closed.`,
+          )
+        }
+        router.refresh()
+      },
+      onError: (error) => {
+        toast.error(error.message)
+      },
+      context: {
+        headers: {
+          'api-key': env.NEXT_PUBLIC_API_KEY,
+        },
+      },
+    },
+  )
 
-    // If this is a new date, select it
-    if (!uniqueDates.includes(drawDate)) {
-      setSelectedDate(drawDate)
-    }
-
-    toast.success(
-      `${name} has been added to the prize list for ${format(
-        parseISO(drawDate),
-        'MMMM d, yyyy',
-      )}.`,
-    )
-  }
-
-  const toggleSubscription = (prizeId: string) => {
-    setPrizes(
-      prizes.map((prize) =>
-        prize.id === prizeId ? { ...prize, isOpen: !prize.isOpen } : prize,
-      ),
-    )
-    const prize = prizes.find((p) => p.id === prizeId)
-
-    if (prize?.isOpen) {
-      toast.success(`Subscriptions for ${prize.name} are now open.`)
-    } else {
-      toast.error(`Subscriptions for ${prize?.name} are now closed.`)
-    }
-  }
+  const [setGiveawayWinner, { loading: isLoadingWinner }] = useMutation(
+    SET_GIVEAWAY_WINNER,
+    {
+      onCompleted: (data) => {
+        setWinner(data.setGiveawayWinnerByIndex.winner)
+        toast.success(
+          `${data.setGiveawayWinnerByIndex.winner.name} has won the ${data.setGiveawayWinnerByIndex.giveaway.name}!`,
+        )
+      },
+      onError: (error) => {
+        toast.error(error.message)
+      },
+      context: {
+        headers: {
+          'api-key': env.NEXT_PUBLIC_API_KEY,
+        },
+      },
+      refetchQueries: ['GetGiveaways'],
+    },
+  )
 
   const executeDraw = (prizeId: string) => {
-    const prize = prizes.find((p) => p.id === prizeId)
-    if (!prize || prize.subscribers.length === 0) return
+    const prize = giveaways.find((p) => p.id === prizeId)
+    if (!prize || prize.participants.length === 0) return
 
     setIsDrawing(true)
     setCurrentPrizeId(prizeId)
 
     // Animation for drawing
-    const subscribers = [...prize.subscribers]
+    const participants = [...prize.participants]
+    const participantsCount = prize.participantsCount
     setDrawingUsers([])
 
     let count = 0
     const interval = setInterval(() => {
       count++
-      const randomIndex = Math.floor(Math.random() * subscribers.length)
-      setDrawingUsers([subscribers[randomIndex]])
+      const randomIndex = Math.floor(Math.random() * prize.participants.length)
+      setDrawingUsers([prize.participants[randomIndex]])
 
       if (count > 20) {
         clearInterval(interval)
-        const winnerIndex = Math.floor(Math.random() * subscribers.length)
-        const winnerId = subscribers[winnerIndex]
+        const winnerIndex = Math.floor(Math.random() * participantsCount)
+        const winnerId = participants[winnerIndex].id
 
         // Update prize with winner
-        setPrizes(
-          prizes.map((p) =>
-            p.id === prizeId ? { ...p, winner: winnerId } : p,
-          ),
-        )
+        setGiveawayWinner({
+          variables: {
+            giveawayId: prizeId,
+            index: winnerIndex,
+          },
+          context: {
+            headers: {
+              'api-key': env.NEXT_PUBLIC_API_KEY,
+            },
+          },
+        })
 
         setIsDrawing(false)
         setShowConfetti(true)
-
-        const winner = mockSubscribedUsers.find((user) => user.id === winnerId)
 
         toast.custom((t) => (
           <div
@@ -383,7 +390,7 @@ export default function GiveawaysMain() {
             )}
           >
             <div className="flex items-center">
-              <Trophy className="h-6 w-6 text-green-500" />
+              <Trophy className="size-6 text-green-500" />
               <div className="ml-3">
                 <p className="text-sm font-medium text-green-800">
                   {winner?.name} has won the {prize.name}!
@@ -405,30 +412,30 @@ export default function GiveawaysMain() {
     <div className="mx-auto">
       <div className="mb-8">
         <div className="relative overflow-hidden rounded-xl bg-gradient-to-r from-primary/90 to-primary p-8 text-white shadow-lg">
-          <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-white/10"></div>
-          <div className="absolute -bottom-10 -left-10 h-32 w-32 rounded-full bg-white/10"></div>
+          <div className="absolute -right-10 -top-10 size-40 rounded-full bg-white/10"></div>
+          <div className="absolute -bottom-10 -left-10 size-32 rounded-full bg-white/10"></div>
           <div className="relative z-10">
-            <h1 className="text-3xl font-bold">Lucky Draw System</h1>
+            <h1 className="text-3xl font-bold">Sorteios Bench</h1>
             <p className="mt-2 max-w-2xl opacity-90">
-              Manage prizes and conduct exciting draws for your subscribers.
-              Create new prizes, control subscriptions, and draw winners with
-              engaging animations.
+              Gerencie prêmios e realize sorteios empolgantes para seus
+              assinantes. Crie novos prêmios, controle inscrições e sorteie
+              vencedores com animações envolventes.
             </p>
             <div className="mt-4 flex gap-4">
               <div className="rounded-lg bg-white/20 px-4 py-2 backdrop-blur-sm">
-                <div className="text-sm opacity-80">Total Prizes</div>
-                <div className="text-2xl font-bold">{prizes.length}</div>
+                <div className="text-sm opacity-80">Prêmios Totais</div>
+                <div className="text-2xl font-bold">{giveaways.length}</div>
               </div>
               <div className="rounded-lg bg-white/20 px-4 py-2 backdrop-blur-sm">
-                <div className="text-sm opacity-80">Active Draws</div>
+                <div className="text-sm opacity-80">Sorteios Ativos</div>
                 <div className="text-2xl font-bold">
-                  {prizes.filter((p) => p.isOpen && !p.winner).length}
+                  {giveaways.filter((g) => g.status === 'OPEN').length}
                 </div>
               </div>
               <div className="rounded-lg bg-white/20 px-4 py-2 backdrop-blur-sm">
-                <div className="text-sm opacity-80">Completed</div>
+                <div className="text-sm opacity-80">Concluídos</div>
                 <div className="text-2xl font-bold">
-                  {prizes.filter((p) => p.winner).length}
+                  {giveaways.filter((g) => g.status === 'COMPLETED').length}
                 </div>
               </div>
             </div>
@@ -444,12 +451,12 @@ export default function GiveawaysMain() {
               onClick={goToPreviousDate}
               disabled={uniqueDates.indexOf(selectedDate) <= 0}
             >
-              <ChevronLeft className="h-4 w-4" />
+              <ChevronLeft className="size-4" />
             </Button>
 
             <DatePickerWithPresets
               selectedDate={selectedDate ? parseISO(selectedDate) : undefined}
-              onSelect={(date) => setSelectedDate(format(date, 'yyyy-MM-dd'))}
+              onSelect={(date) => onDateSelect(format(date, 'yyyy-MM-dd'))}
               presetDates={uniqueDates.map((date) => parseISO(date))}
             />
 
@@ -461,19 +468,39 @@ export default function GiveawaysMain() {
                 uniqueDates.indexOf(selectedDate) >= uniqueDates.length - 1
               }
             >
-              <ChevronRight className="h-4 w-4" />
+              <ChevronRight className="size-4" />
             </Button>
           </div>
 
           <div className="flex items-center gap-4">
             <div className="text-sm text-muted-foreground">
-              {filteredPrizes.length} prize
-              {filteredPrizes.length !== 1 ? 's' : ''} on this date
+              {giveaways.filter((g) => g.drawAt === selectedDate).length} prize
+              {giveaways.filter((g) => g.drawAt === selectedDate).length !== 1
+                ? 's'
+                : ''}
+              on this date
             </div>
-            <NewPrizeDialog
-              onCreatePrize={handleCreatePrize}
-              initialDate={selectedDate}
-            />
+            <Dialog
+              open={openDialogs['giveawayCreateForm']}
+              onOpenChange={(open) => setOpenDialog('giveawayCreateForm', open)}
+            >
+              <DialogTrigger asChild>
+                <Button className="gap-2 bg-primary">
+                  <Plus className="size-4" />
+                  Novo sorteio
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-md">
+                <DialogHeader>
+                  <DialogTitle>Criar novo sorteio</DialogTitle>
+                  <DialogDescription>
+                    Adicione um novo sorteio para o seu sorteio. Os usuários
+                    poderão se inscrever nesse sorteio.
+                  </DialogDescription>
+                </DialogHeader>
+                <GiveawayForm />
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
 
@@ -483,29 +510,29 @@ export default function GiveawaysMain() {
               <div className="flex items-center justify-between">
                 <TabsList className="mb-4">
                   <TabsTrigger value="prizes" className="text-sm">
-                    <Gift className="mr-2 h-4 w-4" />
+                    <Gift className="mr-2 size-4" />
                     Prizes
                   </TabsTrigger>
                   <TabsTrigger value="subscribers" className="text-sm">
-                    <Users className="mr-2 h-4 w-4" />
+                    <Users className="mr-2 size-4" />
                     Subscribers
                   </TabsTrigger>
                 </TabsList>
               </div>
 
               <TabsContent value="prizes" className="space-y-4">
-                {filteredPrizes.length > 0 ? (
-                  filteredPrizes.map((prize) => (
+                {giveaways.length > 0 ? (
+                  giveaways.map((prize) => (
                     <Card
                       key={prize.id}
                       className="relative overflow-hidden border-2 transition-all hover:shadow-md"
                     >
                       {/* Prize status ribbon */}
-                      {prize.winner ? (
+                      {prize.winnerId ? (
                         <div className="absolute -right-12 top-7 rotate-45 bg-green-500 px-12 py-1 text-xs font-semibold text-white">
                           COMPLETED
                         </div>
-                      ) : prize.isOpen ? (
+                      ) : prize.status === 'OPEN' ? (
                         <div className="absolute -right-12 top-7 rotate-45 bg-blue-500 px-12 py-1 text-xs font-semibold text-white">
                           OPEN
                         </div>
@@ -527,8 +554,8 @@ export default function GiveawaysMain() {
                               {prize.description}
                             </CardDescription>
                           </div>
-                          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-                            <Gift className="h-6 w-6 text-primary" />
+                          <div className="flex size-12 items-center justify-center rounded-full bg-primary/10">
+                            <Gift className="size-6 text-primary" />
                           </div>
                         </div>
                       </CardHeader>
@@ -540,7 +567,7 @@ export default function GiveawaysMain() {
                               Subscribers
                             </span>
                             <span className="font-medium">
-                              {prize.subscribers.length}
+                              {prize.participantsCount}
                             </span>
                           </div>
                           <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
@@ -549,7 +576,7 @@ export default function GiveawaysMain() {
                               style={{
                                 width: `${Math.min(
                                   100,
-                                  (prize.subscribers.length / 100) * 100,
+                                  (prize.participantsCount / 100) * 100,
                                 )}%`,
                               }}
                             ></div>
@@ -557,24 +584,20 @@ export default function GiveawaysMain() {
                         </div>
 
                         <div className="mb-4 flex flex-wrap gap-1">
-                          {prize.subscribers.slice(0, 5).map((subscriberId) => {
-                            const user = mockSubscribedUsers.find(
-                              (u) => u.id === subscriberId,
-                            )
+                          {prize.participants.slice(0, 5).map((participant) => {
                             return (
                               <div
-                                key={subscriberId}
-                                className="flex h-8 w-8 items-center justify-center rounded-full bg-muted text-xs font-medium"
-                                title={user?.name}
+                                key={participant.id}
+                                className="flex size-8 items-center justify-center rounded-full bg-muted text-xs font-medium"
+                                title={participant?.name ?? ''}
                               >
-                                {user?.name.charAt(0)}
-                                {user?.name.split(' ')[1]?.charAt(0)}
+                                {participant?.name?.charAt(0)}
                               </div>
                             )
                           })}
-                          {prize.subscribers.length > 5 && (
-                            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted text-xs font-medium">
-                              +{prize.subscribers.length - 5}
+                          {prize.participantsCount > 5 && (
+                            <div className="flex size-8 items-center justify-center rounded-full bg-muted text-xs font-medium">
+                              +{prize.participantsCount - 5}
                             </div>
                           )}
                         </div>
@@ -591,26 +614,23 @@ export default function GiveawaysMain() {
                                 }}
                                 className="mb-4"
                               >
-                                <RefreshCw className="h-10 w-10 text-primary" />
+                                <RefreshCw className="size-10 text-primary" />
                               </motion.div>
                             </div>
                             <div className="mb-3 text-center text-lg font-bold">
                               Drawing winner...
                             </div>
                             <div className="relative h-16 overflow-hidden rounded-lg bg-background p-2">
-                              {drawingUsers.map((userId) => {
-                                const user = mockSubscribedUsers.find(
-                                  (u) => u.id === userId,
-                                )
+                              {drawingUsers.map((participant) => {
                                 return (
                                   <motion.div
-                                    key={userId}
+                                    key={participant.id}
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     exit={{ opacity: 0, y: -20 }}
                                     className="absolute inset-0 flex items-center justify-center text-center text-lg font-semibold"
                                   >
-                                    {user?.name}
+                                    {participant?.name}
                                   </motion.div>
                                 )
                               })}
@@ -624,23 +644,19 @@ export default function GiveawaysMain() {
                             <div className="mt-4 rounded-lg border border-green-200 bg-green-50 p-6 dark:border-green-900 dark:bg-green-900/20">
                               <div className="text-center">
                                 <div className="mb-3 inline-block rounded-full bg-yellow-100 p-3">
-                                  <Trophy className="h-8 w-8 text-yellow-600" />
+                                  <Trophy className="size-8 text-yellow-600" />
                                 </div>
                                 <div className="mb-2 text-xl font-bold">
                                   Winner!
                                 </div>
                                 {prize.winner && (
                                   <button
-                                    onClick={() =>
-                                      handleOpenUserDetails(prize.winner!)
-                                    }
+                                    // onClick={() =>
+                                    //   handleOpenUserDetails(prize.winner.id)
+                                    // }
                                     className="rounded-sm text-lg font-medium text-primary hover:underline focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
                                   >
-                                    {
-                                      mockSubscribedUsers.find(
-                                        (u) => u.id === prize.winner,
-                                      )?.name
-                                    }
+                                    {prize.winner.name}
                                   </button>
                                 )}
                               </div>
@@ -651,23 +667,19 @@ export default function GiveawaysMain() {
                           <div className="mt-4 rounded-lg border border-green-200 bg-green-50 p-4 dark:border-green-900 dark:bg-green-900/20">
                             <div className="flex items-center gap-3">
                               <div className="shrink-0 rounded-full bg-yellow-100 p-2">
-                                <Trophy className="h-5 w-5 text-yellow-600" />
+                                <Trophy className="size-5 text-yellow-600" />
                               </div>
                               <div>
                                 <div className="text-sm text-muted-foreground">
                                   Winner
                                 </div>
                                 <button
-                                  onClick={() =>
-                                    handleOpenUserDetails(prize.winner!)
-                                  }
+                                  // onClick={() =>
+                                  //   handleOpenUserDetails(prize.winner.id)
+                                  // }
                                   className="rounded-sm font-semibold text-primary hover:underline focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
                                 >
-                                  {
-                                    mockSubscribedUsers.find(
-                                      (u) => u.id === prize.winner,
-                                    )?.name
-                                  }
+                                  {prize.winner.name}
                                 </button>
                               </div>
                             </div>
@@ -680,9 +692,19 @@ export default function GiveawaysMain() {
                           <div className="flex items-center space-x-2">
                             <Switch
                               id={`subscription-${prize.id}`}
-                              checked={prize.isOpen}
+                              checked={prize.status === 'OPEN'}
                               onCheckedChange={() =>
-                                toggleSubscription(prize.id)
+                                updateGiveaway({
+                                  variables: {
+                                    input: {
+                                      id: prize.id,
+                                      status:
+                                        prize.status === 'OPEN'
+                                          ? 'CLOSED'
+                                          : 'OPEN',
+                                    },
+                                  },
+                                })
                               }
                               className="data-[state=checked]:bg-green-500"
                             />
@@ -690,7 +712,7 @@ export default function GiveawaysMain() {
                               htmlFor={`subscription-${prize.id}`}
                               className="text-sm font-medium"
                             >
-                              {prize.isOpen
+                              {prize.status === 'OPEN'
                                 ? 'Subscriptions Open'
                                 : 'Subscriptions Closed'}
                             </Label>
@@ -699,7 +721,7 @@ export default function GiveawaysMain() {
                             onClick={() => executeDraw(prize.id)}
                             disabled={
                               isDrawing ||
-                              prize.subscribers.length === 0 ||
+                              prize.participantsCount === 0 ||
                               Boolean(prize.winner)
                             }
                             className={`${
@@ -710,7 +732,7 @@ export default function GiveawaysMain() {
                           >
                             {prize.winner ? (
                               <>
-                                <Trophy className="mr-2 h-4 w-4" /> Drawn
+                                <Trophy className="mr-2 size-4" /> Drawn
                               </>
                             ) : (
                               'Execute Draw'
@@ -723,7 +745,7 @@ export default function GiveawaysMain() {
                 ) : (
                   <div className="flex flex-col items-center justify-center py-12 text-center">
                     <div className="mb-4 rounded-full bg-muted p-6">
-                      <Gift className="h-10 w-10 text-muted-foreground" />
+                      <Gift className="size-10 text-muted-foreground" />
                     </div>
                     <h3 className="mb-2 text-lg font-medium">
                       No prizes for this date
@@ -735,10 +757,10 @@ export default function GiveawaysMain() {
                         : 'this date'}
                       . Create a new prize to get started.
                     </p>
-                    <NewPrizeDialog
+                    {/* <NewPrizeDialog
                       onCreatePrize={handleCreatePrize}
                       initialDate={selectedDate}
-                    />
+                    /> */}
                   </div>
                 )}
               </TabsContent>
@@ -755,11 +777,11 @@ export default function GiveawaysMain() {
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    {filteredPrizes.length > 0 ? (
+                    {giveaways.length > 0 ? (
                       <div className="space-y-6">
                         {/* Prize selector tabs */}
                         <div className="-mx-1 flex overflow-x-auto pb-2">
-                          {filteredPrizes.map((prize, index) => (
+                          {giveaways.map((prize, index) => (
                             <Button
                               key={prize.id}
                               variant={
@@ -778,18 +800,18 @@ export default function GiveawaysMain() {
                                 {prize.name}
                               </span>
                               <span className="ml-2 rounded-full bg-primary/10 px-2 py-0.5 text-xs">
-                                {prize.subscribers.length}
+                                {prize.participantsCount}
                               </span>
                             </Button>
                           ))}
                         </div>
 
-                        {currentPrize && (
+                        {giveaways[currentPrizeIndex] && (
                           <>
                             {/* Search and pagination controls */}
                             <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
                               <div className="relative w-full sm:w-64">
-                                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                                <Search className="absolute left-2.5 top-2.5 size-4 text-muted-foreground" />
                                 <Input
                                   type="search"
                                   placeholder="Search subscribers..."
@@ -804,8 +826,11 @@ export default function GiveawaysMain() {
 
                               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                                 <span>
-                                  {currentPrize.subscribers.length} total
-                                  subscribers
+                                  {
+                                    giveaways[currentPrizeIndex]
+                                      .participantsCount
+                                  }
+                                  total subscribers
                                 </span>
                                 {subscriberSearch && (
                                   <Button
@@ -824,7 +849,9 @@ export default function GiveawaysMain() {
                             <div>
                               {(() => {
                                 const filteredSubscribers =
-                                  getFilteredSubscribers(currentPrize)
+                                  getFilteredSubscribers(
+                                    giveaways[currentPrizeIndex],
+                                  )
                                 const paginatedSubscribers =
                                   getPaginatedSubscribers(filteredSubscribers)
                                 const pageCount = getPageCount(
@@ -851,8 +878,7 @@ export default function GiveawaysMain() {
                                           const user = mockSubscribedUsers.find(
                                             (u) => u.id === subscriberId,
                                           )
-                                          const isWinner =
-                                            currentPrize.winner === subscriberId
+                                          const isWinner = false
 
                                           return (
                                             <div
@@ -863,7 +889,7 @@ export default function GiveawaysMain() {
                                                   : 'bg-muted/50'
                                               }`}
                                             >
-                                              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-background text-xs font-medium">
+                                              <div className="flex size-8 items-center justify-center rounded-full bg-background text-xs font-medium">
                                                 {user?.name.charAt(0)}
                                                 {user?.name
                                                   .split(' ')[1]
@@ -873,22 +899,22 @@ export default function GiveawaysMain() {
                                                 <div className="truncate font-medium">
                                                   {isWinner ? (
                                                     <button
-                                                      onClick={() =>
-                                                        handleOpenUserDetails(
-                                                          subscriberId,
-                                                        )
-                                                      }
+                                                      // onClick={() =>
+                                                      //   handleOpenUserDetails(
+                                                      //     subscriberId,
+                                                      //   )
+                                                      // }
                                                       className="rounded-sm text-primary hover:underline focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
                                                     >
                                                       {user?.name}
                                                     </button>
                                                   ) : (
                                                     <button
-                                                      onClick={() =>
-                                                        handleOpenUserDetails(
-                                                          subscriberId,
-                                                        )
-                                                      }
+                                                      // onClick={() =>
+                                                      //   handleOpenUserDetails(
+                                                      //     subscriberId,
+                                                      //   )
+                                                      // }
                                                       className="rounded-sm hover:underline focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
                                                     >
                                                       {user?.name}
@@ -900,7 +926,7 @@ export default function GiveawaysMain() {
                                                 </div>
                                               </div>
                                               {isWinner && (
-                                                <Trophy className="h-4 w-4 shrink-0 text-yellow-500" />
+                                                <Trophy className="size-4 shrink-0 text-yellow-500" />
                                               )}
                                             </div>
                                           )
@@ -974,7 +1000,7 @@ export default function GiveawaysMain() {
                                                         : 'outline'
                                                     }
                                                     size="sm"
-                                                    className="h-8 w-8 p-0"
+                                                    className="size-8 p-0"
                                                     onClick={() =>
                                                       setCurrentPage(pageNum)
                                                     }
@@ -1033,7 +1059,7 @@ export default function GiveawaysMain() {
       </div>
 
       {/* User Details Dialog */}
-      {selectedUserId && (
+      {/* {selectedUserId && (
         <Dialog open={userDetailsOpen} onOpenChange={setUserDetailsOpen}>
           <DialogContent className="sm:max-w-md md:max-w-lg">
             <UserDetails
@@ -1043,7 +1069,7 @@ export default function GiveawaysMain() {
             />
           </DialogContent>
         </Dialog>
-      )}
+      )} */}
 
       {showConfetti && <ConfettiEffect />}
     </div>
@@ -1074,7 +1100,7 @@ function UserDetails({ userId, prizes, onClose }: UserDetailsProps) {
 
       <div className="py-4">
         <div className="mb-6 flex items-center gap-4">
-          <Avatar className="h-16 w-16 border-2 border-primary/20">
+          <Avatar className="size-16 border-2 border-primary/20">
             <AvatarFallback className="bg-primary/10 text-lg text-primary">
               {user.avatar}
             </AvatarFallback>
@@ -1082,13 +1108,13 @@ function UserDetails({ userId, prizes, onClose }: UserDetailsProps) {
           <div>
             <h3 className="text-xl font-bold">{user.name}</h3>
             <div className="flex items-center text-sm text-muted-foreground">
-              <Mail className="mr-1 h-3 w-3" />
+              <Mail className="mr-1 size-3" />
               {user.email}
             </div>
             <div className="mt-1 flex items-center gap-2">
               {wonPrizes.length > 0 && (
                 <Badge className="bg-yellow-500">
-                  <Trophy className="mr-1 h-3 w-3" /> Winner
+                  <Trophy className="mr-1 size-3" /> Winner
                 </Badge>
               )}
               <Badge variant="outline" className="text-xs">
@@ -1155,9 +1181,9 @@ function UserDetails({ userId, prizes, onClose }: UserDetailsProps) {
                           }`}
                         >
                           {isWinner ? (
-                            <Trophy className="h-4 w-4 text-yellow-600" />
+                            <Trophy className="size-4 text-yellow-600" />
                           ) : (
-                            <Gift className="h-4 w-4 text-primary" />
+                            <Gift className="size-4 text-primary" />
                           )}
                         </div>
                         <div>
@@ -1218,7 +1244,7 @@ function DatePickerWithPresets({
             !selectedDate && 'text-muted-foreground',
           )}
         >
-          <CalendarIcon className="mr-2 h-4 w-4" />
+          <CalendarIcon className="mr-2 size-4" />
           {selectedDate ? format(selectedDate, 'MMMM d, yyyy') : 'Select date'}
         </Button>
       </PopoverTrigger>
@@ -1260,117 +1286,6 @@ function DatePickerWithPresets({
         )}
       </PopoverContent>
     </Popover>
-  )
-}
-
-function NewPrizeDialog({
-  onCreatePrize,
-  initialDate = '',
-}: {
-  onCreatePrize: (name: string, description: string, drawDate: string) => void
-  initialDate?: string
-}) {
-  const [open, setOpen] = useState(false)
-  const [name, setName] = useState('')
-  const [description, setDescription] = useState('')
-  const [drawDate, setDrawDate] = useState<Date | undefined>(
-    initialDate ? parseISO(initialDate) : new Date(),
-  )
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (name.trim() && drawDate) {
-      onCreatePrize(name, description, format(drawDate, 'yyyy-MM-dd'))
-      setName('')
-      setDescription('')
-      setDrawDate(new Date())
-      setOpen(false)
-    }
-  }
-
-  return (
-    <Dialog open={open} onOpenChange={(open) => setOpen(open)}>
-      <DialogTrigger asChild>
-        <Button className="gap-2 bg-primary">
-          <Plus className="h-4 w-4" />
-          New Prize
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
-        <form onSubmit={handleSubmit}>
-          <DialogHeader>
-            <DialogTitle>Create New Prize</DialogTitle>
-            <DialogDescription>
-              Add a new prize for your lucky draw. Users will be able to
-              subscribe to this prize.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid gap-2">
-              <Label htmlFor="prize-name">Prize Name</Label>
-              <Input
-                id="prize-name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Enter prize name"
-                className="border-primary/20 focus-visible:ring-primary"
-                required
-              />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="prize-description">Description</Label>
-              <Textarea
-                id="prize-description"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="Describe the prize"
-                className="border-primary/20 focus-visible:ring-primary"
-                rows={3}
-              />
-            </div>
-            <div className="grid gap-2">
-              <Label>Draw Date</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      'w-full justify-start text-left font-normal',
-                      !drawDate && 'text-muted-foreground',
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {drawDate
-                      ? format(drawDate, 'MMMM d, yyyy')
-                      : 'Select date'}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
-                  <Calendar
-                    mode="single"
-                    selected={drawDate}
-                    onSelect={setDrawDate}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setOpen(false)}
-            >
-              Cancel
-            </Button>
-            <Button type="submit" disabled={!name.trim() || !drawDate}>
-              Create Prize
-            </Button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
   )
 }
 

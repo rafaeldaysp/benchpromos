@@ -31,11 +31,11 @@ export const Calendar = ({
         [UI.CaptionLabel]: 'text-sm font-medium',
         [UI.PreviousMonthButton]: cn(
           buttonVariants({ variant: 'outline' }),
-          'absolute left-1 top-0 h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100',
+          'absolute left-1 top-0 size-7 bg-transparent p-0 opacity-50 hover:opacity-100',
         ),
         [UI.NextMonthButton]: cn(
           buttonVariants({ variant: 'outline' }),
-          'absolute right-1 top-0 h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100',
+          'absolute right-1 top-0 size-7 bg-transparent p-0 opacity-50 hover:opacity-100',
         ),
         [UI.MonthGrid]: 'w-full border-collapse space-y-1',
         [UI.Weekdays]: 'flex',
@@ -46,7 +46,7 @@ export const Calendar = ({
           'h-9 w-9 text-center rounded-md text-sm p-0 relative [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-accent/50 [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20',
         [UI.DayButton]: cn(
           buttonVariants({ variant: 'ghost' }),
-          'h-9 w-9 p-0 font-normal hover:bg-primary hover:text-primary-foreground aria-selected:opacity-100',
+          'size-9 p-0 font-normal hover:bg-primary hover:text-primary-foreground aria-selected:opacity-100',
         ),
         [SelectionState.range_end]: 'day-range-end',
         [SelectionState.selected]:
@@ -71,13 +71,13 @@ export const Calendar = ({
 const Chevron = ({ orientation = 'left' }) => {
   switch (orientation) {
     case 'left':
-      return <ChevronLeftIcon className="h-4 w-4" />
+      return <ChevronLeftIcon className="size-4" />
     case 'right':
-      return <ChevronRightIcon className="h-4 w-4" />
+      return <ChevronRightIcon className="size-4" />
     case 'up':
-      return <ChevronUpIcon className="h-4 w-4" />
+      return <ChevronUpIcon className="size-4" />
     case 'down':
-      return <ChevronDownIcon className="h-4 w-4" />
+      return <ChevronDownIcon className="size-4" />
     default:
       return null
   }

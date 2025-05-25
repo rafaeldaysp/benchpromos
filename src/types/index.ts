@@ -56,6 +56,15 @@ export type Discount = {
   updatedAt: string
 }
 
+export type Giveaway = {
+  id: string
+  name: string
+  description: string
+  drawAt: string
+  status: 'CLOSED' | 'OPEN' | 'COMPLETED'
+  winnerId?: string
+}
+
 export type RecommendedProduct = {
   id: string
   minPrice: number
