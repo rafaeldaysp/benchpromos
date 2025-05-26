@@ -1,7 +1,7 @@
 'use client'
 
 import dayjs from 'dayjs'
-import 'dayjs/locale/pt-br'
+import 'dayjs/locale/en'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { type Session } from 'next-auth'
 import * as React from 'react'
@@ -30,7 +30,7 @@ import { cn } from '@/lib/utils'
 import { LoginPopup } from '../login-popup'
 
 dayjs.extend(relativeTime)
-dayjs.locale('pt-br')
+dayjs.locale('en')
 
 interface CommentsProps {
   saleId: string
@@ -46,7 +46,7 @@ export function Comments({ saleId, user, count }: CommentsProps) {
   return (
     <div className="space-y-8">
       <span className="font-semibold">
-        {count} • comentário
+        {count} • comment
         {(count > 1 || count === 0) && 's'}
       </span>
       <CommentSubmit saleId={saleId} user={user} />
@@ -85,7 +85,7 @@ export function Comments({ saleId, user, count }: CommentsProps) {
                           'flex-none px-1 hover:no-underline',
                         )}
                       >
-                        {comment.repliesCount} resposta
+                        {comment.repliesCount} reply
                         {comment.repliesCount > 1 && 's'}
                       </AccordionTrigger>
                       <AccordionContent>
@@ -329,7 +329,7 @@ export function Comment({ saleId, comment, replyToId, user }: CommentProps) {
               }
             >
               <Icons.Reply className="mr-1.5 h-4 w-4" />
-              Responder
+              Answer
             </Button>
           </footer>
         </div>
@@ -343,7 +343,7 @@ export function Comment({ saleId, comment, replyToId, user }: CommentProps) {
                 className="h-8 w-8 p-0 data-[state=open]:bg-muted"
               >
                 <Icons.MoreVertical className="h-4 w-4" />
-                <span className="sr-only">Abrir menu</span>
+                <span className="sr-only">Open menu</span>
               </Button>
             </DropdownMenuTrigger>
           )}
@@ -354,13 +354,13 @@ export function Comment({ saleId, comment, replyToId, user }: CommentProps) {
         {user?.id === comment.user.id && (
           <DropdownMenuItem onClick={() => setMode('input')}>
             <Icons.Edit className="mr-2 h-3.5 w-3.5 text-muted-foreground/70" />
-            Editar
+            Edit
           </DropdownMenuItem>
         )}
 
         <DropdownMenuItem onClick={() => handleDeleteComment()}>
           <Icons.Trash className="mr-2 h-3.5 w-3.5 text-muted-foreground/70" />
-          Deletar
+          Delete
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -413,7 +413,7 @@ function CommentSubmit({ saleId, commentId, user }: CommentSubmitProps) {
             autoFocus={commentId ? true : false}
             maxLength={1000}
             onChange={(e) => setCommentInput(e.target.value)}
-            placeholder="Adicionar um comentário..."
+            placeholder="Add a comment..."
             onKeyDown={(e) => {
               if (e.key == 'Enter' && e.shiftKey == false) {
                 e.preventDefault()

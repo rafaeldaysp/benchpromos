@@ -15,33 +15,33 @@ import { cn } from '@/lib/utils'
 
 const gradativeScale = [
   {
-    message: 'muito abaixo da média',
+    message: 'very below the average',
     minValue: -1,
     textStyle: 'text-success',
   },
   {
     minValue: 10,
-    message: 'abaixo da média',
+    message: 'below the average',
     textStyle: 'text-lime-600 dark:text-lime-400',
   },
   {
     minValue: 25,
-    message: 'dentro da média',
+    message: 'within the average',
     textStyle: 'text-auxiliary',
   },
   {
     minValue: 50,
-    message: 'dentro da média',
+    message: 'within the average',
     textStyle: 'text-auxiliary',
   },
   {
     minValue: 75,
-    message: 'acima da média',
+    message: 'above the average',
     textStyle: 'text-orange-500',
   },
   {
     minValue: 90,
-    message: 'muito acima da média',
+    message: 'very above the average',
     textStyle: 'text-destructive',
   },
 ]
@@ -136,8 +136,8 @@ export function PriceBar({
             <Icons.LineChart className="h-4 w-4 text-auxiliary" />
             <Label className="flex flex-1 flex-col space-y-2">
               <CardTitle>
-                O preço <span className="">à vista </span>
-                está{' '}
+                The price <span className="font-semibold">in cash </span>
+                is{' '}
                 <span
                   className={cn('font-semibold', maxValueObject.textStyle, {
                     hidden: mean === 0,
@@ -148,12 +148,12 @@ export function PriceBar({
                 {maxValueInstallmentObject && currentValueInstallment && (
                   <span>
                     {' '}
-                    e o preço
+                    and the
                     <span className="font-semibold text-foreground">
                       {' '}
-                      parcelado{' '}
+                      installment{' '}
                     </span>
-                    está{' '}
+                    price is{' '}
                     <span
                       className={cn(
                         'font-semibold',
@@ -169,32 +169,33 @@ export function PriceBar({
                 )}
               </CardTitle>
               <CardDescription>
-                Com base no preço dos últimos{' '}
+                Based on the price of the last{' '}
                 <span className="font-semibold text-foreground">
-                  {dataRange} dias
+                  {dataRange} days
                 </span>
-                , o preço
+                , the price
                 <span className="font-semibold text-foreground">
                   {' '}
-                  à vista{' '}
+                  in cash{' '}
                 </span>{' '}
-                está{' '}
+                is{' '}
                 <span
                   className={cn(maxValueObject.textStyle, {
                     hidden: mean === 0,
                   })}
                 >
                   {Math.round(Math.abs(1 - currentValue / mean) * 100)}%{' '}
-                  {maxValueObject.minValue >= 50 ? 'acima' : 'abaixo'} da média
+                  {maxValueObject.minValue >= 50 ? 'above' : 'below'} the
+                  average
                 </span>
                 {maxValueInstallmentObject && currentValueInstallment && (
                   <span>
                     {' '}
-                    e o preço{' '}
+                    and the{' '}
                     <span className="font-semibold text-foreground">
-                      parcelado{' '}
+                      installment{' '}
                     </span>
-                    está{' '}
+                    price is{' '}
                     <span
                       className={cn(maxValueInstallmentObject.textStyle, {
                         hidden: mean === 0,
@@ -207,8 +208,8 @@ export function PriceBar({
                       )}
                       %{' '}
                       {maxValueInstallmentObject.minValue >= 50
-                        ? 'acima da média'
-                        : 'abaixo da média'}
+                        ? 'above the average'
+                        : 'below the average'}
                     </span>
                   </span>
                 )}
@@ -229,9 +230,9 @@ export function PriceBar({
                   { hidden: mean === 0 },
                 )}
               >
-                {/* Texto "à vista" */}
+                {/* Texto "in cash" */}
                 <span className="absolute -top-8 whitespace-nowrap text-xs font-semibold">
-                  À vista
+                  in cash
                 </span>
                 {/* Ícone Play */}
                 <div className="flex h-[18px] w-[18px] items-center justify-center rounded-full bg-background  text-primary">
@@ -252,7 +253,7 @@ export function PriceBar({
                 >
                   {/* Texto "parcelado" */}
                   <span className="absolute top-8 text-xs font-semibold">
-                    Parcelado
+                    Installment
                   </span>
                   {/* Ícone Play */}
                   <div className="flex h-[18px] w-[18px] items-center justify-center rounded-full bg-background">

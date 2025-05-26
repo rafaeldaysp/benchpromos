@@ -53,7 +53,7 @@ export function SalesByReactions({ data }: SalesByReactionsProps) {
                 </Avatar>
                 <div className="ml-4 space-y-1">
                   <Link
-                    href={`/promocao/${saleData.sale.slug}/${saleData.sale.id}`}
+                    href={`/sale/${saleData.sale.slug}/${saleData.sale.id}`}
                     className="text-sm transition-colors hover:text-primary"
                     target="_blank"
                   >

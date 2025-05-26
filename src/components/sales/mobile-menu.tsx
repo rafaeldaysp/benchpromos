@@ -72,7 +72,7 @@ export function MobileMenu({
 
           <h3 className="py-2 text-sm text-muted-foreground">Interagir</h3>
           <Link
-            href={`/promocao/${sale.slug}/${sale.id}#comments`}
+            href={`/sale/${sale.slug}/${sale.id}#comments`}
             className={cn(
               buttonVariants({ variant: 'ghost', size: 'lg' }),
               'justify-start px-2 ',
@@ -83,7 +83,7 @@ export function MobileMenu({
           </Link>
 
           <Link
-            href={`/promocao/${sale.slug}/${sale.id}`}
+            href={`/sale/${sale.slug}/${sale.id}`}
             className={cn(
               buttonVariants({ variant: 'ghost', size: 'lg' }),
               'justify-start px-2 ',

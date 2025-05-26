@@ -156,7 +156,7 @@ export function ProductSales({ product }: ProductSalesProps) {
             </main>
             <CardFooter className="p-4 pt-0">
               <Link
-                href={`/promocao/${sale.slug}/${sale.id}`}
+                href={`/sale/${sale.slug}/${sale.id}`}
                 className={cn(
                   buttonVariants(),
                   'h-10 flex-1 rounded-xl font-semibold',

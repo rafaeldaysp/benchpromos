@@ -41,33 +41,33 @@ dayjs.locale('pt-br')
 
 const fromNowOptions = [
   {
-    label: '30 dias',
+    label: '30 days',
     value: 30,
   },
   {
-    label: '60 dias',
+    label: '60 days',
     value: 60,
   },
   {
-    label: '3 meses',
+    label: '3 months',
     value: 90,
   },
   {
-    label: '1 ano',
+    label: '1 year',
     value: 365,
   },
 ]
 
 const chartConfig = {
   visitors: {
-    label: 'Preço',
+    label: 'Price',
   },
   lowestPrice: {
-    label: 'À vista',
+    label: 'In cash',
     color: 'hsl(var(--chart-1))',
   },
   lowestInstallmentPrice: {
-    label: 'Parcelado',
+    label: 'Installment',
     color: 'hsl(var(--chart-3))',
   },
 } satisfies ChartConfig
@@ -157,10 +157,10 @@ export default function PriceChart({
       <Card>
         <CardHeader className="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
           <div className="grid flex-1 gap-1 text-center sm:text-left">
-            <CardTitle>Gráfico de Evolução de Preço</CardTitle>
+            <CardTitle>Price Evolution Chart</CardTitle>
             <CardDescription>
-              Acompanhe as variações de preço à vista e parcelado nos últimos{' '}
-              <strong>{periodInDays}</strong> dias
+              Follow the variations of the price in cash and installment in the
+              last <strong>{periodInDays}</strong> days
             </CardDescription>
           </div>
 
@@ -180,7 +180,7 @@ export default function PriceChart({
               className="w-[160px] rounded-lg sm:ml-auto"
               aria-label="Select a value"
             >
-              <SelectValue placeholder="Últimos 30 dias" />
+              <SelectValue placeholder="Last 30 days" />
             </SelectTrigger>
             <SelectContent className="rounded-xl">
               {fromNowOptions.map((option) => (
@@ -264,7 +264,7 @@ export default function PriceChart({
                     labelFormatter={(value) =>
                       dayjs(value).format('DD[ de] MMMM YYYY')
                     }
-                    formatter={(value, name, item, index) => (
+                    formatter={(value, name, _item, _index) => (
                       <>
                         <div
                           className="h-2.5 w-2.5 shrink-0 rounded-[2px] bg-[--color-bg]"

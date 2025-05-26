@@ -13,38 +13,38 @@ const nextConfig = {
       allowedOrigins: ['benchpromos.com.br'],
     },
   },
-  async rewrites() {
-    return [
-      {
-        source: '/promocao/:slug/:id',
-        destination: '/sale/:slug/:id',
-      },
-      {
-        source: '/promocao/:slug',
-        destination: '/sale/:slug',
-      },
-      {
-        source: '/usuario',
-        destination: '/user',
-      },
-      {
-        source: '/usuario/perfil',
-        destination: '/user/profile',
-      },
-      {
-        source: '/usuario/alertas',
-        destination: '/user/alerts',
-      },
-      {
-        source: '/usuario/favoritos',
-        destination: '/user/favorites',
-      },
-      {
-        source: '/politica-de-privacidade',
-        destination: '/privacy-policy',
-      },
-    ]
-  },
+  // async rewrites() {
+  //   return [
+  //     {
+  //       source: '/promocao/:slug/:id',
+  //       destination: '/sale/:slug/:id',
+  //     },
+  //     {
+  //       source: '/promocao/:slug',
+  //       destination: '/sale/:slug',
+  //     },
+  //     {
+  //       source: '/usuario',
+  //       destination: '/user',
+  //     },
+  //     {
+  //       source: '/usuario/perfil',
+  //       destination: '/user/profile',
+  //     },
+  //     {
+  //       source: '/usuario/alertas',
+  //       destination: '/user/alerts',
+  //     },
+  //     {
+  //       source: '/usuario/favoritos',
+  //       destination: '/user/favorites',
+  //     },
+  //     {
+  //       source: '/politica-de-privacidade',
+  //       destination: '/privacy-policy',
+  //     },
+  //   ]
+  // },
   output: 'standalone',
 }
 

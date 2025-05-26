@@ -115,14 +115,14 @@ export function CashbackDialog({
         <div className="flex w-full cursor-default items-center justify-center gap-2 rounded-xl bg-muted p-4 font-semibold transition-colors hover:bg-muted/80">
           <Icons.RotateCcw className="h-4 w-4 text-auxiliary" strokeWidth={3} />
           <span>
-            {cashback.value}% de volta com {cashback.provider}
+            {cashback.value}% back with {cashback.provider}
           </span>
         </div>
         <Card className="w-full">
           <CardHeader className="p-4 text-center">
-            <CardTitle>Como funciona?</CardTitle>
+            <CardTitle>How does it work?</CardTitle>
             <CardDescription>
-              Para garantir o cashback em sua compra, siga estes passos:
+              To ensure cashback on your purchase, follow these steps:
             </CardDescription>
           </CardHeader>
           <CardContent className="p-4 pt-0 text-start text-sm font-semibold text-muted-foreground">
@@ -130,13 +130,14 @@ export function CashbackDialog({
               <li className="flex items-start gap-x-2">
                 1.
                 <p>
-                  Esvazie o carrinho no site da loja onde deseja fazer a compra
+                  Empty your cart on the store where you want to make the
+                  purchase
                 </p>
               </li>
               <li className="flex items-start gap-x-2">
                 2.{' '}
                 <span>
-                  Acesse o{' '}
+                  Access the{' '}
                   <a
                     className={cn(
                       buttonVariants({ variant: 'link' }),
@@ -147,21 +148,18 @@ export function CashbackDialog({
                   >
                     site
                   </a>{' '}
-                  provedor de cashback
+                  cashback provider
                 </span>
               </li>
               <li className="flex items-start gap-x-2">
                 3.{' '}
                 <p>
-                  Entre no site da loja do produto a partir do site do provedor
-                  do cashback
+                  Enter the product store site from the cashback provider site
                 </p>
               </li>
               <li className="flex items-start gap-x-2">
                 4.{' '}
-                <p>
-                  Adicione o produto ao carrinho novamente e faça sua compra
-                </p>
+                <p>Add the product to your cart again and make your purchase</p>
               </li>
             </ul>
           </CardContent>
@@ -178,10 +176,10 @@ export function CashbackDialog({
                 <div className="flex flex-1 flex-col justify-start space-x-6 text-sm">
                   <h3 className="flex items-center gap-x-2">
                     <Icons.YoutubeIcon className="h-4 w-4 text-auxiliary" />
-                    Assista ao vídeo
+                    Watch the video
                   </h3>
                   <p className="text-xs text-muted-foreground">
-                    Assista a uma explicação detalhada sobre o cashback
+                    Watch a detailed explanation of the cashback
                   </p>
                 </div>
               </Button>
@@ -191,7 +189,7 @@ export function CashbackDialog({
       </div>
       <DialogFooter>
         <Button className="w-full" onClick={() => setOpen(false)}>
-          Entendi
+          I understand
         </Button>
       </DialogFooter>
     </DialogContent>
@@ -223,14 +221,14 @@ export function CashbackSheet({
               strokeWidth={3}
             />
             <span>
-              {cashback.value}% de volta com {cashback.provider}
+              {cashback.value}% back with {cashback.provider}
             </span>
           </div>
           <Card className="w-full">
             <CardHeader className="p-4 text-center">
-              <CardTitle>Como funciona?</CardTitle>
+              <CardTitle>How does it work?</CardTitle>
               <CardDescription>
-                Para garantir o cashback em sua compra, siga estes passos:
+                To ensure cashback on your purchase, follow these steps:
               </CardDescription>
             </CardHeader>
             <CardContent className="p-4 pt-0 text-start text-sm font-semibold text-muted-foreground">
@@ -238,14 +236,14 @@ export function CashbackSheet({
                 <li className="flex items-start gap-x-2">
                   1.
                   <p>
-                    Esvazie o carrinho no site da loja onde deseja fazer a
-                    compra
+                    Empty your cart on the store where you want to make the
+                    purchase
                   </p>
                 </li>
                 <li className="flex items-start gap-x-2">
                   2.{' '}
                   <span>
-                    Acesse o{' '}
+                    Access the{' '}
                     <a
                       className={cn(
                         buttonVariants({ variant: 'link' }),
@@ -256,20 +254,19 @@ export function CashbackSheet({
                     >
                       site
                     </a>{' '}
-                    provedor de cashback
+                    cashback provider
                   </span>
                 </li>
                 <li className="flex items-start gap-x-2">
                   3.{' '}
                   <p>
-                    Entre no site da loja do produto a partir do site do
-                    provedor do cashback
+                    Enter the product store site from the cashback provider site
                   </p>
                 </li>
                 <li className="flex items-start gap-x-2">
                   4.{' '}
                   <p>
-                    Adicione o produto ao carrinho novamente e faça sua compra
+                    Add the product to your cart again and make your purchase
                   </p>
                 </li>
               </ul>
@@ -287,10 +284,10 @@ export function CashbackSheet({
                   <div className="flex flex-1 flex-col justify-start space-x-6 text-sm">
                     <h3 className="flex items-center gap-x-2">
                       <Icons.YoutubeIcon className="h-4 w-4 text-auxiliary" />
-                      Assista ao vídeo
+                      Watch the video
                     </h3>
                     <p className="text-xs text-muted-foreground">
-                      Assista a uma explicação detalhada sobre o cashback
+                      Watch a detailed explanation of the cashback
                     </p>
                   </div>
                 </Button>
@@ -300,7 +297,7 @@ export function CashbackSheet({
         </div>
         <SheetFooter>
           <Button className="w-full" onClick={() => setOpen(false)}>
-            Entendi
+            I understand
           </Button>
         </SheetFooter>
       </SheetContent>

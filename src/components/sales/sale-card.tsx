@@ -3,7 +3,7 @@
 import { gql, useMutation, type ApolloClient } from '@apollo/client'
 import { StarFilledIcon } from '@radix-ui/react-icons'
 import dayjs from 'dayjs'
-import 'dayjs/locale/pt-br'
+import 'dayjs/locale/en'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -61,7 +61,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from '../ui/sheet'
 import { MobileMenu } from './mobile-menu'
 
 dayjs.extend(relativeTime)
-dayjs.locale('pt-br')
+dayjs.locale('en')
 
 const DELETE_SALE = gql`
   mutation ($saleId: ID!) {
@@ -158,7 +158,7 @@ export function SaleCard({
   )
 
   function handleShare() {
-    const salePath = `/promocao/${sale.slug}/${sale.id}`
+    const salePath = `/sale/${sale.slug}/${sale.id}`
 
     const text = `Se liga nessa promoção no Bench Promos!\n\n${
       sale.title
@@ -249,14 +249,14 @@ export function SaleCard({
 
               <CardContent className="flex-1 space-y-1.5 p-3 py-0 sm:space-y-2 sm:p-6 sm:pt-0">
                 <CardTitle className="line-clamp-2 space-x-1 font-semibold leading-none tracking-tight max-sm:text-sm sm:line-clamp-3">
-                  <Link href={`/promocao/${sale.slug}/${sale.id}`}>
+                  <Link href={`/sale/${sale.slug}/${sale.id}`}>
                     {sale.title}
                   </Link>
                 </CardTitle>
 
                 <div className="grid grid-cols-3 gap-x-3 sm:block sm:gap-x-0 sm:space-y-2">
                   <Link
-                    href={`/promocao/${sale.slug}/${sale.id}`}
+                    href={`/sale/${sale.slug}/${sale.id}`}
                     className="flex h-full items-center"
                   >
                     <div className="relative mx-auto aspect-square w-full select-none sm:w-8/12">
@@ -398,7 +398,7 @@ export function SaleCard({
                             'hidden h-fit w-full rounded-xl font-semibold sm:inline-flex',
                           )}
                         >
-                          <span className="mr-2">ACESSAR</span>
+                          <span className="mr-2">ACCESS</span>
                           {/* <Icons.ExternalLink
                             className="h-4 w-4"
                             strokeWidth={3}
@@ -432,7 +432,7 @@ export function SaleCard({
                   <div className="flex items-center">
                     {sale.commentsCount > 0 && (
                       <Link
-                        href={`/promocao/${sale.slug}/${sale.id}#comments`}
+                        href={`/sale/${sale.slug}/${sale.id}#comments`}
                         className={cn(
                           buttonVariants({ variant: 'ghost', size: 'sm' }),
                           'w-10 shrink-0 px-0',
@@ -456,13 +456,13 @@ export function SaleCard({
                 </div>
 
                 <Link
-                  href={`/promocao/${sale.slug}/${sale.id}`}
+                  href={`/sale/${sale.slug}/${sale.id}`}
                   className={cn(
                     buttonVariants({ variant: 'default' }),
                     'h-fit w-full rounded-xl py-1.5 font-semibold sm:hidden',
                   )}
                 >
-                  VISUALIZAR
+                  VIEW
                   <Icons.ChevronRight
                     className="ml-1 h-4 w-4"
                     strokeWidth={3}
@@ -477,7 +477,7 @@ export function SaleCard({
             <ContextMenuSub>
               <ContextMenuSubTrigger className="flex gap-2">
                 <Icons.SmilePlus className="h-4 w-4" />
-                <span>Reagir</span>
+                <span>React</span>
               </ContextMenuSubTrigger>
               <ReactionMenu
                 saleId={sale.id}
@@ -488,16 +488,16 @@ export function SaleCard({
             </ContextMenuSub>
 
             <ContextMenuItem asChild>
-              <Link href={`/promocao/${sale.slug}/${sale.id}#comments`}>
+              <Link href={`/sale/${sale.slug}/${sale.id}#comments`}>
                 <Icons.MessageCircle className="mr-2 h-4 w-4" />
-                <span>Comentar</span>
+                <span>Comment</span>
               </Link>
             </ContextMenuItem>
 
             <ContextMenuItem asChild>
-              <Link href={`/promocao/${sale.slug}/${sale.id}`}>
+              <Link href={`/sale/${sale.slug}/${sale.id}`}>
                 <Icons.GanttChartSquare className="mr-2 h-4 w-4" />
-                <span>Ver promoção</span>
+                <span>View promotion</span>
               </Link>
             </ContextMenuItem>
 
@@ -507,7 +507,7 @@ export function SaleCard({
                 <ContextMenuItem asChild>
                   <Link href={`/${sale.category.slug}/${sale.productSlug}`}>
                     <Icons.Eye className="mr-2 h-4 w-4" />
-                    <span>Visualizar produto</span>
+                    <span>View product</span>
                   </Link>
                 </ContextMenuItem>
 
@@ -516,7 +516,7 @@ export function SaleCard({
                     href={`/${sale.category.slug}/${sale.productSlug}#historico`}
                   >
                     <Icons.LineChart className="mr-2 h-4 w-4" />
-                    <span>Histórico de preços</span>
+                    <span>Price history</span>
                   </Link>
                 </ContextMenuItem>
 
@@ -525,7 +525,7 @@ export function SaleCard({
                     href={`/${sale.category.slug}/${sale.productSlug}#precos`}
                   >
                     <Icons.DollarSign className="mr-2 h-4 w-4" />
-                    <span>Opções de compra</span>
+                    <span>Purchase options</span>
                   </Link>
                 </ContextMenuItem>
               </>
@@ -547,7 +547,7 @@ export function SaleCard({
                   }
                 >
                   <Icons.Edit className="mr-2 h-4 w-4" />
-                  Editar
+                  Edit
                 </ContextMenuItem>
 
                 <ContextMenuItem
@@ -562,7 +562,7 @@ export function SaleCard({
                 >
                   <AlertDialogTrigger className="w-full">
                     <Icons.Trash className="mr-2 h-4 w-4 " />
-                    Excluir
+                    Delete
                   </AlertDialogTrigger>
                 </ContextMenuItem>
                 <ContextMenuSeparator />
@@ -571,12 +571,12 @@ export function SaleCard({
                   {sale.expired ? (
                     <>
                       <Icons.Check className="mr-2 h-4 w-4" />
-                      Disponível
+                      Available
                     </>
                   ) : (
                     <>
                       <Icons.Clock8 className="mr-2 h-4 w-4" />
-                      Expirado
+                      Expired
                     </>
                   )}
                 </ContextMenuItem>
@@ -598,7 +598,7 @@ export function SaleCard({
           side="left"
         >
           <SheetHeader>
-            <SheetTitle>EDITAR PROMOÇÃO</SheetTitle>
+            <SheetTitle>EDIT PROMOTION</SheetTitle>
           </SheetHeader>
           <SaleForm
             mode="update"

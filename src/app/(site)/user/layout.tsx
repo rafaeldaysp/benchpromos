@@ -4,21 +4,21 @@ import { UserSidebarNav } from '@/components/layouts/user-sidebar-nav'
 import { Separator } from '@/components/ui/separator'
 
 export const metadata: Metadata = {
-  title: 'Configurações',
-  description: 'Configurações de conta e alertas do usuário.',
+  title: 'Settings',
+  description: 'Account settings and alerts.',
 }
 
 const userSidebarNavItems = [
   {
-    title: 'Perfil',
+    title: 'Profile',
     href: '/user/profile',
   },
   {
-    title: 'Alertas',
+    title: 'Alerts',
     href: '/user/alerts',
   },
   {
-    title: 'Favoritos',
+    title: 'Favorites',
     href: '/user/favorites',
   },
 ]
@@ -31,9 +31,9 @@ export default function SettingsLayout({ children }: SettingsLayoutProps) {
   return (
     <div className="space-y-6 px-4 py-8 sm:container">
       <div className="space-y-0.5">
-        <h2 className="font-medium tracking-tight">Configurações</h2>
+        <h2 className="font-medium tracking-tight">Settings</h2>
         <p className="text-sm text-muted-foreground">
-          Gerencie sua conta e defina seus alertas.
+          Manage your account and set your alerts.
         </p>
       </div>
       <Separator className="my-6" />

@@ -187,7 +187,7 @@ export function Products({
                 size={'sm'}
               >
                 <Icons.SlidersHorizontal className="mr-2 h-4 w-4" />
-                <span className="text-sm">Filtros</span>
+                <span className="text-sm">Filters</span>
                 {filters.length > 0 && (
                   <>
                     <Separator orientation="vertical" className="mx-2 h-4" />
@@ -206,7 +206,7 @@ export function Products({
               className="flex w-full flex-col px-0 sm:max-w-md"
             >
               <SheetHeader className="px-4">
-                <SheetTitle>Filtros</SheetTitle>
+                <SheetTitle>Filters</SheetTitle>
               </SheetHeader>
               <Separator />
               <ScrollArea className="flex-1">
@@ -214,7 +214,7 @@ export function Products({
                   {serverPriceRange[0] !== serverPriceRange[1] && (
                     <div className="space-y-4">
                       <h3 className="font-medium tracking-wide text-foreground">
-                        Preços (R$)
+                        Prices (USD)
                       </h3>
                       <Slider
                         variant="range"
@@ -240,7 +240,7 @@ export function Products({
                           }}
                         />
                         <span className="text-sm text-muted-foreground">
-                          até
+                          to
                         </span>
                         <PriceInput
                           min={serverPriceRange[0]}
@@ -275,11 +275,11 @@ export function Products({
                   )}
                   <div className="space-y-4">
                     <h3 className="font-medium tracking-wide text-foreground">
-                      Ofertas
+                      Offers
                     </h3>
                     <div className="flex items-center justify-between gap-x-2">
                       <Label className="text-sm" htmlFor="hasDeals">
-                        Mostrar não listados
+                        Show not listed
                       </Label>
                       <Switch
                         id="hasDeals"
@@ -299,7 +299,7 @@ export function Products({
                     </div>
                     <div className="flex items-center justify-between gap-x-2">
                       <Label className="text-sm" htmlFor="unavailable">
-                        Mostrar indisponíveis
+                        Show unavailable
                       </Label>
                       <Switch
                         id="unavailable"
@@ -392,7 +392,7 @@ export function Products({
                     })
                   }}
                 >
-                  Limpar Filtros
+                  Clear filters
                 </Button>
               </SheetFooter>
             </SheetContent>
@@ -413,12 +413,12 @@ export function Products({
                 size={'sm'}
               >
                 <Icons.DollarSign className="mr-2 h-4 w-4" />
-                <span className="text-sm">Preços</span>
+                <span className="text-sm">Prices</span>
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-full space-y-4 sm:w-fit">
               <h3 className="font-medium tracking-wide text-foreground">
-                Preços (R$)
+                Prices (US$)
               </h3>
               <Slider
                 variant="range"
@@ -443,7 +443,7 @@ export function Products({
                     ])
                   }}
                 />
-                <span className="text-muted-foreground">até</span>
+                <span className="text-muted-foreground">to</span>
                 <PriceInput
                   min={serverPriceRange[0]}
                   max={serverPriceRange[1]}
@@ -477,7 +477,7 @@ export function Products({
                   {isPending && (
                     <Icons.Spinner className="mr-2 h-4 w-4 animate-spin" />
                   )}
-                  Aplicar
+                  Apply
                 </Button>
                 <Button
                   className="w-full"
@@ -493,7 +493,7 @@ export function Products({
                     })
                   }}
                 >
-                  Resetar
+                  Reset
                 </Button>
               </div>
             </PopoverContent>
@@ -507,12 +507,12 @@ export function Products({
                   size={'sm'}
                 >
                   <Icons.Menu className="mr-2 h-4 w-4" />
-                  <span className="text-sm">Categorias</span>
+                  <span className="text-sm">Categories</span>
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-full space-y-4 sm:w-fit">
                 <h3 className="font-medium tracking-wide text-foreground">
-                  Categorias
+                  Categories
                 </h3>
                 <div className="w-52 space-y-1">
                   {subcategories?.map((subcategory) => (
@@ -545,7 +545,7 @@ export function Products({
                       })
                     }
                   >
-                    Todas
+                    All
                   </Button>
                 </div>
               </PopoverContent>
@@ -577,7 +577,7 @@ export function Products({
         <div className="flex flex-col items-center justify-between gap-4 max-sm:w-full sm:flex-row lg:justify-normal">
           <div className="flex w-full items-center justify-between gap-x-4 sm:justify-normal">
             <h3 className="whitespace-nowrap text-sm">
-              {productCount ?? 0} resultado{productCount > 1 && 's'}
+              {productCount ?? 0} result{productCount > 1 && 's'}
             </h3>
             <Select
               defaultValue="relevance"
@@ -593,15 +593,15 @@ export function Products({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="relevance">Relevância</SelectItem>
-                <SelectItem value="lowest">Menor preço</SelectItem>
-                <SelectItem value="highest">Maior preço</SelectItem>
+                <SelectItem value="relevance">Relevance</SelectItem>
+                <SelectItem value="lowest">Lowest price</SelectItem>
+                <SelectItem value="highest">Highest price</SelectItem>
               </SelectContent>
             </Select>
           </div>
           <div className="flex w-full items-center justify-between gap-x-4 sm:justify-normal">
             <Label className="text-sm" htmlFor="installmentSwitch">
-              Apenas parcelado
+              Only installment
             </Label>
             <Switch
               id="installmentSwitch"
@@ -623,7 +623,7 @@ export function Products({
         </div>
 
         <div className="hidden items-center gap-x-4 lg:flex">
-          <h3 className="text-sm">Produtos por página</h3>
+          <h3 className="text-sm">Products per page</h3>
           <Select
             defaultValue="20"
             value={limit}

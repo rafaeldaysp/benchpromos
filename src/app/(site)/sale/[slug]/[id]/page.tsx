@@ -52,14 +52,14 @@ export async function generateMetadata({ params }: SalePageProps) {
     title: sale.title,
     description: `${sale.category.name} | ${sale.title}`,
     alternates: {
-      canonical: `/promocao/${[sale.slug]}/${sale.id}`,
+      canonical: `/sale/${[sale.slug]}/${sale.id}`,
     },
     openGraph: {
       type: 'website',
       locale: 'pt_BR',
       title: sale.title,
       description: `${sale.category.name} | ${sale.title}`,
-      url: siteConfig.url + `/promocao/${sale.slug}/${sale.id}`,
+      url: siteConfig.url + `/sale/${sale.slug}/${sale.id}`,
       images: [sale.imageUrl],
       siteName: siteConfig.name,
     },

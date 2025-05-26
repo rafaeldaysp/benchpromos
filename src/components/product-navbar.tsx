@@ -14,7 +14,7 @@ const options: {
   icon?: LucideIcon
 }[] = [
   {
-    label: 'Histórico',
+    label: 'History',
     value: 'historico',
     icon: Icons.LineChart,
   },
@@ -24,17 +24,17 @@ const options: {
     icon: Icons.TrendingUp,
   },
   {
-    label: 'Ficha técnica',
+    label: 'Technical sheet',
     value: 'ficha-tecnica',
     icon: Icons.GanttChartSquare,
   },
   {
-    label: 'Análise',
+    label: 'Analysis',
     value: 'analise',
     icon: Icons.ScrollText,
   },
   {
-    label: 'Preços',
+    label: 'Prices',
     value: 'precos',
     icon: Icons.DollarSign,
   },
@@ -49,7 +49,7 @@ const options: {
     icon: Icons.BarChart4,
   },
   {
-    label: 'Arquivos',
+    label: 'Files',
     value: 'files',
     icon: Icons.File,
   },

@@ -78,7 +78,7 @@ export function SalesNavSimplified() {
         </ScrollArea>
         <div className="flex items-center justify-between gap-x-2">
           <Label className="w-max text-sm" htmlFor="showExpired">
-            Mostrar expiradas
+            Show expired
           </Label>
           <Switch
             id="showExpired"

@@ -83,7 +83,7 @@ export function AlertCard({
         <Card id="alert-card" className="overflow-hidden">
           {userAlertPrice && (
             <CardHeader className="block bg-primary px-6 py-1 text-sm font-medium text-primary-foreground">
-              Alerta em{' '}
+              Alert at{' '}
               <strong>{priceFormatter.format(userAlertPrice / 100)}</strong>
             </CardHeader>
           )}
@@ -94,9 +94,9 @@ export function AlertCard({
                 htmlFor={switchId}
                 className="flex flex-1 flex-col space-y-1"
               >
-                <CardTitle>Quer economizar?</CardTitle>
+                <CardTitle>Want to save money?</CardTitle>
                 <CardDescription>
-                  Nós alertamos você quando o preço baixar
+                  We alert you when the price drops
                 </CardDescription>
               </Label>
               <DialogTrigger asChild>
@@ -109,7 +109,7 @@ export function AlertCard({
           {userAlertPrice && (
             <CardFooter className="pb-4">
               <DialogTrigger asChild>
-                <Button variant="outline">Editar alerta</Button>
+                <Button variant="outline">Edit alert</Button>
               </DialogTrigger>
             </CardFooter>
           )}
@@ -187,15 +187,13 @@ export function AlertPrice({
   return (
     <DialogContent>
       <DialogHeader>
-        <DialogTitle className="text-center text-xl">
-          Alerta de Preço
-        </DialogTitle>
+        <DialogTitle className="text-center text-xl">Price alert</DialogTitle>
         <DialogDescription className="text-center">
           {!!userAlertPrice
-            ? `Você tem um alerta de preço para ${priceFormatter.format(
+            ? `You have a price alert for ${priceFormatter.format(
                 userAlertPrice / 100,
               )}`
-            : 'Você ainda não possui um alerta para esse produto'}
+            : 'You do not have an alert for this product yet'}
         </DialogDescription>
       </DialogHeader>
       <div className="space-y-4  text-center">
@@ -203,8 +201,8 @@ export function AlertPrice({
           <span className="flex items-center justify-center">
             <Icons.Bell className="mr-2 h-4 w-4 text-auxiliary" />
             {!!userAlertPrice
-              ? 'Para alterar o alerta, indique um novo valor:'
-              : 'Para criar um alerta, indique um valor:'}
+              ? 'To edit the alert, indicate a new value:'
+              : 'To create an alert, indicate a value:'}
           </span>
           <div className="flex justify-center gap-x-2">
             <Button

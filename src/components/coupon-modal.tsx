@@ -61,7 +61,7 @@ export function CouponModal({
         <div className="flex flex-col items-start">
           <span className="flex items-center font-semibold">
             <Icons.Tag className="mr-2 h-4 w-4 text-auxiliary" />
-            Cupom disponível
+            Coupon available
           </span>
           {description}
         </div>
@@ -84,7 +84,7 @@ export function CouponDialog({
   return (
     <DialogContent className="w-[400px]" onClick={(e) => e.preventDefault()}>
       <DialogHeader>
-        <DialogTitle className="text-center">Cupom disponível</DialogTitle>
+        <DialogTitle className="text-center">Coupon available</DialogTitle>
       </DialogHeader>
       <div className="space-y-4">
         {coupon.description && (
@@ -98,17 +98,17 @@ export function CouponDialog({
         <CopyButton value={coupon.code} />
         <p className="inline-flex items-center text-xs">
           <Icons.AlertCircle className="mr-2 h-6 w-6 text-auxiliary" />
-          Copie o código e cole no carrinho de compras antes de finalizar seu
-          pedido na loja.
+          Copy the code and paste it into your shopping cart before finalizing
+          your purchase at the store.
         </p>
         <article className="text-sm text-muted-foreground">
-          Lembrando que os cupons podem estar sujeitos a validação e é possível
-          que alguns não funcionem. Faça o teste no processo de checkout.
+          Note that coupons may be subject to validation and some may not work.
+          Make the test in the checkout process.
         </article>
       </div>
       <DialogFooter>
         <Button className="w-full" onClick={() => setOpen(false)}>
-          Entendi
+          I understand
         </Button>
       </DialogFooter>
     </DialogContent>
@@ -134,7 +134,7 @@ export function CouponSheet({ open, setOpen, coupon }: CouponDialogProps) {
       >
         {/* <div className="relative -top-4 left-1/2 h-1.5 w-12 shrink-0 -translate-x-1/2 rounded-full bg-accent" /> */}
         <SheetHeader>
-          <SheetTitle className="text-center">Cupom disponível</SheetTitle>
+          <SheetTitle className="text-center">Available coupon</SheetTitle>
         </SheetHeader>
         <div className="flex-1 space-y-4">
           {coupon.description && (
@@ -148,18 +148,17 @@ export function CouponSheet({ open, setOpen, coupon }: CouponDialogProps) {
           <CopyButton value={coupon.code} />
           <p className="inline-flex items-center text-xs">
             <Icons.AlertCircle className="mr-2 h-6 w-6 text-auxiliary" />
-            Copie o código e cole no carrinho de compras antes de finalizar seu
-            pedido na loja.
+            Copy the code and paste it into your shopping cart before finalizing
+            your purchase at the store.
           </p>
           <article className="text-sm text-muted-foreground">
-            Lembrando que os cupons podem estar sujeitos a validação e é
-            possível que alguns não funcionem. Faça o teste no processo de
-            checkout.
+            Note that coupons may be subject to validation and some may not
+            work. Make the test in the checkout process.
           </article>
         </div>
         <SheetFooter>
           <Button className="w-full" onClick={() => setOpen(false)}>
-            Entendi
+            I understand
           </Button>
         </SheetFooter>
       </SheetContent>

@@ -130,17 +130,17 @@ export function Combobox() {
         <Icons.Search className="h-4 w-4 xl:mr-2" aria-hidden="true" />
         <div className="hidden w-[78%] xl:block">
           <span className="line-clamp-1 break-all text-start">
-            {query.trim().length > 0 ? query : 'Procurar produtos...'}
+            {query.trim().length > 0 ? query : 'Search products...'}
           </span>
         </div>
-        <span className="sr-only">Procurar produtos</span>
+        <span className="sr-only">Search products</span>
         <kbd className="pointer-events-none absolute right-1.5 top-2 hidden h-6 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 xl:flex">
           <span className="text-xs">Ctrl</span>K
         </kbd>
       </Button>
       <CommandDialog open={isOpen} onOpenChange={setIsOpen}>
         <CommandInput
-          placeholder="Procurar produtos..."
+          placeholder="Search products..."
           value={query}
           onValueChange={setQuery}
         />
@@ -148,7 +148,7 @@ export function Combobox() {
           <CommandEmpty
             className={cn(isPending ? 'hidden' : 'py-6 text-center text-sm')}
           >
-            Nenhum produto encontrado.
+            No products found.
           </CommandEmpty>
           {isPending && products.length === 0 ? (
             <div className="space-y-1 overflow-hidden px-1 py-2">

@@ -181,8 +181,8 @@ export async function generateMetadata({ params }: ProductPageProps) {
 
   if (errors || !product)
     return {
-      title: 'Não encontrado',
-      description: 'Essa página não foi encontrada.',
+      title: 'Not Found',
+      description: 'This page was not found.',
     }
 
   const metadata: Metadata = {
@@ -193,7 +193,7 @@ export async function generateMetadata({ params }: ProductPageProps) {
     },
     openGraph: {
       type: 'website',
-      locale: 'pt_BR',
+      locale: 'en_US',
       title: product.name,
       description: `${product.category.name} | ${product.name}`,
       url: siteConfig.url + `/${product.category.slug}/${product.slug}`,
@@ -281,12 +281,12 @@ export default async function ProductPage({ params }: ProductPageProps) {
                     />
                   ) : (
                     <strong className="text-xl text-destructive">
-                      Indisponível
+                      Unavailable
                     </strong>
                   )}
                 </>
               ) : (
-                <strong className="text-xl text-warning">Não listado</strong>
+                <strong className="text-xl text-warning">Not listed</strong>
               )}
             </div>
           </div>
@@ -315,10 +315,10 @@ export default async function ProductPage({ params }: ProductPageProps) {
               <p className="flex flex-1 flex-col">
                 <span className="flex items-center gap-x-2 font-semibold">
                   <Icons.StarFilled className="h-4 w-4 text-auxiliary" />
-                  Testado pelo canal
+                  Tested by the channel
                 </span>
                 <span className="text-muted-foreground">
-                  Assista ao vídeo sobre este produto em nosso canal
+                  Watch the video about this product on our channel
                 </span>
               </p>
               <Icons.ChevronRight className="h-4 w-4" />
@@ -334,9 +334,9 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
       <section id="historico">
         <div className="space-y-1">
-          <h2 className="font-semibold tracking-tight md:text-xl">Histórico</h2>
+          <h2 className="font-semibold tracking-tight md:text-xl">History</h2>
           <p className="text-sm text-muted-foreground">
-            Veja a evolução do preço deste produto ao longo do tempo
+            See the price evolution of this product over time
           </p>
         </div>
         <Separator className="my-4" />
@@ -372,19 +372,13 @@ export default async function ProductPage({ params }: ProductPageProps) {
           </div>
 
           <aside className="flex flex-col gap-y-2 xl:col-span-2">
-            {/* <AlertCard
-              productId={product.id}
-              switchId="alert-middle"
-              productPrice={bestDeal?.price ?? 0}
-              token={token}
-            /> */}
             <section id="precos" className="h-full">
               <Card className="h-full">
                 <CardHeader className="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
                   <div className="grid flex-1 gap-1 text-center sm:text-left">
-                    <CardTitle>Opções de compra</CardTitle>
+                    <CardTitle>Purchase Options</CardTitle>
                     <CardDescription>
-                      Veja os preços deste produto em outras lojas
+                      See the prices of this product in other stores
                     </CardDescription>
                   </div>
                 </CardHeader>
@@ -412,7 +406,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                           </span>
                           {deal.id === bestDeal.id && deal.availability && (
                             <Badge className="absolute left-1/2 top-2.5 w-fit -translate-x-1/2 px-1">
-                              {deal.saleId ? 'EM PROMOÇÃO' : 'MELHOR PREÇO'}
+                              {deal.saleId ? 'ON SALE' : 'BEST PRICE'}
                             </Badge>
                           )}
                         </CardHeader>
@@ -448,13 +442,13 @@ export default async function ProductPage({ params }: ProductPageProps) {
                                         )}
                                       </strong>{' '}
                                       <span className="text-muted-foreground">
-                                        à vista{' '}
+                                        in cash{' '}
                                       </span>
                                     </p>
                                     {!!deal.installments &&
                                       !!deal.totalInstallmentPrice && (
                                         <span className="text-muted-foreground">
-                                          ou{' '}
+                                          or{' '}
                                           <strong className="text-sm md:text-base">
                                             {priceFormatter.format(
                                               priceCalculator(
@@ -470,11 +464,11 @@ export default async function ProductPage({ params }: ProductPageProps) {
                                               ) / 100,
                                             )}
                                           </strong>{' '}
-                                          em{' '}
+                                          in{' '}
                                           <strong className="text-sm md:text-base">
                                             {deal.installments}x
                                           </strong>{' '}
-                                          de{' '}
+                                          of{' '}
                                           <strong className="text-sm md:text-base">
                                             {priceFormatter.format(
                                               priceCalculator(
@@ -496,7 +490,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                                   </>
                                 ) : (
                                   <strong className="text-lg text-destructive">
-                                    Indisponível
+                                    Unavailable
                                   </strong>
                                 )}
                               </div>
@@ -511,8 +505,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
                                   coupon={deal.coupon}
                                   description={
                                     <span className="text-muted-foreground">
-                                      {couponFormatter(deal.coupon.discount)} de
-                                      desconto neste produto
+                                      {couponFormatter(deal.coupon.discount)}{' '}
+                                      off on this product
                                     </span>
                                   }
                                 />
@@ -522,7 +516,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                                   cashback={deal.cashback}
                                   description={
                                     <span className="text-muted-foreground">
-                                      {deal.cashback.value}% de volta com{' '}
+                                      {deal.cashback.value}% back with{' '}
                                       {deal.cashback.provider}
                                     </span>
                                   }
@@ -541,9 +535,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
                                 target="_blank"
                               >
                                 <span className="mr-2 font-semibold">
-                                  ACESSAR
+                                  ACCESS
                                 </span>
-                                {/* <Icons.ExternalLink strokeWidth={3} className="h-4 w-4" /> */}
                               </a>
                             </>
                           </CardFooter>
@@ -565,10 +558,10 @@ export default async function ProductPage({ params }: ProductPageProps) {
       <section id="ficha-tecnica">
         <header className="space-y-1">
           <h2 className="font-semibold tracking-tight md:text-xl">
-            Ficha técnica
+            Technical Sheet
           </h2>
           <p className="text-sm text-muted-foreground">
-            Conheça as especificações técnicas do produto
+            Learn about the technical specifications of the product
           </p>
         </header>
         <Separator className="my-4" />
@@ -601,17 +594,17 @@ export default async function ProductPage({ params }: ProductPageProps) {
           </div>
         ) : (
           <h3 className="text-sm text-muted-foreground">
-            Estamos trabalhando para trazer todas as informações necessárias em
-            breve. Agradecemos sua paciência e interesse pelo produto.
+            We are working to bring all the necessary information soon. Thank
+            you for your patience and interest in the product.
           </h3>
         )}
       </section>
 
       <section id="analise">
         <header className="space-y-1">
-          <h2 className="font-semibold tracking-tight md:text-xl">Análise</h2>
+          <h2 className="font-semibold tracking-tight md:text-xl">Analysis</h2>
           <p className="text-sm text-muted-foreground">
-            Veja o que nossa equipe tem a dizer sobre o produto
+            See what our team has to say about the product
           </p>
         </header>
         <Separator className="my-4" />
@@ -619,9 +612,9 @@ export default async function ProductPage({ params }: ProductPageProps) {
           <div className="rounded-xl border shadow md:gap-x-8">
             <Card className="border-none shadow-none">
               <CardHeader className="space-y-1 p-4">
-                <CardTitle>Prós e contras</CardTitle>
+                <CardTitle>Pros and Cons</CardTitle>
                 <CardDescription>
-                  Conheça os pontos positivos e negativos do produto
+                  Learn about the positive and negative points of the product
                 </CardDescription>
               </CardHeader>
 
@@ -630,7 +623,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                   <CardHeader className="flex items-center p-4">
                     <Badge variant={'success'} className="flex w-fit gap-x-1">
                       <Icons.Check className="h-4 w-4 " />
-                      Prós
+                      Pros
                     </Badge>
                   </CardHeader>
                   <CardContent className="p-4 pt-0">
@@ -651,7 +644,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                       className="flex w-fit gap-x-1"
                     >
                       <Icons.X className="h-4 w-4 " />
-                      Contras
+                      Cons
                     </Badge>
                   </CardHeader>
                   <CardContent className="p-4 pt-0">
@@ -669,9 +662,9 @@ export default async function ProductPage({ params }: ProductPageProps) {
             </Card>
             <Card className="border-none shadow-none">
               <CardHeader className="space-y-1 p-4 pt-0">
-                <CardTitle>Comentários</CardTitle>
+                <CardTitle>Comments</CardTitle>
                 <CardDescription>
-                  Entenda a análise de nossa equipe
+                  Understand our team&apos;s analysis
                 </CardDescription>
               </CardHeader>
               <CardContent className="p-4 pt-0">
@@ -687,202 +680,19 @@ export default async function ProductPage({ params }: ProductPageProps) {
           </div>
         ) : (
           <h3 className="text-sm text-muted-foreground">
-            Estamos trabalhando diligentemente para trazer análises detalhadas e
-            precisas em breve. Agradecemos sua compreensão e interesse em nossa
-            análise.
+            We are diligently working to bring detailed and accurate analyses
+            soon. Thank you for your understanding and interest in our analysis.
           </h3>
         )}
       </section>
 
-      {/* <section id="precos">
-        <div className="flex items-center justify-between">
-          <div className="space-y-1">
-            <h2 className="font-semibold tracking-tight md:text-xl">
-              Opções de compra
-            </h2>
-            <p className="text-sm text-muted-foreground">
-              Veja os preços deste produto em outras lojas
-            </p>
-          </div>
-        </div>
-        <Separator className="my-4" />
-        {product.deals.length === 0 && (
-          <h3 className="text-sm text-muted-foreground">
-            Poxa, esse produto ainda não foi listado em nenhuma loja. Mas não se
-            procure! Estamos trabalhando para trazer as melhores ofertas para
-            você.
-          </h3>
-        )}
-
-        <ScrollArea
-          className={cn('rounded-xl border', {
-            'h-[450px]': product.deals.length > 2,
-            hidden: product.deals.length == 0,
-          })}
-        >
-          {product.deals.map((deal) => (
-            <Card
-              key={deal.id}
-              className={cn(
-                'border-transparent shadow-none transition-colors hover:bg-muted/50',
-                {
-                  'border-primary':
-                    deal.id === bestDeal.id && deal.availability,
-                },
-              )}
-            >
-              <CardHeader className="relative p-4">
-                <span className="h-fit w-20 break-words text-sm font-semibold text-muted-foreground">
-                  {deal.retailer.name}
-                </span>
-                {deal.id === bestDeal.id && deal.availability && (
-                  <Badge className="absolute left-1/2 top-2.5 w-fit -translate-x-1/2 px-1">
-                    MELHOR PREÇO
-                  </Badge>
-                )}
-              </CardHeader>
-              <div className="lg:flex">
-                <CardContent className="flex-1 space-y-2 px-4 py-0 lg:pb-4">
-                  <main className="flex items-center gap-x-2 ">
-                    <div className="relative mx-auto aspect-square h-20">
-                      <Image
-                        src={product.imageUrl}
-                        alt={product.name}
-                        className="rounded-lg object-contain"
-                        fill
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                      />
-                    </div>
-
-                    <div className="flex flex-1 flex-col text-xs">
-                      {deal.availability ? (
-                        <>
-                          <p>
-                            <strong className="text-lg">
-                              {priceFormatter.format(
-                                priceCalculator(
-                                  deal.price,
-                                  deal.coupon?.availability
-                                    ? deal.coupon.discount
-                                    : undefined,
-                                  deal.cashback?.value,
-                                ) / 100,
-                              )}
-                            </strong>{' '}
-                            <span className="text-muted-foreground">
-                              à vista{' '}
-                            </span>
-                          </p>
-                          {!!deal.installments &&
-                            !!deal.totalInstallmentPrice && (
-                              <span className="text-muted-foreground">
-                                ou{' '}
-                                <strong className="text-sm md:text-base">
-                                  {priceFormatter.format(
-                                    priceCalculator(
-                                      deal.totalInstallmentPrice,
-                                      deal.coupon?.availability
-                                        ? deal.coupon.discount
-                                        : undefined,
-                                      deal.cashback?.value,
-                                    ) / 100,
-                                  )}
-                                </strong>{' '}
-                                em{' '}
-                                <strong className="text-sm md:text-base">
-                                  {deal.installments}x
-                                </strong>{' '}
-                                de{' '}
-                                <strong className="text-sm md:text-base">
-                                  {priceFormatter.format(
-                                    priceCalculator(
-                                      deal.totalInstallmentPrice,
-                                      deal.coupon?.availability
-                                        ? deal.coupon.discount
-                                        : undefined,
-                                      deal.cashback?.value,
-                                    ) /
-                                      (100 * deal.installments),
-                                  )}
-                                </strong>
-                              </span>
-                            )}
-                        </>
-                      ) : (
-                        <strong className="text-lg text-destructive">
-                          Indisponível
-                        </strong>
-                      )}
-                    </div>
-                  </main>
-                  <div
-                    className={cn('flex flex-col gap-2 lg:flex-row lg:gap-4', {
-                      hidden: !deal.availability,
-                    })}
-                  >
-                    {deal.coupon?.availability && (
-                      <CouponModal
-                        coupon={deal.coupon}
-                        className="lg:w-fit"
-                        description={
-                          <span className="text-muted-foreground">
-                            {couponFormatter(deal.coupon.discount)} de desconto
-                            neste produto
-                          </span>
-                        }
-                      />
-                    )}
-                    {deal.cashback && (
-                      <CashbackModal
-                        cashback={deal.cashback}
-                        className="lg:w-fit"
-                        description={
-                          <span className="text-muted-foreground">
-                            {deal.cashback.value}% de volta com{' '}
-                            {deal.cashback.provider}
-                          </span>
-                        }
-                      />
-                    )}
-                  </div>
-                </CardContent>
-                <CardFooter className="flex flex-col space-y-1 p-4 pt-2">
-                  <>
-                    <a
-                      className={cn(
-                        buttonVariants(),
-                        'flex h-10 w-full cursor-pointer rounded-xl',
-                      )}
-                      href={deal.url}
-                      target="_blank"
-                    >
-                      <span className="mr-2 font-semibold">ACESSAR</span>
-                    </a>
-                  </>
-                </CardFooter>
-              </div>
-            </Card>
-          ))}
-        </ScrollArea>
-      </section> */}
-
-      {/* <section id="promocoes">
-        <header className="space-y-1">
-          <h2 className="font-semibold tracking-tight md:text-xl">Promoções</h2>
-          <p className="text-sm text-muted-foreground">
-            Acompanhe as últimas promoções deste produto
-          </p>
-        </header>
-        <Separator className="my-4" />
-        <ProductSales product={product} />
-      </section> */}
       <section id="benchmarks">
         <header className="space-y-1">
           <h2 className="font-semibold tracking-tight md:text-xl">
             Benchmarks
           </h2>
           <p className="text-sm text-muted-foreground">
-            Saiba como este produto performa em nossos testes
+            Find out how this product performs in our tests
           </p>
         </header>
         <Separator className="my-4" />
@@ -891,9 +701,9 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
       <section id="files">
         <header className="space-y-1">
-          <h2 className="font-semibold tracking-tight md:text-xl">Arquivos</h2>
+          <h2 className="font-semibold tracking-tight md:text-xl">Files</h2>
           <p className="text-sm text-muted-foreground">
-            Veja alguns arquivos relevantes para este produto
+            See some relevant files for this product
           </p>
         </header>
         <Separator className="my-4" />
@@ -904,7 +714,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
         <header className="space-y-1">
           <h2 className="font-semibold tracking-tight md:text-xl">Review</h2>
           <p className="text-sm text-muted-foreground">
-            Assista ao vídeo sobre este produto em nosso canal
+            Watch the video about this product on our channel
           </p>
         </header>
         <Separator className="my-4" />
@@ -930,8 +740,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
           </div>
         ) : (
           <h3 className="text-sm text-muted-foreground">
-            Este produto ainda não foi avaliado em nosso canal, mas fique
-            atento! Assim que tivermos avaliações, você será o primeiro a saber.
+            This product has not yet been reviewed on our channel, but stay
+            tuned! As soon as we have reviews, you will be the first to know.
           </h3>
         )}
       </section>

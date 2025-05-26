@@ -49,19 +49,19 @@ export function UserAccountNav({ user }: UserAccountNavProps) {
         <DropdownMenuItem className="cursor-pointer" asChild>
           <Link href="/user/profile">
             <Icons.User className="mr-2 h-4 w-4" />
-            <span>Perfil</span>
+            <span>Profile</span>
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem className="cursor-pointer" asChild>
           <Link href="/user/alerts">
             <Icons.Bell className="mr-2 h-4 w-4" />
-            <span>Alertas</span>
+            <span>Alerts</span>
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem className="cursor-pointer" asChild>
           <Link href="/user/favorites">
             <Icons.Heart className="mr-2 h-4 w-4" />
-            <span>Favoritos</span>
+            <span>Favorites</span>
           </Link>
         </DropdownMenuItem>
 
@@ -91,7 +91,7 @@ export function UserAccountNav({ user }: UserAccountNavProps) {
         <DropdownMenuItem className="cursor-pointer" asChild>
           <Link href={'/politica-de-privacidade'}>
             <Icons.MenuSquare className="mr-2 h-4 w-4" />
-            <span>Política de Privacidade</span>
+            <span>Privacy Policy</span>
           </Link>
         </DropdownMenuItem>
 
@@ -101,7 +101,7 @@ export function UserAccountNav({ user }: UserAccountNavProps) {
           <DropdownMenuItem className="cursor-pointer" asChild>
             <Link href={'/sign-up/step2'}>
               <Icons.AlertCircle className="mr-2 h-4 w-4" />
-              <span>Verificar conta</span>
+              <span>Verify account</span>
             </Link>
           </DropdownMenuItem>
         )}
@@ -114,7 +114,7 @@ export function UserAccountNav({ user }: UserAccountNavProps) {
           }}
         >
           <Icons.LogOut className="mr-2 h-4 w-4" />
-          <span>Sair</span>
+          <span>Logout</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

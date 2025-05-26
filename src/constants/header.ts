@@ -8,22 +8,22 @@ interface HeaderOptionsProps {
 export function headerOptions({ categories }: HeaderOptionsProps) {
   const options: headerOption[] = [
     {
-      title: 'Notebooks',
-      slug: 'notebooks',
+      title: 'Laptops',
+      slug: 'laptops',
       icon: Icons.Laptop,
     },
-    {
-      title: 'Periféricos',
-      icon: Icons.Headphones,
-      content: [
-        { title: 'Mouses', slug: 'mouses' },
-        { title: 'Teclados', slug: 'teclados' },
-        { title: 'Headsets', slug: 'headsets' },
-        { title: 'Microfones', slug: 'microfones' },
-        { title: 'Mousepads', slug: 'mousepads' },
-        { title: 'Controles', slug: 'controles' },
-      ],
-    },
+    // {
+    //   title: 'Peripherals',
+    //   icon: Icons.Headphones,
+    //   content: [
+    //     { title: 'Mouses', slug: 'mouses' },
+    //     { title: 'Keyboards', slug: 'keyboards' },
+    //     { title: 'Headsets', slug: 'headsets' },
+    //     { title: 'Microphones', slug: 'microphones' },
+    //     { title: 'Mousepads', slug: 'mousepads' },
+    //     { title: 'Joysticks', slug: 'joysticks' },
+    //   ],
+    // },
     // {
     //   title: 'Desktop',
     //   icon: Icons.PcCase,
@@ -46,7 +46,7 @@ export function headerOptions({ categories }: HeaderOptionsProps) {
   )
 
   const more = {
-    title: 'Mais',
+    title: 'More',
     icon: Icons.AlignLeft,
     content: othersCategories
       .map((category) => {
@@ -61,16 +61,16 @@ export function headerOptions({ categories }: HeaderOptionsProps) {
   if (more.content.length > 0) options.push(more)
 
   const moreHeaders: headerOption[] = [
-    {
-      title: 'Benchmarks',
-      slug: 'benchmarks',
-      icon: Icons.BarChart4,
-    },
-    {
-      title: 'Recomendações',
-      slug: 'recommendations',
-      icon: Icons.StarFilled,
-    },
+    // {
+    //   title: 'Benchmarks',
+    //   slug: 'benchmarks',
+    //   icon: Icons.BarChart4,
+    // },
+    // {
+    //   title: 'Recomendações',
+    //   slug: 'recommendations',
+    //   icon: Icons.StarFilled,
+    // },
     // {
     //   title: 'Awards',
     //   slug: 'awards',

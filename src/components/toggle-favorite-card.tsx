@@ -93,7 +93,7 @@ export function ToggleFavoriteCard({
       <Card id="alert-card" className="overflow-hidden">
         {userFavorited && (
           <CardHeader className="block bg-primary px-6 py-1 text-sm font-medium text-primary-foreground">
-            Salvo nos favoritos
+            Saved in favorites
           </CardHeader>
         )}
         <CardContent className="py-4">
@@ -103,9 +103,9 @@ export function ToggleFavoriteCard({
               htmlFor={switchId}
               className="flex flex-1 flex-col space-y-1"
             >
-              <CardTitle>Salvar como favorito</CardTitle>
+              <CardTitle>Save as favorite</CardTitle>
               <CardDescription>
-                Acompanhe esse produto salvando entre seus produtos favoritos
+                Follow this product by saving it in your favorite products
               </CardDescription>
             </Label>
             <Switch

@@ -58,7 +58,7 @@ export function UserProfileForm({ user }: UserProfileFormProps) {
         toast.error(error.message)
       },
       onCompleted(_data, _clientOptions) {
-        toast.success('Perfil atualizado com sucesso!')
+        toast.success('Profile updated successfully!')
         router.refresh()
       },
     },
@@ -88,7 +88,7 @@ export function UserProfileForm({ user }: UserProfileFormProps) {
           name="image"
           render={() => (
             <FormItem>
-              <FormLabel className="text-base">Foto de perfil</FormLabel>
+              <FormLabel className="text-base">Profile picture</FormLabel>
               <div className="flex items-center space-x-4">
                 <UserAvatar
                   user={{
@@ -107,8 +107,8 @@ export function UserProfileForm({ user }: UserProfileFormProps) {
                 </FormControl>
               </div>
               <FormDescription>
-                Selecine um imagem para usar como foto de perfil pública.
-                (Temporariamente desabilitado)
+                Select an image to use as a public profile picture. (Temporarily
+                disabled)
               </FormDescription>
             </FormItem>
           )}
@@ -118,12 +118,12 @@ export function UserProfileForm({ user }: UserProfileFormProps) {
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-base">Nome</FormLabel>
+              <FormLabel className="text-base">Name</FormLabel>
               <FormControl>
-                <Input placeholder="Seu nome" {...field} />
+                <Input placeholder="Your name" {...field} />
               </FormControl>
               <FormDescription>
-                Este nome será mostrado publicamente.
+                This name will be shown publicly.
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -132,7 +132,7 @@ export function UserProfileForm({ user }: UserProfileFormProps) {
 
         <Button disabled={isLoading} type="submit">
           {isLoading && <Icons.Spinner className="mr-2 h-4 w-4 animate-spin" />}
-          Atualizar perfil
+          Update profile
         </Button>
       </form>
     </Form>

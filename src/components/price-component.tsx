@@ -47,14 +47,14 @@ export function PriceComponent({
     <Tabs defaultValue="1x" className="w-full">
       <TabsList className="w-full">
         <TabsTrigger value="1x" className="w-1/2">
-          À vista
+          In cash
         </TabsTrigger>
         <TabsTrigger
           value="installment"
           className="w-1/2"
           disabled={!bestInstallmentDeal?.totalInstallmentPrice}
         >
-          Parcelado
+          Installment
         </TabsTrigger>
       </TabsList>
 
@@ -63,11 +63,11 @@ export function PriceComponent({
           <div className="flex flex-col gap-y-1">
             {bestDeal.saleId && (
               <div className="h-fit rounded-lg bg-auxiliary/20 py-1 text-center text-xs text-muted-foreground">
-                <strong className="text-auxiliary">EM PROMOÇÃO</strong>
+                <strong className="text-auxiliary">ON SALE</strong>
               </div>
             )}
             <p className="text-muted-foreground">
-              menor preço à vista via <strong>{bestDeal.retailer.name}</strong>
+              best price in cash via <strong>{bestDeal.retailer.name}</strong>
             </p>
 
             <p>
@@ -83,7 +83,7 @@ export function PriceComponent({
                   ) / 100,
                 )}
               </strong>{' '}
-              <span className="text-muted-foreground">à vista </span>
+              <span className="text-muted-foreground">in cash </span>
             </p>
 
             {bestDeal.discounts.length > 0 && (
@@ -129,7 +129,7 @@ export function PriceComponent({
                         ) / 100,
                       )}
                     </strong>{' '}
-                    <span className="text-muted-foreground">à vista </span>
+                    <span className="text-muted-foreground">in cash </span>
                   </p>
                 </span>
               </div>
@@ -140,8 +140,8 @@ export function PriceComponent({
               coupon={bestDeal.coupon}
               description={
                 <span className="text-muted-foreground">
-                  {couponFormatter(bestDeal.coupon.discount)} de desconto{' '}
-                  <span className="hidden sm:inline-flex">neste produto</span>
+                  {couponFormatter(bestDeal.coupon.discount)} off on this{' '}
+                  <span className="hidden sm:inline-flex">product</span>
                 </span>
               }
             />
@@ -152,7 +152,7 @@ export function PriceComponent({
               cashback={bestDeal.cashback}
               description={
                 <span className="text-muted-foreground">
-                  {bestDeal.cashback.value}% de volta com{' '}
+                  {bestDeal.cashback.value}% back with{' '}
                   {bestDeal.cashback.provider}
                 </span>
               }
@@ -167,7 +167,7 @@ export function PriceComponent({
             href={bestDeal.url}
             target="_blank"
           >
-            <span className="mr-2 font-semibold">ACESSAR</span>
+            <span className="mr-2 font-semibold">ACCESS</span>
           </a>
         </div>
       </TabsContent>
@@ -179,7 +179,7 @@ export function PriceComponent({
               <div className="flex flex-col gap-y-1">
                 {bestInstallmentDeal.saleId && (
                   <div className="h-fit rounded-lg bg-auxiliary/20 py-1 text-center text-xs text-muted-foreground">
-                    <strong className="text-auxiliary">EM PROMOÇÃO</strong>
+                    <strong className="text-auxiliary">ON SALE</strong>
                   </div>
                 )}
                 <p className="text-muted-foreground">
@@ -203,7 +203,7 @@ export function PriceComponent({
                     )}
                   </strong>{' '}
                   <span className="text-muted-foreground">
-                    em <strong>{bestInstallmentDeal.installments}x </strong> de{' '}
+                    in <strong>{bestInstallmentDeal.installments}x </strong> of{' '}
                     <strong>
                       {priceFormatter.format(
                         priceCalculator(
@@ -226,7 +226,7 @@ export function PriceComponent({
                   <div className="flex flex-col items-start rounded-xl bg-auxiliary/20 px-4 py-2 text-sm text-muted-foreground">
                     <span className="flex items-center font-semibold">
                       <Icons.AlertCircle className="mr-2 h-4 w-4 text-auxiliary" />
-                      Preço final com cashback
+                      Final price with cashback
                     </span>
                     <span className="ml-1 text-foreground">
                       <p>
@@ -245,9 +245,9 @@ export function PriceComponent({
                           )}
                         </strong>{' '}
                         <span className="text-muted-foreground">
-                          em{' '}
+                          in{' '}
                           <strong>{bestInstallmentDeal.installments}x </strong>{' '}
-                          de{' '}
+                          of{' '}
                           <strong>
                             {priceFormatter.format(
                               priceCalculator(
@@ -274,11 +274,9 @@ export function PriceComponent({
                   coupon={bestInstallmentDeal.coupon}
                   description={
                     <span className="text-muted-foreground">
-                      {couponFormatter(bestInstallmentDeal.coupon.discount)} de
-                      desconto{' '}
-                      <span className="hidden sm:inline-flex">
-                        neste produto
-                      </span>
+                      {couponFormatter(bestInstallmentDeal.coupon.discount)} off
+                      on this{' '}
+                      <span className="hidden sm:inline-flex">product</span>
                     </span>
                   }
                 />
@@ -289,7 +287,7 @@ export function PriceComponent({
                   cashback={bestInstallmentDeal.cashback}
                   description={
                     <span className="text-muted-foreground">
-                      {bestInstallmentDeal.cashback.value}% de volta com{' '}
+                      {bestInstallmentDeal.cashback.value}% back with{' '}
                       {bestInstallmentDeal.cashback.provider}
                     </span>
                   }
@@ -303,7 +301,7 @@ export function PriceComponent({
                 href={bestInstallmentDeal.url}
                 target="_blank"
               >
-                <span className="mr-2 font-semibold">ACESSAR</span>
+                <span className="mr-2 font-semibold">ACCESS</span>
               </a>
             </div>
           </TabsContent>

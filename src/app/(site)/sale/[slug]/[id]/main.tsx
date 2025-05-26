@@ -315,8 +315,10 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
                 coupon={sale.couponSchema}
                 description={
                   <span className="text-muted-foreground">
-                    {couponFormatter(sale.couponSchema.discount)} de desconto{' '}
-                    <span className="hidden sm:inline-flex">neste produto</span>
+                    {couponFormatter(sale.couponSchema.discount)} discount{' '}
+                    <span className="hidden sm:inline-flex">
+                      on this product
+                    </span>
                   </span>
                 }
               />
@@ -327,7 +329,7 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
                 cashback={sale.cashback}
                 description={
                   <span className="text-muted-foreground">
-                    {sale.cashback.value}% de volta com {sale.cashback.provider}
+                    {sale.cashback.value}% back with {sale.cashback.provider}
                   </span>
                 }
               />
@@ -339,7 +341,7 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
                 target="_blank"
                 id="access_sale_from_page"
               >
-                <span className="mr-2 font-semibold">ACESSAR</span>
+                <span className="mr-2 font-semibold">ACCESS</span>
                 {/* <Icons.ExternalLink strokeWidth={3} className="h-4 w-4" /> */}
               </a>
             </div>
@@ -352,7 +354,7 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
                 )}
                 id="product_view_from_sale_page"
               >
-                VISUALIZAR PRODUTO
+                VIEW PRODUCT
                 <Icons.ChevronRight strokeWidth={3} className="ml-2 h-4 w-4" />
               </Link>
             )}
@@ -382,7 +384,7 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
             onClick={() => handleShare()}
           >
             <Icons.Share2 className="mr-2 h-4 w-4" />
-            Compartilhar
+            Share
           </Button>
           <Reactions
             apolloClient={client}
@@ -413,10 +415,10 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
             <div>
               <div className="space-y-1">
                 <h2 className="font-semibold tracking-tight md:text-xl">
-                  Histórico
+                  History
                 </h2>
                 <p className="text-sm text-muted-foreground">
-                  Veja a evolução do preço deste produto ao longo do tempo
+                  See the evolution of the price of this product over time
                 </p>
               </div>
               <Separator className="my-4" />
@@ -433,7 +435,7 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
                   Review
                 </h2>
                 <p className="text-sm text-muted-foreground">
-                  Assista ao vídeo sobre este produto em nosso canal
+                  Watch the video about this product on our channel
                 </p>
               </header>
               <Separator className="my-4" />
@@ -450,9 +452,9 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
                 </div>
               ) : (
                 <h3 className="text-sm text-muted-foreground">
-                  Este produto ainda não foi avaliado em nosso canal, mas fique
-                  atento! Assim que tivermos avaliações, você será o primeiro a
-                  saber.
+                  This product has not been reviewed on our channel yet, but
+                  stay tuned! As soon as we have reviews, you will be the first
+                  to know.
                 </h3>
               )}
             </section>
@@ -466,11 +468,11 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
               <p className="flex flex-1 flex-col">
                 <span className="flex items-center gap-x-2 font-semibold">
                   <Icons.StarFilled className="h-4 w-4 text-auxiliary" />
-                  Mais informações do produto
+                  More information about the product
                 </span>
                 <span className="text-muted-foreground">
-                  Essa página é apenas uma postagem da promoção. Clique aqui e
-                  acesse as informações completas do produto.
+                  This page is only a promotion post. Click here and access the
+                  complete product information.
                 </span>
               </p>
               <Icons.ChevronRight className="h-4 w-4" />

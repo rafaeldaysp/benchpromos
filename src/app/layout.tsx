@@ -4,7 +4,7 @@ import 'react-notion-x/src/styles.css'
 import './globals.css'
 
 import dayjs from 'dayjs'
-import 'dayjs/locale/pt-br'
+import 'dayjs/locale/en'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { type Metadata, type Viewport } from 'next'
 import { Montserrat as FontSans } from 'next/font/google'
@@ -23,7 +23,7 @@ const fontSans = FontSans({
 })
 
 dayjs.extend(relativeTime)
-dayjs.locale('pt-br')
+dayjs.locale('en')
 
 export const metadata: Metadata = {
   metadataBase: new URL(env.NEXT_PUBLIC_APP_URL),
@@ -51,7 +51,7 @@ export const metadata: Metadata = {
   // ],
   openGraph: {
     type: 'website',
-    locale: 'pt_BR',
+    locale: 'en_US',
     url: siteConfig.url,
     title: siteConfig.name,
     description: siteConfig.description,
@@ -75,7 +75,7 @@ interface RootLayoutProps {
 
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
-    <html lang="pt-BR" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
       <head>
         <Script id="lomadee" type="text/javascript">
           {`

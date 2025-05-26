@@ -76,7 +76,7 @@ export function ProductCard({
   return (
     <Link
       href={`/${product.category.slug}/${product.slug}`}
-      aria-label={`Visualizar detalhes de ${product.name}`}
+      aria-label={`View details of ${product.name}`}
       className="flex"
     >
       <Card
@@ -88,7 +88,7 @@ export function ProductCard({
       >
         {bestDeal?.saleId && (
           <div className="h-fit bg-auxiliary/20 py-1 text-center text-xs text-muted-foreground">
-            <strong className="text-auxiliary">EM PROMOÇÃO</strong>
+            <strong className="text-auxiliary">ON SALE</strong>
           </div>
         )}
         <CardHeader className="relative flex flex-col justify-center p-3 pb-1.5 sm:hidden">
@@ -96,7 +96,7 @@ export function ProductCard({
             <span className="text-center">
               <Badge className="w-fit px-1 py-[1px]">
                 <Icons.StarFilled className="mr-1 h-3 w-3" />
-                TESTADO NO CANAL
+                TESTED ON CHANNEL
               </Badge>
             </span>
           )}
@@ -125,7 +125,7 @@ export function ProductCard({
             {product.reviewUrl && (
               <Badge className="hidden w-fit px-1 py-[1px] sm:inline-flex">
                 <Icons.StarFilled className="mr-1" />
-                TESTADO NO CANAL
+                TESTED ON CHANNEL
               </Badge>
             )}
             {bestDeal ? (
@@ -134,7 +134,7 @@ export function ProductCard({
                   <>
                     <div className="flex flex-col gap-1">
                       <CardDescription className="hidden text-sm leading-none sm:block">
-                        Menor preço via{' '}
+                        Lowest price via{' '}
                         <strong>{bestDeal.retailer.name}</strong>
                       </CardDescription>
                       <p>
@@ -142,18 +142,18 @@ export function ProductCard({
                           {priceFormatter.format(price / 100)}
                         </strong>{' '}
                         <span className="text-xs text-muted-foreground sm:text-sm">
-                          {onlyInstallments ? 'à prazo' : 'à vista'}{' '}
+                          {onlyInstallments ? 'in installments' : 'in cash'}{' '}
                         </span>
                       </p>
 
                       {!!bestDeal.installments &&
                         !!bestDeal.totalInstallmentPrice && (
                           <span className="text-xs text-muted-foreground sm:text-sm">
-                            {onlyInstallments ? 'até' : 'ou'}{' '}
+                            {onlyInstallments ? 'to' : 'or'}{' '}
                             <strong className="text-sm">
                               {bestDeal.installments}x
                             </strong>{' '}
-                            de{' '}
+                            of{' '}
                             <strong className="text-sm">
                               {priceFormatter.format(
                                 priceCalculator(
@@ -175,7 +175,7 @@ export function ProductCard({
                     {bestDeal.coupon?.availability && (
                       <p className="flex flex-col text-sm">
                         <span className="text-xs text-muted-foreground sm:text-sm">
-                          Com cupom
+                          With coupon
                         </span>
                         <strong>{bestDeal.coupon.code}</strong>
                       </p>
@@ -183,15 +183,15 @@ export function ProductCard({
                     {bestDeal.cashback && (
                       <>
                         <strong className="hidden text-sm sm:inline-flex">
-                          {bestDeal.cashback.value}% de cashback com{' '}
+                          {bestDeal.cashback.value}% of cashback with{' '}
                           {bestDeal.cashback.provider}
                         </strong>
                         <p className="flex flex-col text-sm sm:hidden">
                           <span className="text-xs text-muted-foreground">
-                            Com cashback
+                            With cashback
                           </span>
                           <strong>
-                            {bestDeal.cashback.value}% com{' '}
+                            {bestDeal.cashback.value}% with{' '}
                             {bestDeal.cashback.provider}
                           </strong>
                         </p>
@@ -200,12 +200,12 @@ export function ProductCard({
                   </>
                 ) : (
                   <strong className="text-lg text-destructive">
-                    Indisponível
+                    Unavailable
                   </strong>
                 )}
               </>
             ) : (
-              <strong className="text-lg text-warning">Não listado</strong>
+              <strong className="text-lg text-warning">Not listed</strong>
             )}
           </main>
         </CardContent>
@@ -216,7 +216,7 @@ export function ProductCard({
             'rounded-t-none sm:hidden',
           )}
         >
-          Ver produto
+          View product
           <Icons.ChevronRight className="ml-1 h-4 w-4" strokeWidth={3} />
         </CardFooter>
       </Card>
