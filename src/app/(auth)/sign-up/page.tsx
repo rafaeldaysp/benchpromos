@@ -17,8 +17,8 @@ import { env } from '@/env.mjs'
 
 export const metadata: Metadata = {
   metadataBase: new URL(env.NEXT_PUBLIC_APP_URL),
-  title: 'Cadastrar',
-  description: 'Cadastrar uma conta',
+  title: 'Sign Up',
+  description: 'Sign up for an account',
 }
 
 export default async function SignUpPage() {
@@ -29,9 +29,9 @@ export default async function SignUpPage() {
     <div>
       <Card>
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl">Cadastrar</CardTitle>
+          <CardTitle className="text-2xl">Sign Up</CardTitle>
           <CardDescription>
-            Escolha seu método de cadastro preferido
+            Choose your preferred sign up method
           </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-4">
@@ -42,7 +42,7 @@ export default async function SignUpPage() {
             </div>
             <div className="relative flex justify-center text-xs uppercase">
               <span className="bg-background px-2 text-muted-foreground">
-                Ou continue com
+                Or continue with
               </span>
             </div>
           </div>
@@ -50,13 +50,13 @@ export default async function SignUpPage() {
         </CardContent>
         <CardFooter>
           <div className="text-sm text-muted-foreground">
-            Já possui uma conta?{' '}
+            Already have an account?{' '}
             <Link
-              aria-label="Entrar"
+              aria-label="Sign in"
               href="/sign-in"
               className="text-primary underline-offset-4 transition-colors hover:underline"
             >
-              Entrar
+              Sign in
             </Link>
           </div>
         </CardFooter>

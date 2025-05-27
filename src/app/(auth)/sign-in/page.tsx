@@ -17,8 +17,8 @@ import { env } from '@/env.mjs'
 
 export const metadata: Metadata = {
   metadataBase: new URL(env.NEXT_PUBLIC_APP_URL),
-  title: 'Entrar',
-  description: 'Entre com a sua conta',
+  title: 'Sign In',
+  description: 'Sign in to your account',
 }
 
 export default async function SignInPage() {
@@ -29,10 +29,8 @@ export default async function SignInPage() {
     <div>
       <Card>
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl">Entrar</CardTitle>
-          <CardDescription>
-            Escolha seu método de login preferido
-          </CardDescription>
+          <CardTitle className="text-2xl">Sign In</CardTitle>
+          <CardDescription>Choose your preferred login method</CardDescription>
         </CardHeader>
         <CardContent className="grid gap-4">
           <OAuthSignIn />
@@ -42,7 +40,7 @@ export default async function SignInPage() {
             </div>
             <div className="relative flex justify-center text-xs uppercase">
               <span className="bg-background px-2 text-muted-foreground">
-                Ou continue com
+                Or continue with
               </span>
             </div>
           </div>
@@ -51,22 +49,22 @@ export default async function SignInPage() {
         <CardFooter className="flex flex-wrap items-center justify-between gap-2">
           <div className="text-sm text-muted-foreground">
             <span className="mr-1 hidden sm:inline-block">
-              Não possui uma conta?
+              Don&apos;t have an account?
             </span>
             <Link
-              aria-label="Cadastrar"
+              aria-label="Sign up"
               href="/sign-up"
               className="text-primary underline-offset-4 transition-colors hover:underline"
             >
-              Cadastrar
+              Sign up
             </Link>
           </div>
           <Link
-            aria-label="Redefinir senha"
+            aria-label="Reset password"
             href="/sign-in/reset-password"
             className="text-sm text-primary underline-offset-4 transition-colors hover:underline"
           >
-            Redefinir senha
+            Reset password
           </Link>
         </CardFooter>
       </Card>

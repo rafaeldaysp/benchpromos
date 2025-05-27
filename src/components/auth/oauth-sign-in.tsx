@@ -26,7 +26,7 @@ export function OAuthSignIn() {
     setIsLoading(null)
 
     if (callback?.error) {
-      toast.error('Algo deu errado. Por favor, tente novamente.')
+      toast.error('Something went wrong. Please try again.')
     }
   }
 
@@ -37,7 +37,7 @@ export function OAuthSignIn() {
 
         return (
           <Button
-            aria-label={`Entrar com ${provider.name}`}
+            aria-label={`Sign in with ${provider.name}`}
             key={provider.name}
             variant="outline"
             className="w-full bg-background capitalize sm:w-auto"

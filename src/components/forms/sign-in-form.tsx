@@ -61,7 +61,7 @@ export function SignInForm() {
             <FormItem>
               <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input placeholder="exemplo@seuemail.com" {...field} />
+                <Input placeholder="example@email.com" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -72,7 +72,7 @@ export function SignInForm() {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Senha</FormLabel>
+              <FormLabel>Password</FormLabel>
               <FormControl>
                 <Input type="password" placeholder="**********" {...field} />
               </FormControl>
@@ -87,8 +87,8 @@ export function SignInForm() {
               aria-hidden="true"
             />
           )}
-          Entrar
-          <span className="sr-only">Entrar</span>
+          Sign in
+          <span className="sr-only">Sign in</span>
         </Button>
       </form>
     </Form>

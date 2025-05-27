@@ -50,7 +50,7 @@ export async function SiteHeader() {
                 href={'/benchmarks'}
               >
                 <Icons.BarChart4 className="h-4 w-4" />
-                <span className="sr-only">Mudar tema</span>
+                <span className="sr-only">Change theme</span>
               </Link>
             </div>
 
@@ -63,7 +63,7 @@ export async function SiteHeader() {
                 href="/sign-in"
                 className={buttonVariants({ variant: 'secondary' })}
               >
-                Entrar
+                Sign in
               </Link>
             )}
           </nav>
