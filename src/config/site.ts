@@ -16,24 +16,24 @@ export const links = [
 export const siteConfig = {
   name: 'Bench Promos',
   description:
-    'Um portal de tecnologia completo destinado ao mapeamento de ofertas e preços de produtos, publicações de testes de benchmarks realizados por nossa equipe e muito mais!',
+    'A tech portal for mapping product offers and prices, publishing benchmark tests conducted by our team, and more!',
   url: 'https://benchpromos.com',
   ogImage: 'https://benchpromos.com/opengraph-image.png',
   mainNav: [
     {
-      title: 'Notebooks',
-      href: '/notebooks',
+      title: 'Laptops',
+      href: '/laptops',
     },
-    {
-      title: 'Periféricos',
-      items: [
-        { title: 'Mouses', href: '/mouses' },
-        { title: 'Teclados', href: '/teclados' },
-        { title: 'Headsets', href: '/headsets' },
-        { title: 'Microfones', href: '/microfones' },
-        { title: 'Mousepads', href: '/mousepads' },
-        { title: 'Controles', href: '/controles' },
-      ],
-    },
+    // {
+    //   title: 'Peripherals',
+    //   items: [
+    //     { title: 'Mouses', href: '/mouses' },
+    //     { title: 'Keyboards', href: '/keyboards' },
+    //     { title: 'Headsets', href: '/headsets' },
+    //     { title: 'Microphones', href: '/microphones' },
+    //     { title: 'Mousepads', href: '/mousepads' },
+    //     { title: 'Joysticks', href: '/joysticks' },
+    //   ],
+    // },
   ],
 }
