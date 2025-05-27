@@ -21,7 +21,7 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
       >
         <>
           <Icons.ChevronLeft className="mr-2 h-4 w-4" />
-          Início
+          Home
         </>
       </Link>
       <main className="absolute left-[50%] top-[50%] w-full max-w-lg translate-x-[-50%] translate-y-[-50%]">

@@ -39,7 +39,7 @@ export function DashboardSidebarNav({
       >
         <>
           <Icons.Home className="mr-2 h-4 w-4" />
-          Início
+          Home
         </>
       </Link>
       {items.map((item) => (
