@@ -599,7 +599,7 @@ export function Products({
               </SelectContent>
             </Select>
           </div>
-          <div className="flex w-full items-center justify-between gap-x-4 sm:justify-normal">
+          {/* <div className="flex w-full items-center justify-between gap-x-4 sm:justify-normal">
             <Label className="text-sm" htmlFor="installmentSwitch">
               Only installment
             </Label>
@@ -619,7 +619,7 @@ export function Products({
                 })
               }
             />
-          </div>
+          </div> */}
         </div>
 
         <div className="hidden items-center gap-x-4 lg:flex">

@@ -3,7 +3,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 
-import Logo from '@/assets/logo-benchpromos.svg'
+import Logo from '@/assets/logo-benchpromos-us.svg'
 import LogoXmas from '@/assets/logo-natalina.svg'
 import {
   NavigationMenu,
@@ -36,7 +36,7 @@ export function MainNav({ categories }: MainNavProps) {
         href="/"
         className="flex items-center gap-x-1.5 sm:gap-x-2"
       >
-        <div className="relative aspect-square h-[30px] select-none">
+        <div className="relative aspect-square h-[40px] select-none">
           <Image
             src={Logo}
             alt="Logo"
