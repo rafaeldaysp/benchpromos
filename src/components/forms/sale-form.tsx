@@ -48,13 +48,13 @@ import { DiscountSelector } from '../discount-selector'
 import { DiscountFormDialog } from './discount-form'
 
 const saleLabels = [
-  'LANÇAMENTO',
-  'BAIXOU',
-  'PREÇÃO',
-  'PARCELADO',
-  'SORTEIO',
-  'HISTÓRICO',
-  'PREÇO HISTÓRICO',
+  'LAUNCH',
+  'PRICE DROP',
+  // 'PREÇÃO',
+  // 'PARCELADO',
+  // 'SORTEIO',
+  // 'HISTÓRICO',
+  'RECORD PRICE',
 ]
 
 const CREATE_SALE = gql`

@@ -114,7 +114,7 @@ const specialLabelColorsByLabel = {
   SORTEIO: { bg: 'bg-success/20', text: 'text-success' },
   DESTAQUE: { bg: 'bg-auxiliary/20', text: 'text-auxiliary' },
   HISTÓRICO: { bg: 'bg-destructive/20', text: 'text-destructive' },
-  'PREÇO HISTÓRICO': { bg: 'bg-destructive/20', text: 'text-destructive' },
+  'RECORD PRICE': { bg: 'bg-destructive/20', text: 'text-destructive' },
 }
 
 export function SaleCard({
