@@ -114,6 +114,10 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
           crossOrigin="anonymous"
           strategy="afterInteractive"
         /> */}
+        <meta
+          name="impact-site-verification"
+          content="58160452-7b18-43f6-b823-bd782a7fea2a"
+        />
       </head>
       <body
         className={cn(
