@@ -14,7 +14,7 @@ import {
   Trophy,
   Users,
 } from 'lucide-react'
-import { useEffect, useState, useTransition } from 'react'
+import { useEffect, useMemo, useState, useTransition } from 'react'
 
 import { GiveawayForm } from '@/components/forms/giveaway-form'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
@@ -57,6 +57,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { useQueryString } from '@/hooks/use-query-string'
 import { useFormStore } from '@/hooks/use-form-store'
+import { ptBR } from 'date-fns/locale'
 
 const UPDATE_GIVEAWAY = gql`
   mutation UpdateGiveaway($input: UpdateGiveawayInput!) {
@@ -72,6 +73,7 @@ const SET_GIVEAWAY_WINNER = gql`
   mutation SetGiveawayWinner($giveawayId: ID!, $index: Int!) {
     setGiveawayWinnerByIndex(giveawayId: $giveawayId, index: $index) {
       id
+      name
       winner {
         id
         name
@@ -81,118 +83,14 @@ const SET_GIVEAWAY_WINNER = gql`
     }
   }
 `
-// Generate a larger mock dataset for subscribers
-const generateMockUsers = (count: number) => {
-  const firstNames = [
-    'John',
-    'Jane',
-    'Robert',
-    'Emily',
-    'Michael',
-    'Sarah',
-    'David',
-    'Lisa',
-    'Thomas',
-    'Jennifer',
-    'William',
-    'Elizabeth',
-    'James',
-    'Mary',
-    'Charles',
-    'Patricia',
-    'Joseph',
-    'Linda',
-    'Richard',
-    'Barbara',
-  ]
-  const lastNames = [
-    'Smith',
-    'Johnson',
-    'Williams',
-    'Jones',
-    'Brown',
-    'Davis',
-    'Miller',
-    'Wilson',
-    'Moore',
-    'Taylor',
-    'Anderson',
-    'Thomas',
-    'Jackson',
-    'White',
-    'Harris',
-    'Martin',
-    'Thompson',
-    'Garcia',
-    'Martinez',
-    'Robinson',
-  ]
 
-  const locations = [
-    'New York, NY',
-    'Los Angeles, CA',
-    'Chicago, IL',
-    'Houston, TX',
-    'Phoenix, AZ',
-    'Philadelphia, PA',
-    'San Antonio, TX',
-    'San Diego, CA',
-    'Dallas, TX',
-    'San Jose, CA',
-  ]
-
-  const phoneNumbers = [
-    '(555) 123-4567',
-    '(555) 234-5678',
-    '(555) 345-6789',
-    '(555) 456-7890',
-    '(555) 567-8901',
-    '(555) 678-9012',
-    '(555) 789-0123',
-    '(555) 890-1234',
-    '(555) 901-2345',
-    '(555) 012-3456',
-  ]
-
-  return Array.from({ length: count }, (_, i) => {
-    const firstName = firstNames[Math.floor(Math.random() * firstNames.length)]
-    const lastName = lastNames[Math.floor(Math.random() * lastNames.length)]
-    return {
-      id: i + 1,
-      name: `${firstName} ${lastName}`,
-      email: `${firstName.toLowerCase()}.${lastName.toLowerCase()}@example.com`,
-      location: locations[Math.floor(Math.random() * locations.length)],
-      phone: phoneNumbers[Math.floor(Math.random() * phoneNumbers.length)],
-      joinDate: new Date(
-        2024,
-        Math.floor(Math.random() * 12),
-        Math.floor(Math.random() * 28) + 1,
-      )
-        .toISOString()
-        .split('T')[0],
-      avatar: `${firstName.charAt(0)}${lastName.charAt(0)}`,
+const SUBSCRIBE_TO_GIVEAWAY = gql`
+  mutation SubscribeToGiveaway($giveawayId: ID!) {
+    addUserToGiveaway(giveawayId: $giveawayId) {
+      id
     }
-  })
-}
-
-// Mock data with more subscribers
-const mockSubscribedUsers = generateMockUsers(100)
-
-type Prize = {
-  id: string
-  name: string
-  description: string
-  isOpen: boolean
-  subscribers: number[]
-  winner?: number
-  drawDate: string // ISO string format
-}
-
-type UserDetailsProps = {
-  userId: number
-  prizes: Prize[]
-  onClose: () => void
-}
+  }
+`
 
 interface GiveawaysMainProps {
   giveaways: (Giveaway & {
@@ -241,10 +139,11 @@ export default function GiveawaysMain({
   const uniqueDates = distinctDates
 
   function onDateSelect(date: string) {
+    setSelectedDate(date)
     startTransition(() => {
       router.push(
         `${pathname}?${createQueryString({
-          drawDate: format(date, 'yyyy-MM-dd'),
+          drawDate: date,
         })}`,
       )
     })
@@ -306,7 +205,7 @@ export default function GiveawaysMain({
           )
         } else {
           toast.error(
-            `Subscriptions for ${data?.updateGiveaway.name} are now closed.`,
+            `Inscrições para ${data?.updateGiveaway.name} estão fechadas.`,
           )
         }
         router.refresh()
@@ -328,8 +227,9 @@ export default function GiveawaysMain({
       onCompleted: (data) => {
         setWinner(data.setGiveawayWinnerByIndex.winner)
         toast.success(
-          `${data.setGiveawayWinnerByIndex.winner.name} has won the ${data.setGiveawayWinnerByIndex.giveaway.name}!`,
+          `${data.setGiveawayWinnerByIndex.winner.name} ganhou o prêmio ${data.setGiveawayWinnerByIndex.name}!`,
         )
+        router.refresh()
       },
       onError: (error) => {
         toast.error(error.message)
@@ -343,6 +243,22 @@ export default function GiveawaysMain({
     },
   )
 
+  const [subscribeToGiveaway, { loading: isLoadingSubscribe }] = useMutation(
+    SUBSCRIBE_TO_GIVEAWAY,
+    {
+      onCompleted: () => {
+        toast.success('Inscrição realizada com sucesso!')
+      },
+      onError: (error) => {
+        toast.error(error.message)
+      },
+      context: {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    },
+  )
   const executeDraw = (prizeId: string) => {
     const prize = giveaways.find((p) => p.id === prizeId)
     if (!prize || prize.participants.length === 0) return
@@ -381,24 +297,6 @@ export default function GiveawaysMain({
 
         setIsDrawing(false)
         setShowConfetti(true)
-
-        toast.custom((t) => (
-          <div
-            className={cn(
-              'rounded-md bg-green-50 p-4 shadow',
-              t && 'animate-in fade-in-0',
-            )}
-          >
-            <div className="flex items-center">
-              <Trophy className="size-6 text-green-500" />
-              <div className="ml-3">
-                <p className="text-sm font-medium text-green-800">
-                  {winner?.name} has won the {prize.name}!
-                </p>
-              </div>
-            </div>
-          </div>
-        ))
 
         setTimeout(() => {
           setShowConfetti(false)
@@ -456,7 +354,9 @@ export default function GiveawaysMain({
 
             <DatePickerWithPresets
               selectedDate={selectedDate ? parseISO(selectedDate) : undefined}
-              onSelect={(date) => onDateSelect(format(date, 'yyyy-MM-dd'))}
+              onSelect={(date) =>
+                onDateSelect(format(date, 'yyyy-MM-dd', { locale: ptBR }))
+              }
               presetDates={uniqueDates.map((date) => parseISO(date))}
             />
 
@@ -474,11 +374,11 @@ export default function GiveawaysMain({
 
           <div className="flex items-center gap-4">
             <div className="text-sm text-muted-foreground">
-              {giveaways.filter((g) => g.drawAt === selectedDate).length} prize
+              {giveaways.filter((g) => g.drawAt === selectedDate).length} prêmio
               {giveaways.filter((g) => g.drawAt === selectedDate).length !== 1
                 ? 's'
-                : ''}
-              on this date
+                : ''}{' '}
+              nesse dia
             </div>
             <Dialog
               open={openDialogs['giveawayCreateForm']}
@@ -511,11 +411,11 @@ export default function GiveawaysMain({
                 <TabsList className="mb-4">
                   <TabsTrigger value="prizes" className="text-sm">
                     <Gift className="mr-2 size-4" />
-                    Prizes
+                    Prêmios
                   </TabsTrigger>
                   <TabsTrigger value="subscribers" className="text-sm">
                     <Users className="mr-2 size-4" />
-                    Subscribers
+                    Inscritos
                   </TabsTrigger>
                 </TabsList>
               </div>
@@ -530,15 +430,15 @@ export default function GiveawaysMain({
                       {/* Prize status ribbon */}
                       {prize.winnerId ? (
                         <div className="absolute -right-12 top-7 rotate-45 bg-green-500 px-12 py-1 text-xs font-semibold text-white">
-                          COMPLETED
+                          CONCLUIDO
                         </div>
                       ) : prize.status === 'OPEN' ? (
                         <div className="absolute -right-12 top-7 rotate-45 bg-blue-500 px-12 py-1 text-xs font-semibold text-white">
-                          OPEN
+                          ABERTO
                         </div>
                       ) : (
                         <div className="absolute -right-12 top-7 rotate-45 bg-amber-500 px-12 py-1 text-xs font-semibold text-white">
-                          CLOSED
+                          FECHADO
                         </div>
                       )}
 
@@ -647,7 +547,7 @@ export default function GiveawaysMain({
                                   <Trophy className="size-8 text-yellow-600" />
                                 </div>
                                 <div className="mb-2 text-xl font-bold">
-                                  Winner!
+                                  Ganhador!
                                 </div>
                                 {prize.winner && (
                                   <button
@@ -671,7 +571,7 @@ export default function GiveawaysMain({
                               </div>
                               <div>
                                 <div className="text-sm text-muted-foreground">
-                                  Winner
+                                  Ganhador
                                 </div>
                                 <button
                                   // onClick={() =>
@@ -692,6 +592,10 @@ export default function GiveawaysMain({
                           <div className="flex items-center space-x-2">
                             <Switch
                               id={`subscription-${prize.id}`}
+                              disabled={
+                                prize.status === 'COMPLETED' ||
+                                prize.winnerId !== null
+                              }
                               checked={prize.status === 'OPEN'}
                               onCheckedChange={() =>
                                 updateGiveaway({
@@ -713,8 +617,8 @@ export default function GiveawaysMain({
                               className="text-sm font-medium"
                             >
                               {prize.status === 'OPEN'
-                                ? 'Subscriptions Open'
-                                : 'Subscriptions Closed'}
+                                ? 'Inscrições abertas'
+                                : 'Inscrições fechadas'}
                             </Label>
                           </div>
                           <Button
@@ -732,11 +636,22 @@ export default function GiveawaysMain({
                           >
                             {prize.winner ? (
                               <>
-                                <Trophy className="mr-2 size-4" /> Drawn
+                                <Trophy className="mr-2 size-4" /> Sorteado
                               </>
                             ) : (
-                              'Execute Draw'
+                              'Sortear'
                             )}
+                          </Button>
+                          <Button
+                            onClick={() =>
+                              subscribeToGiveaway({
+                                variables: {
+                                  giveawayId: prize.id,
+                                },
+                              })
+                            }
+                          >
+                            Inscrever-se
                           </Button>
                         </div>
                       </CardFooter>
@@ -748,14 +663,16 @@ export default function GiveawaysMain({
                       <Gift className="size-10 text-muted-foreground" />
                     </div>
                     <h3 className="mb-2 text-lg font-medium">
-                      No prizes for this date
+                      Sem prêmios para esta data
                     </h3>
                     <p className="mb-6 max-w-md text-muted-foreground">
-                      There are no prizes scheduled for{' '}
+                      Não há prêmios agendados para{' '}
                       {selectedDate
-                        ? format(parseISO(selectedDate), 'MMMM d, yyyy')
+                        ? format(parseISO(selectedDate), 'MMMM d, yyyy', {
+                            locale: ptBR,
+                          })
                         : 'this date'}
-                      . Create a new prize to get started.
+                      . Crie um novo prêmio para começar.
                     </p>
                     {/* <NewPrizeDialog
                       onCreatePrize={handleCreatePrize}
@@ -768,11 +685,13 @@ export default function GiveawaysMain({
               <TabsContent value="subscribers">
                 <Card>
                   <CardHeader>
-                    <CardTitle>Subscribed Users</CardTitle>
+                    <CardTitle>Inscritos</CardTitle>
                     <CardDescription>
-                      All users who have subscribed to prizes on{' '}
+                      Todos os usuários que se inscreveram em prêmios em{' '}
                       {selectedDate
-                        ? format(parseISO(selectedDate), 'MMMM d, yyyy')
+                        ? format(parseISO(selectedDate), 'MMMM d, yyyy', {
+                            locale: ptBR,
+                          })
                         : 'this date'}
                     </CardDescription>
                   </CardHeader>
@@ -873,11 +792,12 @@ export default function GiveawaysMain({
                                 return (
                                   <>
                                     <div className="mb-4 grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-3">
-                                      {paginatedSubscribers.map(
+                                      {/* {paginatedSubscribers.map(
                                         (subscriberId) => {
-                                          const user = mockSubscribedUsers.find(
+                                          const user = giveaways[currentPrizeIndex].participants.find(
                                             (u) => u.id === subscriberId,
                                           )
+                                          if (!user) return null
                                           const isWinner = false
 
                                           return (
@@ -931,7 +851,7 @@ export default function GiveawaysMain({
                                             </div>
                                           )
                                         },
-                                      )}
+                                      )} */}
                                     </div>
 
                                     {/* Pagination controls */}
@@ -1046,7 +966,7 @@ export default function GiveawaysMain({
                     ) : (
                       <div className="flex flex-col items-center justify-center py-12 text-center">
                         <p className="text-muted-foreground">
-                          No prizes available for this date.
+                          Não há prêmios disponíveis para esta data.
                         </p>
                       </div>
                     )}
@@ -1076,152 +996,152 @@ export default function GiveawaysMain({
   )
 }
 
-function UserDetails({ userId, prizes, onClose }: UserDetailsProps) {
-  const user = mockSubscribedUsers.find((u) => u.id === userId)
+// function UserDetails({ userId, prizes, onClose }: UserDetailsProps) {
+//   const user = mockSubscribedUsers.find((u) => u.id === userId)
 
-  if (!user) return <div>User not found</div>
+//   if (!user) return <div>User not found</div>
 
-  // Find prizes the user has subscribed to
-  const subscribedPrizes = prizes.filter((prize) =>
-    prize.subscribers.includes(userId),
-  )
+//   // Find prizes the user has subscribed to
+//   const subscribedPrizes = prizes.filter((prize) =>
+//     prize.subscribers.includes(userId),
+//   )
 
-  // Find prizes the user has won
-  const wonPrizes = prizes.filter((prize) => prize.winner === userId)
+//   // Find prizes the user has won
+//   const wonPrizes = prizes.filter((prize) => prize.winner === userId)
 
-  return (
-    <>
-      <DialogHeader>
-        <DialogTitle>User Details</DialogTitle>
-        <DialogDescription>
-          Detailed information about this user and their participation in draws
-        </DialogDescription>
-      </DialogHeader>
+//   return (
+//     <>
+//       <DialogHeader>
+//         <DialogTitle>User Details</DialogTitle>
+//         <DialogDescription>
+//           Detailed information about this user and their participation in draws
+//         </DialogDescription>
+//       </DialogHeader>
 
-      <div className="py-4">
-        <div className="mb-6 flex items-center gap-4">
-          <Avatar className="size-16 border-2 border-primary/20">
-            <AvatarFallback className="bg-primary/10 text-lg text-primary">
-              {user.avatar}
-            </AvatarFallback>
-          </Avatar>
-          <div>
-            <h3 className="text-xl font-bold">{user.name}</h3>
-            <div className="flex items-center text-sm text-muted-foreground">
-              <Mail className="mr-1 size-3" />
-              {user.email}
-            </div>
-            <div className="mt-1 flex items-center gap-2">
-              {wonPrizes.length > 0 && (
-                <Badge className="bg-yellow-500">
-                  <Trophy className="mr-1 size-3" /> Winner
-                </Badge>
-              )}
-              <Badge variant="outline" className="text-xs">
-                ID: {user.id}
-              </Badge>
-            </div>
-          </div>
-        </div>
+//       <div className="py-4">
+//         <div className="mb-6 flex items-center gap-4">
+//           <Avatar className="size-16 border-2 border-primary/20">
+//             <AvatarFallback className="bg-primary/10 text-lg text-primary">
+//               {user.avatar}
+//             </AvatarFallback>
+//           </Avatar>
+//           <div>
+//             <h3 className="text-xl font-bold">{user.name}</h3>
+//             <div className="flex items-center text-sm text-muted-foreground">
+//               <Mail className="mr-1 size-3" />
+//               {user.email}
+//             </div>
+//             <div className="mt-1 flex items-center gap-2">
+//               {wonPrizes.length > 0 && (
+//                 <Badge className="bg-yellow-500">
+//                   <Trophy className="mr-1 size-3" /> Ganhador
+//                 </Badge>
+//               )}
+//               <Badge variant="outline" className="text-xs">
+//                 ID: {user.id}
+//               </Badge>
+//             </div>
+//           </div>
+//         </div>
 
-        <div className="mb-4 grid grid-cols-1 gap-4 md:grid-cols-2">
-          <div className="space-y-2">
-            <h4 className="text-sm font-semibold text-muted-foreground">
-              Location
-            </h4>
-            <p>{user.location}</p>
-          </div>
-          <div className="space-y-2">
-            <h4 className="text-sm font-semibold text-muted-foreground">
-              Phone
-            </h4>
-            <p>{user.phone}</p>
-          </div>
-          <div className="space-y-2">
-            <h4 className="text-sm font-semibold text-muted-foreground">
-              Joined
-            </h4>
-            <p>{format(parseISO(user.joinDate), 'MMMM d, yyyy')}</p>
-          </div>
-          <div className="space-y-2">
-            <h4 className="text-sm font-semibold text-muted-foreground">
-              Subscribed to
-            </h4>
-            <p>
-              {subscribedPrizes.length} prize
-              {subscribedPrizes.length !== 1 ? 's' : ''}
-            </p>
-          </div>
-        </div>
+//         <div className="mb-4 grid grid-cols-1 gap-4 md:grid-cols-2">
+//           <div className="space-y-2">
+//             <h4 className="text-sm font-semibold text-muted-foreground">
+//               Localização
+//             </h4>
+//             <p>{user.location}</p>
+//           </div>
+//           <div className="space-y-2">
+//             <h4 className="text-sm font-semibold text-muted-foreground">
+//               Telefone
+//             </h4>
+//             <p>{user.phone}</p>
+//           </div>
+//           <div className="space-y-2">
+//             <h4 className="text-sm font-semibold text-muted-foreground">
+//               Joined
+//             </h4>
+//             <p>{format(parseISO(user.joinDate), 'MMMM d, yyyy')}</p>
+//           </div>
+//           <div className="space-y-2">
+//             <h4 className="text-sm font-semibold text-muted-foreground">
+//               Inscrito em
+//             </h4>
+//             <p>
+//               {subscribedPrizes.length} prêmio
+//               {subscribedPrizes.length !== 1 ? 's' : ''}
+//             </p>
+//           </div>
+//         </div>
 
-        <Separator className="my-4" />
+//         <Separator className="my-4" />
 
-        <div className="space-y-4">
-          <h4 className="font-medium">Prize Participation</h4>
+//         <div className="space-y-4">
+//           <h4 className="font-medium">Participação em prêmios</h4>
 
-          {subscribedPrizes.length > 0 ? (
-            <div className="space-y-3">
-              {subscribedPrizes.map((prize) => {
-                const isWinner = prize.winner === userId
+//           {subscribedPrizes.length > 0 ? (
+//             <div className="space-y-3">
+//               {subscribedPrizes.map((prize) => {
+//                 const isWinner = prize.winner === userId
 
-                return (
-                  <div
-                    key={prize.id}
-                    className={`rounded-lg border p-3 ${
-                      isWinner
-                        ? 'border-green-200 bg-green-50 dark:border-green-900 dark:bg-green-900/20'
-                        : ''
-                    }`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <div
-                          className={`rounded-full p-1.5 ${
-                            isWinner ? 'bg-yellow-100' : 'bg-primary/10'
-                          }`}
-                        >
-                          {isWinner ? (
-                            <Trophy className="size-4 text-yellow-600" />
-                          ) : (
-                            <Gift className="size-4 text-primary" />
-                          )}
-                        </div>
-                        <div>
-                          <div className="font-medium">{prize.name}</div>
-                          <div className="text-xs text-muted-foreground">
-                            {format(parseISO(prize.drawDate), 'MMMM d, yyyy')}
-                          </div>
-                        </div>
-                      </div>
-                      {isWinner && (
-                        <Badge className="bg-green-500">Winner</Badge>
-                      )}
-                    </div>
-                    {isWinner && (
-                      <div className="mt-2 text-sm text-green-600 dark:text-green-400">
-                        This user won this prize!
-                      </div>
-                    )}
-                  </div>
-                )
-              })}
-            </div>
-          ) : (
-            <div className="py-4 text-center text-muted-foreground">
-              This user hasnt subscribed to any prizes yet.
-            </div>
-          )}
-        </div>
-      </div>
+//                 return (
+//                   <div
+//                     key={prize.id}
+//                     className={`rounded-lg border p-3 ${
+//                       isWinner
+//                         ? 'border-green-200 bg-green-50 dark:border-green-900 dark:bg-green-900/20'
+//                         : ''
+//                     }`}
+//                   >
+//                     <div className="flex items-center justify-between">
+//                       <div className="flex items-center gap-2">
+//                         <div
+//                           className={`rounded-full p-1.5 ${
+//                             isWinner ? 'bg-yellow-100' : 'bg-primary/10'
+//                           }`}
+//                         >
+//                           {isWinner ? (
+//                             <Trophy className="size-4 text-yellow-600" />
+//                           ) : (
+//                             <Gift className="size-4 text-primary" />
+//                           )}
+//                         </div>
+//                         <div>
+//                           <div className="font-medium">{prize.name}</div>
+//                           <div className="text-xs text-muted-foreground">
+//                             {format(parseISO(prize.drawDate), 'MMMM d, yyyy')}
+//                           </div>
+//                         </div>
+//                       </div>
+//                       {isWinner && (
+//                         <Badge className="bg-green-500">Winner</Badge>
+//                       )}
+//                     </div>
+//                     {isWinner && (
+//                       <div className="mt-2 text-sm text-green-600 dark:text-green-400">
+//                         This user won this prize!
+//                       </div>
+//                     )}
+//                   </div>
+//                 )
+//               })}
+//             </div>
+//           ) : (
+//             <div className="py-4 text-center text-muted-foreground">
+//               Este usuário ainda não se inscreveu em nenhum prêmio.
+//             </div>
+//           )}
+//         </div>
+//       </div>
 
-      <DialogFooter>
-        <Button variant="outline" onClick={onClose}>
-          Close
-        </Button>
-      </DialogFooter>
-    </>
-  )
-}
+//       <DialogFooter>
+//         <Button variant="outline" onClick={onClose}>
+//           Fechar
+//         </Button>
+//       </DialogFooter>
+//     </>
+//   )
+// }
 
 function DatePickerWithPresets({
   selectedDate,
@@ -1245,11 +1165,14 @@ function DatePickerWithPresets({
           )}
         >
           <CalendarIcon className="mr-2 size-4" />
-          {selectedDate ? format(selectedDate, 'MMMM d, yyyy') : 'Select date'}
+          {selectedDate
+            ? format(selectedDate, "d 'de' MMMM 'de' yyyy", { locale: ptBR })
+            : 'Selecionar data'}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0" align="start">
         <Calendar
+          locale={ptBR}
           mode="single"
           selected={selectedDate}
           onSelect={(date) => {
@@ -1264,20 +1187,25 @@ function DatePickerWithPresets({
           <>
             <Separator />
             <div className="space-y-1 p-3">
-              <h4 className="text-sm font-medium">Go to date with prizes</h4>
+              <h4 className="text-sm font-medium">Ir para data com prêmios</h4>
               <div className="flex flex-wrap gap-1">
                 {presetDates.map((date, i) => (
                   <Button
                     key={i}
                     variant="outline"
                     size="sm"
-                    className="text-xs"
+                    className={cn(
+                      'text-xs',
+                      selectedDate?.toDateString() === date.toDateString()
+                        ? 'bg-primary text-primary-foreground'
+                        : '',
+                    )}
                     onClick={() => {
                       onSelect(date)
                       setOpen(false)
                     }}
                   >
-                    {format(date, 'MMM d')}
+                    {format(date, 'dd/MM', { locale: ptBR })}
                   </Button>
                 ))}
               </div>

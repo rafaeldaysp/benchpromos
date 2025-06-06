@@ -37,6 +37,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
 import { cn } from '@/lib/utils'
 import { format } from 'date-fns'
 import { CalendarIcon } from 'lucide-react'
+import { ptBR } from 'date-fns/locale'
 
 const CREATE_GIVEAWAY = gql`
   mutation CreateGiveaway($input: CreateGiveawayInput!) {
@@ -175,16 +176,17 @@ export function GiveawayForm({ mode = 'create', giveaway }: GiveawayFormProps) {
                       )}
                     >
                       {field.value ? (
-                        format(field.value, 'PPP')
+                        format(field.value, 'PPP', { locale: ptBR })
                       ) : (
-                        <span>Pick a date</span>
+                        <span>Selecione uma data</span>
                       )}
-                      <CalendarIcon className="size-4 ml-auto opacity-50" />
+                      <CalendarIcon className="ml-auto size-4 opacity-50" />
                     </Button>
                   </FormControl>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
                   <Calendar
+                    locale={ptBR}
                     mode="single"
                     selected={field.value}
                     onSelect={field.onChange}
@@ -235,7 +237,7 @@ export function GiveawayForm({ mode = 'create', giveaway }: GiveawayFormProps) {
         <Button type="submit" disabled={isLoading}>
           {isLoading && (
             <Icons.Spinner
-              className="size-4 mr-2 animate-spin"
+              className="mr-2 size-4 animate-spin"
               aria-hidden="true"
             />
           )}
