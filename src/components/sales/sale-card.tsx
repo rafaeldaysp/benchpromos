@@ -237,7 +237,7 @@ export function SaleCard({
                 </span>
 
                 {sale.label && (
-                  <Badge className="px-1 py-[1px] text-xs sm:hidden">
+                  <Badge className="px-1 py-px text-xs sm:hidden">
                     {sale.label}
                   </Badge>
                 )}
@@ -419,7 +419,7 @@ export function SaleCard({
                       className="w-6 shrink-0 sm:hidden"
                       onClick={() => setOpenMobileMenu(true)}
                     >
-                      <Icons.MoreVertical className="h-4 w-4" />
+                      <Icons.MoreVertical className="size-4" />
                     </Button>
                     <Reactions
                       saleId={sale.id}
@@ -441,7 +441,7 @@ export function SaleCard({
                         <span className="mr-1 text-sm">
                           {sale.commentsCount}
                         </span>
-                        <Icons.MessageCircle className="h-4 w-4" />
+                        <Icons.MessageCircle className="size-4" />
                       </Link>
                     )}
                     <Button
@@ -450,7 +450,7 @@ export function SaleCard({
                       className="w-10 shrink-0 px-0"
                       onClick={() => handleShare()}
                     >
-                      <Icons.Share2 className="h-4 w-4" />
+                      <Icons.Share2 className="size-4" />
                     </Button>
                   </div>
                 </div>
@@ -463,10 +463,7 @@ export function SaleCard({
                   )}
                 >
                   VISUALIZAR
-                  <Icons.ChevronRight
-                    className="ml-1 h-4 w-4"
-                    strokeWidth={3}
-                  />
+                  <Icons.ChevronRight className="ml-1 size-4" strokeWidth={3} />
                 </Link>
               </CardFooter>
             </Card>
@@ -476,7 +473,7 @@ export function SaleCard({
             {/* <MobileMenu open={openDrawer} setOpen={setOpenDrawer} /> */}
             <ContextMenuSub>
               <ContextMenuSubTrigger className="flex gap-2">
-                <Icons.SmilePlus className="h-4 w-4" />
+                <Icons.SmilePlus className="size-4" />
                 <span>Reagir</span>
               </ContextMenuSubTrigger>
               <ReactionMenu
@@ -489,14 +486,14 @@ export function SaleCard({
 
             <ContextMenuItem asChild>
               <Link href={`/promocao/${sale.slug}/${sale.id}#comments`}>
-                <Icons.MessageCircle className="mr-2 h-4 w-4" />
+                <Icons.MessageCircle className="mr-2 size-4" />
                 <span>Comentar</span>
               </Link>
             </ContextMenuItem>
 
             <ContextMenuItem asChild>
               <Link href={`/promocao/${sale.slug}/${sale.id}`}>
-                <Icons.GanttChartSquare className="mr-2 h-4 w-4" />
+                <Icons.GanttChartSquare className="mr-2 size-4" />
                 <span>Ver promoção</span>
               </Link>
             </ContextMenuItem>
@@ -506,7 +503,7 @@ export function SaleCard({
                 <ContextMenuSeparator />
                 <ContextMenuItem asChild>
                   <Link href={`/${sale.category.slug}/${sale.productSlug}`}>
-                    <Icons.Eye className="mr-2 h-4 w-4" />
+                    <Icons.Eye className="mr-2 size-4" />
                     <span>Visualizar produto</span>
                   </Link>
                 </ContextMenuItem>
@@ -515,7 +512,7 @@ export function SaleCard({
                   <Link
                     href={`/${sale.category.slug}/${sale.productSlug}#historico`}
                   >
-                    <Icons.LineChart className="mr-2 h-4 w-4" />
+                    <Icons.LineChart className="mr-2 size-4" />
                     <span>Histórico de preços</span>
                   </Link>
                 </ContextMenuItem>
@@ -524,7 +521,7 @@ export function SaleCard({
                   <Link
                     href={`/${sale.category.slug}/${sale.productSlug}#precos`}
                   >
-                    <Icons.DollarSign className="mr-2 h-4 w-4" />
+                    <Icons.DollarSign className="mr-2 size-4" />
                     <span>Opções de compra</span>
                   </Link>
                 </ContextMenuItem>
@@ -546,7 +543,7 @@ export function SaleCard({
                     setOpenDialog(`saleUpdateForm.${sale.id}`, true)
                   }
                 >
-                  <Icons.Edit className="mr-2 h-4 w-4" />
+                  <Icons.Edit className="mr-2 size-4" />
                   Editar
                 </ContextMenuItem>
 
@@ -561,7 +558,7 @@ export function SaleCard({
                   // }
                 >
                   <AlertDialogTrigger className="w-full">
-                    <Icons.Trash className="mr-2 h-4 w-4 " />
+                    <Icons.Trash className="mr-2 size-4 " />
                     Excluir
                   </AlertDialogTrigger>
                 </ContextMenuItem>
@@ -570,12 +567,12 @@ export function SaleCard({
                 <ContextMenuItem onClick={() => toggleSaleExpired()}>
                   {sale.expired ? (
                     <>
-                      <Icons.Check className="mr-2 h-4 w-4" />
+                      <Icons.Check className="mr-2 size-4" />
                       Disponível
                     </>
                   ) : (
                     <>
-                      <Icons.Clock8 className="mr-2 h-4 w-4" />
+                      <Icons.Clock8 className="mr-2 size-4" />
                       Expirado
                     </>
                   )}

@@ -39,6 +39,7 @@ import {
 import { Label } from '../ui/label'
 import { Skeleton } from '../ui/skeleton'
 import { DateTimePicker } from '../ui/datetime-picker'
+import { ptBR } from 'date-fns/locale'
 
 const CREATE_AWARDS_CATEGORY = gql`
   mutation CreateAwardsCategory($input: CreateAwardsCategoryInput!) {
@@ -187,6 +188,10 @@ export function AwardsCategoryForm({
               <FormLabel>Expira em</FormLabel>
               <FormControl>
                 <DateTimePicker
+                  locale={ptBR}
+                  showOutsideDays
+                  showWeekNumber={false}
+                  weekStartsOn={1}
                   value={new Date(field.value)}
                   onChange={field.onChange}
                 />
@@ -246,7 +251,7 @@ export function AwardsCategoryForm({
         <Button type="submit" disabled={isLoading}>
           {isLoading && (
             <Icons.Spinner
-              className="mr-2 h-4 w-4 animate-spin"
+              className="mr-2 size-4 animate-spin"
               aria-hidden="true"
             />
           )}

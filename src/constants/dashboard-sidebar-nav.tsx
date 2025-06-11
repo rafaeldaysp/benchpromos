@@ -16,7 +16,7 @@ import {
 export const dashboardSidebarItems = [
   {
     title: 'Dashboard',
-    url: '/dashboard',
+    url: '/dashboard/general',
     icon: LayoutDashboard,
     isActive: true,
     items: [],

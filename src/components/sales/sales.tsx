@@ -103,7 +103,7 @@ export function Sales({ user, productSlug }: SalesProps) {
         ))}
         {isPending ? (
           Array.from({ length: SALES_PER_SCROLL }).map((_, i) => (
-            <Skeleton key={i} className="h-full w-full" />
+            <Skeleton key={i} className="size-full" />
           ))
         ) : (
           <div ref={ref} hidden={!hasMoreSales} />

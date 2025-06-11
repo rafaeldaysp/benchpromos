@@ -63,7 +63,7 @@ export default async function SignUpStep2Page({
           <>
             {userVerified ? (
               <Alert variant="success">
-                <Icons.Check className="h-4 w-4" />
+                <Icons.Check className="size-4" />
                 <AlertTitle>Verificação concluída</AlertTitle>
                 <AlertDescription>
                   Parabéns! Seu e-mail foi verificado com sucesso. Você pode
@@ -72,7 +72,7 @@ export default async function SignUpStep2Page({
               </Alert>
             ) : (
               <Alert variant="warning">
-                <Icons.AlertCircle className="h-4 w-4" />
+                <Icons.AlertCircle className="size-4" />
                 <AlertTitle>Verificação pendente</AlertTitle>
                 <AlertDescription>
                   Por favor, verifique seu e-mail e clique no link de
@@ -84,7 +84,7 @@ export default async function SignUpStep2Page({
           </>
         ) : (
           <Alert variant="destructive">
-            <Icons.X className="h-4 w-4" />
+            <Icons.X className="size-4" />
             <AlertTitle>Login necessário</AlertTitle>
             <AlertDescription>
               Efetue o login para realizar a verificação de email. Se o seu

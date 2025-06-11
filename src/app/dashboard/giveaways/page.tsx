@@ -6,10 +6,14 @@ import { type User } from 'next-auth'
 import { getCurrentUserToken } from '@/app/_actions/user'
 import { format } from 'date-fns'
 import { notFound } from 'next/navigation'
+import { env } from '@/env.mjs'
 
 const GET_GIVEAWAYS = gql`
-  query GetGiveaways($drawDate: String) {
-    giveaways(drawDate: $drawDate) {
+  query GetGiveaways(
+    $getGiveawaysInput: GetGiveawaysInput
+    $getUsersInput: GetUsersInput
+  ) {
+    giveaways(getGiveawaysInput: $getGiveawaysInput) {
       distinctDates
       statusCounts {
         status
@@ -28,12 +32,23 @@ const GET_GIVEAWAYS = gql`
           image
         }
         participantsCount
+        winnerId
         winner {
           id
           name
           email
           image
         }
+      }
+    }
+    users(getUsersInput: $getUsersInput) {
+      count
+      list {
+        id
+        name
+        email
+        image
+        role
       }
     }
   }
@@ -46,7 +61,8 @@ interface GiveawaysPageProps {
 export default async function GiveawaysPage({
   searchParams,
 }: GiveawaysPageProps) {
-  const { drawDate } = searchParams
+  const { drawDate, subscribersPage, subscribersSearch, selectedGiveaway } =
+    searchParams
 
   const today = format(new Date(), 'yyyy-MM-dd')
   const _drawDate = drawDate ?? today
@@ -66,10 +82,36 @@ export default async function GiveawaysPage({
         winner: User | null
       })[]
     }
+    users: {
+      count: number
+      list: {
+        id: string
+        name: string
+        email: string
+        image: string
+        role: 'USER' | 'MOD' | 'ADMIN'
+      }[]
+    }
   }>({
     query: GET_GIVEAWAYS,
     variables: {
-      drawDate: _drawDate,
+      getGiveawaysInput: {
+        drawDate: _drawDate,
+      },
+      getUsersInput: {
+        search: subscribersSearch,
+        pagination: {
+          limit: 12,
+          page: Number(subscribersPage ?? '1'),
+        },
+        giveawayId: selectedGiveaway,
+        includeGiveaways: true,
+      },
+    },
+    context: {
+      headers: {
+        'api-key': env.NEXT_PUBLIC_API_KEY,
+      },
     },
   })
 
@@ -86,6 +128,9 @@ export default async function GiveawaysPage({
         drawDate={_drawDate}
         distinctDates={data.giveaways.distinctDates}
         statusCounts={data.giveaways.statusCounts}
+        subscribersToShow={data.users.list}
+        subscribersPageCount={data.users.count}
+        subscribersPage={Number(subscribersPage ?? '1')}
       />
     </main>
   )

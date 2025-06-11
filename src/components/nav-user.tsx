@@ -46,7 +46,7 @@ export function NavUser({
               size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
-              <Avatar className="h-8 w-8 rounded-lg">
+              <Avatar className="size-8 rounded-lg">
                 <AvatarImage src={user.avatar} alt={user.name} />
                 <AvatarFallback className="rounded-lg">CN</AvatarFallback>
               </Avatar>
@@ -54,7 +54,7 @@ export function NavUser({
                 <span className="truncate font-semibold">{user.name}</span>
                 <span className="truncate text-xs">{user.email}</span>
               </div>
-              <ChevronsUpDown className="ml-auto h-4 w-4" />
+              <ChevronsUpDown className="ml-auto size-4" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
@@ -65,7 +65,7 @@ export function NavUser({
           >
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                <Avatar className="h-8 w-8 rounded-lg">
+                <Avatar className="size-8 rounded-lg">
                   <AvatarImage src={user.avatar} alt={user.name} />
                   <AvatarFallback className="rounded-lg">CN</AvatarFallback>
                 </Avatar>
@@ -79,19 +79,19 @@ export function NavUser({
             <DropdownMenuGroup>
               <DropdownMenuItem className="cursor-pointer" asChild>
                 <Link href="/user/profile">
-                  <Icons.User className="mr-2 h-4 w-4" />
+                  <Icons.User className="mr-2 size-4" />
                   <span>Perfil</span>
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem className="cursor-pointer" asChild>
                 <Link href="/user/alerts">
-                  <Icons.Bell className="mr-2 h-4 w-4" />
+                  <Icons.Bell className="mr-2 size-4" />
                   <span>Alertas</span>
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem className="cursor-pointer" asChild>
                 <Link href="/user/favorites">
-                  <Icons.Heart className="mr-2 h-4 w-4" />
+                  <Icons.Heart className="mr-2 size-4" />
                   <span>Favoritos</span>
                 </Link>
               </DropdownMenuItem>
@@ -104,7 +104,7 @@ export function NavUser({
                 signOut()
               }}
             >
-              <Icons.LogOut className="mr-2 h-4 w-4" />
+              <Icons.LogOut className="mr-2 size-4" />
               <span>Sair</span>
             </DropdownMenuItem>
           </DropdownMenuContent>

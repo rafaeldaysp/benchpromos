@@ -98,7 +98,7 @@ export function ToggleFavoriteCard({
         )}
         <CardContent className="py-4">
           <div className="flex items-start space-x-2">
-            <Icons.Heart className="h-4 w-4 text-auxiliary" />
+            <Icons.Heart className="size-4 text-auxiliary" />
             <Label
               htmlFor={switchId}
               className="flex flex-1 flex-col space-y-1"

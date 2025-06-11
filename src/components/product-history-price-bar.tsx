@@ -133,7 +133,7 @@ export function PriceBar({
       <Card className="w-full">
         <CardHeader className="text-sm">
           <div className="flex items-start space-x-2">
-            <Icons.LineChart className="h-4 w-4 text-auxiliary" />
+            <Icons.LineChart className="size-4 text-auxiliary" />
             <Label className="flex flex-1 flex-col space-y-2">
               <CardTitle>
                 O preço <span className="">à vista </span>
@@ -234,9 +234,9 @@ export function PriceBar({
                   À vista
                 </span>
                 {/* Ícone Play */}
-                <div className="flex h-[18px] w-[18px] items-center justify-center rounded-full bg-background  text-primary">
-                  <div className="relative h-3 w-3 rounded-full border-2 border-foreground bg-background">
-                    <Icons.Play className="absolute -top-2.5 left-1/2 h-3 w-3 -translate-x-1/2 -translate-y-3/4 rotate-90 fill-primary text-primary" />
+                <div className="flex size-[18px] items-center justify-center rounded-full bg-background text-primary">
+                  <div className="relative size-3 rounded-full border-2 border-foreground bg-background">
+                    <Icons.Play className="absolute -top-2.5 left-1/2 size-3 -translate-x-1/2 -translate-y-3/4 rotate-90 fill-primary text-primary" />
                   </div>
                 </div>
               </div>
@@ -255,9 +255,9 @@ export function PriceBar({
                     Parcelado
                   </span>
                   {/* Ícone Play */}
-                  <div className="flex h-[18px] w-[18px] items-center justify-center rounded-full bg-background">
-                    <div className="relative h-3 w-3 rounded-full border-2 border-foreground bg-background">
-                      <Icons.Play className="absolute left-1/2 top-1.5 h-3 w-3 -translate-x-1/2 translate-y-3/4 -rotate-90 fill-auxiliary text-auxiliary" />
+                  <div className="flex size-[18px] items-center justify-center rounded-full bg-background">
+                    <div className="relative size-3 rounded-full border-2 border-foreground bg-background">
+                      <Icons.Play className="absolute left-1/2 top-1.5 size-3 -translate-x-1/2 translate-y-3/4 -rotate-90 fill-auxiliary text-auxiliary" />
                     </div>
                   </div>
                 </div>

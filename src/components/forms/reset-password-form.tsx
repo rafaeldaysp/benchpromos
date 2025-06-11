@@ -100,7 +100,7 @@ export function ResetPasswordForm() {
 
         {currentData.sendTokenToEmail && hasCountdown && (
           <Alert>
-            <Icons.AlertCircle className="h-4 w-4" />
+            <Icons.AlertCircle className="size-4" />
             {/* <AlertTitle>Redefinição pendente</AlertTitle> */}
             <AlertDescription>
               {currentData.sendTokenToEmail.message}
@@ -111,7 +111,7 @@ export function ResetPasswordForm() {
         <Button disabled={isLoading || hasCountdown}>
           {isLoading && (
             <Icons.Spinner
-              className="mr-2 h-4 w-4 animate-spin"
+              className="mr-2 size-4 animate-spin"
               aria-hidden="true"
             />
           )}

@@ -98,7 +98,7 @@ export default async function PostPage({ params: { slug } }: PostPageProps) {
           <div className="flex items-center gap-2">
             <UserAvatar
               user={{ image: user.avatar_url, name: user.name }}
-              className="h-8 w-8"
+              className="size-8"
             />
             <span className="font-semibold">{user.name}</span>
           </div>

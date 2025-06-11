@@ -95,7 +95,7 @@ export function UserProfileForm({ user }: UserProfileFormProps) {
                     name: user.name || null,
                     image: user.image || null,
                   }}
-                  className="h-8 w-8"
+                  className="size-8"
                 />
                 {/* Implementar a lógica de upload de arquivos */}
                 <FormControl>
@@ -131,7 +131,7 @@ export function UserProfileForm({ user }: UserProfileFormProps) {
         />
 
         <Button disabled={isLoading} type="submit">
-          {isLoading && <Icons.Spinner className="mr-2 h-4 w-4 animate-spin" />}
+          {isLoading && <Icons.Spinner className="mr-2 size-4 animate-spin" />}
           Atualizar perfil
         </Button>
       </form>

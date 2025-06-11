@@ -186,7 +186,7 @@ export function UserCategoryAlertsForm({
         />
 
         <Button disabled={isLoading} type="submit">
-          {isLoading && <Icons.Spinner className="mr-2 h-4 w-4 animate-spin" />}
+          {isLoading && <Icons.Spinner className="mr-2 size-4 animate-spin" />}
           Atualizar categorias
         </Button>
       </form>

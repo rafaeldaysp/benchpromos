@@ -47,7 +47,7 @@ export function SalesByReactions({ data }: SalesByReactionsProps) {
           <div className="space-y-8 px-6">
             {paginatedData.map((saleData) => (
               <div key={saleData.sale.id} className="flex items-center">
-                <Avatar className="h-9 w-9">
+                <Avatar className="size-9">
                   <AvatarImage src={saleData.sale.imageUrl} alt="Avatar" />
                   <AvatarFallback>N/A</AvatarFallback>
                 </Avatar>
@@ -80,7 +80,7 @@ export function SalesByReactions({ data }: SalesByReactionsProps) {
             disabled={currentPage == 1}
             onClick={() => setCurrentPage(1)}
           >
-            <Icons.ChevronsLeft className="h-4 w-4" />
+            <Icons.ChevronsLeft className="size-4" />
           </Button>
           <Button
             variant={'ghost'}
@@ -88,7 +88,7 @@ export function SalesByReactions({ data }: SalesByReactionsProps) {
             disabled={currentPage == 1}
             onClick={() => setCurrentPage((v) => v - 1)}
           >
-            <Icons.ChevronLeft className="h-4 w-4" />
+            <Icons.ChevronLeft className="size-4" />
           </Button>
           <Button
             variant={'ghost'}
@@ -96,7 +96,7 @@ export function SalesByReactions({ data }: SalesByReactionsProps) {
             disabled={currentPage == pages}
             onClick={() => setCurrentPage((v) => v + 1)}
           >
-            <Icons.ChevronRight className="h-4 w-4" />
+            <Icons.ChevronRight className="size-4" />
           </Button>
           <Button
             variant={'ghost'}
@@ -104,7 +104,7 @@ export function SalesByReactions({ data }: SalesByReactionsProps) {
             disabled={currentPage == pages}
             onClick={() => setCurrentPage(pages)}
           >
-            <Icons.ChevronsRight className="h-4 w-4" />
+            <Icons.ChevronsRight className="size-4" />
           </Button>
         </div>
       </CardFooter>

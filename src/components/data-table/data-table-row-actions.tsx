@@ -86,23 +86,23 @@ export function DataTableRowActions<TData>({
           <DropdownMenuTrigger asChild>
             <Button
               variant="ghost"
-              className="flex h-8 w-8 p-0 data-[state=open]:bg-muted"
+              className="flex size-8 p-0 data-[state=open]:bg-muted"
             >
-              <Icons.MoreHorizontal className="h-4 w-4" />
+              <Icons.MoreHorizontal className="size-4" />
               <span className="sr-only">Abrir menu</span>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-[160px]">
             <SheetTrigger asChild>
               <DropdownMenuItem onClick={() => setDropdownOpen(false)}>
-                <Icons.Edit className="mr-2 h-3.5 w-3.5 text-muted-foreground/70" />
+                <Icons.Edit className="mr-2 size-3.5 text-muted-foreground/70" />
                 Editar
               </DropdownMenuItem>
             </SheetTrigger>
 
             <AlertDialogTrigger asChild>
               <DropdownMenuItem onClick={() => setDropdownOpen(false)}>
-                <Icons.Trash className="mr-2 h-3.5 w-3.5 text-muted-foreground/70" />
+                <Icons.Trash className="mr-2 size-3.5 text-muted-foreground/70" />
                 Deletar
               </DropdownMenuItem>
             </AlertDialogTrigger>

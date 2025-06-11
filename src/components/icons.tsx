@@ -26,6 +26,7 @@ import {
   File,
   Folder,
   GanttChartSquare,
+  Gift,
   GitPullRequestDraft,
   Headphones,
   Heart,
@@ -145,6 +146,7 @@ export const Icons = {
   MoveRight,
   Download,
   Share2,
+  Gift,
   Google: ({ ...props }: LucideProps) => (
     <svg
       aria-hidden="true"

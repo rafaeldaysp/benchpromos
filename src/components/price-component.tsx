@@ -110,7 +110,7 @@ export function PriceComponent({
             {bestDeal.cashback && (
               <div className="flex flex-col items-start rounded-xl bg-auxiliary/20 px-4 py-2 text-sm text-muted-foreground">
                 <span className="flex items-center font-semibold">
-                  <Icons.AlertCircle className="mr-2 h-4 w-4 text-auxiliary" />
+                  <Icons.AlertCircle className="mr-2 size-4 text-auxiliary" />
                   Preço final com cashback
                 </span>
                 <span className="ml-1 text-foreground">
@@ -225,7 +225,7 @@ export function PriceComponent({
                 {bestInstallmentDeal.cashback && (
                   <div className="flex flex-col items-start rounded-xl bg-auxiliary/20 px-4 py-2 text-sm text-muted-foreground">
                     <span className="flex items-center font-semibold">
-                      <Icons.AlertCircle className="mr-2 h-4 w-4 text-auxiliary" />
+                      <Icons.AlertCircle className="mr-2 size-4 text-auxiliary" />
                       Preço final com cashback
                     </span>
                     <span className="ml-1 text-foreground">

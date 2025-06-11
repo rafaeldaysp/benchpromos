@@ -73,10 +73,10 @@ export default function UsersMain() {
                   className="rounded-full"
                 />
               ) : (
-                <Avatar className="h-16 w-16">
+                <Avatar className="size-16">
                   <AvatarFallback>
                     <span className="sr-only">{user.name}</span>
-                    <Icons.User className="h-8 w-8" />
+                    <Icons.User className="size-8" />
                   </AvatarFallback>
                 </Avatar>
               )}
@@ -90,8 +90,8 @@ export default function UsersMain() {
                       user.role === 'ADMIN'
                         ? 'default'
                         : user.role === 'MOD'
-                        ? 'success'
-                        : 'secondary'
+                          ? 'success'
+                          : 'secondary'
                     }
                   >
                     {user.role}

@@ -20,7 +20,7 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
         )}
       >
         <>
-          <Icons.ChevronLeft className="mr-2 h-4 w-4" />
+          <Icons.ChevronLeft className="mr-2 size-4" />
           Início
         </>
       </Link>

@@ -43,6 +43,14 @@ const nextConfig = {
         source: '/politica-de-privacidade',
         destination: '/privacy-policy',
       },
+      {
+        source: '/recomendacoes',
+        destination: '/recommendation',
+      },
+      {
+        source: '/sorteios',
+        destination: '/giveaways',
+      },
     ]
   },
   output: 'standalone',

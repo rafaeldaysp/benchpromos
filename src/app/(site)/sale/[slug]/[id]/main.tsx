@@ -254,7 +254,7 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
                         <TooltipTrigger>
                           <Badge variant="success" className="uppercase">
                             {discount.description && (
-                              <Icons.AlertCircle className="mr-1.5 h-4 w-4" />
+                              <Icons.AlertCircle className="mr-1.5 size-4" />
                             )}
                             {couponFormatter(discount.discount)}{' '}
                             {discount.label}
@@ -274,7 +274,7 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
               {sale.cashback && (
                 <div className="flex flex-col items-start rounded-xl bg-auxiliary/20 px-4 py-2 text-sm text-muted-foreground">
                   <span className="flex items-center font-semibold">
-                    <Icons.AlertCircle className="mr-2 h-4 w-4 text-auxiliary" />
+                    <Icons.AlertCircle className="mr-2 size-4 text-auxiliary" />
                     Preço final com cashback
                   </span>
                   <span className="ml-1 text-foreground">
@@ -353,7 +353,7 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
                 id="product_view_from_sale_page"
               >
                 VISUALIZAR PRODUTO
-                <Icons.ChevronRight strokeWidth={3} className="ml-2 h-4 w-4" />
+                <Icons.ChevronRight strokeWidth={3} className="ml-2 size-4" />
               </Link>
             )}
           </div>
@@ -366,8 +366,8 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
 
         {sale.review && (
           <Card className="relative h-fit border-none py-2 shadow-none">
-            <Icons.Quote className="absolute left-4 top-2 h-4 w-4 -translate-y-1/2 rotate-180 bg-background text-muted-foreground" />
-            <Icons.Quote className="absolute bottom-2 right-4 h-4 w-4 translate-y-1/2 bg-background text-muted-foreground" />
+            <Icons.Quote className="absolute left-4 top-2 size-4 -translate-y-1/2 rotate-180 bg-background text-muted-foreground" />
+            <Icons.Quote className="absolute bottom-2 right-4 size-4 translate-y-1/2 bg-background text-muted-foreground" />
             <CardContent className="h-full whitespace-pre-line rounded-xl border p-4 text-sm font-medium shadow">
               {sale.review}
             </CardContent>
@@ -381,7 +381,7 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
             className="rounded-full"
             onClick={() => handleShare()}
           >
-            <Icons.Share2 className="mr-2 h-4 w-4" />
+            <Icons.Share2 className="mr-2 size-4" />
             Compartilhar
           </Button>
           <Reactions
@@ -394,7 +394,7 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
           <Popover>
             <PopoverTrigger asChild>
               <Button size={'icon'} variant={'ghost'}>
-                <Icons.SmilePlus className="h-4 w-4" />
+                <Icons.SmilePlus className="size-4" />
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-full p-1">
@@ -465,7 +465,7 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
             >
               <p className="flex flex-1 flex-col">
                 <span className="flex items-center gap-x-2 font-semibold">
-                  <Icons.StarFilled className="h-4 w-4 text-auxiliary" />
+                  <Icons.StarFilled className="size-4 text-auxiliary" />
                   Mais informações do produto
                 </span>
                 <span className="text-muted-foreground">
@@ -473,7 +473,7 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
                   acesse as informações completas do produto.
                 </span>
               </p>
-              <Icons.ChevronRight className="h-4 w-4" />
+              <Icons.ChevronRight className="size-4" />
             </Link>
           </div>
         )}

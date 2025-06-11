@@ -270,7 +270,6 @@ export function CouponForm({ mode = 'create', coupon }: CouponFormProps) {
               <FormControl>
                 <Checkbox
                   checked={field.value}
-                  // @ts-expect-error ...
                   onCheckedChange={field.onChange}
                 />
               </FormControl>
@@ -285,7 +284,7 @@ export function CouponForm({ mode = 'create', coupon }: CouponFormProps) {
         >
           {isLoading && (
             <Icons.Spinner
-              className="size-4 mr-2 animate-spin"
+              className="mr-2 size-4 animate-spin"
               aria-hidden="true"
             />
           )}

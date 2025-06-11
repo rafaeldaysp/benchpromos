@@ -64,7 +64,7 @@ export function SidebarNav({ options }: SideBarProps) {
                       className="flex items-center gap-1 font-medium hover:text-primary"
                       href={`/${option.slug}`}
                     >
-                      {option.icon && <option.icon className="h-4 w-4" />}
+                      {option.icon && <option.icon className="size-4" />}
                       {option.title}
                     </Link>
                   </SheetClose>
@@ -76,7 +76,7 @@ export function SidebarNav({ options }: SideBarProps) {
                   {option.content && (
                     <>
                       <span className="flex items-center gap-1 pt-3 font-medium">
-                        {option.icon && <option.icon className="h-4 w-4" />}
+                        {option.icon && <option.icon className="size-4" />}
                         {option.title}
                       </span>
                       {option.content.map((content) => (

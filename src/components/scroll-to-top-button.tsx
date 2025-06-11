@@ -32,12 +32,12 @@ const ScrollToTopButton = () => {
 
   return (
     <Button
-      className={`fixed bottom-4 right-3 h-10 w-10 rounded-full p-0 outline-none transition-opacity duration-200 ${
+      className={`fixed bottom-4 right-3 size-10 rounded-full p-0 outline-none transition-opacity duration-200 ${
         isVisible ? 'opacity-100' : 'opacity-0'
       }`}
       onClick={scrollToTop}
     >
-      <ChevronUp className="h-4 w-4 animate-pulse" />
+      <ChevronUp className="size-4 animate-pulse" />
     </Button>
   )
 }

@@ -332,7 +332,7 @@ export function ProductForm({ mode = 'create', product }: ProductFormProps) {
                 variant="secondary"
                 onClick={() => specsAppend({ title: '', value: '' })}
               >
-                <Icons.Plus className="h-4 w-4" />
+                <Icons.Plus className="size-4" />
               </Button>
               <Button
                 type="button"
@@ -340,7 +340,7 @@ export function ProductForm({ mode = 'create', product }: ProductFormProps) {
                 variant="secondary"
                 onClick={() => specsRemove(-1)}
               >
-                <Icons.Minus className="h-4 w-4" />
+                <Icons.Minus className="size-4" />
               </Button>
             </div>
           </div>
@@ -391,7 +391,7 @@ export function ProductForm({ mode = 'create', product }: ProductFormProps) {
                     variant="secondary"
                     onClick={() => prosAppend({ value: '' })}
                   >
-                    <Icons.Plus className="h-4 w-4" />
+                    <Icons.Plus className="size-4" />
                   </Button>
                   <Button
                     type="button"
@@ -399,7 +399,7 @@ export function ProductForm({ mode = 'create', product }: ProductFormProps) {
                     variant="secondary"
                     onClick={() => prosRemove(-1)}
                   >
-                    <Icons.Minus className="h-4 w-4" />
+                    <Icons.Minus className="size-4" />
                   </Button>
                 </div>
               </div>
@@ -436,7 +436,7 @@ export function ProductForm({ mode = 'create', product }: ProductFormProps) {
                     variant="secondary"
                     onClick={() => consAppend({ value: '' })}
                   >
-                    <Icons.Plus className="h-4 w-4" />
+                    <Icons.Plus className="size-4" />
                   </Button>
                   <Button
                     type="button"
@@ -444,7 +444,7 @@ export function ProductForm({ mode = 'create', product }: ProductFormProps) {
                     variant="secondary"
                     onClick={() => consRemove(-1)}
                   >
-                    <Icons.Minus className="h-4 w-4" />
+                    <Icons.Minus className="size-4" />
                   </Button>
                 </div>
               </div>
@@ -493,7 +493,7 @@ export function ProductForm({ mode = 'create', product }: ProductFormProps) {
         <Button type="submit" disabled={isLoading}>
           {isLoading && (
             <Icons.Spinner
-              className="mr-2 h-4 w-4 animate-spin"
+              className="mr-2 size-4 animate-spin"
               aria-hidden="true"
             />
           )}

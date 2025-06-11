@@ -70,7 +70,7 @@ export function Category({
             <Card className="bg-gradient-to-r from-yellow-100 to-yellow-200 dark:from-yellow-700 dark:to-yellow-800">
               <CardHeader className="pb-2">
                 <CardTitle className="flex items-center text-xl">
-                  <Trophy className="mr-2 h-6 w-6 text-yellow-500" />
+                  <Trophy className="mr-2 size-6 text-yellow-500" />
                   Vencedor
                 </CardTitle>
               </CardHeader>

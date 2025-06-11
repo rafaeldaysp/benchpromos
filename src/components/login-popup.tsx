@@ -53,16 +53,16 @@ export function LoginPopup({ open, setOpen }: LoginPopupProps) {
             <CardContent className="p-4 text-start text-sm font-semibold text-muted-foreground">
               <ul className="space-y-2">
                 <li className="flex items-start gap-x-2">
-                  <Icons.Bell className="mr-1 h-4 w-4 text-auxiliary" /> Alertas
+                  <Icons.Bell className="mr-1 size-4 text-auxiliary" /> Alertas
                   de preço de produtos e promoções
                 </li>
                 <li className="flex items-start gap-x-2">
-                  <Icons.MessageCircle className="mr-1 h-4 w-4 text-auxiliary" />{' '}
+                  <Icons.MessageCircle className="mr-1 size-4 text-auxiliary" />{' '}
                   Comentários liberados
                 </li>
 
                 <li className="flex items-start gap-x-2">
-                  <Icons.SmilePlus className="mr-1 h-4 w-4 text-auxiliary" />{' '}
+                  <Icons.SmilePlus className="mr-1 size-4 text-auxiliary" />{' '}
                   Reações nas postagens e curtidas em comentários
                 </li>
               </ul>
@@ -108,16 +108,16 @@ export function LoginPopup({ open, setOpen }: LoginPopupProps) {
           <CardContent className="p-4 text-start text-sm font-semibold text-muted-foreground">
             <ul className="space-y-2">
               <li className="flex items-start gap-x-2">
-                <Icons.Bell className="mr-1 h-4 w-4 text-auxiliary" /> Alertas
-                de preço de produtos e promoções
+                <Icons.Bell className="mr-1 size-4 text-auxiliary" /> Alertas de
+                preço de produtos e promoções
               </li>
               <li className="flex items-start gap-x-2">
-                <Icons.MessageCircle className="mr-1 h-4 w-4 text-auxiliary" />{' '}
+                <Icons.MessageCircle className="mr-1 size-4 text-auxiliary" />{' '}
                 Comentários liberados
               </li>
 
               <li className="flex items-start gap-x-2">
-                <Icons.SmilePlus className="mr-1 h-4 w-4 text-auxiliary" />{' '}
+                <Icons.SmilePlus className="mr-1 size-4 text-auxiliary" />{' '}
                 Reações nas postagens e curtidas em comentários
               </li>
             </ul>

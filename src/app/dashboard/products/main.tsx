@@ -248,7 +248,7 @@ export function ProductsMain({ filters, categories }: ProductsMainProps) {
               >
                 Salvar Sugestões
                 {isUpdatind && (
-                  <Icons.Spinner className="h-4 w-4 animate-spin" />
+                  <Icons.Spinner className="size-4 animate-spin" />
                 )}
               </Button>
               <Dialog

@@ -49,7 +49,7 @@ export async function SiteHeader() {
                 )}
                 href={'/benchmarks'}
               >
-                <Icons.BarChart4 className="h-4 w-4" />
+                <Icons.BarChart4 className="size-4" />
                 <span className="sr-only">Mudar tema</span>
               </Link>
             </div>

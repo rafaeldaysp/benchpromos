@@ -57,7 +57,7 @@ export function MainNav({ categories }: MainNavProps) {
               {option.content ? (
                 <>
                   <NavigationMenuTrigger>
-                    {option.icon && <option.icon className="mr-1 h-4 w-4" />}
+                    {option.icon && <option.icon className="mr-1 size-4" />}
                     {option.title}
                   </NavigationMenuTrigger>
                   <NavigationMenuContent>
@@ -86,7 +86,7 @@ export function MainNav({ categories }: MainNavProps) {
                     className={navigationMenuTriggerStyle()}
                     href={`/${option.slug}`}
                   >
-                    {option.icon && <option.icon className="mr-1 h-4 w-4" />}
+                    {option.icon && <option.icon className="mr-1 size-4" />}
                     {option.title}
                   </Link>
                 </NavigationMenuLink>
@@ -94,7 +94,7 @@ export function MainNav({ categories }: MainNavProps) {
             </NavigationMenuItem>
           ))}
           <NavigationMenuIndicator>
-            <div className="relative top-[70%] h-[10px] w-[10px] rotate-[45deg] rounded-tl-[2px]" />
+            <div className="relative top-[70%] size-[10px] rotate-45 rounded-tl-[2px]" />
           </NavigationMenuIndicator>
         </NavigationMenuList>
         <NavigationMenuViewport />

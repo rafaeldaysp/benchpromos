@@ -51,7 +51,7 @@ function Parent({ parent }: { parent: Benchmark & { childrenCount: number } }) {
               'h-fit justify-start px-2 hover:no-underline',
             )}
           >
-            <Icons.Folder className="h-4 w-4 fill-auxiliary text-auxiliary" />
+            <Icons.Folder className="size-4 fill-auxiliary text-auxiliary" />
             {parent.name}
           </AccordionTrigger>
           <AccordionContent className="pl-4 pt-1">
@@ -123,7 +123,7 @@ function File({ file }: { file: Benchmark }) {
       )}
     >
       <div>
-        <Icons.MenuSquare className="h-4 w-4" />
+        <Icons.MenuSquare className="size-4" />
       </div>
       <span className="line-clamp-3">{file.name}</span>
     </Link>

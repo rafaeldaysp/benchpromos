@@ -53,7 +53,7 @@ export function VoteOption({
         </div>
         {isSelected && (
           <div className="absolute right-2 top-2 rounded-full bg-primary p-1 text-primary-foreground">
-            <Check className="h-4 w-4" />
+            <Check className="size-4" />
           </div>
         )}
       </CardHeader>

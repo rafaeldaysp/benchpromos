@@ -94,8 +94,8 @@ export function ProductCard({
         <CardHeader className="relative flex flex-col justify-center p-3 pb-1.5 sm:hidden">
           {product.reviewUrl && (
             <span className="text-center">
-              <Badge className="w-fit px-1 py-[1px]">
-                <Icons.StarFilled className="mr-1 h-3 w-3" />
+              <Badge className="w-fit px-1 py-px">
+                <Icons.StarFilled className="mr-1 size-3" />
                 TESTADO NO CANAL
               </Badge>
             </span>
@@ -123,7 +123,7 @@ export function ProductCard({
             </CardTitle>
 
             {product.reviewUrl && (
-              <Badge className="hidden w-fit px-1 py-[1px] sm:inline-flex">
+              <Badge className="hidden w-fit px-1 py-px sm:inline-flex">
                 <Icons.StarFilled className="mr-1" />
                 TESTADO NO CANAL
               </Badge>
@@ -217,7 +217,7 @@ export function ProductCard({
           )}
         >
           Ver produto
-          <Icons.ChevronRight className="ml-1 h-4 w-4" strokeWidth={3} />
+          <Icons.ChevronRight className="ml-1 size-4" strokeWidth={3} />
         </CardFooter>
       </Card>
     </Link>

@@ -60,12 +60,12 @@ export function CouponModal({
       >
         <div className="flex flex-col items-start">
           <span className="flex items-center font-semibold">
-            <Icons.Tag className="mr-2 h-4 w-4 text-auxiliary" />
+            <Icons.Tag className="mr-2 size-4 text-auxiliary" />
             Cupom disponível
           </span>
           {description}
         </div>
-        <Icons.ChevronRight className="h-4 w-4" />
+        <Icons.ChevronRight className="size-4" />
       </Button>
 
       {isSm ? (
@@ -90,14 +90,14 @@ export function CouponDialog({
         {coupon.description && (
           <div className="flex items-center rounded-lg bg-auxiliary/20 p-2 text-sm text-auxiliary">
             <div className="flex items-center">
-              <Icons.AlertCircle className="mr-2 h-4 w-4 text-auxiliary" />
+              <Icons.AlertCircle className="mr-2 size-4 text-auxiliary" />
             </div>
             <p className="font-semibold">{coupon.description}</p>
           </div>
         )}
         <CopyButton value={coupon.code} />
         <p className="inline-flex items-center text-xs">
-          <Icons.AlertCircle className="mr-2 h-6 w-6 text-auxiliary" />
+          <Icons.AlertCircle className="mr-2 size-6 text-auxiliary" />
           Copie o código e cole no carrinho de compras antes de finalizar seu
           pedido na loja.
         </p>
@@ -140,14 +140,14 @@ export function CouponSheet({ open, setOpen, coupon }: CouponDialogProps) {
           {coupon.description && (
             <div className="flex items-center rounded-lg bg-auxiliary/20 p-2 text-sm text-auxiliary">
               <div className="flex items-center">
-                <Icons.AlertCircle className="mr-2 h-4 w-4 text-auxiliary" />
+                <Icons.AlertCircle className="mr-2 size-4 text-auxiliary" />
               </div>
               <p className="font-semibold">{coupon.description}</p>
             </div>
           )}
           <CopyButton value={coupon.code} />
           <p className="inline-flex items-center text-xs">
-            <Icons.AlertCircle className="mr-2 h-6 w-6 text-auxiliary" />
+            <Icons.AlertCircle className="mr-2 size-6 text-auxiliary" />
             Copie o código e cole no carrinho de compras antes de finalizar seu
             pedido na loja.
           </p>
