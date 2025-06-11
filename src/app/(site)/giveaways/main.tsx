@@ -137,11 +137,15 @@ export default function GiveawaysMain({
         <TabsList className="mx-auto mb-8 grid w-full max-w-md grid-cols-2">
           <TabsTrigger value="active" className="flex items-center gap-2">
             <Gift className="size-4" />
-            Abertos ({statusCounts.find((count) => count.status === 'OPEN')?.count ?? 0})
+            Abertos (
+            {statusCounts.find((count) => count.status === 'OPEN')?.count ?? 0})
           </TabsTrigger>
           <TabsTrigger value="ended" className="flex items-center gap-2">
             <Trophy className="size-4" />
-            Encerrados ({statusCounts.find((count) => count.status === 'CLOSED')?.count ?? 0})
+            Encerrados (
+            {statusCounts.find((count) => count.status === 'CLOSED')?.count ??
+              0}
+            )
           </TabsTrigger>
         </TabsList>
 
