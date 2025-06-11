@@ -351,7 +351,7 @@ export default function GiveawaysMain({
           </div>
 
           {/* Date selector and navigation */}
-          <div className="mt-6 flex items-center justify-between">
+          <div className="mt-6 flex flex-col items-center justify-between gap-4 sm:flex-row">
             <div className="flex items-center gap-2">
               <Button
                 variant="outline"
@@ -382,7 +382,7 @@ export default function GiveawaysMain({
               </Button>
             </div>
 
-            <div className="flex items-center gap-4">
+            <div className="flex flex-col items-center gap-4 sm:flex-row">
               <div className="text-sm text-muted-foreground">
                 {giveaways.filter((g) => g.drawAt === selectedDate).length}{' '}
                 prêmio
