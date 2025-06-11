@@ -482,7 +482,9 @@ function Combobox({
                     />
                   </div>
 
-                  <span className="line-clamp-2">{product.name}</span>
+                  <span className="line-clamp-2">
+                    {product.name.replace(/"/g, '”')}
+                  </span>
                 </CommandItem>
               ))}
             </CommandGroup>

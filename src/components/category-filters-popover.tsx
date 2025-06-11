@@ -135,7 +135,7 @@ export function CategoryFilterPopover({
                       <Icons.Check className="size-4" />
                     </div>
 
-                    <span>{option.value}</span>
+                    <span>{option.value.replace(/"/g, '”')}</span>
                   </CommandItem>
                 )
               })}
