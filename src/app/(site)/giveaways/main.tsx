@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useTransition } from 'react'
 import { motion } from 'framer-motion'
 import {
   CalendarIcon,
@@ -35,7 +35,8 @@ import { Icons } from '@/components/icons'
 import { ptBR } from 'date-fns/locale'
 import { gql, useMutation } from '@apollo/client'
 import { toast } from 'sonner'
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
+import { useQueryString } from '@/hooks/use-query-string'
 
 const SUBSCRIBE_TO_GIVEAWAY = gql`
   mutation SubscribeToGiveaway($giveawayId: ID!) {
@@ -46,28 +47,51 @@ const SUBSCRIBE_TO_GIVEAWAY = gql`
 `
 
 interface GiveawaysMainProps {
-  giveaways: (Giveaway & {
+  activeGiveaways: (Giveaway & {
+    participants: User[]
+    participantsCount: number
+    winner: User | null
+  })[]
+  endedGiveaways: (Giveaway & {
     participants: User[]
     participantsCount: number
     winner: User | null
   })[]
   userSubscribedIds: string[]
+  statusCounts: {
+    status: string
+    count: number
+  }[]
   currentUser?: Session['user']
   token?: string
 }
 
 export default function GiveawaysMain({
-  giveaways,
+  activeGiveaways,
+  endedGiveaways,
   currentUser,
   token,
   userSubscribedIds,
+  statusCounts,
 }: GiveawaysMainProps) {
-  const endedGiveaways = [] as (Giveaway & {
-    participants: User[]
-    participantsCount: number
-    winner: User | null
-  })[]
   const router = useRouter()
+  const [activeTab, setActiveTab] = useState<'active' | 'ended'>('active')
+  const [isPending, startTransition] = useTransition()
+  const pathname = usePathname()
+  const { createQueryString } = useQueryString()
+
+  function handleTabChange(value: string) {
+    const tab = value === 'active' ? 'active' : 'ended'
+    setActiveTab(tab)
+    startTransition(() => {
+      router.push(
+        `${pathname}?${createQueryString({
+          status: tab === 'ended' ? 'CLOSED' : null,
+        })}`,
+      )
+    })
+  }
+
   const [subscribeToGiveaway, { loading: isLoadingSubscribe }] = useMutation(
     SUBSCRIBE_TO_GIVEAWAY,
     {
@@ -105,21 +129,25 @@ export default function GiveawaysMain({
       </div>
 
       {/* Giveaways Tabs */}
-      <Tabs defaultValue="active" className="w-full">
+      <Tabs
+        value={activeTab}
+        onValueChange={handleTabChange}
+        className="w-full"
+      >
         <TabsList className="mx-auto mb-8 grid w-full max-w-md grid-cols-2">
           <TabsTrigger value="active" className="flex items-center gap-2">
             <Gift className="size-4" />
-            Abertos ({giveaways.length})
+            Abertos ({statusCounts.find((count) => count.status === 'OPEN')?.count ?? 0})
           </TabsTrigger>
           <TabsTrigger value="ended" className="flex items-center gap-2">
             <Trophy className="size-4" />
-            {/* Encerrados ({giveaways.length - giveaways.length}) */}
+            Encerrados ({statusCounts.find((count) => count.status === 'CLOSED')?.count ?? 0})
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value="active">
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {giveaways.map((giveaway, index) => {
+            {activeGiveaways.map((giveaway, index) => {
               const subscribed = userSubscribedIds.includes(giveaway.id)
               const daysUntil = differenceInDays(
                 new Date(giveaway.drawAt),
@@ -245,7 +273,7 @@ export default function GiveawaysMain({
             })}
           </div>
 
-          {giveaways.length === 0 && (
+          {activeGiveaways.length === 0 && (
             <div className="py-12 text-center">
               <div className="mb-4 text-6xl">🎁</div>
               <h3 className="mb-2 text-xl font-semibold">
@@ -271,7 +299,7 @@ export default function GiveawaysMain({
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
                 >
-                  <Card className="h-full border bg-white/50 opacity-75 backdrop-blur-sm">
+                  <Card className="h-full border bg-muted/50 backdrop-blur-sm">
                     <CardHeader className="pb-3">
                       <div className="flex items-start justify-between">
                         <div className="flex items-center gap-2">

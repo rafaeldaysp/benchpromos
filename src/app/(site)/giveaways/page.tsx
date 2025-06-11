@@ -77,13 +77,22 @@ export default async function GiveawaysPage({
   })
 
   const userSubscribedIds = data?.giveaways.userSubscribedIds || []
+  const activeGiveaways = data?.giveaways.list.filter(
+    (giveaway) => giveaway.status === 'OPEN',
+  )
+  const endedGiveaways = data?.giveaways.list.filter(
+    (giveaway) => giveaway.status === 'CLOSED',
+  )
+  const statusCounts = data?.giveaways.statusCounts
 
   return (
     <GiveawaysMain
-      giveaways={data?.giveaways.list}
+      activeGiveaways={activeGiveaways}
+      endedGiveaways={endedGiveaways}
       currentUser={currentUser}
       token={token}
       userSubscribedIds={userSubscribedIds}
+      statusCounts={statusCounts}
     />
   )
 }
