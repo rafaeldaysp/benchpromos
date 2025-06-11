@@ -14,7 +14,7 @@ import { env } from '@/env.mjs'
 function makeClient() {
   const httpLink = new HttpLink({
     uri: env.NEXT_PUBLIC_API_URL,
-    fetchOptions: { cache: 'no-store' },
+    fetchOptions: { cache: 'force-cache' },
   })
 
   return new NextSSRApolloClient({

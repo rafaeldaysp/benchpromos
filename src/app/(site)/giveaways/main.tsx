@@ -139,13 +139,13 @@ export default function GiveawaysMain({
                         <div className="flex items-center gap-2">
                           <span className="text-2xl">
                             {/* {getCategoryIcon(giveaway.category)} */}
-                            <Icons.Gift className="size-4" />
+                            {/* <Icons.Gift className="size-4" /> */}
                           </span>
                           {/* <Badge variant="outline" className="text-xs">
                             {giveaway.category.replace('-', ' ')}{' '}
                           </Badge> */}
                         </div>
-                        <Badge variant="success">{giveaway.name}</Badge>
+                        {/* <Badge variant="success">{giveaway.name}</Badge> */}
                       </div>
                       <CardTitle className="text-xl">{giveaway.name}</CardTitle>
                       <CardDescription className="line-clamp-3 text-sm">
