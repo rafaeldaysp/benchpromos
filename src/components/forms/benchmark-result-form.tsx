@@ -462,7 +462,7 @@ function Combobox({
               {products?.map((product) => (
                 <CommandItem
                   key={product.id}
-                  value={`${product.name} ${product.category.name} ${product.subcategory?.name}`}
+                  value={`${product.name.replace(/"/g, '')} ${product.category.name} ${product.subcategory?.name}`}
                   className="h-16 space-x-4"
                   onSelect={() => {
                     setSelectedProducts((prev) =>

@@ -160,7 +160,7 @@ export function Combobox() {
               <>
                 <CommandGroup heading="Pesquisar">
                   <CommandItem
-                    value={query}
+                    value={query.replace(/"/g, '')}
                     className="h-16"
                     onSelect={() => {
                       if (data?.categorySlug)
@@ -182,7 +182,7 @@ export function Combobox() {
                   {products?.map((product) => (
                     <CommandItem
                       key={product.id}
-                      value={`${product.name} ${product.category.name} ${product.subcategory?.name}`}
+                      value={`${product.name.replace(/"/g, '')} ${product.category.name} ${product.subcategory?.name}`}
                       className="h-16 space-x-4"
                       onSelect={() =>
                         handleSelect(() =>

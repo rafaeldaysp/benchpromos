@@ -126,7 +126,7 @@ export function ProductSelect({ products, categoryName }: ProductSelectProps) {
                     key={product.slug}
                     className="max-w-[300px] truncate rounded-sm px-1 font-normal"
                   >
-                    {product.name}
+                    {product.name.replace(/"/g, '”')}
                   </Badge>
                 ))
               )}
@@ -194,7 +194,7 @@ export function ProductSelect({ products, categoryName }: ProductSelectProps) {
                   {displayedProducts?.map((product) => (
                     <CommandItem
                       key={product.slug}
-                      value={`${product.name} ${product.category.name} ${product.subcategory?.name}`}
+                      value={`${product.name.replace(/"/g, '')} ${product.category.name} ${product.subcategory?.name}`}
                       className={cn(
                         'h-16 space-x-4 transition-colors aria-selected:bg-accent/50',
                         {
