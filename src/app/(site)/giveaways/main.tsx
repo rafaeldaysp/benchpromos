@@ -35,7 +35,7 @@ import { Icons } from '@/components/icons'
 import { ptBR } from 'date-fns/locale'
 import { gql, useMutation } from '@apollo/client'
 import { toast } from 'sonner'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useQueryString } from '@/hooks/use-query-string'
 
 const SUBSCRIBE_TO_GIVEAWAY = gql`
@@ -75,7 +75,10 @@ export default function GiveawaysMain({
   statusCounts,
 }: GiveawaysMainProps) {
   const router = useRouter()
-  const [activeTab, setActiveTab] = useState<'active' | 'ended'>('active')
+  const searchParams = useSearchParams()
+  const defaultTab =
+    searchParams.get('status') === 'COMPLETED' ? 'ended' : 'active'
+  const [activeTab, setActiveTab] = useState<'active' | 'ended'>(defaultTab)
   const [isPending, startTransition] = useTransition()
   const pathname = usePathname()
   const { createQueryString } = useQueryString()
@@ -86,7 +89,7 @@ export default function GiveawaysMain({
     startTransition(() => {
       router.push(
         `${pathname}?${createQueryString({
-          status: tab === 'ended' ? 'CLOSED' : null,
+          status: tab === 'ended' ? 'COMPLETED' : null,
         })}`,
       )
     })
@@ -143,8 +146,8 @@ export default function GiveawaysMain({
           <TabsTrigger value="ended" className="flex items-center gap-2">
             <Trophy className="size-4" />
             Encerrados (
-            {statusCounts.find((count) => count.status === 'CLOSED')?.count ??
-              0}
+            {statusCounts.find((count) => count.status === 'COMPLETED')
+              ?.count ?? 0}
             )
           </TabsTrigger>
         </TabsList>

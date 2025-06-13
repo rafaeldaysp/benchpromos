@@ -81,7 +81,7 @@ export default async function GiveawaysPage({
     (giveaway) => giveaway.status === 'OPEN',
   )
   const endedGiveaways = data?.giveaways.list.filter(
-    (giveaway) => giveaway.status === 'CLOSED',
+    (giveaway) => giveaway.status === 'COMPLETED',
   )
   const statusCounts = data?.giveaways.statusCounts
 
