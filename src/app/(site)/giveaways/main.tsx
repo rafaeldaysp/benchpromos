@@ -379,12 +379,9 @@ export default function GiveawaysMain({
                         <CalendarIcon className="size-4" />
                         <span>
                           Sorteado:{' '}
-                          {format(
-                            format(giveaway.drawAt, 'yyyy-MM-dd', {
-                              locale: ptBR,
-                            }),
-                            "dd 'de' MMMM 'de' yyyy",
-                          )}
+                          {format(giveaway.drawAt, "dd 'de' MMMM 'de' yyyy", {
+                            locale: ptBR,
+                          })}
                         </span>
                       </div>
 
