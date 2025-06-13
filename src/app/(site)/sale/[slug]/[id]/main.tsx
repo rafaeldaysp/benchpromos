@@ -463,16 +463,16 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
                 'flex h-fit justify-between rounded-xl px-6 py-4',
               )}
             >
-              <p className="flex flex-1 flex-col">
+              <span className="flex w-full min-w-0 flex-1 flex-col">
                 <span className="flex items-center gap-x-2 font-semibold">
                   <Icons.StarFilled className="size-4 text-auxiliary" />
                   Mais informações do produto
                 </span>
-                <span className="text-muted-foreground">
+                <p className="text-wrap break-words text-muted-foreground [word-break:break-word]">
                   Essa página é apenas uma postagem da promoção. Clique aqui e
                   acesse as informações completas do produto.
-                </span>
-              </p>
+                </p>
+              </span>
               <Icons.ChevronRight className="size-4" />
             </Link>
           </div>
