@@ -58,6 +58,18 @@ import { ptBR } from 'date-fns/locale'
 import { type User } from 'next-auth'
 import { usePathname, useRouter } from 'next/navigation'
 import { toast } from 'sonner'
+import { Icons } from '@/components/icons'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog'
 
 const UPDATE_GIVEAWAY = gql`
   mutation UpdateGiveaway($input: UpdateGiveawayInput!) {
@@ -84,9 +96,9 @@ const SET_GIVEAWAY_WINNER = gql`
   }
 `
 
-const SUBSCRIBE_TO_GIVEAWAY = gql`
-  mutation SubscribeToGiveaway($giveawayId: ID!) {
-    addUserToGiveaway(giveawayId: $giveawayId) {
+const DELETE_GIVEAWAY = gql`
+  mutation DeleteGiveaway($id: ID!) {
+    removeGiveaway(id: $id) {
       id
     }
   }
@@ -249,18 +261,19 @@ export default function GiveawaysMain({
     },
   )
 
-  const [subscribeToGiveaway, { loading: isLoadingSubscribe }] = useMutation(
-    SUBSCRIBE_TO_GIVEAWAY,
+  const [deleteGiveaway, { loading: isLoadingDelete }] = useMutation(
+    DELETE_GIVEAWAY,
     {
       onCompleted: () => {
-        toast.success('Inscrição realizada com sucesso!')
+        toast.success('Sorteio deletado com sucesso!')
+        router.refresh()
       },
       onError: (error) => {
         toast.error(error.message)
       },
       context: {
         headers: {
-          Authorization: `Bearer ${token}`,
+          'api-key': env.NEXT_PUBLIC_API_KEY,
         },
       },
     },
@@ -631,27 +644,60 @@ export default function GiveawaysMain({
                                   : 'Inscrições fechadas'}
                               </Label>
                             </div>
-                            <Button
-                              onClick={() => executeDraw(prize.id)}
-                              disabled={
-                                isDrawing ||
-                                prize.participantsCount === 0 ||
-                                Boolean(prize.winner)
-                              }
-                              className={`${
-                                prize.winner
-                                  ? 'bg-green-500 hover:bg-green-600'
-                                  : ''
-                              }`}
-                            >
-                              {prize.winner ? (
-                                <>
-                                  <Trophy className="mr-2 size-4" /> Sorteado
-                                </>
-                              ) : (
-                                'Sortear'
-                              )}
-                            </Button>
+                            <div className="flex items-center gap-2">
+                              <Button
+                                onClick={() => executeDraw(prize.id)}
+                                disabled={
+                                  isDrawing ||
+                                  prize.participantsCount === 0 ||
+                                  Boolean(prize.winner)
+                                }
+                                className={`${
+                                  prize.winner
+                                    ? 'bg-green-500 hover:bg-green-600'
+                                    : ''
+                                }`}
+                              >
+                                {prize.winner ? (
+                                  <>
+                                    <Trophy className="mr-2 size-4" /> Sorteado
+                                  </>
+                                ) : (
+                                  'Sortear'
+                                )}
+                              </Button>
+                              <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                  <Button variant={'destructive'}>
+                                    <Icons.Trash className="size-4" />
+                                  </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                  <AlertDialogHeader>
+                                    <AlertDialogTitle>
+                                      Você tem certeza?
+                                    </AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                      Essa ação não pode ser desfeita.
+                                    </AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter>
+                                    <AlertDialogCancel>
+                                      Cancelar
+                                    </AlertDialogCancel>
+                                    <AlertDialogAction
+                                      onClick={() =>
+                                        deleteGiveaway({
+                                          variables: { id: prize.id },
+                                        })
+                                      }
+                                    >
+                                      Continuar
+                                    </AlertDialogAction>
+                                  </AlertDialogFooter>
+                                </AlertDialogContent>
+                              </AlertDialog>
+                            </div>
                             {/* <Button
                             onClick={() =>
                               subscribeToGiveaway({

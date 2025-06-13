@@ -8,7 +8,7 @@ export const { getClient } = registerApolloClient(() => {
     cache: new InMemoryCache(),
     link: new HttpLink({
       uri: env.NEXT_PUBLIC_API_URL,
-      fetchOptions: { cache: 'force-cache' },
+      fetchOptions: { cache: 'no-store' },
     }),
   })
 })

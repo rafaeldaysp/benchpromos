@@ -120,6 +120,8 @@ export default async function GiveawaysPage({
     return notFound()
   }
 
+  console.log(data.giveaways.list)
+
   return (
     <main>
       <GiveawaysMain
