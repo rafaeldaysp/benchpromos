@@ -138,12 +138,20 @@ export default function GiveawaysMain({
         className="w-full"
       >
         <TabsList className="mx-auto mb-8 grid w-full max-w-md grid-cols-2">
-          <TabsTrigger value="active" className="flex items-center gap-2">
+          <TabsTrigger
+            disabled={isPending}
+            value="active"
+            className="flex items-center gap-2"
+          >
             <Gift className="size-4" />
             Abertos (
             {statusCounts.find((count) => count.status === 'OPEN')?.count ?? 0})
           </TabsTrigger>
-          <TabsTrigger value="ended" className="flex items-center gap-2">
+          <TabsTrigger
+            disabled={isPending}
+            value="ended"
+            className="flex items-center gap-2"
+          >
             <Trophy className="size-4" />
             Encerrados (
             {statusCounts.find((count) => count.status === 'COMPLETED')
