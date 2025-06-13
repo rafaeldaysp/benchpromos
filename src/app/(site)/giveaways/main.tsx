@@ -46,6 +46,14 @@ const SUBSCRIBE_TO_GIVEAWAY = gql`
   }
 `
 
+const LEAVE_GIVEAWAY = gql`
+  mutation LeaveGiveaway($giveawayId: ID!) {
+    removeUserFromGiveaway(giveawayId: $giveawayId) {
+      id
+    }
+  }
+`
+
 interface GiveawaysMainProps {
   activeGiveaways: (Giveaway & {
     participants: User[]
@@ -100,6 +108,24 @@ export default function GiveawaysMain({
     {
       onCompleted: () => {
         toast.success('Inscrição realizada com sucesso!')
+        router.refresh()
+      },
+      onError: (error) => {
+        toast.error(error.message)
+      },
+      context: {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    },
+  )
+
+  const [leaveGiveaway, { loading: isLoadingLeave }] = useMutation(
+    LEAVE_GIVEAWAY,
+    {
+      onCompleted: () => {
+        toast.success('Você saiu do sorteio!')
         router.refresh()
       },
       onError: (error) => {
@@ -256,23 +282,34 @@ export default function GiveawaysMain({
                         )}
                       </div>
 
-                      {/* Subscribe Button */}
+                      {/* Subscribe/Leave Button */}
                       <Button
                         onClick={() =>
-                          subscribeToGiveaway({
-                            variables: { giveawayId: giveaway.id },
-                          })
+                          subscribed
+                            ? leaveGiveaway({
+                                variables: { giveawayId: giveaway.id },
+                              })
+                            : subscribeToGiveaway({
+                                variables: { giveawayId: giveaway.id },
+                              })
                         }
-                        disabled={isLoadingSubscribe || subscribed}
+                        disabled={isLoadingSubscribe || isLoadingLeave}
                         className={cn(
                           'w-full transition-all duration-300',
-                          subscribed ? 'bg-success' : 'bg-primary',
+                          subscribed
+                            ? 'bg-destructive hover:bg-destructive/90'
+                            : 'bg-primary hover:bg-primary/90',
                         )}
                       >
-                        {subscribed ? (
+                        {isLoadingSubscribe || isLoadingLeave ? (
                           <>
-                            <CheckCircle className="mr-2 size-4" />
-                            Inscrito!
+                            <Icons.Spinner className="mr-2 size-4 animate-spin" />
+                            {subscribed ? 'Saindo...' : 'Inscrevendo...'}
+                          </>
+                        ) : subscribed ? (
+                          <>
+                            <XCircle className="mr-2 size-4" />
+                            Sair do sorteio
                           </>
                         ) : (
                           <>
