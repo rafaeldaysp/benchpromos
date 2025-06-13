@@ -299,7 +299,6 @@ export default function GiveawaysMain({
       if (count > 20) {
         clearInterval(interval)
         const winnerIndex = Math.floor(Math.random() * participantsCount)
-        const winnerId = participants[winnerIndex].id
 
         // Update prize with winner
         setGiveawayWinner({
