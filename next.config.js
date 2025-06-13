@@ -45,7 +45,7 @@ const nextConfig = {
       },
       {
         source: '/recomendacoes',
-        destination: '/recommendation',
+        destination: '/recommendations',
       },
       {
         source: '/sorteios',
