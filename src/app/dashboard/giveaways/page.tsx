@@ -5,6 +5,7 @@ import { type Giveaway } from '@/types'
 import { type User } from 'next-auth'
 import { getCurrentUserToken } from '@/app/_actions/user'
 import { format } from 'date-fns'
+import { ptBR } from 'date-fns/locale'
 import { notFound } from 'next/navigation'
 import { env } from '@/env.mjs'
 
@@ -66,7 +67,7 @@ export default async function GiveawaysPage({
   const { drawDate, subscribersPage, subscribersSearch, selectedGiveaway } =
     searchParams
 
-  const today = format(new Date(), 'yyyy-MM-dd')
+  const today = format(new Date(), 'yyyy-MM-dd', { locale: ptBR })
   const _drawDate = drawDate ?? today
 
   const token = await getCurrentUserToken()
