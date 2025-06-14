@@ -4,10 +4,13 @@ import { getClient } from '@/lib/apollo'
 import { type Giveaway } from '@/types'
 import { type User } from 'next-auth'
 import { getCurrentUserToken } from '@/app/_actions/user'
-import { format } from 'date-fns'
-import { ptBR } from 'date-fns/locale'
 import { notFound } from 'next/navigation'
 import { env } from '@/env.mjs'
+import dayjs from 'dayjs'
+import relativeTime from 'dayjs/plugin/relativeTime'
+
+dayjs.extend(relativeTime)
+dayjs.locale('pt-br')
 
 const USERS_PER_PAGE = 12
 
@@ -67,7 +70,7 @@ export default async function GiveawaysPage({
   const { drawDate, subscribersPage, subscribersSearch, selectedGiveaway } =
     searchParams
 
-  const today = format(new Date(), 'yyyy-MM-dd', { locale: ptBR })
+  const today = dayjs().format('YYYY-MM-DD')
   const _drawDate = drawDate ?? today
 
   const token = await getCurrentUserToken()
