@@ -6,11 +6,6 @@ import { type User } from 'next-auth'
 import { getCurrentUserToken } from '@/app/_actions/user'
 import { notFound } from 'next/navigation'
 import { env } from '@/env.mjs'
-import dayjs from 'dayjs'
-import relativeTime from 'dayjs/plugin/relativeTime'
-
-dayjs.extend(relativeTime)
-dayjs.locale('pt-br')
 
 const USERS_PER_PAGE = 12
 
@@ -70,7 +65,21 @@ export default async function GiveawaysPage({
   const { drawDate, subscribersPage, subscribersSearch, selectedGiveaway } =
     searchParams
 
-  const today = dayjs().format('YYYY-MM-DD')
+  // Get today's date in Brazilian timezone using Intl.DateTimeFormat
+  const now = new Date()
+  const formatter = new Intl.DateTimeFormat('pt-BR', {
+    timeZone: 'America/Sao_Paulo',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  })
+
+  const parts = formatter.formatToParts(now)
+  const year = parts.find((part) => part.type === 'year')?.value
+  const month = parts.find((part) => part.type === 'month')?.value
+  const day = parts.find((part) => part.type === 'day')?.value
+
+  const today = `${year}-${month}-${day}`
   const _drawDate = drawDate ?? today
 
   const token = await getCurrentUserToken()
