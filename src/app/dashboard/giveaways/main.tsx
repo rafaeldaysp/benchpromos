@@ -912,6 +912,7 @@ export default function GiveawaysMain({
                                     <Pagination
                                       page={subscribersPage}
                                       pageCount={subscribersPageCount}
+                                      pageString="subscribersPage"
                                     />
                                   )}
                                 </>

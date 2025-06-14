@@ -8,6 +8,8 @@ import { format } from 'date-fns'
 import { notFound } from 'next/navigation'
 import { env } from '@/env.mjs'
 
+const USERS_PER_PAGE = 12
+
 const GET_GIVEAWAYS = gql`
   query GetGiveaways(
     $getGiveawaysInput: GetGiveawaysInput
@@ -101,7 +103,7 @@ export default async function GiveawaysPage({
       getUsersInput: {
         search: subscribersSearch,
         pagination: {
-          limit: 12,
+          limit: USERS_PER_PAGE,
           page: Number(subscribersPage ?? '1'),
         },
         giveawayId: selectedGiveaway,
@@ -120,6 +122,8 @@ export default async function GiveawaysPage({
     return notFound()
   }
 
+  const usersPageCount = Math.ceil(data.users.count / USERS_PER_PAGE)
+
   return (
     <main>
       <GiveawaysMain
@@ -129,7 +133,7 @@ export default async function GiveawaysPage({
         distinctDates={data.giveaways.distinctDates}
         statusCounts={data.giveaways.statusCounts}
         subscribersToShow={data.users.list}
-        subscribersPageCount={data.users.count}
+        subscribersPageCount={usersPageCount}
         subscribersPage={Number(subscribersPage ?? '1')}
       />
     </main>

@@ -10,9 +10,14 @@ import { useQueryString } from '@/hooks/use-query-string'
 interface PaginationProps {
   page: number
   pageCount: number
+  pageString?: string
 }
 
-export function Pagination({ page, pageCount }: PaginationProps) {
+export function Pagination({
+  page,
+  pageCount,
+  pageString = page,
+}: PaginationProps) {
   const [isPending, startTransition] = React.useTransition()
   const pathname = usePathname()
   const router = useRouter()
@@ -57,7 +62,7 @@ export function Pagination({ page, pageCount }: PaginationProps) {
           startTransition(() => {
             router.push(
               `${pathname}?${createQueryString({
-                page: 1,
+                [pageString]: 1,
               })}`,
             )
           })
@@ -75,7 +80,7 @@ export function Pagination({ page, pageCount }: PaginationProps) {
           startTransition(() => {
             router.push(
               `${pathname}?${createQueryString({
-                page: Number(page) - 1,
+                [pageString]: Number(page) - 1,
               })}`,
             )
           })
@@ -107,7 +112,7 @@ export function Pagination({ page, pageCount }: PaginationProps) {
               startTransition(() => {
                 router.push(
                   `${pathname}?${createQueryString({
-                    page: pageNumber,
+                    [pageString]: pageNumber,
                   })}`,
                 )
               })
@@ -127,7 +132,7 @@ export function Pagination({ page, pageCount }: PaginationProps) {
           startTransition(() => {
             router.push(
               `${pathname}?${createQueryString({
-                page: Number(page) + 1,
+                [pageString]: Number(page) + 1,
               })}`,
             )
           })
@@ -144,7 +149,7 @@ export function Pagination({ page, pageCount }: PaginationProps) {
         onClick={() => {
           router.push(
             `${pathname}?${createQueryString({
-              page: pageCount,
+              [pageString]: pageCount,
             })}`,
           )
         }}
