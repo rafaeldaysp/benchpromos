@@ -16,7 +16,7 @@ interface PaginationProps {
 export function Pagination({
   page,
   pageCount,
-  pageString = page,
+  pageString = 'page',
 }: PaginationProps) {
   const [isPending, startTransition] = React.useTransition()
   const pathname = usePathname()
