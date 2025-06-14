@@ -148,7 +148,7 @@ export default function GiveawaysMain({
           transition={{ duration: 0.5 }}
         >
           <h2 className="mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-4xl font-bold text-transparent">
-            Ganhe prêmios incríveis!
+            Sorteios Bench
           </h2>
           <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
             Participe dos nossos sorteios e concorra a notebooks, gift cards e
