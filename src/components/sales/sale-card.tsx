@@ -290,18 +290,16 @@ export function SaleCard({
                         'rounded-xl border border-primary': sale.cashback,
                       })}
                     >
-                      <p className={sale.cashback ? 'px-2' : ''}>
-                        <strong
-                          className={cn('text-xl sm:text-2xl', {
-                            'text-success': sale.price === 0,
-                          })}
-                        >
-                          {priceFormatter.format(salePriceCents / 100)}
-                        </strong>{' '}
-                        <span className="text-xs text-muted-foreground sm:text-sm">
-                          à vista{' '}
-                        </span>
-                      </p>
+                      {sale.price > 0 && (
+                        <p className={sale.cashback ? 'px-2' : ''}>
+                          <strong className="text-xl sm:text-2xl">
+                            {priceFormatter.format(salePriceCents / 100)}
+                          </strong>{' '}
+                          <span className="text-xs text-muted-foreground sm:text-sm">
+                            à vista{' '}
+                          </span>
+                        </p>
+                      )}
 
                       {!!sale.installments && !!sale.totalInstallmentPrice && (
                         <span className="px-2 text-muted-foreground max-sm:text-xs">

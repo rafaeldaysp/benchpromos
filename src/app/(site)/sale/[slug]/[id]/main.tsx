@@ -220,12 +220,14 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
           </div>
           <div className="flex flex-1 flex-col gap-2 md:pr-8 lg:pr-0">
             <div className="flex flex-col gap-1 text-sm">
-              <div>
-                <strong className="text-3xl">
-                  {priceFormatter.format(salePriceWithouCashbackCents / 100)}
-                </strong>{' '}
-                <span className="text-muted-foreground">à vista </span>
-              </div>
+              {sale.price > 0 && (
+                <div>
+                  <strong className="text-3xl">
+                    {priceFormatter.format(salePriceWithouCashbackCents / 100)}
+                  </strong>{' '}
+                  <span className="text-muted-foreground">à vista </span>
+                </div>
+              )}
 
               {!!sale.installments && !!sale.totalInstallmentPrice && (
                 <span className="text-muted-foreground">
@@ -278,12 +280,14 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
                     Preço final com cashback
                   </span>
                   <span className="ml-1 text-foreground">
-                    <p>
-                      <strong className="text-xl">
-                        {priceFormatter.format(salePriceCents / 100)}
-                      </strong>{' '}
-                      <span className="text-muted-foreground">à vista </span>
-                    </p>
+                    {sale.price > 0 && (
+                      <p>
+                        <strong className="text-xl">
+                          {priceFormatter.format(salePriceCents / 100)}
+                        </strong>{' '}
+                        <span className="text-muted-foreground">à vista </span>
+                      </p>
+                    )}
 
                     {!!sale.installments && !!sale.totalInstallmentPrice && (
                       <span className="text-muted-foreground">
