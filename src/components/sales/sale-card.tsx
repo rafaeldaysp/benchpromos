@@ -202,7 +202,7 @@ export function SaleCard({
                 </div>
               )}
               {sale.sponsored && (
-                <div className="h-fit bg-muted py-1 text-center text-xs text-muted-foreground">
+                <div className="h-fit bg-blue-500 py-1 text-center text-xs text-white">
                   <strong>PATROCINADO</strong>
                 </div>
               )}
