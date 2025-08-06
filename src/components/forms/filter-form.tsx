@@ -150,7 +150,7 @@ export function FilterForm({
         <Button type="submit" disabled={isLoading}>
           {isLoading && (
             <Icons.Spinner
-              className="mr-2 size-4 animate-spin"
+              className="size-4 mr-2 animate-spin"
               aria-hidden="true"
             />
           )}

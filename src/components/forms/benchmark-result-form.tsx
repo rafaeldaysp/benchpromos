@@ -340,7 +340,7 @@ export function BenchmarkResultForm({
         <Button type="submit" disabled={isLoading}>
           {isLoading && (
             <Icons.Spinner
-              className="mr-2 size-4 animate-spin"
+              className="size-4 mr-2 animate-spin"
               aria-hidden="true"
             />
           )}
@@ -462,7 +462,9 @@ function Combobox({
               {products?.map((product) => (
                 <CommandItem
                   key={product.id}
-                  value={`${product.name.replace(/"/g, '')} ${product.category.name} ${product.subcategory?.name}`}
+                  value={`${product.name.replace(/"/g, '')} ${
+                    product.category.name
+                  } ${product.subcategory?.name}`}
                   className="h-16 space-x-4"
                   onSelect={() => {
                     setSelectedProducts((prev) =>

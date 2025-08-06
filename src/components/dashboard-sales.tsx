@@ -45,6 +45,7 @@ const GET_SALES = gql`
         caption
         review
         label
+        tag
         coupon
         cashbackId
         createdAt

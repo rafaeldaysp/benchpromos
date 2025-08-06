@@ -126,6 +126,7 @@ const defaultValues: Partial<Inputs> = {
   cashbackId: 'none',
   imageUrl: '',
   review: '',
+  tag: '',
   title: '',
   url: '',
   sponsored: false,
@@ -315,6 +316,27 @@ export function SaleForm({
 
         <FormField
           control={form.control}
+          name="tag"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Tag (opcional)</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="HOT"
+                  aria-invalid={!!form.formState.errors.tag}
+                  {...field}
+                />
+              </FormControl>
+              <FormDescription>
+                Uma palavra que aparecerá antes do título no card da promoção
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
           name="imageUrl"
           render={({ field }) => (
             <FormItem>
@@ -347,7 +369,7 @@ export function SaleForm({
                     <SelectTrigger>
                       {isSaleFormDataLoading && (
                         <Icons.Spinner
-                          className="mr-2 size-4 animate-spin"
+                          className="size-4 mr-2 animate-spin"
                           aria-hidden="true"
                         />
                       )}
@@ -431,7 +453,7 @@ export function SaleForm({
                     <SelectTrigger>
                       {isSaleFormDataLoading && (
                         <Icons.Spinner
-                          className="mr-2 size-4 animate-spin"
+                          className="size-4 mr-2 animate-spin"
                           aria-hidden="true"
                         />
                       )}
@@ -554,7 +576,7 @@ export function SaleForm({
           render={({ field }) => (
             <FormItem>
               <FormLabel className="flex text-warning">
-                <Icons.AlertCircle className="mr-2 size-3" /> Cupom (antigo)
+                <Icons.AlertCircle className="size-3 mr-2" /> Cupom (antigo)
               </FormLabel>
               <FormControl>
                 <Input
@@ -587,7 +609,7 @@ export function SaleForm({
                     <SelectTrigger>
                       {isSaleFormDataLoading && (
                         <Icons.Spinner
-                          className="mr-2 size-4 animate-spin"
+                          className="size-4 mr-2 animate-spin"
                           aria-hidden="true"
                         />
                       )}
@@ -634,7 +656,7 @@ export function SaleForm({
                     <SelectTrigger>
                       {isSaleFormDataLoading && (
                         <Icons.Spinner
-                          className="mr-2 size-4 animate-spin"
+                          className="size-4 mr-2 animate-spin"
                           aria-hidden="true"
                         />
                       )}
@@ -735,7 +757,7 @@ export function SaleForm({
         <Button type="submit" disabled={isLoading}>
           {isLoading && (
             <Icons.Spinner
-              className="mr-2 size-4 animate-spin"
+              className="size-4 mr-2 animate-spin"
               aria-hidden="true"
             />
           )}

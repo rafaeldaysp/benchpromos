@@ -303,17 +303,17 @@ export default function GiveawaysMain({
                       >
                         {isLoadingSubscribe || isLoadingLeave ? (
                           <>
-                            <Icons.Spinner className="mr-2 size-4 animate-spin" />
+                            <Icons.Spinner className="size-4 mr-2 animate-spin" />
                             {subscribed ? 'Saindo...' : 'Inscrevendo...'}
                           </>
                         ) : subscribed ? (
                           <>
-                            <XCircle className="mr-2 size-4" />
+                            <XCircle className="size-4 mr-2" />
                             Sair do sorteio
                           </>
                         ) : (
                           <>
-                            <Heart className="mr-2 size-4" />
+                            <Heart className="size-4 mr-2" />
                             Inscrever-se
                           </>
                         )}
