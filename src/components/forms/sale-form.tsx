@@ -126,6 +126,7 @@ const defaultValues: Partial<Inputs> = {
   cashbackId: 'none',
   imageUrl: '',
   review: '',
+  tag: '',
   title: '',
   url: '',
   sponsored: false,
@@ -308,6 +309,27 @@ export function SaleForm({
                   {...field}
                 />
               </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="tag"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Tag (opcional)</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="HOT"
+                  aria-invalid={!!form.formState.errors.tag}
+                  {...field}
+                />
+              </FormControl>
+              <FormDescription>
+                Uma palavra que aparecerá antes do título no card da promoção
+              </FormDescription>
               <FormMessage />
             </FormItem>
           )}

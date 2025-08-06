@@ -20,6 +20,10 @@ export const saleSchema = z.object({
     .string()
     .transform((str) => str.replace(/[^\x00-\xFF]/g, '').trim())
     .optional(),
+  tag: z
+    .string()
+    .transform((str) => str.replace(/[^\x00-\xFF]/g, '').trim())
+    .optional(),
   label: z.string().optional(),
   coupon: z.string().optional(),
   couponId: z.string().optional(),

@@ -124,6 +124,7 @@ export type Sale = {
   caption?: string
   review?: string
   label?: string
+  tag?: string
   coupon?: string
   cashbackId?: string
   createdAt: string

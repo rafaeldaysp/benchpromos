@@ -76,6 +76,7 @@ const GET_SALE = gql`
         reviewUrl
       }
       label
+      tag
       caption
       productSlug
       review

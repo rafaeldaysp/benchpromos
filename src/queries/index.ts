@@ -31,6 +31,7 @@ export const GET_SALES = gql`
         caption
         review
         label
+        tag
         coupon
         createdAt
         categoryId

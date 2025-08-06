@@ -87,6 +87,7 @@ interface SaleCardProps extends React.HTMLAttributes<HTMLDivElement> {
     caption?: string
     review?: string
     label?: string
+    tag?: string
     coupon?: string
     cashback?: Omit<Cashback, 'id' | 'url'>
     discounts: Discount[]
@@ -250,6 +251,14 @@ export function SaleCard({
               <CardContent className="flex-1 space-y-1.5 p-3 py-0 sm:space-y-2 sm:p-6 sm:pt-0">
                 <CardTitle className="line-clamp-2 space-x-1 font-semibold leading-none tracking-tight max-sm:text-sm sm:line-clamp-3">
                   <Link href={`/promocao/${sale.slug}/${sale.id}`}>
+                    {sale.tag && (
+                      <Badge
+                        variant="success"
+                        className="mr-1.5 px-2 py-0 text-sm"
+                      >
+                        {sale.tag}
+                      </Badge>
+                    )}
                     {sale.title}
                   </Link>
                 </CardTitle>
