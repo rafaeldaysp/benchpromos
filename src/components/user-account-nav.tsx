@@ -85,6 +85,12 @@ export function UserAccountNav({ user }: UserAccountNavProps) {
                 <span>Benchmarks (Admin)</span>
               </Link>
             </DropdownMenuItem>
+            <DropdownMenuItem className="cursor-pointer text-success" asChild>
+              <Link href="/dashboard/giveaways">
+                <Icons.Gift className="mr-2 size-4" />
+                <span>Sorteios (Admin)</span>
+              </Link>
+            </DropdownMenuItem>
           </>
         )}
 
