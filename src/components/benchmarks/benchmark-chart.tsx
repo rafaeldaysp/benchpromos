@@ -100,7 +100,7 @@ function reorganizeResults({ results }: BenchmarkChartProps) {
       ...result,
       resultNoFG: resultWithoutFG[0]?.result,
     })
-    exludingIds.push(resultWithoutFG[0].id)
+    exludingIds.push(resultWithoutFG[0]?.id)
   }
 
   results
