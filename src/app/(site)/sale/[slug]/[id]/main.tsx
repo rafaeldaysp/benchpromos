@@ -136,11 +136,13 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
     sale.discounts.map((discount) => discount.discount),
   )
 
-  const salePriceWithouCashbackCents = priceCalculator(
+  const salePriceWithouCashbackAndCoinsDiscountCents = priceCalculator(
     sale.price,
     sale.couponSchema?.discount,
     undefined,
-    sale.discounts.map((discount) => discount.discount),
+    sale.discounts
+      .filter((discount) => !discount.label?.toLowerCase().includes('moedas'))
+      .map((discount) => discount.discount),
   )
 
   const saleInstallmentPriceCents = priceCalculator(
@@ -150,7 +152,24 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
     sale.discounts.map((discount) => discount.discount),
   )
 
-  const saleInstallmentPriceWithoutCashbackCents = priceCalculator(
+  const saleInstallmentPriceWithoutCashbackAndCoinsDiscountCents =
+    priceCalculator(
+      sale.totalInstallmentPrice,
+      sale.couponSchema?.discount,
+      undefined,
+      sale.discounts
+        .filter((discount) => !discount.label?.toLowerCase().includes('moedas'))
+        .map((discount) => discount.discount),
+    )
+
+  const salePriceWithCoinsDiscountCents = priceCalculator(
+    sale.price,
+    sale.couponSchema?.discount,
+    undefined,
+    sale.discounts.map((discount) => discount.discount),
+  )
+
+  const saleInstallmentPriceWithCoinsDiscountCents = priceCalculator(
     sale.totalInstallmentPrice,
     sale.couponSchema?.discount,
     undefined,
@@ -224,7 +243,9 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
               {sale.price > 0 && (
                 <div>
                   <strong className="text-3xl">
-                    {priceFormatter.format(salePriceWithouCashbackCents / 100)}
+                    {priceFormatter.format(
+                      salePriceWithouCashbackAndCoinsDiscountCents / 100,
+                    )}
                   </strong>{' '}
                   <span className="text-muted-foreground">à vista </span>
                 </div>
@@ -235,14 +256,15 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
                   ou{' '}
                   <strong className="text-base">
                     {priceFormatter.format(
-                      saleInstallmentPriceWithoutCashbackCents / 100,
+                      saleInstallmentPriceWithoutCashbackAndCoinsDiscountCents /
+                        100,
                     )}
                   </strong>{' '}
                   em <strong className="text-base">{sale.installments}x</strong>{' '}
                   de{' '}
                   <strong className="text-base">
                     {priceFormatter.format(
-                      saleInstallmentPriceWithoutCashbackCents /
+                      saleInstallmentPriceWithoutCashbackAndCoinsDiscountCents /
                         (100 * sale.installments),
                     )}
                   </strong>
@@ -271,6 +293,47 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
                       </Tooltip>
                     </TooltipProvider>
                   ))}
+                </div>
+              )}
+
+              {sale.discounts.some((discount) =>
+                discount.label?.toLowerCase().includes('moedas'),
+              ) && (
+                <div className="flex flex-col items-start rounded-xl bg-success/20 px-4 py-2 text-sm text-muted-foreground">
+                  <span className="flex items-center font-semibold">
+                    <Icons.Coins className="mr-2 size-4 text-success" />
+                    Preço final com moedas
+                  </span>
+                  <span className="ml-1 text-foreground">
+                    {sale.price > 0 && (
+                      <p>
+                        <strong className="text-xl">
+                          {priceFormatter.format(
+                            salePriceWithCoinsDiscountCents / 100,
+                          )}
+                        </strong>{' '}
+                        <span className="text-muted-foreground">à vista </span>
+                      </p>
+                    )}
+
+                    {!!sale.installments && !!sale.totalInstallmentPrice && (
+                      <span className="text-muted-foreground">
+                        ou{' '}
+                        <strong className="">
+                          {priceFormatter.format(
+                            saleInstallmentPriceWithCoinsDiscountCents / 100,
+                          )}
+                        </strong>{' '}
+                        em <strong className="">{sale.installments}x</strong> de{' '}
+                        <strong className="">
+                          {priceFormatter.format(
+                            saleInstallmentPriceWithCoinsDiscountCents /
+                              (100 * sale.installments),
+                          )}
+                        </strong>
+                      </span>
+                    )}
+                  </span>
                 </div>
               )}
 

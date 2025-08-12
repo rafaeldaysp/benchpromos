@@ -141,6 +141,20 @@ export function SaleCard({
     sale.discounts.map((discount) => discount.discount),
   )
 
+  const hasCoinsDiscount = sale.discounts.some((discount) =>
+    discount.label?.toLowerCase().includes('moedas'),
+  )
+
+  // TODO: add key on backend to get coins discount
+  let coinsDiscount = 0
+  if (hasCoinsDiscount) {
+    sale.discounts.forEach((discount) => {
+      if (discount.label?.toLowerCase().includes('moedas')) {
+        coinsDiscount = Number(discount.discount)
+      }
+    })
+  }
+
   const salePriceWithouCashbackCents = priceCalculator(
     sale.price,
     sale.couponSchema?.discount,
@@ -297,10 +311,15 @@ export function SaleCard({
                     <div
                       className={cn('flex w-fit flex-col pt-1 sm:w-full', {
                         'rounded-xl border border-primary': sale.cashback,
+                        'rounded-xl border border-success/50': hasCoinsDiscount,
                       })}
                     >
                       {sale.price > 0 && (
-                        <p className={sale.cashback ? 'px-2' : ''}>
+                        <p
+                          className={
+                            sale.cashback || hasCoinsDiscount ? 'px-2' : ''
+                          }
+                        >
                           <strong className="text-xl sm:text-2xl">
                             {priceFormatter.format(salePriceCents / 100)}
                           </strong>{' '}
@@ -338,6 +357,13 @@ export function SaleCard({
                         <div className="mt-1 flex w-fit items-center rounded-bl-lg rounded-tr bg-primary px-2 text-xs font-semibold text-primary-foreground">
                           <span className="max-sm:text-[10px]">
                             COM {sale.cashback.value}% DE CASHBACK
+                          </span>
+                        </div>
+                      )}
+                      {hasCoinsDiscount && (
+                        <div className="mt-1 flex w-fit items-center rounded-bl-lg rounded-tr bg-success/20 px-2 text-xs font-semibold text-success">
+                          <span className="max-sm:text-[10px]">
+                            {priceFormatter.format(coinsDiscount)} EM MOEDAS
                           </span>
                         </div>
                       )}
