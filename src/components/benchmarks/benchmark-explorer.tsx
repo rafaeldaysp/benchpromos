@@ -115,17 +115,18 @@ function File({ file }: { file: Benchmark }) {
       key={file.id}
       href={`/benchmarks/${file.slug}`.concat(queryString)}
       className={cn(
-        buttonVariants({ variant: 'ghost' }),
-        'h-fit w-full justify-start space-x-2 px-2 pl-8',
+        'flex h-fit min-h-9 w-full items-start justify-start rounded-md p-2 pl-8 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
         {
           'bg-muted': pathname.includes(file.slug),
         },
       )}
     >
-      <div>
+      <div className="mr-2 mt-0.5 shrink-0">
         <Icons.MenuSquare className="size-4" />
       </div>
-      <span className="line-clamp-3">{file.name}</span>
+      <span className="min-w-0 flex-1 break-words text-left leading-tight">
+        {file.name}
+      </span>
     </Link>
   )
 }
