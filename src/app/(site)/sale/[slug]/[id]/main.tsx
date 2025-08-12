@@ -209,7 +209,12 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
             EXPIRADO
           </Badge>
         )}
-        <strong className="line-clamp-4 leading-none tracking-tight md:text-xl">
+        <strong className="line-clamp-4 flex items-center gap-x-2 leading-none tracking-tight md:text-xl">
+          {sale.tag && (
+            <Badge variant="success" className="px-2 py-0 text-base">
+              {sale.tag}
+            </Badge>
+          )}
           {sale.title}
         </strong>
         <div className="space-x-1.5">
