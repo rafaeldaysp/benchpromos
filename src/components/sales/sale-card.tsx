@@ -150,7 +150,7 @@ export function SaleCard({
   if (hasCoinsDiscount) {
     sale.discounts.forEach((discount) => {
       if (discount.label?.toLowerCase().includes('moedas')) {
-        coinsDiscount = Number(discount.discount)
+        coinsDiscount += Number(discount.discount)
       }
     })
   }
