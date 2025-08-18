@@ -277,7 +277,7 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
               )}
 
               {sale.discounts.length > 0 && (
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-1 pb-1">
                   {sale.discounts.map((discount) => (
                     <TooltipProvider key={discount.id} delayDuration={100}>
                       <Tooltip>
