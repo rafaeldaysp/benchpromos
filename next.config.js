@@ -8,7 +8,7 @@ const nextConfig = {
       },
       {
         protocol: 'http',
-        hostname: 'minio.benchpromos.com.br',
+        hostname: '**',
       },
     ],
   },
