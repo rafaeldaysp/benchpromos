@@ -1,5 +1,6 @@
 'use client'
 
+import * as React from 'react'
 import { gql, useMutation } from '@apollo/client'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'next/navigation'
@@ -21,7 +22,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { userProfileSchema } from '@/lib/validations/user-profile'
 import { Icons } from '../icons'
-import { UserAvatar } from '../user-avatar'
+import { ProfileImageUploader } from '../files/profile-image-uploader'
 
 const UPDATE_USER_PROFILE = gql`
   mutation UpdateUserProfile($input: UpdateUserProfileInput!) {
@@ -36,6 +37,7 @@ type Inputs = z.infer<typeof userProfileSchema>
 
 interface UserProfileFormProps {
   user: {
+    id: string
     name: string
     image?: string
   }
@@ -64,12 +66,20 @@ export function UserProfileForm({ user }: UserProfileFormProps) {
     },
   )
 
+  const handleImageUploaded = React.useCallback(
+    (imageUrl: string) => {
+      form.setValue('image', imageUrl)
+    },
+    [form],
+  )
+
   async function onSubmit({ name, image }: Inputs) {
     const token = await getCurrentUserToken()
     updateProfile({
       variables: {
         input: {
           name,
+          ...(image && { image }),
         },
       },
       context: {
@@ -90,25 +100,19 @@ export function UserProfileForm({ user }: UserProfileFormProps) {
             <FormItem>
               <FormLabel className="text-base">Foto de perfil</FormLabel>
               <div className="flex items-center space-x-4">
-                <UserAvatar
+                <ProfileImageUploader
+                  userId={user.id}
                   user={{
-                    name: user.name || null,
-                    image: user.image || null,
+                    name: user.name,
+                    image: form.getValues('image') || null,
                   }}
-                  className="size-8"
+                  className="size-16"
+                  onImageUploaded={handleImageUploaded}
+                  disabled={isLoading}
                 />
-                {/* Implementar a lógica de upload de arquivos */}
-                <FormControl>
-                  <Input
-                    disabled
-                    type="file"
-                    className="cursor-pointer pt-1.5 file:cursor-pointer file:rounded-lg file:bg-accent file:text-accent-foreground file:hover:bg-accent/50"
-                  />
-                </FormControl>
               </div>
               <FormDescription>
-                Selecine um imagem para usar como foto de perfil pública.
-                (Temporariamente desabilitado)
+                Clique na sua foto de perfil para alterar a imagem.
               </FormDescription>
             </FormItem>
           )}
