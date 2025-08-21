@@ -6,6 +6,10 @@ const nextConfig = {
         protocol: 'https',
         hostname: '**',
       },
+      {
+        protocol: 'http',
+        hostname: 'minio.benchpromos.com.br',
+      },
     ],
   },
   experimental: {
