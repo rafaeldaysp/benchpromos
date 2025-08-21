@@ -205,7 +205,7 @@ export function RecommendedProductForm({
         <Button type="submit" disabled={isLoading}>
           {isLoading && (
             <Icons.Spinner
-              className="mr-2 h-4 w-4 animate-spin"
+              className="mr-2 size-4 animate-spin"
               aria-hidden="true"
             />
           )}

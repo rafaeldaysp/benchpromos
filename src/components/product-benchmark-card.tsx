@@ -42,7 +42,7 @@ export function ProductBenchmarkCard({ benchmark }: ProductBenchmarkCardProps) {
             />
           </div>
           {showInfo && (
-            <div className="absolute left-0 top-0 flex h-full w-full flex-col items-center justify-center space-y-4 break-words p-2 text-center">
+            <div className="absolute left-0 top-0 flex size-full flex-col items-center justify-center space-y-4 break-words p-2 text-center">
               <Badge className="text-sm"> {benchmark.name}</Badge>
               <ScrollArea className="h-max w-full">
                 <div className="flex flex-col items-center justify-center gap-y-2 px-2.5 text-center">
@@ -62,7 +62,7 @@ export function ProductBenchmarkCard({ benchmark }: ProductBenchmarkCardProps) {
                             .concat(` [${resultData.result.toString()}]`)
                             .concat(` ${resultData.description?.toString()}`)}
                           {resultData.video && (
-                            <Icons.ExternalLink className="ml-2 h-4 w-4" />
+                            <Icons.ExternalLink className="ml-2 size-4" />
                           )}
                         </Badge>
                       </DialogTrigger>
@@ -76,7 +76,7 @@ export function ProductBenchmarkCard({ benchmark }: ProductBenchmarkCardProps) {
       </Card>
 
       {selectedVideo && (
-        <DialogContent className="w-full sm:max-w-[1280px]">
+        <DialogContent className="w-full sm:max-w-screen-xl">
           <div className="aspect-video p-2">
             <iframe
               width="100%"

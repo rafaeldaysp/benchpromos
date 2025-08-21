@@ -4,6 +4,8 @@ import { siteConfig } from '@/config/site'
 import { gql } from '@apollo/client'
 import { getClient } from '@/lib/apollo'
 
+export const dynamic = 'force-dynamic'
+
 const GET_PRODUCTS_AND_CATEGORIES = gql`
   query GET_DATA(
     $getProductsInput: GetProductsInput

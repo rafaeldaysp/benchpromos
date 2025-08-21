@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils'
 const sidebarNavItems = [
   {
     title: 'Dashboard',
-    href: '/dashboard',
+    href: '/dashboard/general',
   },
   {
     title: 'Promoções',

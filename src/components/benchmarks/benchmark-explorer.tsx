@@ -51,7 +51,7 @@ function Parent({ parent }: { parent: Benchmark & { childrenCount: number } }) {
               'h-fit justify-start px-2 hover:no-underline',
             )}
           >
-            <Icons.Folder className="h-4 w-4 fill-auxiliary text-auxiliary" />
+            <Icons.Folder className="size-4 fill-auxiliary text-auxiliary" />
             {parent.name}
           </AccordionTrigger>
           <AccordionContent className="pl-4 pt-1">
@@ -115,17 +115,18 @@ function File({ file }: { file: Benchmark }) {
       key={file.id}
       href={`/benchmarks/${file.slug}`.concat(queryString)}
       className={cn(
-        buttonVariants({ variant: 'ghost' }),
-        'h-fit w-full justify-start space-x-2 px-2 pl-8',
+        'flex h-fit min-h-9 w-full items-start justify-start rounded-md p-2 pl-8 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
         {
           'bg-muted': pathname.includes(file.slug),
         },
       )}
     >
-      <div>
-        <Icons.MenuSquare className="h-4 w-4" />
+      <div className="mr-2 mt-0.5 shrink-0">
+        <Icons.MenuSquare className="size-4" />
       </div>
-      <span className="line-clamp-3">{file.name}</span>
+      <span className="min-w-0 flex-1 break-words text-left leading-tight">
+        {file.name}
+      </span>
     </Link>
   )
 }

@@ -140,7 +140,6 @@ export function FilterForm({
               <FormControl>
                 <Checkbox
                   checked={field.value}
-                  // @ts-expect-error ...
                   onCheckedChange={field.onChange}
                 />
               </FormControl>

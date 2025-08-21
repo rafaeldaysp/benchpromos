@@ -7,6 +7,7 @@ import { removeNullValues } from '@/utils'
 
 export default async function ProfilePage() {
   const user = removeNullValues(await getCurrentUser()) as {
+    id: string
     name: string
     image?: string
   }

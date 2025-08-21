@@ -314,14 +314,14 @@ export default async function ProductPage({ params }: ProductPageProps) {
             >
               <p className="flex flex-1 flex-col">
                 <span className="flex items-center gap-x-2 font-semibold">
-                  <Icons.StarFilled className="h-4 w-4 text-auxiliary" />
+                  <Icons.StarFilled className="size-4 text-auxiliary" />
                   Testado pelo canal
                 </span>
                 <span className="text-muted-foreground">
                   Assista ao vídeo sobre este produto em nosso canal
                 </span>
               </p>
-              <Icons.ChevronRight className="h-4 w-4" />
+              <Icons.ChevronRight className="size-4" />
             </Link>
           )}
         </aside>
@@ -629,7 +629,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 <Card className="border-success transition-colors hover:bg-muted/50">
                   <CardHeader className="flex items-center p-4">
                     <Badge variant={'success'} className="flex w-fit gap-x-1">
-                      <Icons.Check className="h-4 w-4 " />
+                      <Icons.Check className="size-4 " />
                       Prós
                     </Badge>
                   </CardHeader>
@@ -637,7 +637,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                     <ul className="flex flex-col space-y-1 font-medium leading-tight">
                       {product.pros.map((pros, index) => (
                         <li key={index} className="flex gap-x-1">
-                          <Icons.Check className="h-4 w-4 text-success" />
+                          <Icons.Check className="size-4 text-success" />
                           {pros.value}
                         </li>
                       ))}
@@ -650,7 +650,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                       variant={'destructive'}
                       className="flex w-fit gap-x-1"
                     >
-                      <Icons.X className="h-4 w-4 " />
+                      <Icons.X className="size-4 " />
                       Contras
                     </Badge>
                   </CardHeader>
@@ -658,7 +658,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                     <ul className="flex flex-col space-y-1 font-medium leading-tight">
                       {product.cons.map((con, index) => (
                         <li key={index} className="flex items-center gap-x-1">
-                          <Icons.X className="h-4 w-4 text-destructive" />
+                          <Icons.X className="size-4 text-destructive" />
                           {con.value}
                         </li>
                       ))}
@@ -676,8 +676,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
               </CardHeader>
               <CardContent className="p-4 pt-0">
                 <Card className="relative h-fit transition-colors hover:bg-muted/50">
-                  <Icons.Quote className="absolute left-4 top-0 h-4 w-4 -translate-y-1/2 rotate-180 bg-background text-muted-foreground " />
-                  <Icons.Quote className="absolute bottom-0 right-4 h-4 w-4 translate-y-1/2 bg-background text-muted-foreground" />
+                  <Icons.Quote className="absolute left-4 top-0 size-4 -translate-y-1/2 rotate-180 bg-background text-muted-foreground " />
+                  <Icons.Quote className="absolute bottom-0 right-4 size-4 translate-y-1/2 bg-background text-muted-foreground" />
                   <CardContent className="h-full p-4 text-sm font-medium">
                     {product.description}
                   </CardContent>

@@ -74,7 +74,7 @@ export function BenchmarkSelect({ benchmarks }: BenchmarkSelectProps) {
                 {isPending ? (
                   <Icons.Spinner
                     className={cn(
-                      'mr-2 h-4 w-4 animate-spin',
+                      'mr-2 size-4 animate-spin',
                       currentBenchmark === benchmark.slug
                         ? 'opacity-100'
                         : 'opacity-0',
@@ -83,7 +83,7 @@ export function BenchmarkSelect({ benchmarks }: BenchmarkSelectProps) {
                 ) : (
                   <Icons.Check
                     className={cn(
-                      'mr-2 h-4 w-4',
+                      'mr-2 size-4',
                       currentBenchmark === benchmark.slug
                         ? 'opacity-100'
                         : 'opacity-0',
@@ -119,7 +119,7 @@ export function BenchmarkSelect({ benchmarks }: BenchmarkSelectProps) {
             })
           }
         >
-          <Icons.ChevronLeft className="h-4 w-4" />
+          <Icons.ChevronLeft className="size-4" />
         </Button>
 
         <Button
@@ -140,7 +140,7 @@ export function BenchmarkSelect({ benchmarks }: BenchmarkSelectProps) {
             })
           }
         >
-          <Icons.ChevronRight className="h-4 w-4" />
+          <Icons.ChevronRight className="size-4" />
         </Button>
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
@@ -160,9 +160,9 @@ export function BenchmarkSelect({ benchmarks }: BenchmarkSelectProps) {
               </span>
 
               {isPending ? (
-                <Icons.Spinner className="ml-2 h-4 w-4 shrink-0 animate-spin opacity-50" />
+                <Icons.Spinner className="ml-2 size-4 shrink-0 animate-spin opacity-50" />
               ) : (
-                <Icons.ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                <Icons.ChevronDown className="ml-2 size-4 shrink-0 opacity-50" />
               )}
             </Button>
           </PopoverTrigger>

@@ -100,7 +100,7 @@ function reorganizeResults({ results }: BenchmarkChartProps) {
       ...result,
       resultNoFG: resultWithoutFG[0]?.result,
     })
-    exludingIds.push(resultWithoutFG[0].id)
+    exludingIds.push(resultWithoutFG[0]?.id)
   }
 
   results
@@ -400,7 +400,7 @@ function CustomLegend({ unit }: { unit: string; hasFG?: boolean }) {
   return (
     <div className="flex w-full items-center justify-center gap-6">
       <div className="mb-2 flex items-center justify-center gap-x-2">
-        <div className="h-4 w-4 rounded-sm bg-primary" />
+        <div className="size-4 rounded-sm bg-primary" />
         <span className="text-xs text-muted-foreground sm:text-base">
           {unit}
         </span>

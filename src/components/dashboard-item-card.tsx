@@ -25,7 +25,7 @@ const DashboardItemCardRoot = React.forwardRef<
 
 function DashboardItemCardImage({ className, src, alt, ...props }: ImageProps) {
   return (
-    <div className="relative h-16 w-16">
+    <div className="relative size-16">
       <Image
         src={src}
         alt={alt}
@@ -85,7 +85,7 @@ const DashboardItemCardAction = React.forwardRef<
   React.ComponentPropsWithoutRef<typeof Button> & { icon: React.ElementType }
 >(({ icon: Icon, variant = 'outline', ...props }, ref) => (
   <Button ref={ref} variant={variant} size="icon" {...props}>
-    <Icon className="h-4 w-4" />
+    <Icon className="size-4" />
   </Button>
 ))
 DashboardItemCardAction.displayName = 'DashboardItemCardAction'

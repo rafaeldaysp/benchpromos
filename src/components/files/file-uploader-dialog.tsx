@@ -42,9 +42,15 @@ const UPLOADED_FILES = gql`
 
 interface FileUploadDialogProps {
   path: string
+  maxFileCount?: number
+  maxSize?: number
 }
 
-export function FileUploaderDialog({ path }: FileUploadDialogProps) {
+export function FileUploaderDialog({
+  path,
+  maxFileCount = 8,
+  maxSize = 50 * 1024 * 1024,
+}: FileUploadDialogProps) {
   const [files, setFiles] = React.useState<File[]>([])
   const [isProcessingFiles, setIsProcessingFiles] = React.useState(false)
 
@@ -85,7 +91,7 @@ export function FileUploaderDialog({ path }: FileUploadDialogProps) {
         })
     })
   }, [uploadedFileUrls])
-  console.log(isProcessingFiles, isFetchingFiles)
+
   const onUpload = async (files: File[]) => {
     if (files.length === 0) return
     files.forEach(async (file) => {
@@ -143,7 +149,7 @@ export function FileUploaderDialog({ path }: FileUploadDialogProps) {
         >
           {(isFetchingFiles || isProcessingFiles) && (
             <Icons.Spinner
-              className="mr-2 h-4 w-4 animate-spin"
+              className="mr-2 size-4 animate-spin"
               aria-hidden="true"
             />
           )}{' '}
@@ -161,8 +167,8 @@ export function FileUploaderDialog({ path }: FileUploadDialogProps) {
         <FileUploader
           onUpload={onUpload}
           deleteFile={onDelete}
-          maxFileCount={8}
-          maxSize={50 * 1024 * 1024}
+          maxFileCount={maxFileCount}
+          maxSize={maxSize}
           onValueChange={setFiles}
           value={files}
         />

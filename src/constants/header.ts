@@ -68,7 +68,7 @@ export function headerOptions({ categories }: HeaderOptionsProps) {
     },
     {
       title: 'Recomendações',
-      slug: 'recommendations',
+      slug: 'recomendacoes',
       icon: Icons.StarFilled,
     },
     // {
@@ -76,6 +76,11 @@ export function headerOptions({ categories }: HeaderOptionsProps) {
     //   slug: 'awards',
     //   icon: Icons.Award,
     // },
+    {
+      title: 'Sorteios',
+      slug: 'sorteios',
+      icon: Icons.Gift,
+    },
   ]
 
   options.push(...moreHeaders)

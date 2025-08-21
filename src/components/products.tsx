@@ -186,7 +186,7 @@ export function Products({
                 variant="secondary"
                 size={'sm'}
               >
-                <Icons.SlidersHorizontal className="mr-2 h-4 w-4" />
+                <Icons.SlidersHorizontal className="mr-2 size-4" />
                 <span className="text-sm">Filtros</span>
                 {filters.length > 0 && (
                   <>
@@ -412,7 +412,7 @@ export function Products({
                 variant="secondary"
                 size={'sm'}
               >
-                <Icons.DollarSign className="mr-2 h-4 w-4" />
+                <Icons.DollarSign className="mr-2 size-4" />
                 <span className="text-sm">Preços</span>
               </Button>
             </PopoverTrigger>
@@ -475,7 +475,7 @@ export function Products({
                   }
                 >
                   {isPending && (
-                    <Icons.Spinner className="mr-2 h-4 w-4 animate-spin" />
+                    <Icons.Spinner className="mr-2 size-4 animate-spin" />
                   )}
                   Aplicar
                 </Button>
@@ -506,7 +506,7 @@ export function Products({
                   variant="secondary"
                   size={'sm'}
                 >
-                  <Icons.Menu className="mr-2 h-4 w-4" />
+                  <Icons.Menu className="mr-2 size-4" />
                   <span className="text-sm">Categorias</span>
                 </Button>
               </PopoverTrigger>

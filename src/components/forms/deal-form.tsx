@@ -382,7 +382,6 @@ export function DealForm({
               <FormControl>
                 <Checkbox
                   checked={field.value}
-                  // @ts-expect-error ...
                   onCheckedChange={field.onChange}
                 />
               </FormControl>
@@ -400,7 +399,6 @@ export function DealForm({
                 <Checkbox
                   checked={field.value}
                   defaultChecked
-                  // @ts-expect-error ...
                   onCheckedChange={field.onChange}
                 />
               </FormControl>

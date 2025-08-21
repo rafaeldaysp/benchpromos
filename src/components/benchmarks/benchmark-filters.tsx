@@ -63,7 +63,7 @@ export function BenchmarkFilters({ filters }: BenchmarkFiltersProps) {
             variant="secondary"
             className="w-full"
           >
-            <Icons.SlidersHorizontal className="mr-2 h-4 w-4" />
+            <Icons.SlidersHorizontal className="mr-2 size-4" />
             <span className="text-sm">Filtros</span>
             {initialFilters.length > 0 && (
               <>

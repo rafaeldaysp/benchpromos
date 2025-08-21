@@ -25,10 +25,10 @@ export function UserAccountNav({ user }: UserAccountNavProps) {
       <DropdownMenuTrigger className="relative">
         <UserAvatar
           user={{ name: user.name || null, image: user.image || null }}
-          className="h-8 w-8"
+          className="size-8"
         />
         {!user.emailVerified && (
-          <Icons.AlertCircle className="absolute right-0.5 top-0.5 h-3 w-3 fill-warning text-warning-foreground" />
+          <Icons.AlertCircle className="absolute right-0.5 top-0.5 size-3 fill-warning text-warning-foreground" />
         )}
       </DropdownMenuTrigger>
 
@@ -48,19 +48,19 @@ export function UserAccountNav({ user }: UserAccountNavProps) {
 
         <DropdownMenuItem className="cursor-pointer" asChild>
           <Link href="/user/profile">
-            <Icons.User className="mr-2 h-4 w-4" />
+            <Icons.User className="mr-2 size-4" />
             <span>Perfil</span>
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem className="cursor-pointer" asChild>
           <Link href="/user/alerts">
-            <Icons.Bell className="mr-2 h-4 w-4" />
+            <Icons.Bell className="mr-2 size-4" />
             <span>Alertas</span>
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem className="cursor-pointer" asChild>
           <Link href="/user/favorites">
-            <Icons.Heart className="mr-2 h-4 w-4" />
+            <Icons.Heart className="mr-2 size-4" />
             <span>Favoritos</span>
           </Link>
         </DropdownMenuItem>
@@ -69,20 +69,26 @@ export function UserAccountNav({ user }: UserAccountNavProps) {
           <>
             <DropdownMenuItem className="cursor-pointer" asChild>
               <Link href="/dashboard">
-                <Icons.Lock className="mr-2 h-4 w-4" />
+                <Icons.Lock className="mr-2 size-4" />
                 <span>Dashboard (Admin)</span>
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem className="cursor-pointer" asChild>
               <Link href="/dashboard/sales">
-                <Icons.DollarSign className="mr-2 h-4 w-4" />
+                <Icons.DollarSign className="mr-2 size-4" />
                 <span>Promoções (Admin)</span>
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem className="cursor-pointer" asChild>
               <Link href="/dashboard/benchmarks">
-                <Icons.BarChart4 className="mr-2 h-4 w-4" />
+                <Icons.BarChart4 className="mr-2 size-4" />
                 <span>Benchmarks (Admin)</span>
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem className="cursor-pointer text-success" asChild>
+              <Link href="/dashboard/giveaways">
+                <Icons.Gift className="mr-2 size-4" />
+                <span>Sorteios (Admin)</span>
               </Link>
             </DropdownMenuItem>
           </>
@@ -90,7 +96,7 @@ export function UserAccountNav({ user }: UserAccountNavProps) {
 
         <DropdownMenuItem className="cursor-pointer" asChild>
           <Link href={'/politica-de-privacidade'}>
-            <Icons.MenuSquare className="mr-2 h-4 w-4" />
+            <Icons.MenuSquare className="mr-2 size-4" />
             <span>Política de Privacidade</span>
           </Link>
         </DropdownMenuItem>
@@ -100,7 +106,7 @@ export function UserAccountNav({ user }: UserAccountNavProps) {
         {!user.emailVerified && (
           <DropdownMenuItem className="cursor-pointer" asChild>
             <Link href={'/sign-up/step2'}>
-              <Icons.AlertCircle className="mr-2 h-4 w-4" />
+              <Icons.AlertCircle className="mr-2 size-4" />
               <span>Verificar conta</span>
             </Link>
           </DropdownMenuItem>
@@ -113,7 +119,7 @@ export function UserAccountNav({ user }: UserAccountNavProps) {
             signOut()
           }}
         >
-          <Icons.LogOut className="mr-2 h-4 w-4" />
+          <Icons.LogOut className="mr-2 size-4" />
           <span>Sair</span>
         </DropdownMenuItem>
       </DropdownMenuContent>

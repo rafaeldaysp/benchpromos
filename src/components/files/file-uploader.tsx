@@ -220,7 +220,7 @@ export function FileUploader(props: FileUploaderProps) {
               <div className="flex flex-col items-center justify-center gap-4 sm:px-5">
                 <div className="rounded-full border border-dashed p-3">
                   <UploadIcon
-                    className="h-7 w-7 text-muted-foreground"
+                    className="size-7 text-muted-foreground"
                     aria-hidden="true"
                   />
                 </div>
@@ -232,7 +232,7 @@ export function FileUploader(props: FileUploaderProps) {
               <div className="flex flex-col items-center justify-center gap-4 sm:px-5">
                 <div className="rounded-full border border-dashed p-3">
                   <UploadIcon
-                    className="h-7 w-7 text-muted-foreground"
+                    className="size-7 text-muted-foreground"
                     aria-hidden="true"
                   />
                 </div>
@@ -303,10 +303,10 @@ export function FileCard({
             type="button"
             variant="outline"
             size="icon"
-            className="h-7 w-7"
+            className="size-7"
             onClick={onRemove}
           >
-            <Cross2Icon className="h-4 w-4" aria-hidden="true" />
+            <Cross2Icon className="size-4" aria-hidden="true" />
             <span className="sr-only">Remove file</span>
           </Button>
         </div>
@@ -316,10 +316,10 @@ export function FileCard({
           <Button
             type="button"
             size="icon"
-            className="h-7 w-7"
+            className="size-7"
             onClick={() => onDownload(file)}
           >
-            <Icons.Download className="h-4 w-4" aria-hidden="true" />
+            <Icons.Download className="size-4" aria-hidden="true" />
             <span className="sr-only">Download file</span>
           </Button>
         </div>
@@ -352,7 +352,7 @@ function FilePreview({ file }: FilePreviewProps) {
 
   return (
     <FileTextIcon
-      className="h-10 w-10 text-muted-foreground"
+      className="size-10 text-muted-foreground"
       aria-hidden="true"
     />
   )

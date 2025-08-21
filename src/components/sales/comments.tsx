@@ -115,7 +115,7 @@ export function Comments({ saleId, user, count }: CommentsProps) {
         <div className="space-y-10">
           {Array.from({ length: count }).map((_, i) => (
             <div key={i} className="flex space-x-2">
-              <Skeleton className="h-8 w-8 rounded-full" />
+              <Skeleton className="size-8 rounded-full" />
               <div className="space-y-1">
                 <Skeleton className="h-3 w-32" />
                 <Skeleton className="h-3 w-32" />
@@ -149,7 +149,7 @@ function Replies({ saleId, replyToId, user, count }: RepliesProps) {
           <div className="space-y-10">
             {Array.from({ length: count }).map((_, i) => (
               <div key={i} className="flex space-x-2">
-                <Skeleton className="h-8 w-8 rounded-full" />
+                <Skeleton className="size-8 rounded-full" />
                 <div className="space-y-1">
                   <Skeleton className="h-3 w-32" />
                   <Skeleton className="h-3 w-32" />
@@ -236,7 +236,7 @@ export function Comment({ saleId, comment, replyToId, user }: CommentProps) {
               name: comment.user.name || null,
               image: comment.user.image || null,
             }}
-            className="h-8 w-8"
+            className="size-8"
           />
         </div>
         <div className="flex-1 space-y-1 pb-1">
@@ -248,14 +248,13 @@ export function Comment({ saleId, comment, replyToId, user }: CommentProps) {
               {comment.user.role === 'ADMIN' && (
                 <Badge className="px-1 py-0">
                   {' '}
-                  <Icons.Crown className="mr-1 h-3 w-3 text-xs sm:text-sm" />{' '}
-                  ADM
+                  <Icons.Crown className="mr-1 size-3 text-xs sm:text-sm" /> ADM
                 </Badge>
               )}
               {comment.user.role === 'MOD' && (
                 <Badge className="px-1 py-0" variant={'success'}>
                   {' '}
-                  <Icons.ShieldAlert className="mr-1 h-3 w-3 text-xs sm:text-sm" />{' '}
+                  <Icons.ShieldAlert className="mr-1 size-3 text-xs sm:text-sm" />{' '}
                   MOD
                 </Badge>
               )}
@@ -300,11 +299,11 @@ export function Comment({ saleId, comment, replyToId, user }: CommentProps) {
                     variant={'ghost'}
                     onClick={() => handleUpdateComment()}
                   >
-                    <Icons.Check className="h-4 w-4" />
+                    <Icons.Check className="size-4" />
                   </Button>
 
                   <Button variant={'ghost'} onClick={() => setMode('text')}>
-                    <Icons.X className="h-4 w-4" />
+                    <Icons.X className="size-4" />
                   </Button>
                 </div>
               </div>
@@ -317,7 +316,7 @@ export function Comment({ saleId, comment, replyToId, user }: CommentProps) {
               pressed={currentUserLiked}
               onPressedChange={() => toggleCommentLike(comment.id)}
             >
-              <Icons.Like className="mr-1.5 h-4 w-4 group-data-[state=on]:text-primary" />{' '}
+              <Icons.Like className="mr-1.5 size-4 group-data-[state=on]:text-primary" />{' '}
               {comment.likesCount ? comment.likesCount : ''}
             </Toggle>
             <Button
@@ -328,21 +327,21 @@ export function Comment({ saleId, comment, replyToId, user }: CommentProps) {
                 addActiveReplyCommentId(replyToId ? replyToId : comment.id)
               }
             >
-              <Icons.Reply className="mr-1.5 h-4 w-4" />
+              <Icons.Reply className="mr-1.5 size-4" />
               Responder
             </Button>
           </footer>
         </div>
-        <div className="h-8 w-8">
+        <div className="size-8">
           {(user?.role === 'ADMIN' ||
             user?.role === 'MOD' ||
             user?.id === comment.user.id) && (
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
-                className="h-8 w-8 p-0 data-[state=open]:bg-muted"
+                className="size-8 p-0 data-[state=open]:bg-muted"
               >
-                <Icons.MoreVertical className="h-4 w-4" />
+                <Icons.MoreVertical className="size-4" />
                 <span className="sr-only">Abrir menu</span>
               </Button>
             </DropdownMenuTrigger>
@@ -353,13 +352,13 @@ export function Comment({ saleId, comment, replyToId, user }: CommentProps) {
       <DropdownMenuContent align="end" className="max-w-fit">
         {user?.id === comment.user.id && (
           <DropdownMenuItem onClick={() => setMode('input')}>
-            <Icons.Edit className="mr-2 h-3.5 w-3.5 text-muted-foreground/70" />
+            <Icons.Edit className="mr-2 size-3.5 text-muted-foreground/70" />
             Editar
           </DropdownMenuItem>
         )}
 
         <DropdownMenuItem onClick={() => handleDeleteComment()}>
-          <Icons.Trash className="mr-2 h-3.5 w-3.5 text-muted-foreground/70" />
+          <Icons.Trash className="mr-2 size-3.5 text-muted-foreground/70" />
           Deletar
         </DropdownMenuItem>
       </DropdownMenuContent>
@@ -403,7 +402,7 @@ function CommentSubmit({ saleId, commentId, user }: CommentSubmitProps) {
       <LoginPopup open={openLoginPopup} setOpen={setOpenLoginPopup} />
       <UserAvatar
         user={{ name: user?.name || null, image: user?.image || null }}
-        className="h-8 w-8"
+        className="size-8"
       />
       <div className="flex-1 items-end gap-x-2">
         <div className="flex flex-1 border-b p-2">
@@ -430,7 +429,7 @@ function CommentSubmit({ saleId, commentId, user }: CommentSubmitProps) {
               variant="ghost"
               onClick={() => removeActiveReplyCommentId(commentId)}
             >
-              <Icons.X className="h-4 w-4" />
+              <Icons.X className="size-4" />
             </Button>
           )}
 
@@ -441,11 +440,11 @@ function CommentSubmit({ saleId, commentId, user }: CommentSubmitProps) {
           >
             {createCommentLoading ? (
               <Icons.Spinner
-                className="h-4 w-4 animate-spin"
+                className="size-4 animate-spin"
                 aria-hidden="true"
               />
             ) : (
-              <Icons.Send className="h-4 w-4" />
+              <Icons.Send className="size-4" />
             )}
           </Button>
         </div>

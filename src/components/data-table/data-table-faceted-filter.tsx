@@ -68,7 +68,7 @@ export function DataTableFacetedFilter({
     <Popover>
       <PopoverTrigger asChild>
         <Button variant="outline" className="border-dashed">
-          <PlusCircle className="mr-2 h-4 w-4" />
+          <PlusCircle className="mr-2 size-4" />
           {title}
           {selectedOptions.length > 0 && (
             <>
@@ -78,7 +78,7 @@ export function DataTableFacetedFilter({
                 className="rounded-sm px-1 font-normal xl:hidden"
               >
                 {isPending ? (
-                  <Icons.Spinner className="h-4 w-4 animate-spin" />
+                  <Icons.Spinner className="size-4 animate-spin" />
                 ) : (
                   `${selectedOptions.length}`
                 )}
@@ -93,7 +93,7 @@ export function DataTableFacetedFilter({
                 className="rounded-sm px-1 font-normal"
               >
                 {isPending ? (
-                  <Icons.Spinner className="mr-1 h-4 w-4 animate-spin" />
+                  <Icons.Spinner className="mr-1 size-4 animate-spin" />
                 ) : (
                   `${selectedOptions.length}`
                 )}{' '}
@@ -141,17 +141,17 @@ export function DataTableFacetedFilter({
                     >
                       <div
                         className={cn(
-                          'mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary',
+                          'mr-2 flex size-4 items-center justify-center rounded-sm border border-primary',
                           isSelected
                             ? 'bg-primary text-primary-foreground'
                             : 'opacity-50 [&_svg]:invisible',
                         )}
                       >
-                        <Check className="h-4 w-4" />
+                        <Check className="size-4" />
                       </div>
 
                       <span>{option.label}</span>
-                      <span className="ml-auto flex h-4 w-4 items-center justify-center font-mono text-xs">
+                      <span className="ml-auto flex size-4 items-center justify-center font-mono text-xs">
                         {option.count}
                       </span>
                     </CommandItem>

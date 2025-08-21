@@ -89,7 +89,7 @@ export function AlertCard({
           )}
           <CardContent className="py-4">
             <div className="flex items-start space-x-2">
-              <Icons.BellRing className="h-4 w-4 text-auxiliary" />
+              <Icons.BellRing className="size-4 text-auxiliary" />
               <Label
                 htmlFor={switchId}
                 className="flex flex-1 flex-col space-y-1"
@@ -201,7 +201,7 @@ export function AlertPrice({
       <div className="space-y-4  text-center">
         <div className="space-y-4 rounded-xl border py-4">
           <span className="flex items-center justify-center">
-            <Icons.Bell className="mr-2 h-4 w-4 text-auxiliary" />
+            <Icons.Bell className="mr-2 size-4 text-auxiliary" />
             {!!userAlertPrice
               ? 'Para alterar o alerta, indique um novo valor:'
               : 'Para criar um alerta, indique um valor:'}

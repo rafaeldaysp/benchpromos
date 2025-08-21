@@ -184,7 +184,7 @@ export function FilterModal({ categoryId, filter }: FilterModalProps) {
           <Button variant="outline">Adicionar</Button>
         ) : (
           <Button variant="outline" size="icon">
-            <Icons.Edit className="h-4 w-4" />
+            <Icons.Edit className="size-4" />
           </Button>
         )}
       </DialogTrigger>
@@ -250,7 +250,7 @@ export function FilterOptionModal({ filter }: FilterOptionModalProps) {
     <Sheet>
       <SheetTrigger asChild>
         <Button variant="outline" size="icon">
-          <Icons.MenuSquare className="h-4 w-4" />
+          <Icons.MenuSquare className="size-4" />
         </Button>
       </SheetTrigger>
       <SheetContent
@@ -303,7 +303,7 @@ export function FilterOptionModal({ filter }: FilterOptionModalProps) {
                       })
                     }
                   >
-                    <Icons.Trash className="h-4 w-4" />
+                    <Icons.Trash className="size-4" />
                   </Button>
                 </div>
               ))}

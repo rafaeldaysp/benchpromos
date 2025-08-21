@@ -16,6 +16,7 @@ import {
   ChevronsRight,
   CircleDollarSign,
   Clock8,
+  Coins,
   Copy,
   Crown,
   DollarSign,
@@ -26,6 +27,7 @@ import {
   File,
   Folder,
   GanttChartSquare,
+  Gift,
   GitPullRequestDraft,
   Headphones,
   Heart,
@@ -145,6 +147,8 @@ export const Icons = {
   MoveRight,
   Download,
   Share2,
+  Gift,
+  Coins,
   Google: ({ ...props }: LucideProps) => (
     <svg
       aria-hidden="true"

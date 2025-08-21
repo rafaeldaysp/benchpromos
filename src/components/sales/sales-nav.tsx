@@ -59,7 +59,7 @@ export function SalesNav() {
 
   return (
     <div className="flex w-full flex-col justify-between gap-4 sm:flex-row">
-      <div className="flex w-full items-center gap-x-2 sm:w-[65%] md:w-[70%] lg:w-[80%] xl:w-[83%]">
+      <div className="flex w-full items-center gap-x-2 sm:w-[65%] md:w-[70%] lg:w-4/5 xl:w-[83%]">
         <Button
           size={'sm'}
           variant={'outline'}
@@ -67,7 +67,7 @@ export function SalesNav() {
           disabled={scrollIndex === 0}
           className="hidden sm:inline-flex"
         >
-          <Icons.ChevronLeft className="h-4 w-4" />
+          <Icons.ChevronLeft className="size-4" />
         </Button>
         <div className="overflow-x-scroll sm:overflow-hidden" id="scroll">
           <div
@@ -121,7 +121,7 @@ export function SalesNav() {
               : false
           }
         >
-          <Icons.ChevronRight className="h-4 w-4" />
+          <Icons.ChevronRight className="size-4" />
         </Button>
       </div>
 

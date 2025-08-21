@@ -43,7 +43,7 @@ export function CategoryFilterPopover({
     <Popover>
       <PopoverTrigger asChild>
         <Button variant="outline" size={'sm'} className="border-dashed">
-          <Icons.PlusCircle className="mr-2 h-4 w-4" />
+          <Icons.PlusCircle className="mr-2 size-4" />
           {categoryFilter.name}
           {options.size > 0 && (
             <>
@@ -53,7 +53,7 @@ export function CategoryFilterPopover({
                 className="rounded-sm px-1 font-normal xl:hidden"
               >
                 {isPending ? (
-                  <Icons.Spinner className="h-4 w-4 animate-spin" />
+                  <Icons.Spinner className="size-4 animate-spin" />
                 ) : (
                   `${options.size}`
                 )}
@@ -65,7 +65,7 @@ export function CategoryFilterPopover({
                     className="rounded-sm px-1 font-normal"
                   >
                     {isPending ? (
-                      <Icons.Spinner className="mr-1 h-4 w-4 animate-spin" />
+                      <Icons.Spinner className="mr-1 size-4 animate-spin" />
                     ) : (
                       `${options.size}`
                     )}{' '}
@@ -126,16 +126,16 @@ export function CategoryFilterPopover({
                   >
                     <div
                       className={cn(
-                        'mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary',
+                        'mr-2 flex size-4 items-center justify-center rounded-sm border border-primary',
                         isSelected
                           ? 'bg-primary text-primary-foreground'
                           : 'opacity-50 [&_svg]:invisible',
                       )}
                     >
-                      <Icons.Check className="h-4 w-4" />
+                      <Icons.Check className="size-4" />
                     </div>
 
-                    <span>{option.value}</span>
+                    <span>{option.value.replace(/"/g, '”')}</span>
                   </CommandItem>
                 )
               })}

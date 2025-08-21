@@ -187,7 +187,7 @@ export default async function RecommendationsPage({
                           >
                             <span className="mr-2">Visualizar</span>
                             <Icons.MoveRight
-                              className="h-4 w-4"
+                              className="size-4"
                               strokeWidth={3}
                             />
                           </Link>

@@ -163,7 +163,7 @@ export function ProductSales({ product }: ProductSalesProps) {
                 )}
               >
                 VISUALIZAR
-                <Icons.ChevronRight strokeWidth={3} className="ml-1 h-4 w-4" />
+                <Icons.ChevronRight strokeWidth={3} className="ml-1 size-4" />
               </Link>
             </CardFooter>
           </Card>

@@ -88,7 +88,7 @@ export function DiscountSelector({
                   selectedDiscounts.length > 1 ? 's' : ''
                 } selecionado${selectedDiscounts.length > 1 ? 's' : ''}`
               : placeholder}
-            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+            <ChevronsUpDown className="ml-2 size-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-full p-0">
@@ -111,7 +111,7 @@ export function DiscountSelector({
                       >
                         <Check
                           className={cn(
-                            'mr-2 h-4 w-4',
+                            'mr-2 size-4',
                             isSelected ? 'opacity-100' : 'opacity-0',
                           )}
                         />
@@ -141,10 +141,10 @@ export function DiscountSelector({
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-4 w-4 p-0 hover:bg-transparent"
+                className="size-4 p-0 hover:bg-transparent"
                 onClick={() => removeDiscount(discount.id)}
               >
-                <X className="h-3 w-3" />
+                <X className="size-3" />
                 <span className="sr-only">Remove {discount.label}</span>
               </Button>
             </Badge>

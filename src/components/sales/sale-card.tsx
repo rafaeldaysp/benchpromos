@@ -141,6 +141,20 @@ export function SaleCard({
     sale.discounts.map((discount) => discount.discount),
   )
 
+  const hasCoinsDiscount = sale.discounts.some((discount) =>
+    discount.label?.toLowerCase().includes('moedas'),
+  )
+
+  // TODO: add key on backend to get coins discount
+  let coinsDiscount = 0
+  if (hasCoinsDiscount) {
+    sale.discounts.forEach((discount) => {
+      if (discount.label?.toLowerCase().includes('moedas')) {
+        coinsDiscount += Number(discount.discount)
+      }
+    })
+  }
+
   const salePriceWithouCashbackCents = priceCalculator(
     sale.price,
     sale.couponSchema?.discount,
@@ -203,7 +217,7 @@ export function SaleCard({
                 </div>
               )}
               {sale.sponsored && (
-                <div className="h-fit bg-muted py-1 text-center text-xs text-muted-foreground">
+                <div className="h-fit bg-blue-500 py-1 text-center text-xs text-white">
                   <strong>PATROCINADO</strong>
                 </div>
               )}
@@ -238,7 +252,7 @@ export function SaleCard({
                 </span>
 
                 {sale.label && (
-                  <Badge className="px-1 py-[1px] text-xs sm:hidden">
+                  <Badge className="px-1 py-px text-xs sm:hidden">
                     {sale.label}
                   </Badge>
                 )}
@@ -297,20 +311,23 @@ export function SaleCard({
                     <div
                       className={cn('flex w-fit flex-col pt-1 sm:w-full', {
                         'rounded-xl border border-primary': sale.cashback,
+                        'rounded-xl border border-success/50': hasCoinsDiscount,
                       })}
                     >
-                      <p className={sale.cashback ? 'px-2' : ''}>
-                        <strong
-                          className={cn('text-xl sm:text-2xl', {
-                            'text-success': sale.price === 0,
-                          })}
+                      {sale.price > 0 && (
+                        <p
+                          className={
+                            sale.cashback || hasCoinsDiscount ? 'px-2' : ''
+                          }
                         >
-                          {priceFormatter.format(salePriceCents / 100)}
-                        </strong>{' '}
-                        <span className="text-xs text-muted-foreground sm:text-sm">
-                          à vista{' '}
-                        </span>
-                      </p>
+                          <strong className="text-xl sm:text-2xl">
+                            {priceFormatter.format(salePriceCents / 100)}
+                          </strong>{' '}
+                          <span className="text-xs text-muted-foreground sm:text-sm">
+                            à vista{' '}
+                          </span>
+                        </p>
+                      )}
 
                       {!!sale.installments && !!sale.totalInstallmentPrice && (
                         <span className="px-2 text-muted-foreground max-sm:text-xs">
@@ -340,6 +357,13 @@ export function SaleCard({
                         <div className="mt-1 flex w-fit items-center rounded-bl-lg rounded-tr bg-primary px-2 text-xs font-semibold text-primary-foreground">
                           <span className="max-sm:text-[10px]">
                             COM {sale.cashback.value}% DE CASHBACK
+                          </span>
+                        </div>
+                      )}
+                      {hasCoinsDiscount && (
+                        <div className="mt-1 flex w-fit items-center rounded-bl-lg rounded-tr bg-success/20 px-2 text-xs font-semibold text-success">
+                          <span className="max-sm:text-[10px]">
+                            {priceFormatter.format(coinsDiscount)} EM MOEDAS
                           </span>
                         </div>
                       )}
@@ -428,7 +452,7 @@ export function SaleCard({
                       className="w-6 shrink-0 sm:hidden"
                       onClick={() => setOpenMobileMenu(true)}
                     >
-                      <Icons.MoreVertical className="h-4 w-4" />
+                      <Icons.MoreVertical className="size-4" />
                     </Button>
                     <Reactions
                       saleId={sale.id}
@@ -450,7 +474,7 @@ export function SaleCard({
                         <span className="mr-1 text-sm">
                           {sale.commentsCount}
                         </span>
-                        <Icons.MessageCircle className="h-4 w-4" />
+                        <Icons.MessageCircle className="size-4" />
                       </Link>
                     )}
                     <Button
@@ -459,7 +483,7 @@ export function SaleCard({
                       className="w-10 shrink-0 px-0"
                       onClick={() => handleShare()}
                     >
-                      <Icons.Share2 className="h-4 w-4" />
+                      <Icons.Share2 className="size-4" />
                     </Button>
                   </div>
                 </div>
@@ -472,10 +496,7 @@ export function SaleCard({
                   )}
                 >
                   VISUALIZAR
-                  <Icons.ChevronRight
-                    className="ml-1 h-4 w-4"
-                    strokeWidth={3}
-                  />
+                  <Icons.ChevronRight className="ml-1 size-4" strokeWidth={3} />
                 </Link>
               </CardFooter>
             </Card>
@@ -485,7 +506,7 @@ export function SaleCard({
             {/* <MobileMenu open={openDrawer} setOpen={setOpenDrawer} /> */}
             <ContextMenuSub>
               <ContextMenuSubTrigger className="flex gap-2">
-                <Icons.SmilePlus className="h-4 w-4" />
+                <Icons.SmilePlus className="size-4" />
                 <span>Reagir</span>
               </ContextMenuSubTrigger>
               <ReactionMenu
@@ -498,14 +519,14 @@ export function SaleCard({
 
             <ContextMenuItem asChild>
               <Link href={`/promocao/${sale.slug}/${sale.id}#comments`}>
-                <Icons.MessageCircle className="mr-2 h-4 w-4" />
+                <Icons.MessageCircle className="mr-2 size-4" />
                 <span>Comentar</span>
               </Link>
             </ContextMenuItem>
 
             <ContextMenuItem asChild>
               <Link href={`/promocao/${sale.slug}/${sale.id}`}>
-                <Icons.GanttChartSquare className="mr-2 h-4 w-4" />
+                <Icons.GanttChartSquare className="mr-2 size-4" />
                 <span>Ver promoção</span>
               </Link>
             </ContextMenuItem>
@@ -515,7 +536,7 @@ export function SaleCard({
                 <ContextMenuSeparator />
                 <ContextMenuItem asChild>
                   <Link href={`/${sale.category.slug}/${sale.productSlug}`}>
-                    <Icons.Eye className="mr-2 h-4 w-4" />
+                    <Icons.Eye className="mr-2 size-4" />
                     <span>Visualizar produto</span>
                   </Link>
                 </ContextMenuItem>
@@ -524,7 +545,7 @@ export function SaleCard({
                   <Link
                     href={`/${sale.category.slug}/${sale.productSlug}#historico`}
                   >
-                    <Icons.LineChart className="mr-2 h-4 w-4" />
+                    <Icons.LineChart className="mr-2 size-4" />
                     <span>Histórico de preços</span>
                   </Link>
                 </ContextMenuItem>
@@ -533,7 +554,7 @@ export function SaleCard({
                   <Link
                     href={`/${sale.category.slug}/${sale.productSlug}#precos`}
                   >
-                    <Icons.DollarSign className="mr-2 h-4 w-4" />
+                    <Icons.DollarSign className="mr-2 size-4" />
                     <span>Opções de compra</span>
                   </Link>
                 </ContextMenuItem>
@@ -555,7 +576,7 @@ export function SaleCard({
                     setOpenDialog(`saleUpdateForm.${sale.id}`, true)
                   }
                 >
-                  <Icons.Edit className="mr-2 h-4 w-4" />
+                  <Icons.Edit className="mr-2 size-4" />
                   Editar
                 </ContextMenuItem>
 
@@ -570,7 +591,7 @@ export function SaleCard({
                   // }
                 >
                   <AlertDialogTrigger className="w-full">
-                    <Icons.Trash className="mr-2 h-4 w-4 " />
+                    <Icons.Trash className="mr-2 size-4 " />
                     Excluir
                   </AlertDialogTrigger>
                 </ContextMenuItem>
@@ -579,12 +600,12 @@ export function SaleCard({
                 <ContextMenuItem onClick={() => toggleSaleExpired()}>
                   {sale.expired ? (
                     <>
-                      <Icons.Check className="mr-2 h-4 w-4" />
+                      <Icons.Check className="mr-2 size-4" />
                       Disponível
                     </>
                   ) : (
                     <>
-                      <Icons.Clock8 className="mr-2 h-4 w-4" />
+                      <Icons.Clock8 className="mr-2 size-4" />
                       Expirado
                     </>
                   )}

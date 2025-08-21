@@ -402,7 +402,7 @@ export function DealsMain({ deals, retailers, categories }: DealsMainProps) {
                   </span>
                   {deal.scrapingStatus && (
                     <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                      <Icons.AlertCircle className="h-4 w-4" />
+                      <Icons.AlertCircle className="size-4" />
                       <span>
                         Scraping status:{' '}
                         <Badge

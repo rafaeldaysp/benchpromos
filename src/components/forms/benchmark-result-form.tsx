@@ -287,7 +287,6 @@ export function BenchmarkResultForm({
               <FormControl>
                 <Checkbox
                   checked={field.value}
-                  // @ts-expect-error ...
                   onCheckedChange={field.onChange}
                 />
               </FormControl>
@@ -463,7 +462,9 @@ function Combobox({
               {products?.map((product) => (
                 <CommandItem
                   key={product.id}
-                  value={`${product.name} ${product.category.name} ${product.subcategory?.name}`}
+                  value={`${product.name.replace(/"/g, '')} ${
+                    product.category.name
+                  } ${product.subcategory?.name}`}
                   className="h-16 space-x-4"
                   onSelect={() => {
                     setSelectedProducts((prev) =>
@@ -483,7 +484,9 @@ function Combobox({
                     />
                   </div>
 
-                  <span className="line-clamp-2">{product.name}</span>
+                  <span className="line-clamp-2">
+                    {product.name.replace(/"/g, '”')}
+                  </span>
                 </CommandItem>
               ))}
             </CommandGroup>

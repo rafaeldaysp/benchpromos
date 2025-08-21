@@ -139,7 +139,7 @@ export function CategoryForm({ mode = 'create', category }: CategoryFormProps) {
         >
           {isLoading && (
             <Icons.Spinner
-              className="mr-2 h-4 w-4 animate-spin"
+              className="mr-2 size-4 animate-spin"
               aria-hidden="true"
             />
           )}
@@ -159,7 +159,7 @@ export function CategoryFormDialog() {
     >
       <DialogTrigger asChild>
         <Button type="button" size={'icon'}>
-          <Icons.Plus className="h-4 w-4" />
+          <Icons.Plus className="size-4" />
         </Button>
       </DialogTrigger>
       <DialogContent className="w-full space-y-4 overflow-auto sm:max-w-xl">

@@ -90,8 +90,8 @@ export default function UsersMain() {
                       user.role === 'ADMIN'
                         ? 'default'
                         : user.role === 'MOD'
-                        ? 'success'
-                        : 'secondary'
+                          ? 'success'
+                          : 'secondary'
                     }
                   >
                     {user.role}

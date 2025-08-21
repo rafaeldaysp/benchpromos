@@ -124,10 +124,10 @@ export function Combobox() {
     <>
       <Button
         variant="outline"
-        className="relative h-9 w-9 p-0 xl:h-10 xl:w-[250px] xl:justify-start xl:px-3 xl:py-2"
+        className="relative size-9 p-0 xl:h-10 xl:w-[250px] xl:justify-start xl:px-3 xl:py-2"
         onClick={() => setIsOpen(true)}
       >
-        <Icons.Search className="h-4 w-4 xl:mr-2" aria-hidden="true" />
+        <Icons.Search className="size-4 xl:mr-2" aria-hidden="true" />
         <div className="hidden w-[78%] xl:block">
           <span className="line-clamp-1 break-all text-start">
             {query.trim().length > 0 ? query : 'Procurar produtos...'}
@@ -160,7 +160,7 @@ export function Combobox() {
               <>
                 <CommandGroup heading="Pesquisar">
                   <CommandItem
-                    value={query}
+                    value={query.replace(/"/g, '')}
                     className="h-16"
                     onSelect={() => {
                       if (data?.categorySlug)
@@ -182,7 +182,7 @@ export function Combobox() {
                   {products?.map((product) => (
                     <CommandItem
                       key={product.id}
-                      value={`${product.name} ${product.category.name} ${product.subcategory?.name}`}
+                      value={`${product.name.replace(/"/g, '')} ${product.category.name} ${product.subcategory?.name}`}
                       className="h-16 space-x-4"
                       onSelect={() =>
                         handleSelect(() =>
@@ -202,7 +202,9 @@ export function Combobox() {
                         />
                       </div>
 
-                      <span className="line-clamp-2">{product.name}</span>
+                      <span className="line-clamp-2">
+                        {product.name.replace(/"/g, '”')}
+                      </span>
                     </CommandItem>
                   ))}
                 </CommandGroup>

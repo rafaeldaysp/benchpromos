@@ -99,7 +99,7 @@ export function ProductSelect({ products, categoryName }: ProductSelectProps) {
         variant="outline"
         className="w-full lg:px-2"
       >
-        <Icons.Search className="mr-2 h-4 w-4" />
+        <Icons.Search className="mr-2 size-4" />
         {categoryName ?? 'Buscar produtos...'}
         {selectedProducts.length > 0 && (
           <>
@@ -126,7 +126,7 @@ export function ProductSelect({ products, categoryName }: ProductSelectProps) {
                     key={product.slug}
                     className="max-w-[300px] truncate rounded-sm px-1 font-normal"
                   >
-                    {product.name}
+                    {product.name.replace(/"/g, '”')}
                   </Badge>
                 ))
               )}
@@ -194,7 +194,7 @@ export function ProductSelect({ products, categoryName }: ProductSelectProps) {
                   {displayedProducts?.map((product) => (
                     <CommandItem
                       key={product.slug}
-                      value={`${product.name} ${product.category.name} ${product.subcategory?.name}`}
+                      value={`${product.name.replace(/"/g, '')} ${product.category.name} ${product.subcategory?.name}`}
                       className={cn(
                         'h-16 space-x-4 transition-colors aria-selected:bg-accent/50',
                         {
@@ -231,7 +231,9 @@ export function ProductSelect({ products, categoryName }: ProductSelectProps) {
                         />
                       </div>
 
-                      <span className="line-clamp-2">{product.name}</span>
+                      <span className="line-clamp-2">
+                        {product.name.replace(/"/g, '”')}
+                      </span>
                     </CommandItem>
                   ))}
                   {/* </ScrollArea> */}
@@ -249,7 +251,7 @@ export function ProductSelect({ products, categoryName }: ProductSelectProps) {
               size={'sm'}
               onClick={() => setSelectedProducts(displayedProducts)}
             >
-              <Icons.PlusCircle className="mr-2 h-4 w-4" />
+              <Icons.PlusCircle className="mr-2 size-4" />
               Todos
             </Button>
             <Separator orientation="vertical" className="h-4" />
@@ -259,7 +261,7 @@ export function ProductSelect({ products, categoryName }: ProductSelectProps) {
               className="px-2"
               onClick={() => setSelectedProducts([])}
             >
-              <Icons.MinusCircle className="mr-2 h-4 w-4" />
+              <Icons.MinusCircle className="mr-2 size-4" />
               Nenhum
             </Button>
           </div>
@@ -293,7 +295,7 @@ export function ProductSelect({ products, categoryName }: ProductSelectProps) {
               })
             }
           >
-            <Icons.Check className="mr-2 h-4 w-4" />
+            <Icons.Check className="mr-2 size-4" />
             Ok
           </Button>
         </div>

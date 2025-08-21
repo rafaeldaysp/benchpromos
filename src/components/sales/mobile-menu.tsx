@@ -78,7 +78,7 @@ export function MobileMenu({
               'justify-start px-2 ',
             )}
           >
-            <Icons.MessageCircle className="mr-4 h-4 w-4" />
+            <Icons.MessageCircle className="mr-4 size-4" />
             <span>Comentar</span>
           </Link>
 
@@ -89,7 +89,7 @@ export function MobileMenu({
               'justify-start px-2 ',
             )}
           >
-            <Icons.GanttChartSquare className="mr-4 h-4 w-4" />
+            <Icons.GanttChartSquare className="mr-4 size-4" />
             <span>Visualizar promoção</span>
           </Link>
           {sale.productSlug && (
@@ -105,7 +105,7 @@ export function MobileMenu({
                   'justify-start px-2 ',
                 )}
               >
-                <Icons.Eye className="mr-4 h-4 w-4" />
+                <Icons.Eye className="mr-4 size-4" />
                 <span>Visualizar produto</span>
               </Link>
               <Link
@@ -115,7 +115,7 @@ export function MobileMenu({
                   'justify-start px-2 ',
                 )}
               >
-                <Icons.LineChart className="mr-4 h-4 w-4" />
+                <Icons.LineChart className="mr-4 size-4" />
                 <span>Histórico de preços</span>
               </Link>
               <Link
@@ -125,7 +125,7 @@ export function MobileMenu({
                   'justify-start px-2 ',
                 )}
               >
-                <Icons.DollarSign className="mr-4 h-4 w-4" />
+                <Icons.DollarSign className="mr-4 size-4" />
                 <span>Opções de compra</span>
               </Link>
             </>
@@ -150,7 +150,7 @@ export function MobileMenu({
                   setOpenSaleDialog(`saleUpdateForm.${sale.id}`, true)
                 }
               >
-                <Icons.Edit className="mr-4 h-4 w-4" />
+                <Icons.Edit className="mr-4 size-4" />
                 Editar
               </Button>
 
@@ -162,7 +162,7 @@ export function MobileMenu({
                     'justify-start px-2 ',
                   )}
                 >
-                  <Icons.Trash className="mr-4 h-4 w-4" />
+                  <Icons.Trash className="mr-4 size-4" />
                   Excluir
                 </Button>
               </AlertDialogTrigger>
@@ -174,12 +174,12 @@ export function MobileMenu({
               >
                 {sale.expired ? (
                   <>
-                    <Icons.Check className="mr-4 h-4 w-4" />
+                    <Icons.Check className="mr-4 size-4" />
                     Disponível
                   </>
                 ) : (
                   <>
-                    <Icons.Clock8 className="mr-4 h-4 w-4" />
+                    <Icons.Clock8 className="mr-4 size-4" />
                     Expirado
                   </>
                 )}

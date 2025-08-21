@@ -61,7 +61,7 @@ export function HighlightSaleToggle({ sale, user, className }: HighlightProps) {
       )}
       onClick={() => handleToggleHighlight(sale.id, user?.role)}
     >
-      <Icons.Bookmark className="mr-2 h-4 w-4" />
+      <Icons.Bookmark className="mr-2 size-4" />
       {sale.highlight ? 'Desmarcar' : 'Marcar'}
     </Button>
   )

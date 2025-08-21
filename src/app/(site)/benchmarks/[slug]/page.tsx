@@ -108,8 +108,8 @@ export default async function BenchmarkPage({
       (result.products.some((p) => (productsString ?? '').includes(p.slug)) ||
         !toHideFromCustomFilters.length ||
         !toHideFromCustomFilters.some((customFilter) =>
-          customFilter.values.some(
-            (value) => result.description?.includes(value),
+          customFilter.values.some((value) =>
+            result.description?.includes(value),
           ),
         )) &&
       (!result.hidden || user?.role === 'ADMIN'),

@@ -62,7 +62,7 @@ export function ProductSuggestions({ slug }: { slug: string }) {
             key={product.id}
             className="flex items-start gap-x-6 rounded-md bg-card p-4 transition-colors hover:bg-muted/50 sm:px-8"
           >
-            <div className="relative h-16 w-16">
+            <div className="relative size-16">
               <Image
                 src={product.imageUrl}
                 alt={product.name}

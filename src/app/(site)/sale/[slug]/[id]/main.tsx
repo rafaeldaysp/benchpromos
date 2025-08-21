@@ -136,11 +136,13 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
     sale.discounts.map((discount) => discount.discount),
   )
 
-  const salePriceWithouCashbackCents = priceCalculator(
+  const salePriceWithouCashbackAndCoinsDiscountCents = priceCalculator(
     sale.price,
     sale.couponSchema?.discount,
     undefined,
-    sale.discounts.map((discount) => discount.discount),
+    sale.discounts
+      .filter((discount) => !discount.label?.toLowerCase().includes('moedas'))
+      .map((discount) => discount.discount),
   )
 
   const saleInstallmentPriceCents = priceCalculator(
@@ -150,7 +152,24 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
     sale.discounts.map((discount) => discount.discount),
   )
 
-  const saleInstallmentPriceWithoutCashbackCents = priceCalculator(
+  const saleInstallmentPriceWithoutCashbackAndCoinsDiscountCents =
+    priceCalculator(
+      sale.totalInstallmentPrice,
+      sale.couponSchema?.discount,
+      undefined,
+      sale.discounts
+        .filter((discount) => !discount.label?.toLowerCase().includes('moedas'))
+        .map((discount) => discount.discount),
+    )
+
+  const salePriceWithCoinsDiscountCents = priceCalculator(
+    sale.price,
+    sale.couponSchema?.discount,
+    undefined,
+    sale.discounts.map((discount) => discount.discount),
+  )
+
+  const saleInstallmentPriceWithCoinsDiscountCents = priceCalculator(
     sale.totalInstallmentPrice,
     sale.couponSchema?.discount,
     undefined,
@@ -190,7 +209,12 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
             EXPIRADO
           </Badge>
         )}
-        <strong className="line-clamp-4 leading-none tracking-tight md:text-xl">
+        <strong className="line-clamp-4 flex items-center gap-x-2 leading-none tracking-tight md:text-xl">
+          {sale.tag && (
+            <Badge variant="success" className="px-2 py-0 text-base">
+              {sale.tag}
+            </Badge>
+          )}
           {sale.title}
         </strong>
         <div className="space-x-1.5">
@@ -221,26 +245,31 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
           </div>
           <div className="flex flex-1 flex-col gap-2 md:pr-8 lg:pr-0">
             <div className="flex flex-col gap-1 text-sm">
-              <div>
-                <strong className="text-3xl">
-                  {priceFormatter.format(salePriceWithouCashbackCents / 100)}
-                </strong>{' '}
-                <span className="text-muted-foreground">à vista </span>
-              </div>
+              {sale.price > 0 && (
+                <div>
+                  <strong className="text-3xl">
+                    {priceFormatter.format(
+                      salePriceWithouCashbackAndCoinsDiscountCents / 100,
+                    )}
+                  </strong>{' '}
+                  <span className="text-muted-foreground">à vista </span>
+                </div>
+              )}
 
               {!!sale.installments && !!sale.totalInstallmentPrice && (
                 <span className="text-muted-foreground">
                   ou{' '}
                   <strong className="text-base">
                     {priceFormatter.format(
-                      saleInstallmentPriceWithoutCashbackCents / 100,
+                      saleInstallmentPriceWithoutCashbackAndCoinsDiscountCents /
+                        100,
                     )}
                   </strong>{' '}
                   em <strong className="text-base">{sale.installments}x</strong>{' '}
                   de{' '}
                   <strong className="text-base">
                     {priceFormatter.format(
-                      saleInstallmentPriceWithoutCashbackCents /
+                      saleInstallmentPriceWithoutCashbackAndCoinsDiscountCents /
                         (100 * sale.installments),
                     )}
                   </strong>
@@ -248,14 +277,14 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
               )}
 
               {sale.discounts.length > 0 && (
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-1 pb-1">
                   {sale.discounts.map((discount) => (
                     <TooltipProvider key={discount.id} delayDuration={100}>
                       <Tooltip>
                         <TooltipTrigger>
                           <Badge variant="success" className="uppercase">
                             {discount.description && (
-                              <Icons.AlertCircle className="mr-1.5 h-4 w-4" />
+                              <Icons.AlertCircle className="mr-1.5 size-4" />
                             )}
                             {couponFormatter(discount.discount)}{' '}
                             {discount.label}
@@ -272,19 +301,62 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
                 </div>
               )}
 
+              {sale.discounts.some((discount) =>
+                discount.label?.toLowerCase().includes('moedas'),
+              ) && (
+                <div className="flex flex-col items-start rounded-xl bg-success/20 px-4 py-2 text-sm text-muted-foreground">
+                  <span className="flex items-center font-semibold">
+                    <Icons.Coins className="mr-2 size-4 text-success" />
+                    Preço final com moedas
+                  </span>
+                  <span className="ml-1 text-foreground">
+                    {sale.price > 0 && (
+                      <p>
+                        <strong className="text-xl">
+                          {priceFormatter.format(
+                            salePriceWithCoinsDiscountCents / 100,
+                          )}
+                        </strong>{' '}
+                        <span className="text-muted-foreground">à vista </span>
+                      </p>
+                    )}
+
+                    {!!sale.installments && !!sale.totalInstallmentPrice && (
+                      <span className="text-muted-foreground">
+                        ou{' '}
+                        <strong className="">
+                          {priceFormatter.format(
+                            saleInstallmentPriceWithCoinsDiscountCents / 100,
+                          )}
+                        </strong>{' '}
+                        em <strong className="">{sale.installments}x</strong> de{' '}
+                        <strong className="">
+                          {priceFormatter.format(
+                            saleInstallmentPriceWithCoinsDiscountCents /
+                              (100 * sale.installments),
+                          )}
+                        </strong>
+                      </span>
+                    )}
+                  </span>
+                </div>
+              )}
+
               {sale.cashback && (
                 <div className="flex flex-col items-start rounded-xl bg-auxiliary/20 px-4 py-2 text-sm text-muted-foreground">
                   <span className="flex items-center font-semibold">
-                    <Icons.AlertCircle className="mr-2 h-4 w-4 text-auxiliary" />
+                    <Icons.AlertCircle className="mr-2 size-4 text-auxiliary" />
                     Preço final com cashback
                   </span>
                   <span className="ml-1 text-foreground">
-                    <p>
-                      <strong className="text-xl">
-                        {priceFormatter.format(salePriceCents / 100)}
-                      </strong>{' '}
-                      <span className="text-muted-foreground">à vista </span>
-                    </p>
+                    {sale.price > 0 && (
+                      <p>
+                        <strong className="text-xl">
+                          {priceFormatter.format(salePriceCents / 100)}
+                        </strong>{' '}
+                        <span className="text-muted-foreground">à vista </span>
+                      </p>
+                    )}
 
                     {!!sale.installments && !!sale.totalInstallmentPrice && (
                       <span className="text-muted-foreground">
@@ -354,7 +426,7 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
                 id="product_view_from_sale_page"
               >
                 VISUALIZAR PRODUTO
-                <Icons.ChevronRight strokeWidth={3} className="ml-2 h-4 w-4" />
+                <Icons.ChevronRight strokeWidth={3} className="ml-2 size-4" />
               </Link>
             )}
           </div>
@@ -367,8 +439,8 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
 
         {sale.review && (
           <Card className="relative h-fit border-none py-2 shadow-none">
-            <Icons.Quote className="absolute left-4 top-2 h-4 w-4 -translate-y-1/2 rotate-180 bg-background text-muted-foreground" />
-            <Icons.Quote className="absolute bottom-2 right-4 h-4 w-4 translate-y-1/2 bg-background text-muted-foreground" />
+            <Icons.Quote className="absolute left-4 top-2 size-4 -translate-y-1/2 rotate-180 bg-background text-muted-foreground" />
+            <Icons.Quote className="absolute bottom-2 right-4 size-4 translate-y-1/2 bg-background text-muted-foreground" />
             <CardContent className="h-full whitespace-pre-line rounded-xl border p-4 text-sm font-medium shadow">
               {sale.review}
             </CardContent>
@@ -382,7 +454,7 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
             className="rounded-full"
             onClick={() => handleShare()}
           >
-            <Icons.Share2 className="mr-2 h-4 w-4" />
+            <Icons.Share2 className="mr-2 size-4" />
             Compartilhar
           </Button>
           <Reactions
@@ -395,7 +467,7 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
           <Popover>
             <PopoverTrigger asChild>
               <Button size={'icon'} variant={'ghost'}>
-                <Icons.SmilePlus className="h-4 w-4" />
+                <Icons.SmilePlus className="size-4" />
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-full p-1">
@@ -464,17 +536,17 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
                 'flex h-fit justify-between rounded-xl px-6 py-4',
               )}
             >
-              <p className="flex flex-1 flex-col">
+              <span className="flex w-full min-w-0 flex-1 flex-col">
                 <span className="flex items-center gap-x-2 font-semibold">
-                  <Icons.StarFilled className="h-4 w-4 text-auxiliary" />
+                  <Icons.StarFilled className="size-4 text-auxiliary" />
                   Mais informações do produto
                 </span>
-                <span className="text-muted-foreground">
+                <p className="text-wrap break-words text-muted-foreground [word-break:break-word]">
                   Essa página é apenas uma postagem da promoção. Clique aqui e
                   acesse as informações completas do produto.
-                </span>
-              </p>
-              <Icons.ChevronRight className="h-4 w-4" />
+                </p>
+              </span>
+              <Icons.ChevronRight className="size-4" />
             </Link>
           </div>
         )}

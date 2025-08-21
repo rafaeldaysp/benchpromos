@@ -54,7 +54,7 @@ export function SendEmail({ email, redirectUrl, tokenType }: ResendEmailProps) {
         disabled={isLoading || hasCountdown}
         onClick={() => refetch()}
       >
-        {isLoading && <Icons.Spinner className="mr-2 h-4 w-4 animate-spin" />}
+        {isLoading && <Icons.Spinner className="mr-2 size-4 animate-spin" />}
         Reenviar email
         {hasCountdown && (
           <>
@@ -69,7 +69,7 @@ export function SendEmail({ email, redirectUrl, tokenType }: ResendEmailProps) {
 
   return (
     <div className="flex w-full justify-center">
-      <Icons.Spinner className="h-4 w-4 animate-spin" />
+      <Icons.Spinner className="size-4 animate-spin" />
     </div>
   )
 }

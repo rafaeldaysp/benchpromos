@@ -6,6 +6,10 @@ const nextConfig = {
         protocol: 'https',
         hostname: '**',
       },
+      {
+        protocol: 'http',
+        hostname: '**',
+      },
     ],
   },
   experimental: {
@@ -42,6 +46,14 @@ const nextConfig = {
       {
         source: '/politica-de-privacidade',
         destination: '/privacy-policy',
+      },
+      {
+        source: '/recomendacoes',
+        destination: '/recommendations',
+      },
+      {
+        source: '/sorteios',
+        destination: '/giveaways',
       },
     ]
   },

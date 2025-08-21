@@ -195,7 +195,6 @@ export function BenchmarkForm({
               <FormControl>
                 <Checkbox
                   checked={field.value}
-                  // @ts-expect-error ...
                   onCheckedChange={field.onChange}
                 />
               </FormControl>
@@ -212,7 +211,6 @@ export function BenchmarkForm({
               <FormControl>
                 <Checkbox
                   checked={field.value}
-                  // @ts-expect-error ...
                   onCheckedChange={field.onChange}
                 />
               </FormControl>

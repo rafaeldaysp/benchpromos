@@ -74,12 +74,12 @@ export function CashbackModal({
       >
         <div className="flex flex-col items-start">
           <span className="flex items-center font-semibold">
-            <Icons.RotateCcw className="mr-2 h-4 w-4 text-auxiliary" />
+            <Icons.RotateCcw className="mr-2 size-4 text-auxiliary" />
             Cashback
           </span>
           {description}
         </div>
-        <Icons.ChevronRight className="h-4 w-4" />
+        <Icons.ChevronRight className="size-4" />
       </Button>
       {isSm ? (
         <CashbackSheet
@@ -113,7 +113,7 @@ export function CashbackDialog({
       </DialogHeader>
       <div className="flex w-full flex-col items-center gap-4">
         <div className="flex w-full cursor-default items-center justify-center gap-2 rounded-xl bg-muted p-4 font-semibold transition-colors hover:bg-muted/80">
-          <Icons.RotateCcw className="h-4 w-4 text-auxiliary" strokeWidth={3} />
+          <Icons.RotateCcw className="size-4 text-auxiliary" strokeWidth={3} />
           <span>
             {cashback.value}% de volta com {cashback.provider}
           </span>
@@ -177,7 +177,7 @@ export function CashbackDialog({
               >
                 <div className="flex flex-1 flex-col justify-start space-x-6 text-sm">
                   <h3 className="flex items-center gap-x-2">
-                    <Icons.YoutubeIcon className="h-4 w-4 text-auxiliary" />
+                    <Icons.YoutubeIcon className="size-4 text-auxiliary" />
                     Assista ao vídeo
                   </h3>
                   <p className="text-xs text-muted-foreground">
@@ -219,7 +219,7 @@ export function CashbackSheet({
         <div className="flex w-full flex-col items-center gap-4">
           <div className="flex w-full cursor-default items-center justify-center gap-2 rounded-xl bg-muted p-4 font-semibold transition-colors hover:bg-muted/80">
             <Icons.RotateCcw
-              className="h-4 w-4 text-auxiliary"
+              className="size-4 text-auxiliary"
               strokeWidth={3}
             />
             <span>
@@ -286,7 +286,7 @@ export function CashbackSheet({
                 >
                   <div className="flex flex-1 flex-col justify-start space-x-6 text-sm">
                     <h3 className="flex items-center gap-x-2">
-                      <Icons.YoutubeIcon className="h-4 w-4 text-auxiliary" />
+                      <Icons.YoutubeIcon className="size-4 text-auxiliary" />
                       Assista ao vídeo
                     </h3>
                     <p className="text-xs text-muted-foreground">
@@ -322,7 +322,7 @@ export function VideoDialog({
         setOpen(!value)
       }}
     >
-      <DialogContent className="w-full sm:max-w-[1280px]">
+      <DialogContent className="w-full sm:max-w-screen-xl">
         <div className="aspect-video p-2">
           <iframe
             width="100%"
