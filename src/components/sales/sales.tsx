@@ -7,13 +7,12 @@ import { useInView } from 'react-intersection-observer'
 
 import { SaleCard } from '@/components/sales/sale-card'
 import { Skeleton } from '@/components/ui/skeleton'
+import { MIN_SALES_DT } from '@/constants'
 import { GET_SALES, type GetSalesQuery } from '@/queries'
 import ScrollToTopButton from '../scroll-to-top-button'
 import { SalesNavSimplified } from './sales-nav-simplified'
 
 const SALES_PER_SCROLL = 12
-const MIN_DT = new Date().getTime() - 30 * 24 * 60 * 60 * 1000
-
 interface SalesProps {
   user?: { id: string; role: 'ADMIN' | 'MOD' | 'USER' }
   productSlug?: string
@@ -42,7 +41,7 @@ export function Sales({ user, productSlug }: SalesProps) {
         productSlug,
         showExpired,
         categories,
-        minDt: MIN_DT,
+        minDt: MIN_SALES_DT,
       },
     },
   )
@@ -62,7 +61,7 @@ export function Sales({ user, productSlug }: SalesProps) {
           productSlug,
           showExpired,
           categories,
-          minDt: MIN_DT,
+          minDt: MIN_SALES_DT,
         },
         updateQuery(previousResult, { fetchMoreResult }) {
           const previousSales = previousResult.sales

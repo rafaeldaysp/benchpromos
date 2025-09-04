@@ -57,3 +57,5 @@ export const notebooksCustomFilters = [
     type: 'show',
   },
 ]
+
+export const MIN_SALES_DT = new Date().getTime() - 30 * 24 * 60 * 60 * 1000

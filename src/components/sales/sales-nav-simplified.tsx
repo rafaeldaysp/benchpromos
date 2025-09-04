@@ -4,6 +4,7 @@ import { gql, useSuspenseQuery } from '@apollo/client'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import * as React from 'react'
 
+import { MIN_SALES_DT } from '@/constants'
 import { useQueryString } from '@/hooks/use-query-string'
 import { type Category } from '@/types'
 import { Label } from '../ui/label'
@@ -12,8 +13,8 @@ import { Switch } from '../ui/switch'
 import { Toggle } from '../ui/toggle'
 
 const GET_CATEGORIES_RANK = gql`
-  query getCategoriesRank {
-    salesCategoryRank {
+  query getCategoriesRank($minDt: Date) {
+    salesCategoryRank(minDt: $minDt) {
       name
       slug
     }
@@ -32,7 +33,11 @@ export function SalesNavSimplified() {
 
   const { data } = useSuspenseQuery<{
     salesCategoryRank: Pick<Category, 'name' | 'slug'>[]
-  }>(GET_CATEGORIES_RANK)
+  }>(GET_CATEGORIES_RANK, {
+    variables: {
+      minDt: MIN_SALES_DT,
+    },
+  })
 
   const categories = data.salesCategoryRank
 
