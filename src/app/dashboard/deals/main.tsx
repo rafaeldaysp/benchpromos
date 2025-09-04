@@ -1,6 +1,6 @@
 'use client'
 
-import { gql, useMutation } from '@apollo/client'
+import { gql, useMutation, useQuery } from '@apollo/client'
 import dayjs from 'dayjs'
 import 'dayjs/locale/pt-br'
 import relativeTime from 'dayjs/plugin/relativeTime'
@@ -56,6 +56,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet'
+import { Skeleton } from '@/components/ui/skeleton'
 import { Switch } from '@/components/ui/switch'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { env } from '@/env.mjs'
@@ -85,24 +86,69 @@ const DELETE_DEAL = gql`
   }
 `
 
-interface DealsMainProps {
-  deals: (Deal & {
-    cashback?: Pick<Cashback, 'value' | 'provider'>
-    coupon?: Pick<Coupon, 'discount' | 'code'>
-    discounts: Discount[]
-    product: Pick<Product, 'id' | 'name' | 'imageUrl'> & {
-      category: Pick<Category, 'id' | 'name'>
+const GET_DEALS = gql`
+  query GetDeals($getDealsInput: GetDealsInput) {
+    deals(getDealsInput: $getDealsInput) {
+      id
+      price
+      availability
+      url
+      installments
+      totalInstallmentPrice
+      sku
+      productId
+      retailerId
+      couponId
+      cashbackId
+      createdAt
+      updatedAt
+      retailerIsSeller
+      lastScrapedAt
+      lastScrapedMessage
+      scrapingStatus
+      cashback {
+        provider
+        value
+      }
+      coupon {
+        discount
+        code
+      }
+      discounts {
+        id
+        label
+        discount
+        retailerId
+      }
+      product {
+        id
+        name
+        imageUrl
+        category {
+          id
+          name
+        }
+      }
+      saleId
+      sale {
+        expired
+      }
     }
-    sale?: Pick<Sale, 'expired'>
-  })[]
+  }
+`
+
+interface DealsMainProps {
   retailers: Retailer[]
   categories: Pick<Category, 'id' | 'name'>[]
 }
 
-export function DealsMain({ deals, retailers, categories }: DealsMainProps) {
+export function DealsMain({ retailers, categories }: DealsMainProps) {
   const [retailersQuery, setRetailersQuery] = React.useState('')
-  const [selectedProduct, setSelectedProduct] =
-    React.useState<(typeof deals)[number]['product']>()
+  const [selectedProduct, setSelectedProduct] = React.useState<
+    Pick<Product, 'id' | 'name' | 'imageUrl'> & {
+      category: Pick<Category, 'id' | 'name'>
+    }
+  >()
   const [selectedRetailer, setSelectedRetailer] =
     React.useState<(typeof retailers)[number]>()
   const [selectedDealIds, setSelectedDealIds] = React.useState<string[]>([])
@@ -112,6 +158,26 @@ export function DealsMain({ deals, retailers, categories }: DealsMainProps) {
     React.useState(false)
   const { openDialogs, setOpenDialog } = useFormStore()
   const router = useRouter()
+
+  const { data, loading: isLoadingDeals } = useQuery<{
+    deals: (Deal & {
+      cashback?: Pick<Cashback, 'value' | 'provider'>
+      coupon?: Pick<Coupon, 'discount' | 'code'>
+      discounts: Discount[]
+      product: Pick<Product, 'id' | 'name' | 'imageUrl'> & {
+        category: Pick<Category, 'id' | 'name'>
+      }
+      sale?: Pick<Sale, 'expired'>
+    })[]
+  }>(GET_DEALS, {
+    variables: {
+      getDealsInput: {
+        productId: selectedProduct?.id,
+        retailerId: selectedRetailer?.id,
+      },
+    },
+    skip: !selectedProduct && !selectedRetailer,
+  })
 
   const onDealSelect = (dealId: string) => {
     selectedDealIds.includes(dealId)
@@ -123,7 +189,7 @@ export function DealsMain({ deals, retailers, categories }: DealsMainProps) {
       : setSelectedDealIds([...selectedDealIds, dealId])
   }
 
-  const filteredDeals = deals
+  const filteredDeals = data?.deals
     .filter((deal) => {
       if (selectedProduct && selectedRetailer) {
         return (
@@ -237,7 +303,7 @@ export function DealsMain({ deals, retailers, categories }: DealsMainProps) {
       <div className="space-y-4">
         <div className="flex flex-col items-start gap-y-2 sm:flex-row sm:items-center sm:justify-between">
           <div className="w-32 break-keep font-medium tracking-tight">
-            Ofertas • {filteredDeals.length.toString()}
+            Ofertas • {filteredDeals?.length.toString() ?? '0'}
           </div>
           <div className="flex w-full flex-col items-center justify-end gap-2 sm:flex-row">
             {selectedRetailer && (
@@ -283,7 +349,7 @@ export function DealsMain({ deals, retailers, categories }: DealsMainProps) {
                   </SelectTrigger>
                   <SelectContent>
                     <ScrollArea className="h-80">
-                      <SelectItem value="">Todas</SelectItem>
+                      <SelectItem value="">Todoss</SelectItem>
                       {categories.map((category) => (
                         <SelectItem key={category.id} value={category.id}>
                           {category.name}
@@ -297,15 +363,19 @@ export function DealsMain({ deals, retailers, categories }: DealsMainProps) {
                   variant="outline"
                   className="w-full px-3 sm:w-fit sm:px-4"
                   onClick={() =>
-                    selectedDealIds.length === filteredDeals.length
+                    selectedDealIds.length === filteredDeals?.length
                       ? setSelectedDealIds([])
-                      : setSelectedDealIds(filteredDeals.map((deal) => deal.id))
+                      : setSelectedDealIds(
+                          filteredDeals?.map((deal) => deal.id) ?? [],
+                        )
                   }
                 >
-                  {selectedDealIds.length === filteredDeals.length
-                    ? 'Desmarcar'
-                    : 'Marcar'}
-                  <h6 className="ml-1 hidden sm:inline-flex">todos</h6>
+                  <span>
+                    {selectedDealIds.length === filteredDeals?.length
+                      ? 'Desmarcar'
+                      : 'Marcar'}
+                    <h6 className="ml-1 hidden sm:inline-flex">todos</h6>
+                  </span>
                 </Button>
 
                 <div className="flex w-full items-center justify-between gap-x-2 sm:w-fit">
@@ -322,13 +392,41 @@ export function DealsMain({ deals, retailers, categories }: DealsMainProps) {
           </div>
         </div>
 
-        {filteredDeals.length > 0 ? (
+        {isLoadingDeals ? (
+          <ScrollArea className="h-[400px] rounded-md border">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <DashboardItemCard.Root key={i}>
+                {selectedRetailer && (
+                  <div className="flex items-center">
+                    <Skeleton className="size-4 rounded" />
+                  </div>
+                )}
+                <div className="relative size-16">
+                  <Skeleton className="size-full rounded-md" />
+                </div>
+
+                <DashboardItemCard.Content>
+                  <Skeleton className="mb-2 h-4 w-full max-w-md" />
+                  <div className="space-y-1">
+                    <Skeleton className="h-3 w-3/4" />
+                    <Skeleton className="h-3 w-1/2" />
+                  </div>
+                </DashboardItemCard.Content>
+
+                <DashboardItemCard.Actions>
+                  <Skeleton className="size-9 rounded-md" />
+                  <Skeleton className="size-9 rounded-md" />
+                </DashboardItemCard.Actions>
+              </DashboardItemCard.Root>
+            ))}
+          </ScrollArea>
+        ) : filteredDeals && filteredDeals.length > 0 ? (
           <ScrollArea
             className={cn('rounded-md border', {
-              'h-[400px]': filteredDeals.length > 4,
+              'h-[400px]': filteredDeals && filteredDeals.length > 4,
             })}
           >
-            {filteredDeals.map((deal) => (
+            {filteredDeals?.map((deal) => (
               <DashboardItemCard.Root
                 key={deal.id}
                 className={cn('cursor-pointer', {
@@ -363,7 +461,7 @@ export function DealsMain({ deals, retailers, categories }: DealsMainProps) {
                   </p>
 
                   <span className="text-xs text-muted-foreground">
-                    {deal.saleId && (
+                    {deal && deal.saleId && (
                       <Badge
                         className="mr-2"
                         variant={deal.sale?.expired ? 'auxiliary' : 'default'}
