@@ -59,7 +59,7 @@ export const notebooksCustomFilters = [
   {
     label: 'Mostrar importados',
     slug: 'imported',
-    values: ['Descontinuado'],
+    values: ['Importado'],
     type: 'show',
   },
 ]
