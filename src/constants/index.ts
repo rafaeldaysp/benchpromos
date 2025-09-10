@@ -21,16 +21,16 @@ export const RESENT_EMAIL_TIME_MS = 10 * 60 * 1000 // 10 minutes
 
 export const notebooksCustomFilters = [
   {
-    label: 'Ocultar Frame Generation',
-    slug: 'hide-frame-generation',
+    label: 'Mostrar Frame Generation',
+    slug: 'show-frame-generation',
     values: ['Frame Generation'],
-    type: 'hide',
+    type: 'show',
   },
   {
-    label: 'Ocultar Modo Turbo',
-    slug: 'hide-modo-turbo',
+    label: 'Mostrar Modo Turbo',
+    slug: 'show-modo-turbo',
     values: ['Modo Turbo'],
-    type: 'hide',
+    type: 'show',
   },
   {
     label: 'Mostrar Modo Equilibrado',
@@ -53,6 +53,12 @@ export const notebooksCustomFilters = [
   {
     label: 'Mostrar descontinuados',
     slug: 'descontinued',
+    values: ['Descontinuado'],
+    type: 'show',
+  },
+  {
+    label: 'Mostrar importados',
+    slug: 'imported',
     values: ['Descontinuado'],
     type: 'show',
   },
