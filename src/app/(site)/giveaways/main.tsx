@@ -7,13 +7,12 @@ import {
   Clock,
   Gift,
   Heart,
-  Search,
   Trophy,
   Users,
   CheckCircle,
   XCircle,
 } from 'lucide-react'
-import { differenceInDays, format, parseISO } from 'date-fns'
+import { differenceInDays, format } from 'date-fns'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -23,9 +22,9 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Pagination } from '@/components/pagination'
 
 import { cn } from '@/lib/utils'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -72,15 +71,19 @@ interface GiveawaysMainProps {
   }[]
   currentUser?: Session['user']
   token?: string
+  page: number
+  pageCount: number
 }
 
 export default function GiveawaysMain({
   activeGiveaways,
   endedGiveaways,
-  currentUser,
+  currentUser: _currentUser,
   token,
   userSubscribedIds,
   statusCounts,
+  page,
+  pageCount,
 }: GiveawaysMainProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -98,6 +101,7 @@ export default function GiveawaysMain({
       router.push(
         `${pathname}?${createQueryString({
           status: tab === 'ended' ? 'COMPLETED' : null,
+          page: null, // Reset to first page when changing tabs
         })}`,
       )
     })
@@ -303,17 +307,17 @@ export default function GiveawaysMain({
                       >
                         {isLoadingSubscribe || isLoadingLeave ? (
                           <>
-                            <Icons.Spinner className="size-4 mr-2 animate-spin" />
+                            <Icons.Spinner className="mr-2 size-4 animate-spin" />
                             {subscribed ? 'Saindo...' : 'Inscrevendo...'}
                           </>
                         ) : subscribed ? (
                           <>
-                            <XCircle className="size-4 mr-2" />
+                            <XCircle className="mr-2 size-4" />
                             Sair do sorteio
                           </>
                         ) : (
                           <>
-                            <Heart className="size-4 mr-2" />
+                            <Heart className="mr-2 size-4" />
                             Inscrever-se
                           </>
                         )}
@@ -334,6 +338,13 @@ export default function GiveawaysMain({
               <p className="text-muted-foreground">
                 Verifique novamente em breve para novos sorteios incríveis!
               </p>
+            </div>
+          )}
+
+          {/* Pagination */}
+          {activeGiveaways.length > 0 && pageCount > 1 && (
+            <div className="mt-8 flex justify-center">
+              <Pagination page={page} pageCount={pageCount} />
             </div>
           )}
         </TabsContent>
@@ -425,6 +436,13 @@ export default function GiveawaysMain({
               )
             })}
           </div>
+
+          {/* Pagination */}
+          {endedGiveaways.length > 0 && pageCount > 1 && (
+            <div className="mt-8 flex justify-center">
+              <Pagination page={page} pageCount={pageCount} />
+            </div>
+          )}
         </TabsContent>
       </Tabs>
     </main>
