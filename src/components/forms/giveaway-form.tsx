@@ -150,7 +150,7 @@ export function GiveawayForm({ mode = 'create', giveaway }: GiveawayFormProps) {
           name="description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Descrição (opcional)</FormLabel>
+              <FormLabel>Descrição</FormLabel>
               <FormControl>
                 <Textarea rows={4} {...field} />
               </FormControl>

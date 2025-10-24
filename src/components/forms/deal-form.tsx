@@ -35,11 +35,12 @@ import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
 import { dealSchema } from '@/lib/validations/deal'
 import type { Cashback, Coupon, Discount } from '@/types'
+import { removeNullValues } from '@/utils'
 import { couponFormatter } from '@/utils/formatter'
+import { DiscountSelector } from '../discount-selector'
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
 import { ScrollArea } from '../ui/scroll-area'
 import { DiscountFormDialog } from './discount-form'
-import { DiscountSelector } from '../discount-selector'
 
 const CREATE_DEAL = gql`
   mutation CreateDeal($input: CreateDealInput!) {
@@ -105,7 +106,7 @@ export function DealForm({
     resolver: zodResolver(dealSchema),
     defaultValues: {
       ...defaultValues,
-      ...deal,
+      ...removeNullValues(deal),
     },
   })
   const { setOpenDialog } = useFormStore()
@@ -434,7 +435,7 @@ export function DealForm({
         <Button type="submit" disabled={isLoading}>
           {isLoading && (
             <Icons.Spinner
-              className="size-4 mr-2 animate-spin"
+              className="mr-2 size-4 animate-spin"
               aria-hidden="true"
             />
           )}
