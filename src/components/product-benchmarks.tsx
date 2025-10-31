@@ -68,7 +68,7 @@ export function ProductBenchmarks({ productSlug }: ProductBenchmarksProps) {
         {groupedBenchmarks.map((benchmark) => (
           <CarouselItem
             key={benchmark.name}
-            className="sm:basis-1/2 lg:basis-1/3 xl:basis-1/4"
+            className="select-none sm:basis-1/2 lg:basis-1/3 xl:basis-1/4"
           >
             <ProductBenchmarkCard benchmark={benchmark} />
           </CarouselItem>
