@@ -51,13 +51,13 @@ export const notebooksCustomFilters = [
     type: 'show',
   },
   {
-    label: 'Mostrar descontinuados',
+    label: 'Ocultar Descontinuados',
     slug: 'descontinued',
     values: ['Descontinuado'],
-    type: 'show',
+    type: 'hide',
   },
   {
-    label: 'Mostrar importados',
+    label: 'Mostrar Importados',
     slug: 'imported',
     values: ['Importado'],
     type: 'show',
