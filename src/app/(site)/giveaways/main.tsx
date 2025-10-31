@@ -27,7 +27,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Pagination } from '@/components/pagination'
 
 import { cn } from '@/lib/utils'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { type Giveaway } from '@/types'
 import { type Session, type User } from 'next-auth'
 import { Icons } from '@/components/icons'
@@ -55,12 +54,10 @@ const LEAVE_GIVEAWAY = gql`
 
 interface GiveawaysMainProps {
   activeGiveaways: (Giveaway & {
-    participants: User[]
     participantsCount: number
     winner: User | null
   })[]
   endedGiveaways: (Giveaway & {
-    participants: User[]
     participantsCount: number
     winner: User | null
   })[]
@@ -260,30 +257,6 @@ export default function GiveawaysMain({
                         <span>
                           {giveaway.participantsCount} participante(s)
                         </span>
-                      </div>
-
-                      {/* Recent Participants */}
-                      <div className="flex items-center gap-1">
-                        <span className="mr-2 text-xs text-muted-foreground">
-                          Recentes:
-                        </span>
-                        {giveaway.participants.slice(-5).map((participant) => (
-                          <Avatar key={participant.id}>
-                            <AvatarImage
-                              src={participant.image ?? ''}
-                              alt="Avatar"
-                              className="cursor-pointer"
-                            />
-                            <AvatarFallback>
-                              {participant?.name?.charAt(0)}
-                            </AvatarFallback>
-                          </Avatar>
-                        ))}
-                        {giveaway.participantsCount > 5 && (
-                          <span className="ml-1 text-xs text-muted-foreground">
-                            +{giveaway.participantsCount - 5}
-                          </span>
-                        )}
                       </div>
 
                       {/* Subscribe/Leave Button */}

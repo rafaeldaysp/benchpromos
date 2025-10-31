@@ -26,12 +26,6 @@ const GET_GIVEAWAYS = gql`
         description
         drawAt
         status
-        participants {
-          id
-          name
-          email
-          image
-        }
         participantsCount
         winnerId
         winner {
@@ -92,7 +86,6 @@ export default async function GiveawaysPage({
         count: number
       }[]
       list: (Giveaway & {
-        participants: User[]
         participantsCount: number
         winner: User | null
       })[]

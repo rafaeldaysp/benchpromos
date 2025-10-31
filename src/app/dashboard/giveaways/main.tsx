@@ -106,7 +106,6 @@ const DELETE_GIVEAWAY = gql`
 
 interface GiveawaysMainProps {
   giveaways: (Giveaway & {
-    participants: User[]
     participantsCount: number
     winner: User | null
   })[]
@@ -136,7 +135,6 @@ export default function GiveawaysMain({
   const [isDrawing, setIsDrawing] = useState(false)
   const [currentPrizeId, setCurrentPrizeId] = useState<string | null>(null)
   const [showConfetti, setShowConfetti] = useState(false)
-  const [drawingUsers, setDrawingUsers] = useState<User[]>([])
   const [winner, setWinner] = useState<User | null>(null)
   const { openDialogs, setOpenDialog } = useFormStore()
   // Date selection state
@@ -244,13 +242,23 @@ export default function GiveawaysMain({
     {
       onCompleted: (data) => {
         setWinner(data.setGiveawayWinnerByIndex.winner)
+        setIsDrawing(false)
+        setShowConfetti(true)
+
         toast.success(
           `${data.setGiveawayWinnerByIndex.winner.name} ganhou o prêmio ${data.setGiveawayWinnerByIndex.name}!`,
         )
+
+        setTimeout(() => {
+          setShowConfetti(false)
+          setCurrentPrizeId(null)
+        }, 5000)
+
         router.refresh()
       },
       onError: (error) => {
-        toast.error(error.message)
+        setIsDrawing(false)
+        // toast.error(error.message)
       },
       context: {
         headers: {
@@ -280,25 +288,21 @@ export default function GiveawaysMain({
   )
   const executeDraw = (prizeId: string) => {
     const prize = giveaways.find((p) => p.id === prizeId)
-    if (!prize || prize.participants.length === 0) return
+    if (!prize || prize.participantsCount === 0) return
 
     setIsDrawing(true)
     setCurrentPrizeId(prizeId)
 
     // Animation for drawing
-    const participants = [...prize.participants]
-    const participantsCount = prize.participantsCount
-    setDrawingUsers([])
 
     let count = 0
-    const interval = setInterval(() => {
-      count++
-      const randomIndex = Math.floor(Math.random() * prize.participants.length)
-      setDrawingUsers([prize.participants[randomIndex]])
+    let drawingInterval: NodeJS.Timeout | null = null
 
-      if (count > 20) {
-        clearInterval(interval)
-        const winnerIndex = Math.floor(Math.random() * participantsCount)
+    drawingInterval = setInterval(() => {
+      count++
+      if (count > 20 && drawingInterval) {
+        clearInterval(drawingInterval)
+        const winnerIndex = Math.floor(Math.random() * prize.participantsCount)
 
         // Update prize with winner
         setGiveawayWinner({
@@ -312,14 +316,6 @@ export default function GiveawaysMain({
             },
           },
         })
-
-        setIsDrawing(false)
-        setShowConfetti(true)
-
-        setTimeout(() => {
-          setShowConfetti(false)
-          setCurrentPrizeId(null)
-        }, 5000)
       }
     }, 100)
   }
@@ -492,32 +488,11 @@ export default function GiveawaysMain({
                           </div>
                         </div> */}
 
-                          <div className="mb-4 flex flex-wrap gap-1">
-                            {prize.participants
-                              .slice(0, 5)
-                              .map((participant) => {
-                                return (
-                                  <Avatar key={participant.id}>
-                                    <AvatarImage
-                                      src={participant.image ?? ''}
-                                      alt="Avatar"
-                                      className="cursor-pointer"
-                                      onClick={() => {
-                                        setSelectedUserId(participant.id)
-                                        setOpenDialog('userDetails', true)
-                                      }}
-                                    />
-                                    <AvatarFallback>
-                                      {participant?.name?.charAt(0)}
-                                    </AvatarFallback>
-                                  </Avatar>
-                                )
-                              })}
-                            {prize.participantsCount > 5 && (
-                              <div className="flex size-10 items-center justify-center rounded-full bg-muted text-xs font-medium">
-                                +{prize.participantsCount - 5}
-                              </div>
-                            )}
+                          <div className="mb-4 flex items-center gap-2 text-sm">
+                            <Users className="size-4 text-muted-foreground" />
+                            <span>
+                              {prize.participantsCount} participante(s)
+                            </span>
                           </div>
 
                           {currentPrizeId === prize.id && isDrawing && (
@@ -538,7 +513,7 @@ export default function GiveawaysMain({
                               <div className="mb-3 text-center text-lg font-bold">
                                 Drawing winner...
                               </div>
-                              <div className="relative h-16 overflow-hidden rounded-lg bg-background p-2">
+                              {/* <div className="relative h-16 overflow-hidden rounded-lg bg-background p-2">
                                 {drawingUsers.map((participant) => {
                                   return (
                                     <motion.div
@@ -552,7 +527,7 @@ export default function GiveawaysMain({
                                     </motion.div>
                                   )
                                 })}
-                              </div>
+                              </div> */}
                             </div>
                           )}
 
@@ -647,9 +622,7 @@ export default function GiveawaysMain({
                               <Button
                                 onClick={() => executeDraw(prize.id)}
                                 disabled={
-                                  isDrawing ||
-                                  prize.participantsCount === 0 ||
-                                  Boolean(prize.winner)
+                                  isDrawing || prize.participantsCount === 0
                                 }
                                 className={`${
                                   prize.winner
@@ -659,7 +632,8 @@ export default function GiveawaysMain({
                               >
                                 {prize.winner ? (
                                   <>
-                                    <Trophy className="mr-2 size-4" /> Sorteado
+                                    <RefreshCw className="mr-2 size-4" />{' '}
+                                    Sortear novamente
                                   </>
                                 ) : (
                                   'Sortear'
