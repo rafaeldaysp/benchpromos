@@ -12,6 +12,8 @@ import { toast } from 'sonner'
 
 import { CashbackModal } from '@/components/cashback-modal'
 import { CouponModal } from '@/components/coupon-modal'
+import { DealConfirmationModal } from '@/components/deal-confirmation-modal'
+import { ExpiredSaleModal } from '@/components/expired-sale-modal'
 import { Icons } from '@/components/icons'
 import { LoginPopup } from '@/components/login-popup'
 import PriceChart from '@/components/product-price-chart'
@@ -105,6 +107,7 @@ interface SaleMainProps {
 
 export function SaleMain({ saleId, user }: SaleMainProps) {
   const [openLoginPopup, setOpenLoginPopup] = React.useState(false)
+  const [openExpiredModal, setOpenExpiredModal] = React.useState(false)
   const pathname = usePathname()
   const { data, error, client } = useSuspenseQuery<{
     sale: Sale & {
@@ -123,11 +126,17 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
     },
   })
 
-  if (!data || error) {
+  const sale = data?.sale
+
+  React.useEffect(() => {
+    if (sale?.expired) {
+      setOpenExpiredModal(true)
+    }
+  }, [sale?.expired])
+
+  if (!sale) {
     return notFound()
   }
-
-  const sale = data.sale
 
   const salePriceCents = priceCalculator(
     sale.price,
@@ -178,12 +187,12 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
 
   function handleShare() {
     const text = `Se liga nessa promoção no Bench Promos!\n\n${
-      sale.title
+      sale?.title
     } - ${priceFormatter.format(salePriceCents / 100)}\n\n`
 
     if (navigator.share) {
       navigator.share({
-        title: sale.title,
+        title: sale?.title,
         text,
         url: pathname,
       })
@@ -196,6 +205,7 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
   return (
     <div className="space-y-10 px-4 py-10 sm:container lg:grid lg:grid-cols-3 lg:gap-8 lg:space-y-2 xl:grid-cols-5">
       <LoginPopup open={openLoginPopup} setOpen={setOpenLoginPopup} />
+      <ExpiredSaleModal open={openExpiredModal} setOpen={setOpenExpiredModal} />
       <main
         className={cn(
           'flex flex-col gap-2 lg:col-span-2 lg:pt-2 xl:col-span-3',
@@ -406,15 +416,24 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
               />
             )}
             <div className="space-y-2">
-              <a
-                className={cn(buttonVariants(), 'flex h-10 rounded-xl')}
-                href={sale.url}
-                target="_blank"
+              <DealConfirmationModal
+                dealUrl={sale.url}
+                coupon={
+                  sale.couponSchema
+                    ? {
+                        code: sale.couponSchema.code,
+                        discount: sale.couponSchema.discount,
+                        description: sale.couponSchema.description,
+                      }
+                    : sale.coupon
+                }
+                cashback={sale.cashback}
+                className={cn(buttonVariants(), 'flex h-10 w-full rounded-xl')}
                 id="access_sale_from_page"
               >
                 <span className="mr-2 font-semibold">ACESSAR</span>
                 {/* <Icons.ExternalLink strokeWidth={3} className="h-4 w-4" /> */}
-              </a>
+              </DealConfirmationModal>
             </div>
             {sale.productSlug && (
               <Link

@@ -12,6 +12,7 @@ import { toast } from 'sonner'
 
 import { CashbackModal } from '@/components/cashback-modal'
 import { CouponModal } from '@/components/coupon-modal'
+import { DealConfirmationModal } from '@/components/deal-confirmation-modal'
 import { Icons } from '@/components/icons'
 import { ReactionMenu } from '@/components/sales/reaction-menu'
 import { Reactions } from '@/components/sales/reactions'
@@ -422,10 +423,19 @@ export function SaleCard({
                       )}
 
                       <div>
-                        <a
+                        <DealConfirmationModal
                           id="access_sale_from_card"
-                          href={sale.url}
-                          target="_blank"
+                          dealUrl={sale.url}
+                          coupon={
+                            sale.couponSchema
+                              ? {
+                                  code: sale.couponSchema.code,
+                                  discount: sale.couponSchema.discount,
+                                  description: sale.couponSchema.description,
+                                }
+                              : sale.coupon
+                          }
+                          cashback={sale.cashback}
                           className={cn(
                             buttonVariants(),
                             'hidden h-fit w-full rounded-xl font-semibold sm:inline-flex',
@@ -436,7 +446,7 @@ export function SaleCard({
                             className="h-4 w-4"
                             strokeWidth={3}
                           /> */}
-                        </a>
+                        </DealConfirmationModal>
                       </div>
                     </footer>
                   </div>

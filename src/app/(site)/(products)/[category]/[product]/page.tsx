@@ -9,6 +9,7 @@ import { getCurrentUserToken } from '@/app/_actions/user'
 import { AlertCard } from '@/components/alert-price'
 import { CashbackModal } from '@/components/cashback-modal'
 import { CouponModal } from '@/components/coupon-modal'
+import { DealConfirmationModal } from '@/components/deal-confirmation-modal'
 import { Icons } from '@/components/icons'
 import { ProductBenchmarks } from '@/components/product-benchmarks'
 import { ProductNavbar } from '@/components/product-navbar'
@@ -532,19 +533,24 @@ export default async function ProductPage({ params }: ProductPageProps) {
                           </CardContent>
                           <CardFooter className="flex flex-col space-y-1 p-4 pt-2">
                             <>
-                              <a
+                              <DealConfirmationModal
+                                dealUrl={deal.url}
+                                coupon={
+                                  deal.coupon?.availability
+                                    ? deal.coupon
+                                    : undefined
+                                }
+                                cashback={deal.cashback}
                                 className={cn(
                                   buttonVariants(),
                                   'flex h-10 w-full cursor-pointer rounded-xl',
                                 )}
-                                href={deal.url}
-                                target="_blank"
                               >
                                 <span className="mr-2 font-semibold">
                                   ACESSAR
                                 </span>
                                 {/* <Icons.ExternalLink strokeWidth={3} className="h-4 w-4" /> */}
-                              </a>
+                              </DealConfirmationModal>
                             </>
                           </CardFooter>
                         </div>
