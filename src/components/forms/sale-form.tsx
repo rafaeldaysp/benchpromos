@@ -55,6 +55,7 @@ const saleLabels = [
   'SORTEIO',
   'HISTÓRICO',
   'PREÇO HISTÓRICO',
+  'PREÇO HISTÓRICO PARCELADO',
 ]
 
 const CREATE_SALE = gql`
@@ -369,7 +370,7 @@ export function SaleForm({
                     <SelectTrigger>
                       {isSaleFormDataLoading && (
                         <Icons.Spinner
-                          className="size-4 mr-2 animate-spin"
+                          className="mr-2 size-4 animate-spin"
                           aria-hidden="true"
                         />
                       )}
@@ -453,7 +454,7 @@ export function SaleForm({
                     <SelectTrigger>
                       {isSaleFormDataLoading && (
                         <Icons.Spinner
-                          className="size-4 mr-2 animate-spin"
+                          className="mr-2 size-4 animate-spin"
                           aria-hidden="true"
                         />
                       )}
@@ -576,7 +577,7 @@ export function SaleForm({
           render={({ field }) => (
             <FormItem>
               <FormLabel className="flex text-warning">
-                <Icons.AlertCircle className="size-3 mr-2" /> Cupom (antigo)
+                <Icons.AlertCircle className="mr-2 size-3" /> Cupom (antigo)
               </FormLabel>
               <FormControl>
                 <Input
@@ -609,7 +610,7 @@ export function SaleForm({
                     <SelectTrigger>
                       {isSaleFormDataLoading && (
                         <Icons.Spinner
-                          className="size-4 mr-2 animate-spin"
+                          className="mr-2 size-4 animate-spin"
                           aria-hidden="true"
                         />
                       )}
@@ -656,7 +657,7 @@ export function SaleForm({
                     <SelectTrigger>
                       {isSaleFormDataLoading && (
                         <Icons.Spinner
-                          className="size-4 mr-2 animate-spin"
+                          className="mr-2 size-4 animate-spin"
                           aria-hidden="true"
                         />
                       )}
@@ -757,7 +758,7 @@ export function SaleForm({
         <Button type="submit" disabled={isLoading}>
           {isLoading && (
             <Icons.Spinner
-              className="size-4 mr-2 animate-spin"
+              className="mr-2 size-4 animate-spin"
               aria-hidden="true"
             />
           )}
