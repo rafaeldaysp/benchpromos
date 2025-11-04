@@ -16,6 +16,7 @@ import { ThemeProvider } from '@/components/theme-provider'
 import { Toaster } from '@/components/ui/toaster'
 import { siteConfig } from '@/config/site'
 import { cn } from '@/lib/utils'
+import RouteProgressProvider from '@/components/route-progress-provider'
 
 const fontSans = FontSans({
   subsets: ['latin'],
@@ -131,7 +132,9 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         </noscript>
 
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
-          <ApolloWrapper>{children}</ApolloWrapper>
+          <RouteProgressProvider>
+            <ApolloWrapper>{children}</ApolloWrapper>
+          </RouteProgressProvider>
         </ThemeProvider>
 
         <Toaster />

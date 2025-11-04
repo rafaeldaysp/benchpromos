@@ -12,6 +12,7 @@
   "dependencies": {
     "@apollo/client": "^3.8.7",
     "@apollo/experimental-nextjs-app-support": "^0.5.1",
+    "@bprogress/next": "^3.2.12",
     "@hookform/resolvers": "^3.1.1",
     "@notionhq/client": "^2.2.14",
     "@radix-ui/react-accordion": "^1.1.2",
