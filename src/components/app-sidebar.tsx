@@ -4,7 +4,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import * as React from 'react'
 
-import Logo from '@/assets/logo-benchpromos.svg'
+import Logo from '@/assets/black_friday_bp2.svg'
 import { NavMain } from '@/components/nav-main'
 import { NavUser } from '@/components/nav-user'
 import {
