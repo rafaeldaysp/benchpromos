@@ -11,6 +11,7 @@ import { FileUploaderDialog } from '@/components/files/file-uploader-dialog'
 import { ProductFiltersForm } from '@/components/forms/product-filters-form'
 import { ProductForm } from '@/components/forms/product-form'
 import { RecommendedProductForm } from '@/components/forms/recommended-product-form'
+import { ProductHistoryEditor } from '@/components/product-history-editor'
 import { Icons } from '@/components/icons'
 import {
   AlertDialog,
@@ -380,6 +381,16 @@ export function ProductsMain({ filters, categories }: ProductsMainProps) {
                     <ProductForm mode="update" product={product} />
                   </SheetContent>
                 </Sheet>
+
+                <ProductHistoryEditor
+                  productSlug={product.slug}
+                  productId={product.id}
+                  open={openDialogs[`productHistoryEditor.${product.id}`]}
+                  onOpenChange={(open) =>
+                    setOpenDialog(`productHistoryEditor.${product.id}`, open)
+                  }
+                  trigger={<DashboardItemCard.Action icon={Icons.ScrollText} />}
+                />
 
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
