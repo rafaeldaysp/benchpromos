@@ -13,24 +13,46 @@ import type {
   Discount,
   Coupon,
   Product,
+  Retailer,
   Sale,
 } from '@/types'
 import { removeNullValues } from '@/utils'
 import { Button } from './ui/button'
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+  CommandSeparator,
+} from './ui/command'
 import { Input } from './ui/input'
+import { Popover, PopoverContent, PopoverTrigger } from './ui/popover'
 
 const SALES_PER_PAGE = 12
+
+const GET_RETAILERS = gql`
+  query GetRetailers {
+    retailers {
+      id
+      name
+    }
+  }
+`
 
 const GET_SALES = gql`
   query GetDashboardSales(
     $pagination: PaginationInput
     $search: String
     $showExpired: Boolean
+    $retailerId: ID
   ) {
     sales(
       paginationInput: $pagination
       search: $search
       showExpired: $showExpired
+      retailerId: $retailerId
     ) {
       count
       list {
@@ -109,6 +131,18 @@ export function DashboardSales({ children }: DashboardSalesProps) {
   const [isPending, startTransition] = React.useTransition()
   const [searchInput, setSearchInput] = React.useState('')
   const [query, setQuery] = React.useState('')
+  const [retailerId, setRetailerId] = React.useState<string>('')
+
+  const { data: retailersData } = useSuspenseQuery<{
+    retailers: Retailer[]
+  }>(GET_RETAILERS, {
+    fetchPolicy: 'cache-first',
+    context: {
+      headers: {
+        'api-key': env.NEXT_PUBLIC_API_KEY,
+      },
+    },
+  })
 
   const { data, fetchMore } = useSuspenseQuery<{
     sales: {
@@ -138,6 +172,7 @@ export function DashboardSales({ children }: DashboardSalesProps) {
         page: 1,
       },
       showExpired: true,
+      retailerId: retailerId || undefined,
     },
   })
 
@@ -155,6 +190,7 @@ export function DashboardSales({ children }: DashboardSalesProps) {
             page: page + 1,
           },
           showExpired: true,
+          retailerId: retailerId || undefined,
         },
         updateQuery(previousResult, { fetchMoreResult }) {
           const fetchMorePages = previousResult.sales.count
@@ -187,6 +223,71 @@ export function DashboardSales({ children }: DashboardSalesProps) {
             }
           }}
         />
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant="outline" className="w-60 justify-between">
+              {retailerId
+                ? retailersData.retailers.find((r) => r.id === retailerId)
+                    ?.name || 'Varejista'
+                : 'Varejista'}
+              <Icons.ChevronDown className="ml-2 size-4 opacity-50" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-[240px] p-0" align="start">
+            <Command>
+              <CommandInput placeholder="Buscar varejista..." />
+              <CommandList>
+                <CommandEmpty>Nenhum resultado encontrado.</CommandEmpty>
+                <CommandGroup className="max-h-[300px] overflow-auto">
+                  {retailersData.retailers.map((retailer) => {
+                    const isSelected = retailerId === retailer.id
+                    return (
+                      <CommandItem
+                        key={retailer.id}
+                        disabled={isPending}
+                        className={cn({ 'opacity-60': isPending })}
+                        onSelect={() => {
+                          startTransition(() => {
+                            setRetailerId(isSelected ? '' : retailer.id)
+                          })
+                        }}
+                      >
+                        <span
+                          className={cn(
+                            'flex-1',
+                            isSelected && 'font-semibold',
+                          )}
+                        >
+                          {retailer.name}
+                        </span>
+                        {isSelected && (
+                          <Icons.Check className="size-4 text-primary" />
+                        )}
+                      </CommandItem>
+                    )
+                  })}
+                </CommandGroup>
+                {retailerId && (
+                  <>
+                    <CommandSeparator />
+                    <CommandGroup>
+                      <CommandItem
+                        onSelect={() => {
+                          startTransition(() => {
+                            setRetailerId('')
+                          })
+                        }}
+                        className="justify-center text-center text-sm"
+                      >
+                        Limpar filtro
+                      </CommandItem>
+                    </CommandGroup>
+                  </>
+                )}
+              </CommandList>
+            </Command>
+          </PopoverContent>
+        </Popover>
         <Button onClick={() => setQuery(searchInput)}>Pesquisar</Button>
       </div>
 
