@@ -20,6 +20,7 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
 import { env } from '@/env.mjs'
 import { useDebounce } from '@/hooks/use-debounce'
 import { useFormStore } from '@/hooks/use-form-store'
@@ -38,8 +39,7 @@ import {
 } from '../ui/command'
 import { Label } from '../ui/label'
 import { Skeleton } from '../ui/skeleton'
-import { DateTimePicker } from '../ui/datetime-picker'
-import { ptBR } from 'date-fns/locale'
+import { removeNullValues } from '@/utils'
 
 const CREATE_AWARDS_CATEGORY = gql`
   mutation CreateAwardsCategory($input: CreateAwardsCategoryInput!) {
@@ -61,11 +61,14 @@ type Inputs = z.infer<typeof awardsCategorySchema>
 
 const defaultValues: Partial<Inputs> = {
   title: '',
-  expiredAt: new Date().toISOString(),
+  description: '',
+  icon: '',
+  shortTitle: '',
 }
 
 interface AwardsCategoryFormProps {
   mode?: 'create' | 'update'
+  awardsId?: string
   awardsCategory?: AwardsCategory & {
     options: (AwardsCategoryOption & {
       product: Pick<Product, 'id' | 'imageUrl' | 'name'>
@@ -75,22 +78,32 @@ interface AwardsCategoryFormProps {
 
 export function AwardsCategoryForm({
   mode = 'create',
+  awardsId,
   awardsCategory,
 }: AwardsCategoryFormProps) {
   const form = useForm<Inputs>({
     resolver: zodResolver(awardsCategorySchema),
     defaultValues: {
       ...defaultValues,
-      ...awardsCategory,
+      ...removeNullValues(awardsCategory),
+      awardsId: awardsId || awardsCategory?.awardsId,
     },
   })
 
   const [selectedProducts, setSelectedProducts] = React.useState<
-    (Pick<Product, 'id' | 'imageUrl' | 'name'> & { title?: string })[]
+    (Pick<Product, 'id' | 'imageUrl' | 'name'> & {
+      title?: string
+      brand?: string
+      subtitle?: string
+      badge?: string
+    })[]
   >(
     awardsCategory?.options.map((option) => ({
       ...option.product,
       title: option.title,
+      brand: option.brand ?? undefined,
+      subtitle: option.subtitle ?? undefined,
+      badge: option.badge ?? undefined,
     })) ?? [],
   )
 
@@ -126,7 +139,7 @@ export function AwardsCategoryForm({
         toast.success(message)
         router.refresh()
       },
-      refetchQueries: ['GetAwardsCategories'],
+      refetchQueries: ['GetAllAwards'],
     },
   )
   async function onSubmit(data: Inputs) {
@@ -138,6 +151,9 @@ export function AwardsCategoryForm({
           productOptions: selectedProducts.map((product) => ({
             productId: product.id,
             title: product.title ?? product.name,
+            brand: product.brand,
+            subtitle: product.subtitle,
+            badge: product.badge,
           })),
           ...data,
         },
@@ -166,7 +182,43 @@ export function AwardsCategoryForm({
           )}
         />
 
-        {/* <FormField
+        <FormField
+          control={form.control}
+          name="shortTitle"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Título Curto (opcional)</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="Gamer"
+                  aria-invalid={!!form.formState.errors.shortTitle}
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="icon"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Ícone (opcional)</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="🎮"
+                  aria-invalid={!!form.formState.errors.icon}
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
           control={form.control}
           name="description"
           render={({ field }) => (
@@ -178,75 +230,92 @@ export function AwardsCategoryForm({
               <FormMessage />
             </FormItem>
           )}
-        /> */}
-
-        <FormField
-          control={form.control}
-          name="expiredAt"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Expira em</FormLabel>
-              <FormControl>
-                <DateTimePicker
-                  locale={ptBR}
-                  showOutsideDays
-                  showWeekNumber={false}
-                  weekStartsOn={1}
-                  value={new Date(field.value)}
-                  onChange={field.onChange}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
         />
-        {mode === 'create' && (
-          <>
-            <div className="space-y-2">
-              <Label>
-                Selecionar opções (produtos) • {selectedProducts.length}
-              </Label>
 
-              {selectedProducts.map((product) => (
-                <DashboardItemCard.Root className="border" key={product.id}>
-                  <DashboardItemCard.Image src={product.imageUrl} alt="" />
+        <>
+          <div className="space-y-2">
+            <Label>
+              Selecionar opções (produtos) • {selectedProducts.length}
+            </Label>
 
-                  <DashboardItemCard.Content>
-                    <p className="text-sm leading-7">{product.name}</p>
-                    <Input
-                      placeholder="Nome do modelo resumido"
-                      value={product.title ?? ''}
-                      onChange={(e) =>
-                        setSelectedProducts((prev) =>
-                          prev.map((current) =>
-                            current.id == product.id
-                              ? { ...current, title: e.target.value }
-                              : current,
-                          ),
-                        )
-                      }
-                    ></Input>
-                  </DashboardItemCard.Content>
+            {selectedProducts.map((product) => (
+              <DashboardItemCard.Root className="border" key={product.id}>
+                <DashboardItemCard.Image src={product.imageUrl} alt="" />
 
-                  <DashboardItemCard.Actions>
-                    <DashboardItemCard.Action
-                      variant="destructive"
-                      icon={Icons.X}
-                      onClick={() =>
-                        setSelectedProducts((prev) =>
-                          prev.filter((selected) => selected.id !== product.id),
-                        )
-                      }
-                      type="button"
-                    />
-                  </DashboardItemCard.Actions>
-                </DashboardItemCard.Root>
-              ))}
-            </div>
+                <DashboardItemCard.Content className="space-y-2">
+                  <p className="text-sm leading-7">{product.name}</p>
+                  <Input
+                    placeholder="Nome do modelo resumido"
+                    value={product.title ?? ''}
+                    onChange={(e) =>
+                      setSelectedProducts((prev) =>
+                        prev.map((current) =>
+                          current.id == product.id
+                            ? { ...current, title: e.target.value }
+                            : current,
+                        ),
+                      )
+                    }
+                  />
+                  <Input
+                    placeholder="Marca (opcional)"
+                    value={product.brand ?? ''}
+                    onChange={(e) =>
+                      setSelectedProducts((prev) =>
+                        prev.map((current) =>
+                          current.id == product.id
+                            ? { ...current, brand: e.target.value }
+                            : current,
+                        ),
+                      )
+                    }
+                  />
+                  <Input
+                    placeholder="Subtítulo (opcional)"
+                    value={product.subtitle ?? ''}
+                    onChange={(e) =>
+                      setSelectedProducts((prev) =>
+                        prev.map((current) =>
+                          current.id == product.id
+                            ? { ...current, subtitle: e.target.value }
+                            : current,
+                        ),
+                      )
+                    }
+                  />
+                  <Input
+                    placeholder="Badge (opcional)"
+                    value={product.badge ?? ''}
+                    onChange={(e) =>
+                      setSelectedProducts((prev) =>
+                        prev.map((current) =>
+                          current.id == product.id
+                            ? { ...current, badge: e.target.value }
+                            : current,
+                        ),
+                      )
+                    }
+                  />
+                </DashboardItemCard.Content>
 
-            <Combobox setSelectedProducts={setSelectedProducts} />
-          </>
-        )}
+                <DashboardItemCard.Actions>
+                  <DashboardItemCard.Action
+                    variant="destructive"
+                    icon={Icons.X}
+                    onClick={() =>
+                      setSelectedProducts((prev) =>
+                        prev.filter((selected) => selected.id !== product.id),
+                      )
+                    }
+                    type="button"
+                  />
+                </DashboardItemCard.Actions>
+              </DashboardItemCard.Root>
+            ))}
+          </div>
+
+          <Combobox setSelectedProducts={setSelectedProducts} />
+        </>
 
         <Button type="submit" disabled={isLoading}>
           {isLoading && (

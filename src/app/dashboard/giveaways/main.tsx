@@ -2,6 +2,7 @@
 
 import { format, parseISO } from 'date-fns'
 import { motion } from 'framer-motion'
+import Image from 'next/image'
 import {
   CalendarIcon,
   ChevronLeft,
@@ -13,11 +14,13 @@ import {
   Trophy,
   Users,
 } from 'lucide-react'
-import { useState, useTransition } from 'react'
+import { useState, useTransition, useEffect } from 'react'
+import confetti from 'canvas-confetti'
 
 import { GiveawayForm } from '@/components/forms/giveaway-form'
 import { Pagination } from '@/components/pagination'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Calendar } from '@/components/ui/calendar'
 import {
@@ -52,8 +55,8 @@ import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
 import { useQueryString } from '@/hooks/use-query-string'
 import { cn } from '@/lib/utils'
-import { type Giveaway } from '@/types'
-import { gql, useMutation } from '@apollo/client'
+import { type GiveawayRuleConfig, type Giveaway } from '@/types'
+import { gql, useMutation, useQuery } from '@apollo/client'
 import { ptBR } from 'date-fns/locale'
 import { type User } from 'next-auth'
 import { usePathname, useRouter } from 'next/navigation'
@@ -119,6 +122,7 @@ interface GiveawaysMainProps {
   subscribersToShow: User[]
   subscribersPageCount: number
   subscribersPage: number
+  rulesConfigData?: GiveawayRuleConfig[]
 }
 
 export default function GiveawaysMain({
@@ -130,11 +134,12 @@ export default function GiveawaysMain({
   subscribersToShow,
   subscribersPageCount,
   subscribersPage,
+  rulesConfigData,
 }: GiveawaysMainProps) {
   const router = useRouter()
   const [isDrawing, setIsDrawing] = useState(false)
   const [currentPrizeId, setCurrentPrizeId] = useState<string | null>(null)
-  const [showConfetti, setShowConfetti] = useState(false)
+  // const [showConfetti, setShowConfetti] = useState(false)
   const [winner, setWinner] = useState<User | null>(null)
   const { openDialogs, setOpenDialog } = useFormStore()
   // Date selection state
@@ -147,6 +152,65 @@ export default function GiveawaysMain({
   const [currentPrizeIndex, setCurrentPrizeIndex] = useState<number | null>(
     null,
   )
+
+  const rulesConfig = rulesConfigData || []
+
+  // Helper function to get rule label
+  const getRuleLabel = (ruleType: string) => {
+    const config = rulesConfig.find((rc) => rc.type === ruleType)
+    return config?.label || ruleType
+  }
+
+  // Helper function to get config field label
+  const getConfigFieldLabel = (ruleType: string, configKey: string) => {
+    const config = rulesConfig.find((rc) => rc.type === ruleType)
+    const field = config?.configSchema.find((f) => f.key === configKey)
+    return field?.label || configKey
+  }
+
+  // Helper function to get option label for SELECT fields
+  const getOptionLabel = (
+    ruleType: string,
+    configKey: string,
+    value: string,
+  ) => {
+    const config = rulesConfig.find((rc) => rc.type === ruleType)
+    const field = config?.configSchema.find((f) => f.key === configKey)
+    if (field?.type === 'SELECT') {
+      const option = field.options?.find((o) => o.value === value)
+      return option?.label || value
+    }
+    return value
+  }
+
+  const showConfetti = () => {
+    // Fire confetti on mount
+    const duration = 3000
+    const end = Date.now() + duration
+
+    const frame = () => {
+      confetti({
+        particleCount: 3,
+        angle: 60,
+        spread: 55,
+        origin: { x: 0, y: 0.7 },
+        colors: ['#f59e0b', '#fbbf24', '#fcd34d'],
+      })
+      confetti({
+        particleCount: 3,
+        angle: 120,
+        spread: 55,
+        origin: { x: 1, y: 0.7 },
+        colors: ['#f59e0b', '#fbbf24', '#fcd34d'],
+      })
+
+      if (Date.now() < end) {
+        requestAnimationFrame(frame)
+      }
+    }
+
+    frame()
+  }
 
   const handleSearch = () => {
     startTransition(() => {
@@ -243,14 +307,14 @@ export default function GiveawaysMain({
       onCompleted: (data) => {
         setWinner(data.setGiveawayWinnerByIndex.winner)
         setIsDrawing(false)
-        setShowConfetti(true)
+        showConfetti()
 
         toast.success(
           `${data.setGiveawayWinnerByIndex.winner.name} ganhou o prêmio ${data.setGiveawayWinnerByIndex.name}!`,
         )
 
         setTimeout(() => {
-          setShowConfetti(false)
+          // setShowConfetti(false)
           setCurrentPrizeId(null)
         }, 5000)
 
@@ -450,6 +514,23 @@ export default function GiveawaysMain({
                         <div className="absolute left-0 top-0 h-full w-1.5 bg-gradient-to-b from-primary to-primary/50"></div>
 
                         <CardHeader className="pb-2">
+                          {/* Giveaway Image */}
+                          {prize.imageUrl ? (
+                            <div className="relative mb-4 aspect-video w-full overflow-hidden rounded-lg sm:max-w-40">
+                              <Image
+                                src={prize.imageUrl}
+                                alt={prize.name}
+                                fill
+                                className="object-contain"
+                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                              />
+                            </div>
+                          ) : (
+                            <div className="relative mb-4 flex aspect-video w-full items-center justify-center overflow-hidden rounded-lg bg-muted">
+                              <Gift className="size-16 text-muted-foreground" />
+                            </div>
+                          )}
+
                           <div className="flex items-start justify-between">
                             <div className="flex-1">
                               <CardTitle className="text-xl font-bold">
@@ -495,6 +576,60 @@ export default function GiveawaysMain({
                             </span>
                           </div>
 
+                          {prize.rules && prize.rules.length > 0 && (
+                            <div className="mb-4">
+                              <h4 className="mb-2 text-sm font-semibold text-foreground">
+                                Regras de Participação
+                              </h4>
+                              <div className="space-y-2">
+                                {prize.rules.map((rule, i) => (
+                                  <div
+                                    key={i}
+                                    className="rounded-lg border bg-muted/50 p-3"
+                                  >
+                                    <div className="mb-2 flex items-center gap-2">
+                                      <Badge
+                                        variant="secondary"
+                                        className="text-xs font-medium"
+                                      >
+                                        {getRuleLabel(rule.type)}
+                                      </Badge>
+                                    </div>
+                                    {rule.config &&
+                                      Object.keys(rule.config).length > 0 && (
+                                        <div className="mt-2 space-y-1.5">
+                                          {Object.entries(rule.config).map(
+                                            ([key, value]) => (
+                                              <div
+                                                key={key}
+                                                className="flex flex-col gap-1 text-xs"
+                                              >
+                                                <span className="font-medium text-muted-foreground">
+                                                  {getConfigFieldLabel(
+                                                    rule.type,
+                                                    key,
+                                                  )}
+                                                </span>
+                                                <span className="text-foreground">
+                                                  {typeof value === 'object'
+                                                    ? JSON.stringify(value)
+                                                    : getOptionLabel(
+                                                        rule.type,
+                                                        key,
+                                                        String(value),
+                                                      )}
+                                                </span>
+                                              </div>
+                                            ),
+                                          )}
+                                        </div>
+                                      )}
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
                           {currentPrizeId === prize.id && isDrawing && (
                             <div className="mt-4 rounded-lg border border-primary/20 bg-primary/5 p-6">
                               <div className="flex items-center justify-center">
@@ -531,32 +666,30 @@ export default function GiveawaysMain({
                             </div>
                           )}
 
-                          {currentPrizeId === prize.id &&
-                            !isDrawing &&
-                            showConfetti && (
-                              <div className="mt-4 rounded-lg border border-green-200 bg-green-50 p-6 dark:border-green-900 dark:bg-green-900/20">
-                                <div className="text-center">
-                                  <div className="mb-3 inline-block rounded-full bg-yellow-100 p-3">
-                                    <Trophy className="size-8 text-yellow-600" />
-                                  </div>
-                                  <div className="mb-2 text-xl font-bold">
-                                    Ganhador!
-                                  </div>
-                                  {prize.winner && (
-                                    <Button
-                                      variant="link"
-                                      className="h-4 p-0"
-                                      onClick={() => {
-                                        setSelectedUserId(prize.winner?.id)
-                                        setOpenDialog('userDetails', true)
-                                      }}
-                                    >
-                                      {prize.winner.name}
-                                    </Button>
-                                  )}
+                          {currentPrizeId === prize.id && !isDrawing && (
+                            <div className="mt-4 rounded-lg border border-green-200 bg-green-50 p-6 dark:border-green-900 dark:bg-green-900/20">
+                              <div className="text-center">
+                                <div className="mb-3 inline-block rounded-full bg-yellow-100 p-3">
+                                  <Trophy className="size-8 text-yellow-600" />
                                 </div>
+                                <div className="mb-2 text-xl font-bold">
+                                  Ganhador!
+                                </div>
+                                {prize.winner && (
+                                  <Button
+                                    variant="link"
+                                    className="h-4 p-0"
+                                    onClick={() => {
+                                      setSelectedUserId(prize.winner?.id)
+                                      setOpenDialog('userDetails', true)
+                                    }}
+                                  >
+                                    {prize.winner.name}
+                                  </Button>
+                                )}
                               </div>
-                            )}
+                            </div>
+                          )}
 
                           {prize.winner && currentPrizeId !== prize.id && (
                             <div className="mt-4 rounded-lg border border-green-200 bg-green-50 p-4 dark:border-green-900 dark:bg-green-900/20">
@@ -938,7 +1071,7 @@ export default function GiveawaysMain({
         </Dialog>
       )}
 
-      {showConfetti && <ConfettiEffect />}
+      {/* {showConfetti && <ConfettiEffect />} */}
     </div>
   )
 }

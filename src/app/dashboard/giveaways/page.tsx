@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client'
 import GiveawaysMain from './main'
 import { getClient } from '@/lib/apollo'
-import { type Giveaway } from '@/types'
+import { type GiveawayRuleConfig, type Giveaway } from '@/types'
 import { type User } from 'next-auth'
 import { getCurrentUserToken } from '@/app/_actions/user'
 import { notFound } from 'next/navigation'
@@ -26,6 +26,7 @@ const GET_GIVEAWAYS = gql`
         description
         drawAt
         status
+        imageUrl
         participantsCount
         winnerId
         winner {
@@ -33,6 +34,10 @@ const GET_GIVEAWAYS = gql`
           name
           email
           image
+        }
+        rules {
+          type
+          config
         }
       }
     }
@@ -44,6 +49,19 @@ const GET_GIVEAWAYS = gql`
         email
         image
         role
+      }
+    }
+    giveawayRulesConfig {
+      type
+      label
+      configSchema {
+        key
+        label
+        type
+        options {
+          value
+          label
+        }
       }
     }
   }
@@ -100,6 +118,7 @@ export default async function GiveawaysPage({
         role: 'USER' | 'MOD' | 'ADMIN'
       }[]
     }
+    giveawayRulesConfig?: GiveawayRuleConfig[]
   }>({
     query: GET_GIVEAWAYS,
     variables: {
@@ -129,6 +148,9 @@ export default async function GiveawaysPage({
   }
 
   const usersPageCount = Math.ceil(data.users.count / USERS_PER_PAGE)
+  const rulesConfigData = data.giveawayRulesConfig || []
+
+  console.log(data)
 
   return (
     <main>
@@ -141,6 +163,7 @@ export default async function GiveawaysPage({
         subscribersToShow={data.users.list}
         subscribersPageCount={usersPageCount}
         subscribersPage={Number(subscribersPage ?? '1')}
+        rulesConfigData={rulesConfigData}
       />
     </main>
   )

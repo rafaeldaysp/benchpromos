@@ -1,93 +1,220 @@
 'use client'
 
-import * as React from 'react'
+import { useState } from 'react'
 import { gql, useMutation } from '@apollo/client'
-
-import { Category } from '@/components/awards/category'
-import {
-  type AwardsCategory,
-  type AwardsCategoryOption,
-  type Product,
-  type AwardsCategoryOptionVote,
-} from '@/types'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
+import { VotingProgress } from '@/components/awards-v2/voting-progress'
+import { CategoryVoting } from '@/components/awards-v2/category-voting'
+import { VotingSummary } from '@/components/awards-v2/voting-summary'
+import { VotingSuccess } from '@/components/awards-v2/voting-success'
+import { VotingHeader } from '@/components/awards-v2/voting-header'
+import {
+  type Awards,
+  type AwardsCategory,
+  type AwardsCategoryOption,
+  type AwardsCategoryOptionVote,
+  type Product,
+} from '@/types'
 import { LoginPopup } from '@/components/login-popup'
 
-const TOGGLE_VOTE = gql`
-  mutation ToggleAwardsVote($awardsCategoryOptionId: ID!) {
-    toggleAwardsCategoryOptionVote(
-      awardsCategoryOptionId: $awardsCategoryOptionId
-    ) {
-      awardsCategoryOptionId
+const VOTE_ON_AWARDS_CATEGORIES = gql`
+  mutation VoteOnAwardsCategories($votes: [VoteOnAwardsCategoryInput!]!) {
+    voteOnAwardsCategories(votes: $votes) {
+      votes {
+        id
+        userId
+        awardsCategoryOptionId
+      }
     }
   }
 `
 
-type EnhancedAwardsCategory = AwardsCategory & {
-  options: (AwardsCategoryOption & {
-    product: Product
-    votes: AwardsCategoryOptionVote[]
+export type Vote = {
+  categoryId: string
+  optionId: string
+}
+
+type EnhancedAwards = Awards & {
+  categories: (AwardsCategory & {
+    options: (AwardsCategoryOption & {
+      product: Product
+      _count: { votes: number }
+    })[]
   })[]
 }
 
-interface AwardsMainProps {
-  awardsCategories: EnhancedAwardsCategory[]
-  userId?: string
+interface BenchAwardsProps {
+  awards: EnhancedAwards
+  myVotes: (AwardsCategoryOptionVote & {
+    awardsCategoryOption: AwardsCategoryOption
+  })[]
   token?: string
 }
 
-export function AwardsMain({
-  awardsCategories,
-  userId,
-  token,
-}: AwardsMainProps) {
+export function BenchAwards({ awards, myVotes, token }: BenchAwardsProps) {
   const router = useRouter()
-  const [openLoginPopup, setOpenLoginPopup] = React.useState(false)
 
-  const [toggleVote, { loading: isVoting }] = useMutation(TOGGLE_VOTE, {
-    onCompleted: () => {
-      router.refresh()
-    },
-    onError: (error) => {
-      toast.error(error.message)
-    },
-    context: {
-      headers: {
-        Authorization: `Bearer ${token}`,
+  // Initialize votes from existing user votes
+  const initialVotes: Vote[] = awards.categories
+    .map((category) => {
+      const userVote = category.options?.find((option) =>
+        myVotes.some((vote) => option.id === vote.awardsCategoryOptionId),
+      )
+      return userVote
+        ? { categoryId: category.id, optionId: userVote.id }
+        : null
+    })
+    .filter((vote): vote is Vote => vote !== null)
+
+  const [currentStep, setCurrentStep] = useState(0)
+  const [votes, setVotes] = useState<Vote[]>(initialVotes)
+  const [isSubmitted, setIsSubmitted] = useState(myVotes.length > 0)
+  const [openLoginPopup, setOpenLoginPopup] = useState(false)
+
+  const [submitVotes, { loading: isSubmitting }] = useMutation(
+    VOTE_ON_AWARDS_CATEGORIES,
+    {
+      onError(error) {
+        toast.error(error.message)
       },
+      onCompleted() {
+        setIsSubmitted(true)
+        toast.success('Votos enviados com sucesso!')
+        router.refresh()
+      },
+      context: {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+      refetchQueries: ['GetMyAwardsVotes'],
     },
-    refetchQueries: ['GetPublicAwardsCategories'],
-  })
+  )
 
-  function handleToggleVote(optionId: string) {
-    if (!userId) {
+  const totalCategories = awards.categories.length
+  const isLastCategory = currentStep === totalCategories - 1
+  const isSummaryStep = currentStep === totalCategories
+  const currentCategory = awards.categories[currentStep]
+
+  const handleVote = (categoryId: string, optionId: string) => {
+    // Check if user is logged in
+    if (!token) {
       setOpenLoginPopup(true)
       return
     }
 
-    toggleVote({ variables: { awardsCategoryOptionId: optionId } })
+    // Update local state only - no API call yet
+    setVotes((prev) => {
+      const existingVoteIndex = prev.findIndex(
+        (v) => v.categoryId === categoryId,
+      )
+      if (existingVoteIndex >= 0) {
+        const newVotes = [...prev]
+        newVotes[existingVoteIndex] = { categoryId, optionId }
+        return newVotes
+      }
+      return [...prev, { categoryId, optionId }]
+    })
   }
 
-  const getWinner = (category: EnhancedAwardsCategory) => {
-    const winningOption = category.options.reduce((prev, current) =>
-      prev.votes.length > current.votes.length ? prev : current,
-    )
-    return winningOption.votes.length > 0 ? winningOption : null
+  const getCurrentVote = (categoryId: string) => {
+    return votes.find((v) => v.categoryId === categoryId)?.optionId
   }
+
+  const handleNext = () => {
+    if (currentStep < totalCategories) {
+      setCurrentStep((prev) => prev + 1)
+    }
+  }
+
+  const handleBack = () => {
+    if (currentStep > 0) {
+      setCurrentStep((prev) => prev - 1)
+    }
+  }
+
+  const handleSubmit = async () => {
+    if (!token) {
+      toast.error('Você precisa estar logado para enviar seus votos')
+      return
+    }
+
+    if (votes.length === 0) {
+      toast.error('Você precisa votar em pelo menos uma categoria')
+      return
+    }
+
+    // Submit all votes at once
+    await submitVotes({
+      variables: {
+        votes: votes.map((vote) => ({
+          awardsCategoryOptionId: vote.optionId,
+        })),
+      },
+    })
+  }
+
+  const handleRestart = () => {
+    setCurrentStep(0)
+    setIsSubmitted(false)
+  }
+
+  // Check if awards is active
+  if (!awards.isActive) {
+    return (
+      <div className="flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold">Votação Encerrada</h1>
+          <p className="text-muted-foreground">
+            A votação para os prêmios de {awards.year} foi encerrada.
+          </p>
+        </div>
+      </div>
+    )
+  }
+
+  if (isSubmitted) {
+    return (
+      <VotingSuccess awards={awards} votes={votes} onRestart={handleRestart} />
+    )
+  }
+
   return (
-    <div className="space-y-8">
-      <LoginPopup open={openLoginPopup} setOpen={setOpenLoginPopup} />
-      {awardsCategories.map((category) => (
-        <Category
-          key={category.id}
-          category={category}
-          onVote={handleToggleVote}
-          currentUserId={userId}
-          getWinner={getWinner}
-          isVoting={isVoting}
+    <main className="space-y-8">
+      {openLoginPopup && (
+        <LoginPopup open={openLoginPopup} setOpen={setOpenLoginPopup} />
+      )}
+
+      <VotingHeader year={awards.year} />
+      <div className="relative mx-auto space-y-8 sm:container">
+        <VotingProgress
+          currentStep={currentStep}
+          totalSteps={totalCategories}
+          categories={awards.categories}
+          votes={votes}
         />
-      ))}
-    </div>
+
+        {isSummaryStep ? (
+          <VotingSummary
+            awards={awards}
+            votes={votes}
+            onBack={handleBack}
+            onSubmit={handleSubmit}
+            isSubmitting={isSubmitting}
+          />
+        ) : (
+          <CategoryVoting
+            category={currentCategory}
+            selectedOptionId={getCurrentVote(currentCategory.id)}
+            onVote={(optionId) => handleVote(currentCategory.id, optionId)}
+            onNext={handleNext}
+            onBack={handleBack}
+            isFirstCategory={currentStep === 0}
+            isLastCategory={isLastCategory}
+          />
+        )}
+      </div>
+    </main>
   )
 }

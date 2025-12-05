@@ -61,7 +61,14 @@ export type Giveaway = {
   name: string
   description: string
   drawAt: string
+  imageUrl?: string
   status: 'CLOSED' | 'OPEN' | 'COMPLETED'
+  rules: {
+    type: string
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    config: Record<string, any>
+  }[]
+  participantsCount: number
   winnerId?: string
 }
 
@@ -188,16 +195,33 @@ export type headerOption = {
   icon?: React.ComponentType<{ className?: string }>
 }
 
+export type Awards = {
+  id: string
+  year: number
+  isActive: boolean
+  showResults: boolean
+  createdAt: string
+  updatedAt: string
+}
+
 export type AwardsCategory = {
   id: string
   title: string
+  shortTitle?: string
   expiredAt: string
   description?: string
+  icon?: string
+  awardsId?: string
+  createdAt: string
+  updatedAt: string
 }
 
 export type AwardsCategoryOption = {
   id: string
   title?: string
+  brand?: string
+  subtitle?: string
+  badge?: string
 
   productId: string
   awardsCategoryId: string
@@ -211,4 +235,24 @@ export type AwardsCategoryOptionVote = {
   id: string
   userId: string
   awardsCategoryOptionId: string
+}
+
+type ConfigFieldType = 'SELECT' | 'TEXT' | 'NUMBER'
+
+type ConfigOption = {
+  value: string
+  label: string
+}
+
+type ConfigField = {
+  key: string
+  label: string
+  type: ConfigFieldType
+  options?: ConfigOption[]
+}
+
+export type GiveawayRuleConfig = {
+  type: string
+  label: string
+  configSchema: ConfigField[]
 }

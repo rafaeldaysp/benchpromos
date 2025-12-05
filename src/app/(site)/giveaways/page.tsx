@@ -2,7 +2,7 @@ import { gql } from '@apollo/client'
 import GiveawaysMain from './main'
 import { getClient } from '@/lib/apollo'
 import { type User } from 'next-auth'
-import { type Giveaway } from '@/types'
+import { type Giveaway, type GiveawayRuleConfig } from '@/types'
 import { getCurrentUser, getCurrentUserToken } from '@/app/_actions/user'
 
 const GIVEAWAYS_PER_PAGE = 12
@@ -20,8 +20,12 @@ const GET_PUBLIC_GIVEAWAYS = gql`
         name
         description
         drawAt
+        imageUrl
         status
-
+        rules {
+          type
+          config
+        }
         participantsCount
         winnerId
         winner {
@@ -32,6 +36,19 @@ const GET_PUBLIC_GIVEAWAYS = gql`
         }
       }
       userSubscribedIds
+    }
+    giveawayRulesConfig {
+      type
+      label
+      configSchema {
+        key
+        label
+        type
+        options {
+          value
+          label
+        }
+      }
     }
   }
 `
@@ -65,6 +82,7 @@ export default async function GiveawaysPage({
       })[]
       userSubscribedIds?: string[]
     }
+    giveawayRulesConfig?: GiveawayRuleConfig[]
   }>({
     query: GET_PUBLIC_GIVEAWAYS,
     variables: {
@@ -82,6 +100,7 @@ export default async function GiveawaysPage({
   const userSubscribedIds = data?.giveaways.userSubscribedIds || []
   const giveaways = data?.giveaways.list || []
   const statusCounts = data?.giveaways.statusCounts
+  const rulesConfigData = data?.giveawayRulesConfig || []
   const pageCount = Math.ceil(
     (data.giveaways.statusCounts.find((count) => count.status === status)
       ?.count || 0) / GIVEAWAYS_PER_PAGE,
@@ -101,6 +120,7 @@ export default async function GiveawaysPage({
       statusCounts={statusCounts}
       page={currentPage}
       pageCount={pageCount}
+      rulesConfigData={rulesConfigData}
     />
   )
 }

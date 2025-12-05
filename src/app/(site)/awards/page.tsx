@@ -1,37 +1,46 @@
 import { getClient } from '@/lib/apollo'
 import {
+  type Awards,
   type AwardsCategory,
   type AwardsCategoryOption,
-  type Product,
   type AwardsCategoryOptionVote,
+  type Product,
 } from '@/types'
 import { gql } from '@apollo/client'
-import { AwardsMain } from './main'
-import { getCurrentUser, getCurrentUserToken } from '@/app/_actions/user'
+import { BenchAwards } from './main'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
+import { getCurrentUserToken } from '@/app/_actions/user'
 
-const GET_AWARDS_CATEGORIES = gql`
-  query GetPublicAwardsCategories {
-    awardsCategories {
+const GET_AWARDS_2025 = gql`
+  query GetAwards2025($year: Int) {
+    allAwards(year: $year) {
       id
-      title
-      expiredAt
-      description
-      options {
+      year
+      isActive
+      showResults
+      categories {
         id
         title
-        product {
+        shortTitle
+        icon
+        expiredAt
+        description
+        options {
           id
-          imageUrl
-          name
-        }
-        _count {
-          votes
-        }
-        votes {
-          id
-          userId
-          user {
+          title
+          brand
+          subtitle
+          badge
+          awardsCategoryId
+          productId
+          product {
             id
+            name
+            imageUrl
+          }
+          _count {
+            votes
           }
         }
       }
@@ -39,31 +48,67 @@ const GET_AWARDS_CATEGORIES = gql`
   }
 `
 
-export default async function AwardsPage() {
+const GET_MY_VOTES = gql`
+  query GetMyAwardsVotes($year: Int) {
+    myAwardsVotes(year: $year) {
+      id
+      userId
+      awardsCategoryOptionId
+      awardsCategoryOption {
+        awardsCategoryId
+      }
+    }
+  }
+`
+
+export default async function Awards2025Page() {
+  const token = await getCurrentUserToken()
+
   const { data } = await getClient().query<{
-    awardsCategories: (AwardsCategory & {
-      options: (AwardsCategoryOption & {
-        product: Product
-        votes: AwardsCategoryOptionVote[]
+    allAwards: (Awards & {
+      categories: (AwardsCategory & {
+        options: (AwardsCategoryOption & {
+          product: Product
+          _count: { votes: number }
+        })[]
       })[]
     })[]
   }>({
-    query: GET_AWARDS_CATEGORIES,
+    query: GET_AWARDS_2025,
+    variables: { year: 2025 },
   })
-  const awardsCategories = data?.awardsCategories || []
-  const user = await getCurrentUser()
-  const token = await getCurrentUserToken()
 
-  return (
-    <div className="my-10 px-4 sm:container">
-      <h1 className="mb-8 text-center text-3xl font-bold uppercase tracking-widest">
-        Bench Awards 2024
-      </h1>
-      <AwardsMain
-        awardsCategories={awardsCategories}
-        userId={user?.id}
-        token={token}
-      />
-    </div>
-  )
+  const { data: myVotesData } = await getClient().query<{
+    myAwardsVotes: (AwardsCategoryOptionVote & {
+      awardsCategoryOption: AwardsCategoryOption
+    })[]
+  }>({
+    query: GET_MY_VOTES,
+    variables: { year: 2025 },
+    context: {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+    errorPolicy: 'ignore',
+  })
+
+  // Find the 2025 awards
+  const awards2025 = data?.allAwards.find((award) => award.year === 2025)
+  const myVotes = myVotesData?.myAwardsVotes || []
+
+  if (!awards2025) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold">Prêmios 2025 não encontrados</h1>
+          <p className="text-muted-foreground">
+            Os prêmios de 2025 ainda não estão disponíveis.
+          </p>
+        </div>
+      </div>
+    )
+  }
+
+  return <BenchAwards awards={awards2025} myVotes={myVotes} token={token} />
 }
