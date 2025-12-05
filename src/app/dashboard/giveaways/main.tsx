@@ -526,7 +526,7 @@ export default function GiveawaysMain({
                               />
                             </div>
                           ) : (
-                            <div className="relative mb-4 flex aspect-video w-full items-center justify-center overflow-hidden rounded-lg bg-muted">
+                            <div className="relative mb-4 flex aspect-video w-full items-center justify-center overflow-hidden rounded-lg bg-muted sm:max-w-40">
                               <Gift className="size-16 text-muted-foreground" />
                             </div>
                           )}
