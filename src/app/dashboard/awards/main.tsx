@@ -331,190 +331,182 @@ export function AwardsDashboardMain() {
                   </div>
 
                   {awards.categories.length > 0 ? (
-                    <ScrollArea
-                      className={cn('rounded-md border', {
-                        'h-[600px]': awards.categories.length > 4,
-                      })}
-                    >
-                      <div className="space-y-4 p-4">
-                        {awards.categories.map((category) => {
-                          const totalVotes = category.options.reduce(
-                            (sum, option) => sum + (option._count?.votes || 0),
-                            0,
-                          )
+                    <div className="space-y-4">
+                      {awards.categories.map((category) => {
+                        const totalVotes = category.options.reduce(
+                          (sum, option) => sum + (option._count?.votes || 0),
+                          0,
+                        )
 
-                          return (
-                            <div
-                              key={category.id}
-                              className="space-y-3 rounded-lg border p-4"
-                            >
-                              <div className="flex items-start justify-between">
-                                <div className="space-y-1">
-                                  <div className="flex items-center gap-2">
-                                    {category.icon && (
-                                      <span className="text-lg">
-                                        {category.icon}
-                                      </span>
-                                    )}
-                                    <p className="text-sm font-semibold">
-                                      {category.title}
-                                    </p>
-                                  </div>
-                                  {category.shortTitle && (
-                                    <p className="text-xs text-muted-foreground">
-                                      {category.shortTitle}
-                                    </p>
+                        return (
+                          <div
+                            key={category.id}
+                            className="space-y-3 rounded-lg border p-4"
+                          >
+                            <div className="flex items-start justify-between">
+                              <div className="space-y-1">
+                                <div className="flex items-center gap-2">
+                                  {category.icon && (
+                                    <span className="text-lg">
+                                      {category.icon}
+                                    </span>
                                   )}
-                                  <p className="text-xs text-muted-foreground">
-                                    Total de votos: {totalVotes}
+                                  <p className="text-sm font-semibold">
+                                    {category.title}
                                   </p>
                                 </div>
-
-                                <div className="flex gap-2">
-                                  <Sheet
-                                    open={
-                                      openDialogs[
-                                        `awardsCategoryUpdateForm.${category.id}`
-                                      ]
-                                    }
-                                    onOpenChange={(open) =>
-                                      setOpenDialog(
-                                        `awardsCategoryUpdateForm.${category.id}`,
-                                        open,
-                                      )
-                                    }
-                                  >
-                                    <SheetTrigger asChild>
-                                      <Button variant="ghost" size="icon">
-                                        <Icons.Edit className="size-4" />
-                                      </Button>
-                                    </SheetTrigger>
-                                    <SheetContent
-                                      className="w-full space-y-4 overflow-auto sm:max-w-xl"
-                                      side="left"
-                                    >
-                                      <SheetHeader>
-                                        <SheetTitle>
-                                          EDITAR CATEGORIA
-                                        </SheetTitle>
-                                      </SheetHeader>
-                                      <AwardsCategoryForm
-                                        mode="update"
-                                        awardsCategory={
-                                          category as AwardsCategory & {
-                                            options: (AwardsCategoryOption & {
-                                              product: Product
-                                            })[]
-                                          }
-                                        }
-                                        awardsId={awards.id}
-                                      />
-                                    </SheetContent>
-                                  </Sheet>
-
-                                  <AlertDialog>
-                                    <AlertDialogTrigger asChild>
-                                      <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        className="text-destructive hover:text-destructive"
-                                      >
-                                        <Icons.Trash className="size-4" />
-                                      </Button>
-                                    </AlertDialogTrigger>
-                                    <AlertDialogContent>
-                                      <AlertDialogHeader>
-                                        <AlertDialogTitle>
-                                          Você tem certeza?
-                                        </AlertDialogTitle>
-                                        <AlertDialogDescription>
-                                          Essa ação não pode ser desfeita.
-                                        </AlertDialogDescription>
-                                      </AlertDialogHeader>
-                                      <AlertDialogFooter>
-                                        <AlertDialogCancel>
-                                          Cancelar
-                                        </AlertDialogCancel>
-                                        <AlertDialogAction
-                                          onClick={() =>
-                                            deleteAwardsCategory({
-                                              variables: { id: category.id },
-                                            })
-                                          }
-                                        >
-                                          Continuar
-                                        </AlertDialogAction>
-                                      </AlertDialogFooter>
-                                    </AlertDialogContent>
-                                  </AlertDialog>
-                                </div>
+                                {category.shortTitle && (
+                                  <p className="text-xs text-muted-foreground">
+                                    {category.shortTitle}
+                                  </p>
+                                )}
+                                <p className="text-xs text-muted-foreground">
+                                  Total de votos: {totalVotes}
+                                </p>
                               </div>
 
-                              {category.options.length > 0 && (
-                                <div className="space-y-2 pt-2">
-                                  {Array.from(category.options)
-                                    .sort(
-                                      (a, b) =>
-                                        (b._count?.votes || 0) -
-                                        (a._count?.votes || 0),
+                              <div className="flex gap-2">
+                                <Sheet
+                                  open={
+                                    openDialogs[
+                                      `awardsCategoryUpdateForm.${category.id}`
+                                    ]
+                                  }
+                                  onOpenChange={(open) =>
+                                    setOpenDialog(
+                                      `awardsCategoryUpdateForm.${category.id}`,
+                                      open,
                                     )
-                                    .map((option) => {
-                                      const votes = option._count?.votes || 0
-                                      const percentage =
-                                        totalVotes > 0
-                                          ? (votes / totalVotes) * 100
-                                          : 0
+                                  }
+                                >
+                                  <SheetTrigger asChild>
+                                    <Button variant="ghost" size="icon">
+                                      <Icons.Edit className="size-4" />
+                                    </Button>
+                                  </SheetTrigger>
+                                  <SheetContent
+                                    className="w-full space-y-4 overflow-auto sm:max-w-xl"
+                                    side="left"
+                                  >
+                                    <SheetHeader>
+                                      <SheetTitle>EDITAR CATEGORIA</SheetTitle>
+                                    </SheetHeader>
+                                    <AwardsCategoryForm
+                                      mode="update"
+                                      awardsCategory={
+                                        category as AwardsCategory & {
+                                          options: (AwardsCategoryOption & {
+                                            product: Product
+                                          })[]
+                                        }
+                                      }
+                                      awardsId={awards.id}
+                                    />
+                                  </SheetContent>
+                                </Sheet>
 
-                                      return (
-                                        <div
-                                          key={option.id}
-                                          className="space-y-1"
-                                        >
-                                          <div className="flex items-center justify-between text-xs">
-                                            <span className="font-medium">
-                                              {option.brand && (
-                                                <span className="text-muted-foreground">
-                                                  {option.brand}{' '}
-                                                </span>
-                                              )}
-                                              {option.title ||
-                                                option.product.name}
-                                              {option.badge && (
-                                                <Badge
-                                                  variant="secondary"
-                                                  className="ml-2 text-[10px]"
-                                                >
-                                                  {option.badge}
-                                                </Badge>
-                                              )}
-                                            </span>
-                                            <span className="font-semibold">
-                                              {percentage.toFixed(1)}% ({votes})
-                                            </span>
-                                          </div>
-                                          <div className="h-2 w-full overflow-hidden rounded-full bg-secondary">
-                                            <div
-                                              className="h-full bg-primary transition-all duration-300"
-                                              style={{
-                                                width: `${percentage}%`,
-                                              }}
-                                            />
-                                          </div>
-                                          {option.subtitle && (
-                                            <p className="text-[10px] text-muted-foreground">
-                                              {option.subtitle}
-                                            </p>
-                                          )}
-                                        </div>
-                                      )
-                                    })}
-                                </div>
-                              )}
+                                <AlertDialog>
+                                  <AlertDialogTrigger asChild>
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      className="text-destructive hover:text-destructive"
+                                    >
+                                      <Icons.Trash className="size-4" />
+                                    </Button>
+                                  </AlertDialogTrigger>
+                                  <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                      <AlertDialogTitle>
+                                        Você tem certeza?
+                                      </AlertDialogTitle>
+                                      <AlertDialogDescription>
+                                        Essa ação não pode ser desfeita.
+                                      </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                      <AlertDialogCancel>
+                                        Cancelar
+                                      </AlertDialogCancel>
+                                      <AlertDialogAction
+                                        onClick={() =>
+                                          deleteAwardsCategory({
+                                            variables: { id: category.id },
+                                          })
+                                        }
+                                      >
+                                        Continuar
+                                      </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                  </AlertDialogContent>
+                                </AlertDialog>
+                              </div>
                             </div>
-                          )
-                        })}
-                      </div>
-                    </ScrollArea>
+
+                            {category.options.length > 0 && (
+                              <div className="space-y-2 pt-2">
+                                {Array.from(category.options)
+                                  .sort(
+                                    (a, b) =>
+                                      (b._count?.votes || 0) -
+                                      (a._count?.votes || 0),
+                                  )
+                                  .map((option) => {
+                                    const votes = option._count?.votes || 0
+                                    const percentage =
+                                      totalVotes > 0
+                                        ? (votes / totalVotes) * 100
+                                        : 0
+
+                                    return (
+                                      <div
+                                        key={option.id}
+                                        className="space-y-1"
+                                      >
+                                        <div className="flex items-center justify-between text-xs">
+                                          <span className="font-medium">
+                                            {option.brand && (
+                                              <span className="text-muted-foreground">
+                                                {option.brand}{' '}
+                                              </span>
+                                            )}
+                                            {option.title ||
+                                              option.product.name}
+                                            {option.badge && (
+                                              <Badge
+                                                variant="secondary"
+                                                className="ml-2 text-[10px]"
+                                              >
+                                                {option.badge}
+                                              </Badge>
+                                            )}
+                                          </span>
+                                          <span className="font-semibold">
+                                            {percentage.toFixed(1)}% ({votes})
+                                          </span>
+                                        </div>
+                                        <div className="h-2 w-full overflow-hidden rounded-full bg-secondary">
+                                          <div
+                                            className="h-full bg-primary transition-all duration-300"
+                                            style={{
+                                              width: `${percentage}%`,
+                                            }}
+                                          />
+                                        </div>
+                                        {option.subtitle && (
+                                          <p className="text-[10px] text-muted-foreground">
+                                            {option.subtitle}
+                                          </p>
+                                        )}
+                                      </div>
+                                    )
+                                  })}
+                              </div>
+                            )}
+                          </div>
+                        )
+                      })}
+                    </div>
                   ) : (
                     <div className="flex justify-center py-8">
                       <p className="text-sm text-muted-foreground">
