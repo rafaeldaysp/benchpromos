@@ -2,6 +2,7 @@
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
 import type { Vote } from '@/app/(site)/awards/main'
 import type {
   Awards,
@@ -9,15 +10,21 @@ import type {
   AwardsCategoryOption,
   Product,
 } from '@/types'
-import { ArrowLeft, Check, Send, Trophy } from 'lucide-react'
+import { ArrowLeft, Send, Trophy, CheckCircle2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { motion } from 'framer-motion'
+import Image from 'next/image'
+
+type EnhancedOption = AwardsCategoryOption & {
+  product: Product
+}
+
+type EnhancedCategory = AwardsCategory & {
+  options: EnhancedOption[]
+}
 
 type EnhancedAwards = Awards & {
-  categories: (AwardsCategory & {
-    options: (AwardsCategoryOption & {
-      product: Product
-    })[]
-  })[]
+  categories: EnhancedCategory[]
 }
 
 interface VotingSummaryProps {
@@ -26,6 +33,97 @@ interface VotingSummaryProps {
   onBack: () => void
   onSubmit: () => void
   isSubmitting?: boolean
+}
+
+function SummaryVoteCard({
+  category,
+  option,
+  index,
+}: {
+  category: EnhancedCategory
+  option: EnhancedOption | null
+  index: number
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.05 }}
+    >
+      <Card
+        className={cn(
+          'overflow-hidden transition-all',
+          option
+            ? 'border-primary/20 bg-gradient-to-br from-primary/5 via-card to-transparent'
+            : 'border-dashed bg-muted/30',
+        )}
+      >
+        <CardContent className="p-4">
+          <div className="flex items-center gap-4">
+            {/* Category Icon */}
+            <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-primary/10 text-2xl">
+              {category.icon}
+            </div>
+
+            {option ? (
+              <>
+                {/* Product Image */}
+                <div className="relative h-20 w-28 shrink-0 overflow-hidden rounded-lg border border-border bg-muted">
+                  <Image
+                    src={option.product.imageUrl || '/placeholder.svg'}
+                    alt={option.product.name}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+
+                {/* Vote Info */}
+                <div className="min-w-0 flex-1">
+                  <div className="mb-1 flex items-center gap-2">
+                    <p className="text-xs font-medium text-muted-foreground">
+                      {category.title}
+                    </p>
+                    <Badge
+                      variant="outline"
+                      className="gap-1 border-primary text-xs text-primary"
+                    >
+                      <CheckCircle2 className="size-3" />
+                      Seu voto
+                    </Badge>
+                  </div>
+                  <h4 className="truncate font-semibold">
+                    {option.title || option.product.name}
+                  </h4>
+                  <p className="text-xs text-muted-foreground">
+                    {option.brand || option.product.name.split(' ')[0]}
+                  </p>
+                  {option.subtitle && (
+                    <p className="mt-1 truncate text-xs text-muted-foreground">
+                      {option.subtitle}
+                    </p>
+                  )}
+                </div>
+
+                {/* Check Icon */}
+                <div className="shrink-0">
+                  <div className="flex size-10 items-center justify-center rounded-full bg-primary/10">
+                    <CheckCircle2 className="size-5 text-primary" />
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div className="min-w-0 flex-1">
+                <p className="text-sm text-muted-foreground">
+                  {category.title}
+                </p>
+                <p className="italic text-muted-foreground">Nenhum voto</p>
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+    </motion.div>
+  )
 }
 
 export function VotingSummary({
@@ -61,59 +159,17 @@ export function VotingSummary({
         </p>
       </div>
 
-      <div className="mb-8 grid gap-4">
-        {awards.categories.map((category) => {
+      <div className="mb-8 space-y-3">
+        {awards.categories.map((category, index) => {
           const votedOption = getVotedOption(category.id)
 
           return (
-            <Card
+            <SummaryVoteCard
               key={category.id}
-              className={cn(
-                'transition-all',
-                votedOption ? 'bg-muted/50' : 'border-dashed bg-muted/30',
-              )}
-            >
-              <CardContent className="p-4">
-                <div className="flex items-center gap-4">
-                  <div className="flex size-12 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-2xl">
-                    {category.icon}
-                  </div>
-
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm text-muted-foreground">
-                      {category.title}
-                    </p>
-                    {votedOption ? (
-                      <div className="flex items-center gap-3">
-                        <p className="truncate font-semibold">
-                          {votedOption.brand}{' '}
-                          {votedOption.title || votedOption.product.name}
-                        </p>
-                      </div>
-                    ) : (
-                      <p className="italic text-muted-foreground">
-                        No vote selected
-                      </p>
-                    )}
-                  </div>
-
-                  <div
-                    className={cn(
-                      'flex size-8 shrink-0 items-center justify-center rounded-full',
-                      votedOption
-                        ? 'bg-primary text-primary-foreground'
-                        : 'bg-muted text-muted-foreground',
-                    )}
-                  >
-                    {votedOption ? (
-                      <Check className="size-4" />
-                    ) : (
-                      <span className="text-xs">—</span>
-                    )}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+              category={category}
+              option={votedOption || null}
+              index={index}
+            />
           )
         })}
       </div>

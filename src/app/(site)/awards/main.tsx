@@ -9,6 +9,8 @@ import { CategoryVoting } from '@/components/awards-v2/category-voting'
 import { VotingSummary } from '@/components/awards-v2/voting-summary'
 import { VotingSuccess } from '@/components/awards-v2/voting-success'
 import { VotingHeader } from '@/components/awards-v2/voting-header'
+import { VotingResults } from '@/components/awards-v2/voting-results'
+import { VotingClosed } from '@/components/awards-v2/voting-closed'
 import {
   type Awards,
   type AwardsCategory,
@@ -160,18 +162,14 @@ export function BenchAwards({ awards, myVotes, token }: BenchAwardsProps) {
     setIsSubmitted(false)
   }
 
+  // Show results if showResults is true
+  if (awards.showResults) {
+    return <VotingResults awards={awards} votes={votes} />
+  }
+
   // Check if awards is active
   if (!awards.isActive) {
-    return (
-      <div className="flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold">Votação Encerrada</h1>
-          <p className="text-muted-foreground">
-            A votação para os prêmios de {awards.year} foi encerrada.
-          </p>
-        </div>
-      </div>
-    )
+    return <VotingClosed awards={awards} votes={votes} />
   }
 
   if (isSubmitted) {

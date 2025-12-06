@@ -126,7 +126,7 @@ export function AwardsCategoryForm({
 
         setOpenDialog(
           mode === 'create'
-            ? 'awardsCategoryCreateForm'
+            ? `awardsCategoryCreateForm.${awardsId}`
             : `awardsCategoryUpdateForm.${awardsCategory?.id}`,
           false,
         )
