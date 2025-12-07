@@ -114,7 +114,7 @@ function WinnerCard({
               >
                 <Badge className="bg-gradient-to-r from-yellow-500 to-amber-500 font-bold text-black shadow-lg">
                   <Trophy className="mr-1 size-3" />
-                  WINNER
+                  VENCEDOR
                 </Badge>
               </motion.div>
             </div>
@@ -131,7 +131,7 @@ function WinnerCard({
                     className="gap-1 border-primary text-xs text-primary"
                   >
                     <CheckCircle2 className="size-3" />
-                    Your vote
+                    Seu voto
                   </Badge>
                 )}
               </div>
