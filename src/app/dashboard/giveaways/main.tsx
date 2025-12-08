@@ -8,6 +8,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Gift,
+  Pencil,
   Plus,
   RefreshCw,
   Search,
@@ -772,6 +773,20 @@ export default function GiveawaysMain({
                                   'Sortear'
                                 )}
                               </Button>
+                              {prize.winner ? null : (
+                                <Button
+                                  variant="outline"
+                                  size="icon"
+                                  onClick={() =>
+                                    setOpenDialog(
+                                      `giveawayUpdateForm.${prize.id}`,
+                                      true,
+                                    )
+                                  }
+                                >
+                                  <Pencil className="size-4" />
+                                </Button>
+                              )}
                               <AlertDialog>
                                 <AlertDialogTrigger asChild>
                                   <Button variant={'destructive'}>
@@ -1070,6 +1085,39 @@ export default function GiveawaysMain({
           </DialogContent>
         </Dialog>
       )}
+
+      {/* Update Giveaway Dialogs */}
+      {giveaways.map((prize) => (
+        <Dialog
+          key={`update-dialog-${prize.id}`}
+          open={openDialogs[`giveawayUpdateForm.${prize.id}`]}
+          onOpenChange={(open) =>
+            setOpenDialog(`giveawayUpdateForm.${prize.id}`, open)
+          }
+        >
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Editar sorteio</DialogTitle>
+              <DialogDescription>
+                Atualize as informações do sorteio. Você pode editar o nome,
+                descrição, data, status e regras.
+              </DialogDescription>
+            </DialogHeader>
+            <GiveawayForm
+              mode="update"
+              giveaway={{
+                id: prize.id,
+                name: prize.name,
+                description: prize.description,
+                drawAt: parseISO(prize.drawAt),
+                status: prize.status as 'OPEN' | 'CLOSED',
+                rules: prize.rules,
+                imageUrl: prize.imageUrl,
+              }}
+            />
+          </DialogContent>
+        </Dialog>
+      ))}
 
       {/* {showConfetti && <ConfettiEffect />} */}
     </div>
