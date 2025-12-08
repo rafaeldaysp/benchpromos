@@ -51,14 +51,14 @@ function UserVoteCard({
     >
       <Card className="overflow-hidden border-primary/20 bg-gradient-to-br from-primary/5 via-card to-transparent">
         <CardContent className="p-4">
-          <div className="flex items-center gap-4">
+          <div className="flex flex-col items-center gap-4 md:flex-row md:items-center">
             {/* Category Icon */}
             <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-primary/10 text-2xl">
               {category.icon}
             </div>
 
             {/* Product Image */}
-            <div className="relative h-20 w-28 shrink-0 overflow-hidden rounded-lg border border-border bg-muted">
+            <div className="relative h-32 w-48 shrink-0 overflow-hidden rounded-lg border border-border bg-muted md:h-20 md:w-28">
               <Image
                 src={option.product.imageUrl || '/placeholder.svg'}
                 alt={option.product.name}
@@ -68,8 +68,8 @@ function UserVoteCard({
             </div>
 
             {/* Vote Info */}
-            <div className="min-w-0 flex-1">
-              <div className="mb-1 flex items-center gap-2">
+            <div className="min-w-0 flex-1 text-center md:text-left">
+              <div className="mb-1 flex items-center justify-center gap-2 md:justify-start">
                 <p className="text-xs font-medium text-muted-foreground">
                   {category.title}
                 </p>
@@ -186,10 +186,10 @@ export function VotingSuccess({
           <div className="mb-6 inline-flex size-24 items-center justify-center rounded-full bg-auxiliary/20">
             <PartyPopper className="size-12 text-auxiliary" />
           </div>
-          <h1 className="mb-4 text-4xl font-bold tracking-tight">
+          <h1 className="mb-4 text-xl font-bold tracking-tight sm:text-4xl">
             Obrigado por Votar!
           </h1>
-          <p className="text-xl text-muted-foreground">
+          <p className="text-muted-foreground sm:text-xl">
             Seus votos foram computados com sucesso para o Bench Awards{' '}
             {awards.year}
           </p>
