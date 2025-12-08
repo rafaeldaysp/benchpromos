@@ -72,7 +72,7 @@ export function LaptopCard({ option, isSelected, onSelect }: LaptopCardProps) {
         </div>
 
         {option.subtitle && (
-          <p className="mb-3 line-clamp-2 text-sm text-muted-foreground">
+          <p className="mb-3 line-clamp-3 text-sm text-muted-foreground">
             {option.subtitle}
           </p>
         )}

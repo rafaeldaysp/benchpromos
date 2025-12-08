@@ -68,7 +68,7 @@ function SummaryVoteCard({
             {option ? (
               <>
                 {/* Product Image */}
-                <div className="relative h-20 w-28 shrink-0 overflow-hidden rounded-lg border border-border bg-muted">
+                <div className="relative h-20 w-28 shrink-0 overflow-hidden rounded-lg">
                   <Image
                     src={option.product.imageUrl || '/placeholder.svg'}
                     alt={option.product.name}
@@ -144,7 +144,7 @@ export function VotingSummary({
   }
 
   return (
-    <div className="duration-500 animate-in fade-in slide-in-from-right-4">
+    <div className="pb-4 duration-500 animate-in fade-in slide-in-from-right-4">
       <div className="mb-8 text-center">
         <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-auxiliary/10 px-4 py-1.5 text-sm font-medium text-auxiliary">
           <Trophy className="size-4" />
@@ -185,8 +185,12 @@ export function VotingSummary({
       </div>
 
       {/* Navigation */}
-      <div className="flex items-center justify-between border-t border-border pt-4">
-        <Button variant="ghost" onClick={onBack} className="gap-2">
+      <div className="flex flex-col-reverse items-center justify-between gap-y-2 border-t border-border pt-4 sm:flex-row">
+        <Button
+          variant="ghost"
+          onClick={onBack}
+          className="gap-2 max-sm:w-full"
+        >
           <ArrowLeft className="size-4" />
           Voltar para a votação
         </Button>
@@ -195,7 +199,7 @@ export function VotingSummary({
           onClick={onSubmit}
           disabled={!allVotesComplete || isSubmitting}
           size="lg"
-          className="gap-2"
+          className="gap-2 max-sm:w-full"
         >
           {isSubmitting ? (
             <>

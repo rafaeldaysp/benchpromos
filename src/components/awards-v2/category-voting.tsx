@@ -65,12 +65,12 @@ export function CategoryVoting({
       </div>
 
       {/* Navigation */}
-      <div className="flex items-center justify-between border-t border-border pt-4">
+      <div className="flex flex-col-reverse items-center justify-between gap-y-2 border-t border-border pt-4 sm:flex-row">
         <Button
           variant="ghost"
           onClick={onBack}
           disabled={isFirstCategory}
-          className="gap-2"
+          className="gap-2 max-sm:w-full"
         >
           <ArrowLeft className="size-4" />
           Anterior
@@ -90,7 +90,7 @@ export function CategoryVoting({
         <Button
           onClick={onNext}
           disabled={!hasVoted || isVoting}
-          className="gap-2"
+          className="gap-2 max-sm:w-full"
         >
           {isLastCategory ? 'Revisar Votos' : 'Próxima Categoria'}
           <ArrowRight className="size-4" />
