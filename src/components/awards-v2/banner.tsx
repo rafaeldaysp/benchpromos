@@ -51,7 +51,7 @@ export function BenchAwardsBanner({
             </div>
             <h3 className="text-lg font-bold text-white">Bench Awards 2025</h3>
             <p className="max-w-md text-sm text-zinc-400">
-              Vote nos melhores notebooks do ano e ajude a eleger os campeoes de
+              Vote nos melhores notebooks do ano e ajude a eleger os campeões de
               cada categoria!
             </p>
           </div>
