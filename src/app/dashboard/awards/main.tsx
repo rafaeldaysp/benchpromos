@@ -1,6 +1,7 @@
 'use client'
 
 import { gql, useMutation, useQuery } from '@apollo/client'
+import { useState } from 'react'
 
 import { DashboardItemCard } from '@/components/dashboard-item-card'
 import { AwardsCategoryForm } from '@/components/forms/create-awards.form'
@@ -108,6 +109,12 @@ interface AwardsDashboardMainProps {
 export function AwardsDashboardMain() {
   const { openDialogs, setOpenDialog } = useFormStore()
   const router = useRouter()
+  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(
+    new Set(),
+  )
+  const [refetchingCategory, setRefetchingCategory] = useState<string | null>(
+    null,
+  )
 
   const { data, loading, refetch } = useQuery<{
     allAwards: (Awards & {
@@ -134,6 +141,31 @@ export function AwardsDashboardMain() {
       toast.success('Dados atualizados com sucesso.')
     } catch (error) {
       toast.error('Erro ao atualizar dados.')
+    }
+  }
+
+  const handleToggleCategoryResults = async (categoryId: string) => {
+    const isExpanded = expandedCategories.has(categoryId)
+
+    if (isExpanded) {
+      // Just collapse
+      setExpandedCategories((prev) => {
+        const newSet = new Set(prev)
+        newSet.delete(categoryId)
+        return newSet
+      })
+    } else {
+      // Expand and refetch
+      setRefetchingCategory(categoryId)
+      try {
+        await refetch()
+        setExpandedCategories((prev) => new Set(prev).add(categoryId))
+        toast.success('Dados atualizados com sucesso.')
+      } catch (error) {
+        toast.error('Erro ao atualizar dados.')
+      } finally {
+        setRefetchingCategory(null)
+      }
     }
   }
 
@@ -338,6 +370,9 @@ export function AwardsDashboardMain() {
                           0,
                         )
 
+                        const isExpanded = expandedCategories.has(category.id)
+                        const isRefetching = refetchingCategory === category.id
+
                         return (
                           <div
                             key={category.id}
@@ -366,6 +401,28 @@ export function AwardsDashboardMain() {
                               </div>
 
                               <div className="flex gap-2">
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() =>
+                                    handleToggleCategoryResults(category.id)
+                                  }
+                                  disabled={isRefetching}
+                                  title={
+                                    isExpanded
+                                      ? 'Ocultar resultados'
+                                      : 'Mostrar resultados'
+                                  }
+                                >
+                                  {isRefetching ? (
+                                    <Icons.Spinner className="size-4 animate-spin" />
+                                  ) : isExpanded ? (
+                                    <Icons.EyeOff className="size-4" />
+                                  ) : (
+                                    <Icons.Eye className="size-4" />
+                                  )}
+                                </Button>
+
                                 <Sheet
                                   open={
                                     openDialogs[
@@ -443,7 +500,7 @@ export function AwardsDashboardMain() {
                               </div>
                             </div>
 
-                            {category.options.length > 0 && (
+                            {isExpanded && category.options.length > 0 && (
                               <div className="space-y-2 pt-2">
                                 {Array.from(category.options)
                                   .sort(

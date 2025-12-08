@@ -88,7 +88,10 @@ export function CategoryVoting({
         </div>
 
         <Button
-          onClick={onNext}
+          onClick={() => {
+            onNext()
+            scrollTo({ top: 0, behavior: 'smooth' })
+          }}
           disabled={!hasVoted || isVoting}
           className="gap-2 max-sm:w-full"
         >
