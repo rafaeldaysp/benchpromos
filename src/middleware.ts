@@ -16,17 +16,6 @@ export default withAuth(
       return null
     }
 
-    // before releasing user dashboard, we restrict access to /user to admins only
-    if (req.nextUrl.pathname.startsWith('/awards')) {
-      const isAdmin = token?.role === 'ADMIN'
-
-      if (!isAdmin) {
-        return NextResponse.redirect(new URL('/', req.url))
-      }
-
-      return null
-    }
-
     if (req.nextUrl.pathname.startsWith('/user')) {
       if (!token?.email)
         return NextResponse.redirect(new URL('/sign-in', req.url))
@@ -56,11 +45,5 @@ export default withAuth(
 )
 
 export const config = {
-  matcher: [
-    '/dashboard/:path*',
-    '/sign-up',
-    '/sign-in',
-    '/user/:path*',
-    '/awards',
-  ],
+  matcher: ['/dashboard/:path*', '/sign-up', '/sign-in', '/user/:path*'],
 }

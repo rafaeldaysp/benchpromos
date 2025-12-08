@@ -228,7 +228,7 @@ export function VotingSuccess({
         </motion.div>
 
         {/* Action Buttons */}
-        <motion.div
+        {/* <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.6 }}
@@ -238,7 +238,7 @@ export function VotingSuccess({
             <RotateCcw className="size-4" />
             Votar Novamente (ADMIN)
           </Button>
-        </motion.div>
+        </motion.div> */}
       </div>
     </div>
   )
