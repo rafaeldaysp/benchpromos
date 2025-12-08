@@ -66,16 +66,16 @@ export function headerOptions({ categories }: HeaderOptionsProps) {
       slug: 'benchmarks',
       icon: Icons.BarChart4,
     },
-    {
-      title: 'Recomendações',
-      slug: 'recomendacoes',
-      icon: Icons.StarFilled,
-    },
     // {
-    //   title: 'Awards',
-    //   slug: 'awards',
-    //   icon: Icons.Award,
+    //   title: 'Recomendações',
+    //   slug: 'recomendacoes',
+    //   icon: Icons.StarFilled,
     // },
+    {
+      title: 'Awards',
+      slug: 'awards',
+      icon: Icons.Award,
+    },
     {
       title: 'Sorteios',
       slug: 'sorteios',
