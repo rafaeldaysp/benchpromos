@@ -35,7 +35,7 @@ export function CategoryVoting({
   const hasVoted = !!selectedOptionId
 
   return (
-    <div className="duration-500 animate-in fade-in slide-in-from-right-4">
+    <div className="pb-4 duration-500 animate-in fade-in slide-in-from-right-4">
       {/* Category header */}
       <div className="mb-8 text-center">
         <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-auxiliary/10 px-4 py-1.5 text-sm font-medium text-auxiliary">
@@ -53,7 +53,7 @@ export function CategoryVoting({
       </div>
 
       {/* Laptop options */}
-      <div className="mb-8 grid gap-4 md:grid-cols-3">
+      <div className="mb-12 grid gap-4 md:grid-cols-3">
         {category.options?.map((option) => (
           <LaptopCard
             key={option.id}

@@ -6,7 +6,7 @@ interface VotingHeaderProps {
 
 export function VotingHeader({ year }: VotingHeaderProps) {
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-card/50 backdrop-blur-sm">
+    <header className="sticky top-[58px] z-50 border-b border-border bg-card/50 backdrop-blur-sm">
       <div className="mx-auto flex h-16 items-center justify-between px-4 sm:container">
         <div className="flex items-center gap-3">
           <div className="flex size-10 items-center justify-center rounded-lg bg-primary">

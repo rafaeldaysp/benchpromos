@@ -185,7 +185,7 @@ export function BenchAwards({ awards, myVotes, token }: BenchAwardsProps) {
       )}
 
       <VotingHeader year={awards.year} />
-      <div className="relative mx-auto space-y-8 sm:container">
+      <div className="relative mx-auto space-y-8 px-4 sm:container">
         <VotingProgress
           currentStep={currentStep}
           totalSteps={totalCategories}
