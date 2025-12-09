@@ -378,7 +378,7 @@ export function AwardsDashboardMain() {
                             key={category.id}
                             className="space-y-3 rounded-lg border p-4"
                           >
-                            <div className="flex items-start justify-between">
+                            <div className="flex w-full flex-col-reverse items-start justify-between gap-y-2 sm:flex-row">
                               <div className="space-y-1">
                                 <div className="flex items-center gap-2">
                                   {category.icon && (
