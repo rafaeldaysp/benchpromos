@@ -27,8 +27,8 @@ export function BenchAwardsBanner({
       </div>
 
       {/* Sparkle decorations */}
-      <Sparkles className="absolute left-[15%] top-3 size-4 animate-pulse text-amber-400/40" />
-      <Sparkles className="absolute bottom-3 right-[20%] size-3 animate-pulse text-amber-300/30 delay-500" />
+      {/* <Sparkles className="absolute left-[15%] top-3 size-4 animate-pulse text-amber-400/40" />
+      <Sparkles className="absolute bottom-3 right-[20%] size-3 animate-pulse text-amber-300/30 delay-500" /> */}
 
       <div className="relative flex flex-col items-center justify-between gap-4 p-4 sm:flex-row sm:px-6 sm:py-3">
         {/* Left content */}
@@ -46,7 +46,7 @@ export function BenchAwardsBanner({
             <div className="flex items-center justify-center gap-2 sm:justify-start">
               <Trophy className="size-4 text-amber-400 sm:hidden" />
               <span className="text-xs font-semibold uppercase tracking-wider text-amber-400">
-                Votacao Aberta
+                Votação Aberta
               </span>
             </div>
             <h3 className="text-lg font-bold text-white">Bench Awards 2025</h3>

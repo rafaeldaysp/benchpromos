@@ -281,8 +281,8 @@ export function AwardsDashboardMain() {
                     >
                       <SheetTrigger asChild>
                         <Button variant="outline" size="sm">
-                          <Icons.Edit className="mr-2 size-4" />
-                          Editar
+                          <Icons.Edit className="size-4 sm:mr-2" />
+                          <span className="hidden sm:inline">Editar</span>
                         </Button>
                       </SheetTrigger>
                       <SheetContent
@@ -299,8 +299,8 @@ export function AwardsDashboardMain() {
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
                         <Button variant="destructive" size="sm">
-                          <Icons.Trash className="mr-2 size-4" />
-                          Deletar
+                          <Icons.Trash className="size-4 sm:mr-2" />
+                          <span className="hidden sm:inline">Deletar</span>
                         </Button>
                       </AlertDialogTrigger>
                       <AlertDialogContent>

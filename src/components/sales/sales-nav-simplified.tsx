@@ -43,7 +43,7 @@ export function SalesNavSimplified() {
 
   return (
     <div className="flex w-full flex-col justify-between gap-4 sm:flex-row">
-      <div className="flex w-full items-center gap-x-2">
+      <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-center">
         <ScrollArea className="flex-1">
           <div className="flex w-fit gap-x-2 ">
             {categories.map((category) => (
