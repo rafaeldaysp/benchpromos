@@ -269,7 +269,7 @@ export default function GiveawaysMain({
                         {/* <Badge variant="success">{giveaway.name}</Badge> */}
                       </div>
                       <CardTitle className="text-xl">{giveaway.name}</CardTitle>
-                      <CardDescription className="line-clamp-3 text-sm">
+                      <CardDescription className="text-sm">
                         {giveaway.description}
                       </CardDescription>
                     </CardHeader>
@@ -477,7 +477,7 @@ export default function GiveawaysMain({
                       <CardTitle className="text-xl text-muted-foreground">
                         {giveaway.name}
                       </CardTitle>
-                      <CardDescription className="line-clamp-3 text-sm">
+                      <CardDescription className="text-sm">
                         {giveaway.description}
                       </CardDescription>
                     </CardHeader>
