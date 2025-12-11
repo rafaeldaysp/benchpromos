@@ -464,7 +464,8 @@ const TimePeriodSelect = React.forwardRef<
 
 TimePeriodSelect.displayName = 'TimePeriodSelect'
 
-interface TimePickerInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+interface TimePickerInputProps
+  extends React.InputHTMLAttributes<HTMLInputElement> {
   picker: TimePickerType
   date?: Date | null
   onDateChange?: (date: Date | undefined) => void
