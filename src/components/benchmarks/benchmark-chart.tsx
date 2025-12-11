@@ -442,7 +442,7 @@ const RenderCustomBarLabel = ({
             'fill-primary-foreground': textPositionThreshold <= Number(value),
           },
         )}
-        textAnchor={textPositionThreshold > Number(value) ? 'right' : 'end'}
+        textAnchor={textPositionThreshold > Number(value) ? 'start' : 'end'}
       >
         {value}
       </text>
@@ -469,7 +469,7 @@ const RenderCustomBarLabel = ({
                 : Number(value) < selected[0].result,
             },
           )}
-          textAnchor="right"
+          textAnchor="end"
         >
           {
             <>

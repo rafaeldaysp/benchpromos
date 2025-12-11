@@ -1,5 +1,7 @@
 import { Separator } from '@/components/ui/separator'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { AwardsDashboardMain } from './main'
+import { AwardsRevealMain } from './reveal-main'
 
 export default async function AwardsDashboardPage() {
   return (
@@ -11,7 +13,20 @@ export default async function AwardsDashboardPage() {
         </p>
       </div>
       <Separator />
-      <AwardsDashboardMain />
+      <Tabs defaultValue="manage" className="space-y-4">
+        <TabsList className="grid w-full max-w-md grid-cols-2">
+          <TabsTrigger value="manage">Gerenciar</TabsTrigger>
+          <TabsTrigger value="reveal">Revelar</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="manage">
+          <AwardsDashboardMain />
+        </TabsContent>
+
+        <TabsContent value="reveal">
+          <AwardsRevealMain />
+        </TabsContent>
+      </Tabs>
     </div>
   )
 }

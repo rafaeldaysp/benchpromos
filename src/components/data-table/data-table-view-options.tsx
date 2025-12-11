@@ -1,6 +1,6 @@
 'use client'
 
-import { type Table } from '@tanstack/react-table'
+import { type ColumnMeta, type Table } from '@tanstack/react-table'
 import { SlidersHorizontal } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
@@ -44,6 +44,7 @@ export function DataTableViewOptions<TData>({
                 checked={column.getIsVisible()}
                 onCheckedChange={(value) => column.toggleVisibility(!!value)}
               >
+                {/* @ts-expect-error ... */}
                 {column.columnDef.meta?.header}
               </DropdownMenuCheckboxItem>
             )
