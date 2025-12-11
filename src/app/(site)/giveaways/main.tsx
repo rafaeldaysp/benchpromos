@@ -13,7 +13,7 @@ import {
   CheckCircle,
   XCircle,
 } from 'lucide-react'
-import { differenceInDays, format } from 'date-fns'
+import { differenceInDays, endOfDay, format } from 'date-fns'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -226,7 +226,7 @@ export default function GiveawaysMain({
             {activeGiveaways.map((giveaway, index) => {
               const subscribed = userSubscribedIds.includes(giveaway.id)
               const daysUntil = differenceInDays(
-                new Date(giveaway.drawAt),
+                endOfDay(new Date(giveaway.drawAt)),
                 new Date(),
               )
 
