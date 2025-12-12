@@ -15,6 +15,7 @@ import confetti from 'canvas-confetti'
 import { useEffect } from 'react'
 import { motion } from 'framer-motion'
 import Image from 'next/image'
+import { GiveawayBanner } from './giveaway-banner'
 
 type EnhancedOption = AwardsCategoryOption & {
   product: Product
@@ -69,26 +70,26 @@ function UserVoteCard({
 
             {/* Vote Info */}
             <div className="min-w-0 flex-1 text-center md:text-left">
-              <div className="mb-1 flex items-center justify-center gap-2 md:justify-start">
-                <p className="text-xs font-medium text-muted-foreground">
+              <div className="mb-1 flex flex-wrap items-center justify-center gap-2 md:justify-start">
+                <p className="break-words text-xs font-medium text-muted-foreground">
                   {category.title}
                 </p>
                 <Badge
                   variant="outline"
-                  className="gap-1 border-primary text-xs text-primary"
+                  className="shrink-0 gap-1 border-primary text-xs text-primary"
                 >
                   <CheckCircle2 className="size-3" />
                   Seu voto
                 </Badge>
               </div>
-              <h4 className="truncate font-semibold">
+              <h4 className="break-words font-semibold leading-tight">
                 {option.title || option.product.name}
               </h4>
-              <p className="text-xs text-muted-foreground">
+              <p className="break-words text-xs text-muted-foreground">
                 {option.brand || option.product.name.split(' ')[0]}
               </p>
               {option.subtitle && (
-                <p className="mt-1 truncate text-xs text-muted-foreground">
+                <p className="mt-1 break-words text-xs leading-relaxed text-muted-foreground">
                   {option.subtitle}
                 </p>
               )}
@@ -157,7 +158,7 @@ export function VotingSuccess({
     <div className="flex flex-col">
       {/* Header */}
       <header className="border-b border-border bg-card/50 backdrop-blur-sm">
-        <div className="mx-auto px-4 sm:container">
+        <div className="">
           <div className="flex h-16 items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="flex size-10 items-center justify-center rounded-lg bg-primary">
@@ -176,7 +177,17 @@ export function VotingSuccess({
         </div>
       </header>
 
-      <div className="mx-auto px-4 py-12 sm:container">
+      <div className="py-8">
+        {/* Giveaway Banner */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="mb-8"
+        >
+          <GiveawayBanner hasVoted={true} />
+        </motion.div>
+
         {/* Success Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}

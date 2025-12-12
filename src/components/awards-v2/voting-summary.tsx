@@ -61,7 +61,7 @@ function SummaryVoteCard({
         <CardContent className="p-4">
           <div className="flex items-center gap-4">
             {/* Category Icon */}
-            <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-primary/10 text-2xl">
+            <div className="hidden size-12 shrink-0 items-center justify-center rounded-full bg-primary/10 text-2xl sm:flex">
               {category.icon}
             </div>
 
@@ -85,7 +85,7 @@ function SummaryVoteCard({
                     </p>
                     <Badge
                       variant="outline"
-                      className="gap-1 border-primary text-xs text-primary"
+                      className="hidden gap-1 border-primary text-xs text-primary sm:inline-flex"
                     >
                       <CheckCircle2 className="size-3" />
                       Seu voto
@@ -106,7 +106,7 @@ function SummaryVoteCard({
 
                 {/* Check Icon */}
                 <div className="shrink-0">
-                  <div className="flex size-10 items-center justify-center rounded-full bg-primary/10">
+                  <div className="hidden size-10 items-center justify-center rounded-full bg-primary/10 sm:flex">
                     <CheckCircle2 className="size-5 text-primary" />
                   </div>
                 </div>

@@ -11,6 +11,7 @@ import { VotingSuccess } from '@/components/awards-v2/voting-success'
 import { VotingHeader } from '@/components/awards-v2/voting-header'
 import { VotingResults } from '@/components/awards-v2/voting-results'
 import { VotingClosed } from '@/components/awards-v2/voting-closed'
+import { GiveawayBanner } from '@/components/awards-v2/giveaway-banner'
 import {
   type Awards,
   type AwardsCategory,
@@ -174,7 +175,13 @@ export function BenchAwards({ awards, myVotes, token }: BenchAwardsProps) {
 
   if (isSubmitted) {
     return (
-      <VotingSuccess awards={awards} votes={votes} onRestart={handleRestart} />
+      <div className="mx-auto space-y-8 px-4 sm:container">
+        <VotingSuccess
+          awards={awards}
+          votes={votes}
+          onRestart={handleRestart}
+        />
+      </div>
     )
   }
 
@@ -186,6 +193,8 @@ export function BenchAwards({ awards, myVotes, token }: BenchAwardsProps) {
 
       <VotingHeader year={awards.year} />
       <div className="relative mx-auto space-y-8 px-4 sm:container">
+        <GiveawayBanner hasVoted={false} />
+
         <VotingProgress
           currentStep={currentStep}
           totalSteps={totalCategories}
