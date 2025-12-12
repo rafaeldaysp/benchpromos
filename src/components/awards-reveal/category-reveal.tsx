@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Fireworks } from '@/components/fireworks'
 import { Trophy, Medal, Award } from 'lucide-react'
 import Image from 'next/image'
@@ -22,6 +22,7 @@ type EnhancedCategory = AwardsCategory & {
 
 interface CategoryRevealProps {
   category: EnhancedCategory
+  awardsId: string
   onRevealComplete: () => void
 }
 
@@ -32,12 +33,36 @@ interface OptionWithResults extends EnhancedOption {
 
 export function CategoryReveal({
   category,
+  awardsId,
   onRevealComplete,
 }: CategoryRevealProps) {
   const [showFireworks, setShowFireworks] = useState(false)
   const [revealedPositions, setRevealedPositions] = useState<number[]>([])
   const [countdown, setCountdown] = useState<number | null>(null)
   const [isRevealing, setIsRevealing] = useState(false)
+  const lastRevealedRef = useRef<HTMLDivElement>(null)
+
+  const storageKey = `awards-reveal-${awardsId}-${category.id}`
+
+  // Load revealedPositions from localStorage on mount
+  useEffect(() => {
+    const savedPositions = localStorage.getItem(storageKey)
+    if (savedPositions) {
+      try {
+        const positions = JSON.parse(savedPositions)
+        setRevealedPositions(positions)
+      } catch (error) {
+        console.error('Failed to parse saved positions:', error)
+      }
+    }
+  }, [storageKey])
+
+  // Save revealedPositions to localStorage whenever it changes
+  useEffect(() => {
+    if (revealedPositions.length > 0) {
+      localStorage.setItem(storageKey, JSON.stringify(revealedPositions))
+    }
+  }, [revealedPositions, storageKey])
 
   // Calculate total votes and percentages
   const totalVotes = category.options.reduce(
@@ -76,11 +101,11 @@ export function CategoryReveal({
       setShowFireworks(true)
     } else {
       // Other positions - subtle confetti
-      const particleCount = position === 2 ? 30 : 20
+      const particleCount = position * 300
       confetti({
         particleCount,
         spread: 60,
-        origin: { y: 0.6 },
+        origin: { y: 0.6 + position * 0.08 },
         colors: ['#f59e0b', '#fbbf24', '#fcd34d'],
       })
     }
@@ -91,16 +116,39 @@ export function CategoryReveal({
     setCountdown(3)
 
     setTimeout(() => {
-      setRevealedPositions((prev) => [...prev, position])
+      setRevealedPositions((prev) => {
+        const newRevealed = [...prev, position]
+        // Check if all revealed
+        if (newRevealed.length === optionsWithResults.length) {
+          setTimeout(() => {
+            onRevealComplete()
+          }, 5000)
+        }
+        return newRevealed
+      })
       triggerConfetti(position)
 
-      // Check if all revealed
-      if (position === 1) {
-        setTimeout(() => {
-          onRevealComplete()
-        }, 5000)
-      }
+      // Scroll to the newly revealed item
+      setTimeout(() => {
+        lastRevealedRef.current?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center',
+        })
+      }, 100)
     }, 3000)
+  }
+
+  const handlePreviousPosition = () => {
+    setRevealedPositions((prev) => {
+      const newRevealed = prev.slice(0, -1)
+      // Update localStorage
+      if (newRevealed.length > 0) {
+        localStorage.setItem(storageKey, JSON.stringify(newRevealed))
+      } else {
+        localStorage.removeItem(storageKey)
+      }
+      return newRevealed
+    })
   }
 
   const getPositionIcon = (position: number) => {
@@ -118,7 +166,7 @@ export function CategoryReveal({
 
   const getNextPositionToReveal = () => {
     const totalOptions = optionsWithResults.length
-    for (let i = totalOptions; i >= 1; i--) {
+    for (let i = 1; i <= totalOptions; i++) {
       if (!revealedPositions.includes(i)) {
         return i
       }
@@ -127,10 +175,10 @@ export function CategoryReveal({
   }
 
   const nextPosition = getNextPositionToReveal()
-  const allRevealed = revealedPositions.includes(1)
+  const allRevealed = revealedPositions.length === optionsWithResults.length
 
   return (
-    <div className="relative min-h-[600px]">
+    <div className="relative flex-1">
       {/* Fireworks */}
       {showFireworks && (
         <Fireworks duration={4000} onComplete={() => setShowFireworks(false)} />
@@ -149,9 +197,11 @@ export function CategoryReveal({
       )}
 
       {/* Category Header */}
-      <div className="mb-8 text-center">
-        <div className="mb-2 text-4xl">{category.icon || '🏆'}</div>
-        <h2 className="text-3xl font-bold">{category.title}</h2>
+      <div className="mb-8 flex justify-center">
+        <span className="flex items-center gap-2">
+          <div className="mb-4 text-4xl">{category.icon || '🏆'}</div>
+          <h2 className="mb-2 text-3xl font-bold">{category.title}</h2>
+        </span>
         {category.description && (
           <p className="mt-2 text-muted-foreground">{category.description}</p>
         )}
@@ -160,6 +210,15 @@ export function CategoryReveal({
       {/* Control Buttons */}
       {!allRevealed && !isRevealing && nextPosition && (
         <div className="mb-8 flex justify-center gap-4">
+          {revealedPositions.length > 0 && (
+            <Button
+              onClick={handlePreviousPosition}
+              size="lg"
+              variant="outline"
+            >
+              Reset
+            </Button>
+          )}
           <Button
             onClick={() => handleRevealPosition(nextPosition)}
             size="lg"
@@ -187,13 +246,16 @@ export function CategoryReveal({
         {optionsWithResults.map((option) => {
           const isRevealed = revealedPositions.includes(option.position)
           const isWinner = option.position === 1
+          const isLastRevealed =
+            option.position === revealedPositions[revealedPositions.length - 1]
 
           if (!isRevealed) return null
 
           return (
             <div
               key={option.id}
-              className="duration-1000 animate-in fade-in slide-in-from-bottom-4"
+              ref={isLastRevealed ? lastRevealedRef : null}
+              className="px-4 duration-1000 animate-in fade-in slide-in-from-bottom-4"
             >
               {isWinner ? (
                 // Winner - Large Featured Card

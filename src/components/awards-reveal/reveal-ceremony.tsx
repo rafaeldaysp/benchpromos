@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { CategoryReveal } from './category-reveal'
 import { Trophy, Sparkles } from 'lucide-react'
@@ -51,6 +51,37 @@ export function RevealCeremony({ allAwards }: RevealCeremonyProps) {
   const currentCategory =
     currentCategoryIndex >= 0 ? categories[currentCategoryIndex] : null
 
+  // Load state from localStorage on mount
+  useEffect(() => {
+    if (!selectedAwardsId) return
+
+    const storageKey = `awards-reveal-${selectedAwardsId}`
+    const savedState = localStorage.getItem(storageKey)
+
+    if (savedState) {
+      try {
+        const { categoryIndex, phase } = JSON.parse(savedState)
+        setCurrentCategoryIndex(categoryIndex)
+        setRevealPhase(phase)
+      } catch (error) {
+        console.error('Failed to parse saved reveal state:', error)
+      }
+    }
+  }, [selectedAwardsId])
+
+  // Save state to localStorage whenever it changes
+  useEffect(() => {
+    if (!selectedAwardsId) return
+
+    const storageKey = `awards-reveal-${selectedAwardsId}`
+    const stateToSave = {
+      categoryIndex: currentCategoryIndex,
+      phase: revealPhase,
+    }
+
+    localStorage.setItem(storageKey, JSON.stringify(stateToSave))
+  }, [selectedAwardsId, currentCategoryIndex, revealPhase])
+
   const handleStartReveal = () => {
     if (categories.length > 0) {
       setCurrentCategoryIndex(0)
@@ -60,8 +91,28 @@ export function RevealCeremony({ allAwards }: RevealCeremonyProps) {
 
   const handleNextCategory = () => {
     if (currentCategoryIndex < categories.length - 1) {
-      setCurrentCategoryIndex(currentCategoryIndex + 1)
-      setRevealPhase('intro')
+      const nextIndex = currentCategoryIndex + 1
+      const nextCategory = categories[nextIndex]
+
+      // Check if next category has revealed positions in localStorage
+      const storageKey = `awards-reveal-${selectedAwardsId}-${nextCategory.id}`
+      const savedPositions = localStorage.getItem(storageKey)
+
+      setCurrentCategoryIndex(nextIndex)
+
+      // Skip intro if category already has revealed positions
+      if (savedPositions && JSON.parse(savedPositions).length > 0) {
+        setRevealPhase('revealing')
+      } else {
+        setRevealPhase('intro')
+      }
+    }
+  }
+
+  const handlePreviousCategory = () => {
+    if (currentCategoryIndex > 0) {
+      setCurrentCategoryIndex(currentCategoryIndex - 1)
+      setRevealPhase('revealing')
     }
   }
 
@@ -76,9 +127,36 @@ export function RevealCeremony({ allAwards }: RevealCeremonyProps) {
   const handleReset = () => {
     setCurrentCategoryIndex(-1)
     setRevealPhase('intro')
+
+    // Clear localStorage for this awards
+    if (selectedAwardsId) {
+      const storageKey = `awards-reveal-${selectedAwardsId}`
+      localStorage.removeItem(storageKey)
+
+      // Clear all category-level storage for this awards
+      categories.forEach((category) => {
+        localStorage.removeItem(
+          `awards-reveal-${selectedAwardsId}-${category.id}`,
+        )
+      })
+    }
   }
 
   const allRevealed = currentCategoryIndex === categories.length - 1
+
+  // Check if current category has any revealed positions
+  const hasCurrentCategoryRevealed = () => {
+    if (!currentCategory) return false
+    const storageKey = `awards-reveal-${selectedAwardsId}-${currentCategory.id}`
+    const savedPositions = localStorage.getItem(storageKey)
+    if (!savedPositions) return false
+    try {
+      const positions = JSON.parse(savedPositions)
+      return positions.length > 0
+    } catch {
+      return false
+    }
+  }
 
   if (!selectedAwards) {
     return (
@@ -93,7 +171,7 @@ export function RevealCeremony({ allAwards }: RevealCeremonyProps) {
   }
 
   return (
-    <div className="relative bg-gradient-to-b from-background via-background to-background/80">
+    <div className="relative flex flex-col bg-gradient-to-b from-background via-background to-background/80">
       {/* Header */}
       <div className="px-4 py-8">
         <div className="flex items-center justify-between">
@@ -174,9 +252,9 @@ export function RevealCeremony({ allAwards }: RevealCeremonyProps) {
       </div>
 
       {/* Reveal Area */}
-      <div className="px-4 py-8">
+      <div className="flex-1 px-4 py-8">
         {currentCategoryIndex === -1 ? (
-          <div className="flex min-h-[600px] items-center justify-center">
+          <div className="flex min-h-full items-center justify-center">
             <div className="text-center">
               <div className="mx-auto mb-6 flex size-32 items-center justify-center rounded-full bg-gradient-to-br from-primary/20 to-accent/20">
                 <Trophy className="size-16 text-primary" />
@@ -196,10 +274,10 @@ export function RevealCeremony({ allAwards }: RevealCeremonyProps) {
             </div>
           </div>
         ) : currentCategory ? (
-          <>
+          <div className="flex h-full flex-col">
             {/* Category Intro Phase */}
             {revealPhase === 'intro' && (
-              <div className="flex min-h-[600px] items-center justify-center">
+              <div className="flex h-full min-h-full items-center justify-center">
                 <div className="max-w-2xl text-center">
                   <div className="mb-6 animate-bounce text-6xl">
                     {currentCategory.icon || '🏆'}
@@ -227,21 +305,30 @@ export function RevealCeremony({ allAwards }: RevealCeremonyProps) {
             {/* Show Options Phase */}
             {revealPhase === 'options' && (
               <div className="space-y-8">
-                <div className="text-center">
-                  <div className="mb-4 text-4xl">
-                    {currentCategory.icon || '🏆'}
-                  </div>
-                  <h2 className="mb-2 text-3xl font-bold">
-                    {currentCategory.title}
-                  </h2>
+                <div className="flex flex-col items-center justify-center">
+                  <span className="flex items-center gap-2">
+                    <div className="mb-4 text-4xl">
+                      {currentCategory.icon || '🏆'}
+                    </div>
+                    <h2 className="mb-2 text-3xl font-bold">
+                      {currentCategory.title}
+                    </h2>
+                  </span>
                   <p className="mb-8 text-muted-foreground">
                     Candidatos desta categoria
                   </p>
                 </div>
 
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                  {currentCategory.options.map((option) => (
-                    <Card key={option.id} className="overflow-hidden">
+                  {currentCategory.options.map((option, index) => (
+                    <Card
+                      key={option.id}
+                      className="overflow-hidden animate-in fade-in slide-in-from-bottom-4"
+                      style={{
+                        animationDelay: `${index * 150}ms`,
+                        animationFillMode: 'backwards',
+                      }}
+                    >
                       <CardHeader className="p-0 pt-2">
                         <div className="flex w-full items-center justify-center">
                           <div className="relative aspect-square w-[70%] max-w-xs">
@@ -300,6 +387,7 @@ export function RevealCeremony({ allAwards }: RevealCeremonyProps) {
             {revealPhase === 'revealing' && (
               <CategoryReveal
                 category={currentCategory}
+                awardsId={selectedAwardsId}
                 onRevealComplete={() => {
                   if (!allRevealed) {
                     // Show next button after reveal complete
@@ -307,21 +395,31 @@ export function RevealCeremony({ allAwards }: RevealCeremonyProps) {
                 }}
               />
             )}
-
-            {/* Next Category Button */}
-            {revealPhase === 'revealing' && !allRevealed && (
-              <div className="mt-8 flex justify-center">
+            {/* Category Navigation Buttons */}
+            {revealPhase === 'revealing' && (
+              <div className="mt-8 flex justify-center gap-4 pb-8">
                 <Button
-                  onClick={handleNextCategory}
+                  onClick={handlePreviousCategory}
                   size="lg"
-                  className="gap-2 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90"
+                  variant="outline"
+                  disabled={currentCategoryIndex === 0}
                 >
-                  <Sparkles className="size-5" />
-                  Revelar Próxima Categoria
+                  Categoria Anterior
                 </Button>
+                {!allRevealed && (
+                  <Button
+                    onClick={handleNextCategory}
+                    size="lg"
+                    className="gap-2 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90"
+                    // disabled={!hasCurrentCategoryRevealed()}
+                  >
+                    <Sparkles className="size-5" />
+                    Próxima Categoria
+                  </Button>
+                )}
               </div>
             )}
-          </>
+          </div>
         ) : null}
       </div>
     </div>
