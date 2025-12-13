@@ -82,8 +82,8 @@ function WinnerCard({
           </motion.div>
         </div>
 
-        <CardContent className="p-6">
-          <div className="flex flex-col items-center gap-6 md:flex-row">
+        <CardContent className="p-4 sm:p-6">
+          <div className="flex flex-col items-center gap-4 md:flex-row md:gap-6">
             {/* Winner image with crown */}
             <div className="relative shrink-0">
               <motion.div
@@ -94,7 +94,7 @@ function WinnerCard({
               >
                 <Crown className="size-8 fill-yellow-500 text-yellow-500 drop-shadow-lg" />
               </motion.div>
-              <div className="relative h-32 w-48 overflow-hidden rounded-xl border-2 border-yellow-500/30 bg-gradient-to-br from-yellow-500/5 to-amber-500/5">
+              <div className="relative h-40 w-56 overflow-hidden rounded-xl border-2 border-yellow-500/30 bg-gradient-to-br from-yellow-500/5 to-amber-500/5 md:h-32 md:w-48">
                 <Image
                   src={option.product.imageUrl || '/placeholder.svg'}
                   alt={option.product.name}
@@ -121,24 +121,24 @@ function WinnerCard({
 
             {/* Winner info */}
             <div className="flex-1 text-center md:text-left">
-              <div className="mb-1 flex items-center justify-center gap-2 md:justify-start">
-                <p className="text-sm font-medium text-muted-foreground">
+              <div className="mb-1 flex flex-wrap items-center justify-center gap-2 md:justify-start">
+                <p className="break-words text-sm font-medium text-muted-foreground">
                   {option.brand || option.product.name.split(' ')[0]}
                 </p>
                 {isUserVote && (
                   <Badge
                     variant="outline"
-                    className="gap-1 border-primary text-xs text-primary"
+                    className="shrink-0 gap-1 border-primary text-xs text-primary"
                   >
                     <CheckCircle2 className="size-3" />
                     Seu voto
                   </Badge>
                 )}
               </div>
-              <h3 className="mb-1 text-2xl font-bold">
+              <h3 className="mb-1 break-words text-xl font-bold leading-tight sm:text-2xl">
                 {option.title || option.product.name}
               </h3>
-              <p className="mb-3 text-sm text-muted-foreground">
+              <p className="mb-3 break-words text-sm leading-relaxed text-muted-foreground">
                 {option.subtitle || ''}
               </p>
               {option.badge && (
@@ -234,7 +234,7 @@ function RunnerUpCard({
         )}
       >
         <CardContent className="p-4">
-          <div className="flex items-center gap-4">
+          <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-center">
             {/* Position badge */}
             <div
               className={cn(
@@ -248,7 +248,7 @@ function RunnerUpCard({
             </div>
 
             {/* Product image */}
-            <div className="relative h-16 w-24 shrink-0 overflow-hidden rounded-lg bg-muted/50">
+            <div className="relative h-32 w-48 shrink-0 overflow-hidden rounded-lg bg-muted/50 sm:h-16 sm:w-24">
               <Image
                 src={option.product.imageUrl || '/placeholder.svg'}
                 alt={option.product.name}
@@ -258,31 +258,31 @@ function RunnerUpCard({
             </div>
 
             {/* Product info */}
-            <div className="min-w-0 flex-1">
-              <div className="flex flex-wrap items-center gap-2">
-                <p className="text-xs text-muted-foreground">
+            <div className="min-w-0 flex-1 text-center sm:text-left">
+              <div className="flex flex-wrap items-center justify-center gap-2 sm:justify-start">
+                <p className="break-words text-xs text-muted-foreground">
                   {option.brand || option.product.name.split(' ')[0]}
                 </p>
                 {isUserVote && (
                   <Badge
                     variant="outline"
-                    className="gap-1 border-primary text-xs text-primary"
+                    className="shrink-0 gap-1 border-primary text-xs text-primary"
                   >
                     <CheckCircle2 className="size-3" />
                     Seu voto
                   </Badge>
                 )}
               </div>
-              <h4 className="truncate font-semibold">
+              <h4 className="break-words font-semibold leading-tight">
                 {option.title || option.product.name}
               </h4>
-              <p className="truncate text-xs text-muted-foreground">
+              <p className="break-words text-xs leading-relaxed text-muted-foreground">
                 {option.subtitle || ''}
               </p>
             </div>
 
             {/* Percentage */}
-            <div className="shrink-0 text-right">
+            <div className="shrink-0 text-center sm:text-right">
               <p className={cn('text-2xl font-bold', colors.text)}>
                 {percentage}%
               </p>
