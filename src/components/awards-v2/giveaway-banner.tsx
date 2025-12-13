@@ -60,8 +60,9 @@ export function GiveawayBanner({ hasVoted }: GiveawayBannerProps) {
                 <Youtube className="mt-0.5 size-4 shrink-0 text-red-500" />
                 <span>
                   <strong className="text-white">Live ao vivo</strong> no dia{' '}
-                  <strong className="text-white">12/12 às 19:30h</strong> no canal{' '}
-                  <strong className="text-white">Lucas Ishii</strong> no YouTube
+                  <strong className="text-white">12/12 às 19:30h</strong> no
+                  canal <strong className="text-white">Lucas Ishii</strong> no
+                  YouTube
                 </span>
               </li>
               <li className="flex items-start gap-2">
