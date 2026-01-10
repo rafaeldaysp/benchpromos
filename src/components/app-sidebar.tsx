@@ -5,7 +5,7 @@ import Link from 'next/link'
 import * as React from 'react'
 
 import Logo from '@/assets/logo-benchpromos.svg'
-import LogoXmas from '@/assets/logo-natalina.svg'
+// import LogoXmas from '@/assets/logo-natalina.svg'
 import { NavMain } from '@/components/nav-main'
 import { NavUser } from '@/components/nav-user'
 import {
@@ -30,7 +30,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               <Link href="/">
                 <div className="relative aspect-square h-[30px] select-none">
                   <Image
-                    src={LogoXmas}
+                    src={Logo}
                     alt="Logo"
                     className="object-contain"
                     fill
