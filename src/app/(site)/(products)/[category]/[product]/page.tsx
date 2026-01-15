@@ -43,6 +43,7 @@ import { couponFormatter, priceFormatter } from '@/utils/formatter'
 import { priceCalculator } from '@/utils/price-calculator'
 import { PriceComponent } from '@/components/price-component'
 import { ProductFiles } from '@/components/files/product-files'
+import { ProductViewTracker } from '@/components/product-view-tracker'
 
 const GET_PRODUCT = gql`
   query GetProduct(
@@ -255,6 +256,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   return (
     <main className="relative mx-auto space-y-8 px-4 py-10 sm:container">
+      <ProductViewTracker productId={product.id} />
       <section className="space-y-4 md:gap-x-8 lg:grid lg:grid-cols-3 lg:space-y-0 xl:grid-cols-5">
         <div className="space-y-4 lg:col-span-2 xl:col-span-3">
           <strong className="line-clamp-4 leading-none tracking-tight md:line-clamp-3 md:text-xl">
