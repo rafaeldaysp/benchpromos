@@ -63,7 +63,7 @@ export default async function AlertsPage() {
   if (!token) notFound()
 
   const { data } = await getClient().query<{
-    productsList: {
+    productsList?: {
       products: (Product & {
         category: Pick<Category, 'slug'>
         deals: (Pick<
@@ -95,7 +95,7 @@ export default async function AlertsPage() {
     errorPolicy: 'ignore',
   })
 
-  const products = data.productsList.products
+  const products = data.productsList?.products
 
   return (
     <div className="space-y-6">
