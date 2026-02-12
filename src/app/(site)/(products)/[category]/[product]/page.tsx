@@ -623,75 +623,79 @@ export default async function ProductPage({ params }: ProductPageProps) {
           </p>
         </header>
         <Separator className="my-4" />
-        {product.pros && product.cons && product.description ? (
+        {(product.pros && product.cons) || product.description ? (
           <div className="rounded-xl border shadow md:gap-x-8">
-            <Card className="border-none shadow-none">
-              <CardHeader className="space-y-1 p-4">
-                <CardTitle>Prós e contras</CardTitle>
-                <CardDescription>
-                  Conheça os pontos positivos e negativos do produto
-                </CardDescription>
-              </CardHeader>
+            {product.pros && product.cons && (
+              <Card className="border-none shadow-none">
+                <CardHeader className="space-y-1 p-4">
+                  <CardTitle>Prós e contras</CardTitle>
+                  <CardDescription>
+                    Conheça os pontos positivos e negativos do produto
+                  </CardDescription>
+                </CardHeader>
 
-              <CardContent className="grid grid-cols-1 gap-x-8 gap-y-4 p-4 pt-0 text-sm md:grid-cols-2">
-                <Card className="border-success transition-colors hover:bg-muted/50">
-                  <CardHeader className="flex items-center p-4">
-                    <Badge variant={'success'} className="flex w-fit gap-x-1">
-                      <Icons.Check className="size-4 " />
-                      Prós
-                    </Badge>
-                  </CardHeader>
-                  <CardContent className="p-4 pt-0">
-                    <ul className="flex flex-col space-y-1 font-medium leading-tight">
-                      {product.pros.map((pros, index) => (
-                        <li key={index} className="flex gap-x-1">
-                          <Icons.Check className="size-4 text-success" />
-                          {pros.value}
-                        </li>
-                      ))}
-                    </ul>
-                  </CardContent>
-                </Card>
-                <Card className="border-destructive transition-colors hover:bg-muted/50">
-                  <CardHeader className="flex items-center p-4">
-                    <Badge
-                      variant={'destructive'}
-                      className="flex w-fit gap-x-1"
-                    >
-                      <Icons.X className="size-4 " />
-                      Contras
-                    </Badge>
-                  </CardHeader>
-                  <CardContent className="p-4 pt-0">
-                    <ul className="flex flex-col space-y-1 font-medium leading-tight">
-                      {product.cons.map((con, index) => (
-                        <li key={index} className="flex items-center gap-x-1">
-                          <Icons.X className="size-4 text-destructive" />
-                          {con.value}
-                        </li>
-                      ))}
-                    </ul>
-                  </CardContent>
-                </Card>
-              </CardContent>
-            </Card>
-            <Card className="border-none shadow-none">
-              <CardHeader className="space-y-1 p-4 pt-0">
-                <CardTitle>Comentários</CardTitle>
-                <CardDescription>
-                  Entenda a análise de nossa equipe
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="p-4 pt-0">
-                <Card className="relative h-fit transition-colors hover:bg-muted/50">
-                  <Icons.Quote className="absolute left-4 top-0 size-4 -translate-y-1/2 rotate-180 bg-background text-muted-foreground " />
-                  <Icons.Quote className="absolute bottom-0 right-4 size-4 translate-y-1/2 bg-background text-muted-foreground" />
-                  <CardContent className="h-full p-4 text-sm font-medium">
-                    {product.description}
-                  </CardContent>
-                </Card>
-              </CardContent>
-            </Card>
+                <CardContent className="grid grid-cols-1 gap-x-8 gap-y-4 p-4 pt-0 text-sm md:grid-cols-2">
+                  <Card className="border-success transition-colors hover:bg-muted/50">
+                    <CardHeader className="flex items-center p-4">
+                      <Badge variant={'success'} className="flex w-fit gap-x-1">
+                        <Icons.Check className="size-4 " />
+                        Prós
+                      </Badge>
+                    </CardHeader>
+                    <CardContent className="p-4 pt-0">
+                      <ul className="flex flex-col space-y-1 font-medium leading-tight">
+                        {product.pros.map((pros, index) => (
+                          <li key={index} className="flex gap-x-1">
+                            <Icons.Check className="size-4 text-success" />
+                            {pros.value}
+                          </li>
+                        ))}
+                      </ul>
+                    </CardContent>
+                  </Card>
+                  <Card className="border-destructive transition-colors hover:bg-muted/50">
+                    <CardHeader className="flex items-center p-4">
+                      <Badge
+                        variant={'destructive'}
+                        className="flex w-fit gap-x-1"
+                      >
+                        <Icons.X className="size-4 " />
+                        Contras
+                      </Badge>
+                    </CardHeader>
+                    <CardContent className="p-4 pt-0">
+                      <ul className="flex flex-col space-y-1 font-medium leading-tight">
+                        {product.cons.map((con, index) => (
+                          <li key={index} className="flex items-center gap-x-1">
+                            <Icons.X className="size-4 text-destructive" />
+                            {con.value}
+                          </li>
+                        ))}
+                      </ul>
+                    </CardContent>
+                  </Card>
+                </CardContent>
+              </Card>
+            )}
+            {product.description && (
+              <Card className="border-none shadow-none">
+                <CardHeader className="space-y-1 p-4 pt-0">
+                  <CardTitle>Comentários</CardTitle>
+                  <CardDescription>
+                    Entenda a análise de nossa equipe
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="p-4 pt-0">
+                  <Card className="relative h-fit transition-colors hover:bg-muted/50">
+                    <Icons.Quote className="absolute left-4 top-0 size-4 -translate-y-1/2 rotate-180 bg-background text-muted-foreground " />
+                    <Icons.Quote className="absolute bottom-0 right-4 size-4 translate-y-1/2 bg-background text-muted-foreground" />
+                    <CardContent className="h-full p-4 text-sm font-medium">
+                      {product.description}
+                    </CardContent>
+                  </Card>
+                </CardContent>
+              </Card>
+            )}
           </div>
         ) : (
           <h3 className="text-sm text-muted-foreground">
