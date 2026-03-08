@@ -1,11 +1,31 @@
 'use client'
 
 import { gql, useMutation } from '@apollo/client'
-import { Crown, Layers, Package, Pencil, Plus, Save, X } from 'lucide-react'
+import {
+  Crown,
+  Layers,
+  Package,
+  Pencil,
+  Plus,
+  Save,
+  Trash2,
+  X,
+} from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import * as React from 'react'
 import { toast } from 'sonner'
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { env } from '@/env.mjs'
@@ -20,6 +40,14 @@ import {
 } from '@/components/ui/dialog'
 import { TierSection } from './tier-section'
 import { ProductPickerSheet } from './product-picker-sheet'
+
+const REMOVE_TIER_LIST = gql`
+  mutation RemoveTierList($id: ID!) {
+    removeTierList(id: $id) {
+      id
+    }
+  }
+`
 
 const UPDATE_TIER_LIST = gql`
   mutation UpdateTierList($updateTierListInput: UpdateTierListInput!) {
@@ -95,6 +123,24 @@ export function TierListMain({ tierList, isAdmin }: TierListMainProps) {
       onCompleted() {
         toast.success('Tier list atualizada com sucesso.')
         router.refresh()
+      },
+    },
+  )
+
+  const [removeTierList, { loading: isDeleting }] = useMutation(
+    REMOVE_TIER_LIST,
+    {
+      context: {
+        headers: {
+          'api-key': env.NEXT_PUBLIC_API_KEY,
+        },
+      },
+      onError(error) {
+        toast.error(error.message)
+      },
+      onCompleted() {
+        toast.success('Recomendação removida com sucesso.')
+        router.push('/tier-lists')
       },
     },
   )
@@ -245,11 +291,11 @@ export function TierListMain({ tierList, isAdmin }: TierListMainProps) {
     <main className="space-y-8">
       {/* Hero Header */}
       <header
-        className="relative -mx-4 -mt-10 overflow-hidden border-b sm:-mx-6 md:-mx-8"
+        className="relative overflow-hidden border-b"
         style={{ background: heroGradient }}
       >
         <div className="absolute inset-0 bg-gradient-to-b from-transparent to-background" />
-        <div className="relative mx-auto px-4 pb-8 pt-16 sm:px-8 md:pb-10 md:pt-20">
+        <div className="relative px-4 pb-8 pt-16 sm:container md:pb-10 md:pt-20">
           <div className="flex flex-col gap-4">
             {/* Category + icon */}
             <div className="flex items-center gap-2">
@@ -313,24 +359,26 @@ export function TierListMain({ tierList, isAdmin }: TierListMainProps) {
       </header>
 
       {/* Tiers */}
-      <div className="flex flex-col gap-5">
-        {tiers.map((tier) => (
-          <TierSection
-            key={tier.id}
-            tier={tier}
-            editMode={editMode}
-            onEditTier={() => handleOpenEditDialog(tier)}
-            onDeleteTier={() => handleDeleteTier(tier.id)}
-            onOpenDrawer={() => handleOpenDrawer(tier.id)}
-            onRemoveProduct={(productId) =>
-              handleRemoveProduct(tier.id, productId)
-            }
-            onReorderProducts={(products) =>
-              handleReorderProducts(tier.id, products)
-            }
-            categorySlug={tierList.category.slug}
-          />
-        ))}
+      <div className="px-4 py-10 sm:container">
+        <div className="flex flex-col gap-5">
+          {tiers.map((tier) => (
+            <TierSection
+              key={tier.id}
+              tier={tier}
+              editMode={editMode}
+              onEditTier={() => handleOpenEditDialog(tier)}
+              onDeleteTier={() => handleDeleteTier(tier.id)}
+              onOpenDrawer={() => handleOpenDrawer(tier.id)}
+              onRemoveProduct={(productId) =>
+                handleRemoveProduct(tier.id, productId)
+              }
+              onReorderProducts={(products) =>
+                handleReorderProducts(tier.id, products)
+              }
+              categorySlug={tierList.category.slug}
+            />
+          ))}
+        </div>
       </div>
 
       {/* Floating Admin Toolbar */}
@@ -356,6 +404,41 @@ export function TierListMain({ tierList, isAdmin }: TierListMainProps) {
                 <Save className="size-3.5" />
                 {isSaving ? 'Salvando...' : 'Salvar'}
               </Button>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    disabled={isDeleting}
+                    className="size-8 rounded-full text-muted-foreground hover:text-destructive"
+                    aria-label="Excluir recomendação"
+                  >
+                    <Trash2 className="size-4" />
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>
+                      Excluir &quot;{tierList.title}&quot;?
+                    </AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Essa ação é irreversível. Todos os tiers e produtos
+                      vinculados serão removidos.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={() =>
+                        removeTierList({ variables: { id: tierList.id } })
+                      }
+                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                    >
+                      Excluir
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
               <Button
                 variant="ghost"
                 size="icon"

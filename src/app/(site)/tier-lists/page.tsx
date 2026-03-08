@@ -72,7 +72,7 @@ export default async function TierListsPage() {
       {/* Hero Section */}
       <div className="relative overflow-hidden border-b bg-gradient-to-b from-primary/5 via-background to-background">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent" />
-        <div className="relative mx-auto px-4 py-16 sm:px-6 md:py-24">
+        <div className="relative mx-auto px-4 py-16 sm:container md:py-24">
           <div className="flex flex-col items-center text-center">
             <div className="mb-6 flex size-16 items-center justify-center rounded-2xl bg-primary/10 text-primary ring-1 ring-primary/20">
               <Crown className="size-8" />
@@ -89,7 +89,7 @@ export default async function TierListsPage() {
       </div>
 
       {/* Content */}
-      <div className="mx-auto px-4 py-10 sm:px-6">
+      <div className="px-4 py-10 sm:container">
         <TierListsMain
           tierLists={data.tierLists}
           isAdmin={isAdmin}

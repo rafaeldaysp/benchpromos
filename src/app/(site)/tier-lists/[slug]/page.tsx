@@ -105,7 +105,7 @@ export default async function TierListPage({ params }: TierListPageProps) {
   console.log('is admin: ', isAdmin)
 
   return (
-    <div className="my-10 px-4 sm:container">
+    <div>
       <TierListMain tierList={data.tierList} isAdmin={isAdmin} />
     </div>
   )
