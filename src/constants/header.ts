@@ -68,8 +68,8 @@ export function headerOptions({ categories }: HeaderOptionsProps) {
     },
     {
       title: 'Recomendações',
-      slug: 'recomendacoes',
-      icon: Icons.StarFilled,
+      slug: 'tier-lists',
+      icon: Icons.Crown,
     },
     // {
     //   title: 'Awards',

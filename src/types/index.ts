@@ -256,3 +256,27 @@ export type GiveawayRuleConfig = {
   label: string
   configSchema: ConfigField[]
 }
+
+export type TierProduct = {
+  id: string
+  position: number
+  productId: string
+}
+
+export type Tier = {
+  id: string
+  name: string
+  color: string
+  priceLimit?: number | null
+  position: number
+}
+
+export type TierList = {
+  id: string
+  title: string
+  slug: string
+  description?: string | null
+  categoryId: string
+  createdAt: string
+  updatedAt: string
+}
