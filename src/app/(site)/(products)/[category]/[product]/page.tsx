@@ -312,7 +312,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
               href={'#review'}
               className={cn(
                 buttonVariants({ variant: 'secondary' }),
-                'flex h-fit justify-between rounded-xl px-6 py-4 whitespace-normal text-left',
+                'flex h-fit justify-between whitespace-normal rounded-xl px-6 py-4 text-left',
               )}
             >
               <p className="flex flex-1 flex-col">
