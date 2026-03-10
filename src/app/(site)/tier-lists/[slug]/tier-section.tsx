@@ -159,7 +159,7 @@ export function TierSection({
       </div>
 
       {/* Product List */}
-      <div className="overflow-x-auto px-5 pb-5">
+      <div className="px-5 pb-5">
         {tier.products.length === 0 ? (
           <div className="flex flex-col items-center justify-center rounded-lg border border-dashed py-10 text-muted-foreground">
             <Package className="mb-2 size-8 opacity-40" />
@@ -182,15 +182,11 @@ export function TierSection({
             value={tier.products}
             onValueChange={onReorderProducts}
             getItemValue={(item) => item.id}
-            orientation="horizontal"
+            orientation="vertical"
           >
-            <SortableContent className="mx-auto flex w-fit gap-3 pb-2">
+            <SortableContent className="grid grid-cols-1 gap-3">
               {tier.products.map((tp, index) => (
-                <SortableItem
-                  key={tp.id}
-                  value={tp.id}
-                  className="w-[200px] shrink-0 md:w-[260px]"
-                >
+                <SortableItem key={tp.id} value={tp.id}>
                   <TierProductCard
                     product={tp.product}
                     rank={index + 1}
@@ -210,31 +206,28 @@ export function TierSection({
                 if (!tp) return null
                 const index = tier.products.indexOf(tp)
                 return (
-                  <div className="w-[200px] md:w-[260px]">
-                    <TierProductCard
-                      product={tp.product}
-                      rank={index + 1}
-                      editMode={false}
-                      note={tp.note}
-                      categorySlug={categorySlug}
-                    />
-                  </div>
+                  <TierProductCard
+                    product={tp.product}
+                    rank={index + 1}
+                    editMode={false}
+                    note={tp.note}
+                    categorySlug={categorySlug}
+                  />
                 )
               }}
             </SortableOverlay>
           </Sortable>
         ) : (
-          <div className="mx-auto flex w-fit gap-3 pb-2">
+          <div className="grid grid-cols-1 gap-3">
             {tier.products.map((tp, index) => (
-              <div key={tp.id} className="w-[200px] shrink-0 md:w-[260px]">
-                <TierProductCard
-                  product={tp.product}
-                  rank={index + 1}
-                  editMode={false}
-                  note={tp.note}
-                  categorySlug={categorySlug}
-                />
-              </div>
+              <TierProductCard
+                key={tp.id}
+                product={tp.product}
+                rank={index + 1}
+                editMode={false}
+                note={tp.note}
+                categorySlug={categorySlug}
+              />
             ))}
           </div>
         )}

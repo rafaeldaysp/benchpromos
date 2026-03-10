@@ -49,23 +49,23 @@ export function TierProductCard({
   const content = (
     <div
       className={cn(
-        'group relative flex h-full flex-col overflow-hidden rounded-lg border bg-card text-card-foreground transition-all',
-        'shadow-sm hover:shadow-md',
+        'group relative flex w-full overflow-hidden rounded-xl border bg-card text-card-foreground transition-all',
+        'shadow-sm hover:shadow-lg',
       )}
     >
       {/* Rank Badge */}
-      <div className="absolute left-2 top-2 z-10 flex size-7 items-center justify-center rounded-full bg-foreground text-xs font-bold text-background shadow-md">
-        {rank}
+      <div className="absolute left-2 top-2 z-10 flex size-8 items-center justify-center rounded-full bg-foreground text-xs font-bold text-background shadow-lg md:size-10 md:text-sm">
+        #{rank}
       </div>
 
       {/* Remove button */}
       {editMode && onRemove && (
-        <div className="absolute right-1.5 top-1.5 z-10">
+        <div className="absolute right-2 top-2 z-10">
           <Button
             variant="ghost"
             size="icon"
             onClick={onRemove}
-            className="size-6 rounded-full bg-background/80 text-muted-foreground backdrop-blur-sm hover:bg-destructive hover:text-white"
+            className="size-7 rounded-full bg-background/90 text-muted-foreground backdrop-blur-sm hover:bg-destructive hover:text-white"
             aria-label={`Remover ${product.name}`}
           >
             <X className="size-3.5" />
@@ -75,32 +75,32 @@ export function TierProductCard({
 
       {/* Drag Handle */}
       {editMode && dragHandle && (
-        <div className="absolute left-0 top-1/2 z-10 flex h-10 w-5 -translate-y-1/2 items-center justify-center rounded-r-md bg-muted/80 text-muted-foreground opacity-0 backdrop-blur-sm transition-opacity group-hover:opacity-100">
-          <GripVertical className="size-3.5" />
+        <div className="absolute left-0 top-1/2 z-10 flex h-14 w-5 -translate-y-1/2 items-center justify-center rounded-r-lg bg-muted/90 text-muted-foreground opacity-0 backdrop-blur-sm transition-opacity group-hover:opacity-100">
+          <GripVertical className="size-4" />
           <div className="absolute inset-0">{dragHandle}</div>
         </div>
       )}
 
       {/* Product Image */}
-      <div className="relative aspect-[4/3] w-full overflow-hidden bg-muted">
+      <div className="relative aspect-square w-24 shrink-0 overflow-hidden bg-muted sm:w-32 md:w-36">
         <Image
           src={product.imageUrl}
           alt={product.name}
           fill
-          sizes="(max-width: 768px) 200px, 220px"
+          sizes="(max-width: 640px) 96px, (max-width: 768px) 128px, 144px"
           className="object-contain p-2 transition-transform group-hover:scale-105"
         />
       </div>
 
       {/* Product Info */}
-      <div className="flex flex-1 flex-col gap-1 p-3">
-        <h3 className="line-clamp-3 text-sm font-semibold leading-tight text-foreground">
+      <div className="flex flex-1 flex-col justify-center gap-1 p-3 md:gap-1.5 md:p-4">
+        <h3 className="line-clamp-2 text-sm font-semibold leading-snug text-foreground md:text-base">
           {product.name}
         </h3>
         {product.deals?.length > 0 ? (
           product.deals[0].availability ? (
-            <div className="mt-auto flex flex-col">
-              <span className="text-sm font-bold text-foreground">
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-bold text-foreground md:text-base">
                 {priceFormatter.format(
                   priceCalculator(
                     product.deals[0].price,
@@ -117,38 +117,34 @@ export function TierProductCard({
               </span>
             </div>
           ) : (
-            <span className="mt-auto text-sm font-bold text-destructive">
+            <span className="text-sm font-bold text-destructive">
               Indisponível
             </span>
           )
         ) : (
-          <span className="mt-auto text-sm font-bold text-warning">
-            Não listado
-          </span>
+          <span className="text-sm font-bold text-warning">Não listado</span>
         )}
-      </div>
 
-      {/* Note */}
-      {editMode && onNoteChange ? (
-        <div className="border-t px-3 py-2">
+        {/* Note */}
+        {editMode && onNoteChange ? (
           <Textarea
             placeholder="Adicionar nota..."
             value={note ?? ''}
             onChange={(e) => onNoteChange(e.target.value)}
-            className="min-h-[60px] resize-none text-xs"
+            className="mt-1 min-h-[48px] resize-none text-xs"
             rows={2}
           />
-        </div>
-      ) : (
-        note && (
-          <div className="flex items-start gap-1.5 border-t px-3 py-2">
-            <MessageSquare className="mt-0.5 size-3 shrink-0 text-muted-foreground" />
-            <p className="line-clamp-3 text-xs leading-relaxed text-muted-foreground">
-              {note}
-            </p>
-          </div>
-        )
-      )}
+        ) : (
+          note && (
+            <div className="mt-1 flex items-start gap-1.5">
+              <MessageSquare className="mt-0.5 size-3 shrink-0 text-muted-foreground" />
+              <p className="line-clamp-2 text-xs leading-relaxed text-muted-foreground">
+                {note}
+              </p>
+            </div>
+          )
+        )}
+      </div>
     </div>
   )
 
