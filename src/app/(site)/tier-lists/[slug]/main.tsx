@@ -169,6 +169,7 @@ export function TierListMain({ tierList, isAdmin }: TierListMainProps) {
             products: tier.products.map((tp, productIndex) => ({
               productId: tp.product.id,
               position: productIndex,
+              note: tp.note ?? undefined,
             })),
           })),
         },
@@ -218,6 +219,7 @@ export function TierListMain({ tierList, isAdmin }: TierListMainProps) {
                   id: `new-${Date.now()}-${product.id}`,
                   position: t.products.length,
                   productId: product.id,
+                  note: undefined,
                   product,
                 },
               ],
@@ -266,6 +268,23 @@ export function TierListMain({ tierList, isAdmin }: TierListMainProps) {
       }
       setTiers((prev) => [...prev, newTier])
     }
+  }
+
+  function handleUpdateNote(tierId: string, productId: string, note: string) {
+    setTiers((prev) =>
+      prev.map((t) =>
+        t.id === tierId
+          ? {
+              ...t,
+              products: t.products.map((tp) =>
+                tp.product.id === productId
+                  ? { ...tp, note: note || undefined }
+                  : tp,
+              ),
+            }
+          : t,
+      ),
+    )
   }
 
   function handleDeleteTier(tierId: string) {
@@ -375,6 +394,9 @@ export function TierListMain({ tierList, isAdmin }: TierListMainProps) {
               onReorderProducts={(products) =>
                 handleReorderProducts(tier.id, products)
               }
+              onUpdateNote={(productId, note) =>
+                handleUpdateNote(tier.id, productId, note)
+              }
               categorySlug={tierList.category.slug}
             />
           ))}
@@ -383,7 +405,7 @@ export function TierListMain({ tierList, isAdmin }: TierListMainProps) {
 
       {/* Floating Admin Toolbar */}
       {isAdmin && (
-        <div className="fixed bottom-6 right-6 z-50">
+        <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2">
           {editMode ? (
             <div className="flex items-center gap-2 rounded-full border bg-background/95 p-1.5 shadow-lg ring-1 ring-black/5 backdrop-blur-sm">
               <Button

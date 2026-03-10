@@ -261,6 +261,7 @@ export type TierProduct = {
   id: string
   position: number
   productId: string
+  note?: string
 }
 
 export type Tier = {

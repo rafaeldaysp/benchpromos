@@ -30,6 +30,7 @@ const GET_TIER_LIST = gql`
         products {
           id
           position
+          note
           product {
             id
             name

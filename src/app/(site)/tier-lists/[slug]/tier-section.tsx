@@ -55,6 +55,7 @@ interface TierSectionProps {
   onOpenDrawer: () => void
   onRemoveProduct: (productId: string) => void
   onReorderProducts: (products: TierWithProducts['products']) => void
+  onUpdateNote: (productId: string, note: string) => void
   categorySlug: string
 }
 
@@ -66,6 +67,7 @@ export function TierSection({
   onOpenDrawer,
   onRemoveProduct,
   onReorderProducts,
+  onUpdateNote,
   categorySlug,
 }: TierSectionProps) {
   return (
@@ -194,6 +196,8 @@ export function TierSection({
                     rank={index + 1}
                     editMode
                     onRemove={() => onRemoveProduct(tp.product.id)}
+                    note={tp.note}
+                    onNoteChange={(note) => onUpdateNote(tp.product.id, note)}
                     categorySlug={categorySlug}
                     dragHandle={<SortableItemHandle className="size-full" />}
                   />
@@ -211,6 +215,7 @@ export function TierSection({
                       product={tp.product}
                       rank={index + 1}
                       editMode={false}
+                      note={tp.note}
                       categorySlug={categorySlug}
                     />
                   </div>
@@ -226,6 +231,7 @@ export function TierSection({
                   product={tp.product}
                   rank={index + 1}
                   editMode={false}
+                  note={tp.note}
                   categorySlug={categorySlug}
                 />
               </div>

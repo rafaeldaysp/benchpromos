@@ -1,10 +1,11 @@
 'use client'
 
-import { GripVertical, X } from 'lucide-react'
+import { GripVertical, MessageSquare, X } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 
 import { Button } from '@/components/ui/button'
+import { Textarea } from '@/components/ui/textarea'
 import { cn } from '@/lib/utils'
 import type { Product } from '@/types'
 import { priceFormatter } from '@/utils/formatter'
@@ -29,6 +30,8 @@ interface TierProductCardProps {
   rank: number
   editMode: boolean
   onRemove?: () => void
+  note?: string
+  onNoteChange?: (note: string) => void
   categorySlug: string
   dragHandle?: React.ReactNode
 }
@@ -38,6 +41,8 @@ export function TierProductCard({
   rank,
   editMode,
   onRemove,
+  note,
+  onNoteChange,
   categorySlug,
   dragHandle,
 }: TierProductCardProps) {
@@ -122,6 +127,28 @@ export function TierProductCard({
           </span>
         )}
       </div>
+
+      {/* Note */}
+      {editMode && onNoteChange ? (
+        <div className="border-t px-3 py-2">
+          <Textarea
+            placeholder="Adicionar nota..."
+            value={note ?? ''}
+            onChange={(e) => onNoteChange(e.target.value)}
+            className="min-h-[60px] resize-none text-xs"
+            rows={2}
+          />
+        </div>
+      ) : (
+        note && (
+          <div className="flex items-start gap-1.5 border-t px-3 py-2">
+            <MessageSquare className="mt-0.5 size-3 shrink-0 text-muted-foreground" />
+            <p className="line-clamp-3 text-xs leading-relaxed text-muted-foreground">
+              {note}
+            </p>
+          </div>
+        )
+      )}
     </div>
   )
 
