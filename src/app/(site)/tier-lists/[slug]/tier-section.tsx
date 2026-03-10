@@ -83,18 +83,18 @@ export function TierSection({
             className="size-3 rounded-full"
             style={{ backgroundColor: tier.color }}
           />
-          <h2 className="text-lg font-semibold text-foreground">{tier.name}</h2>
+          {/*<h2 className="text-lg font-semibold text-foreground">{tier.name}</h2>*/}
           {tier.priceLimit != null && (
             <Badge
               variant="outline"
-              className="hidden text-xs font-medium sm:block"
+              className="text-sm font-medium sm:text-lg"
               style={{
                 borderColor: `${tier.color}33`,
                 color: tier.color,
                 backgroundColor: `${tier.color}15`,
               }}
             >
-              {priceFormatter.format(tier.priceLimit / 100)}
+              {tier.name}
             </Badge>
           )}
           <span className="hidden text-xs text-muted-foreground sm:block">
