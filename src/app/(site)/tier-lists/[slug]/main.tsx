@@ -470,6 +470,7 @@ export function TierListMain({ tierList, isAdmin }: TierListMainProps) {
         onAddProduct={handleAddProduct}
         assignedProductIds={assignedProductIds}
         categorySlug={tierList.category.slug}
+        priceLimit={activeTier?.priceLimit ?? null}
       />
 
       {/* Tier Create/Edit Dialog */}

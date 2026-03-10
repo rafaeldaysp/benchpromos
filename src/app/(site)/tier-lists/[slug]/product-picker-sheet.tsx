@@ -8,8 +8,10 @@ import * as React from 'react'
 import { InView } from 'react-intersection-observer'
 
 import { Icons } from '@/components/icons'
+import { PriceInput } from '@/components/price-input'
 import { Input } from '@/components/ui/input'
 import { ScrollArea } from '@/components/ui/scroll-area'
+import { Slider } from '@/components/ui/slider'
 import {
   Sheet,
   SheetContent,
@@ -90,6 +92,7 @@ interface ProductPickerSheetProps {
   onAddProduct: (product: TierListProduct) => void
   assignedProductIds: Set<string>
   categorySlug: string
+  priceLimit?: number | null
 }
 
 export function ProductPickerSheet({
@@ -99,9 +102,35 @@ export function ProductPickerSheet({
   onAddProduct,
   assignedProductIds,
   categorySlug,
+  priceLimit,
 }: ProductPickerSheetProps) {
   const [searchInput, setSearchInput] = React.useState('')
   const debouncedSearch = useDebounce(searchInput, 300)
+
+  const priceLimitReais = priceLimit != null ? priceLimit / 100 : null
+
+  const sliderMin =
+    priceLimitReais != null ? Math.max(0, Math.floor(priceLimitReais * 0.5)) : 0
+  const sliderMax =
+    priceLimitReais != null ? Math.ceil(priceLimitReais * 1.5) : 99999.99
+
+  const defaultMin =
+    priceLimitReais != null
+      ? Math.max(sliderMin, Math.floor(priceLimitReais - 500))
+      : sliderMin
+  const defaultMax =
+    priceLimitReais != null
+      ? Math.min(sliderMax, Math.ceil(priceLimitReais + 500))
+      : sliderMax
+
+  const [currentPriceRange, setCurrentPriceRange] = React.useState<
+    [number, number]
+  >([defaultMin, defaultMax])
+  const debouncedPrice = useDebounce(currentPriceRange, 300)
+
+  React.useEffect(() => {
+    setCurrentPriceRange([defaultMin, defaultMax])
+  }, [priceLimit]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -113,6 +142,49 @@ export function ProductPickerSheet({
             <strong>{targetTierName}</strong>.
           </SheetDescription>
         </SheetHeader>
+
+        <div className="space-y-2">
+          <span className="text-sm font-medium text-foreground">
+            Preços (R$)
+          </span>
+          <Slider
+            variant="range"
+            value={currentPriceRange}
+            min={sliderMin}
+            max={sliderMax}
+            step={1}
+            onValueChange={(value: typeof currentPriceRange) => {
+              setCurrentPriceRange(value)
+            }}
+          />
+          <div className="flex items-center space-x-2">
+            <PriceInput
+              min={sliderMin}
+              max={sliderMax}
+              className="h-9"
+              value={currentPriceRange[0]}
+              onValueChange={({ floatValue }) => {
+                setCurrentPriceRange((prev) => [
+                  Number(~~(floatValue ?? 0)),
+                  prev[1],
+                ])
+              }}
+            />
+            <span className="text-sm text-muted-foreground">até</span>
+            <PriceInput
+              min={sliderMin}
+              max={sliderMax}
+              className="h-9"
+              value={currentPriceRange[1]}
+              onValueChange={({ floatValue }) => {
+                setCurrentPriceRange((prev) => [
+                  prev[0],
+                  Number(~~(floatValue ?? 0)),
+                ])
+              }}
+            />
+          </div>
+        </div>
 
         <div className="relative">
           <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
@@ -141,6 +213,7 @@ export function ProductPickerSheet({
             assignedProductIds={assignedProductIds}
             onAddProduct={onAddProduct}
             categorySlug={categorySlug}
+            priceRange={debouncedPrice}
           />
         </React.Suspense>
       </SheetContent>
@@ -153,6 +226,7 @@ interface ProductPickerListProps {
   assignedProductIds: Set<string>
   onAddProduct: (product: TierListProduct) => void
   categorySlug: string
+  priceRange: [number, number]
 }
 
 function ProductPickerList({
@@ -160,6 +234,7 @@ function ProductPickerList({
   assignedProductIds,
   onAddProduct,
   categorySlug,
+  priceRange,
 }: ProductPickerListProps) {
   const [isPending, startTransition] = React.useTransition()
 
@@ -178,6 +253,10 @@ function ProductPickerList({
         pagination: {
           limit: PRODUCTS_PER_PAGE,
           page: 1,
+        },
+        priceRange: {
+          min: Math.round(priceRange[0] * 100),
+          max: Math.round(priceRange[1] * 100),
         },
       },
     },
@@ -198,6 +277,10 @@ function ProductPickerList({
             pagination: {
               limit: PRODUCTS_PER_PAGE,
               page: page + 1,
+            },
+            priceRange: {
+              min: Math.round(priceRange[0] * 100),
+              max: Math.round(priceRange[1] * 100),
             },
           },
         },
@@ -235,7 +318,7 @@ function ProductPickerList({
   }
 
   return (
-    <ScrollArea className="h-[calc(100vh-220px)]">
+    <ScrollArea className="h-[calc(100vh-380px)]">
       <div className="flex flex-col gap-2 pr-4">
         {availableProducts.map((product) => (
           <button
