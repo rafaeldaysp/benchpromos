@@ -157,7 +157,7 @@ export function TierSection({
       </div>
 
       {/* Product List */}
-      <div className="px-5 pb-5">
+      <div className="overflow-x-auto px-5 pb-5">
         {tier.products.length === 0 ? (
           <div className="flex flex-col items-center justify-center rounded-lg border border-dashed py-10 text-muted-foreground">
             <Package className="mb-2 size-8 opacity-40" />
@@ -182,7 +182,7 @@ export function TierSection({
             getItemValue={(item) => item.id}
             orientation="horizontal"
           >
-            <SortableContent className="flex justify-center gap-3 overflow-x-auto pb-2">
+            <SortableContent className="mx-auto flex w-fit gap-3 pb-2">
               {tier.products.map((tp, index) => (
                 <SortableItem
                   key={tp.id}
@@ -219,7 +219,7 @@ export function TierSection({
             </SortableOverlay>
           </Sortable>
         ) : (
-          <div className="flex justify-center gap-3 overflow-x-auto pb-2">
+          <div className="mx-auto flex w-fit gap-3 pb-2">
             {tier.products.map((tp, index) => (
               <div key={tp.id} className="w-[200px] shrink-0 md:w-[260px]">
                 <TierProductCard
