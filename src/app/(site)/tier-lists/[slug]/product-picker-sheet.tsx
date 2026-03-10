@@ -386,8 +386,10 @@ function ProductPickerList({
         ) : (
           <InView
             as="div"
-            delay={500}
+            delay={100}
             hidden={!hasMore}
+            rootMargin="200px"
+            style={{ minHeight: 1 }}
             onChange={(_, entry) => {
               if (entry.isIntersecting) onEntry()
             }}

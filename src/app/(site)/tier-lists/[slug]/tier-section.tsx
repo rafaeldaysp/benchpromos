@@ -87,7 +87,7 @@ export function TierSection({
           {tier.priceLimit != null && (
             <Badge
               variant="outline"
-              className="text-sm font-medium sm:text-lg"
+              className="text-sm font-semibold sm:text-lg"
               style={{
                 borderColor: `${tier.color}33`,
                 color: tier.color,
