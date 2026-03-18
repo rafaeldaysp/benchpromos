@@ -21,6 +21,11 @@ const GET_TIER_LISTS = gql`
         name
         slug
       }
+      categories {
+        id
+        name
+        slug
+      }
       tiers {
         id
         name
@@ -47,6 +52,7 @@ export default async function TierListsPage() {
     getClient().query<{
       tierLists: (TierList & {
         category: Pick<Category, 'id' | 'name' | 'slug'>
+        categories: Pick<Category, 'id' | 'name' | 'slug'>[]
         tiers: {
           id: string
           name: string

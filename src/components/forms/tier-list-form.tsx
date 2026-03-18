@@ -7,8 +7,20 @@ import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { type z } from 'zod'
 
+import { Check, ChevronsUpDown, X } from 'lucide-react'
+
 import { Icons } from '@/components/icons'
+import { cn } from '@/lib/utils'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@/components/ui/command'
 import {
   Form,
   FormControl,
@@ -19,12 +31,11 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover'
+import { ScrollArea } from '@/components/ui/scroll-area'
 import { Textarea } from '@/components/ui/textarea'
 import { env } from '@/env.mjs'
 import { tierListSchema } from '@/lib/validations/tier-list'
@@ -45,6 +56,7 @@ const defaultValues: Partial<Inputs> = {
   title: '',
   description: '',
   categoryId: '',
+  categoryIds: [],
 }
 
 interface TierListFormProps {
@@ -82,17 +94,25 @@ export function TierListForm({ categories, onSuccess }: TierListFormProps) {
   )
 
   async function onSubmit(data: Inputs) {
+    const categoryIds =
+      data.categoryIds && data.categoryIds.length > 0
+        ? data.categoryIds
+        : [data.categoryId]
+
     await createTierList({
       variables: {
         createTierListInput: {
           title: data.title,
           description: data.description || undefined,
-          categoryId: data.categoryId,
+          categoryId: categoryIds[0],
+          categoryIds,
           tiers: [],
         },
       },
     })
   }
+
+  const selectedCategoryIds = form.watch('categoryIds') ?? []
 
   return (
     <Form {...form}>
@@ -135,24 +155,98 @@ export function TierListForm({ categories, onSuccess }: TierListFormProps) {
 
         <FormField
           control={form.control}
-          name="categoryId"
+          name="categoryIds"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Categoria</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione uma categoria" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent className="max-h-80">
-                  {categories.map((category) => (
-                    <SelectItem key={category.id} value={category.id}>
-                      {category.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <FormLabel>Categorias</FormLabel>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <FormControl>
+                    <Button
+                      variant="outline"
+                      role="combobox"
+                      className="w-full justify-between"
+                    >
+                      {selectedCategoryIds.length > 0
+                        ? `${selectedCategoryIds.length} categoria${selectedCategoryIds.length > 1 ? 's' : ''} selecionada${selectedCategoryIds.length > 1 ? 's' : ''}`
+                        : 'Selecione categorias...'}
+                      <ChevronsUpDown className="ml-2 size-4 shrink-0 opacity-50" />
+                    </Button>
+                  </FormControl>
+                </PopoverTrigger>
+                <PopoverContent className="w-full p-0" side="top">
+                  <Command>
+                    <CommandInput placeholder="Pesquisar categorias..." />
+                    <CommandList>
+                      <CommandEmpty>Nenhuma categoria encontrada.</CommandEmpty>
+                      <CommandGroup>
+                        <ScrollArea className="h-60">
+                          {categories.map((category) => {
+                            const isSelected = selectedCategoryIds.includes(
+                              category.id,
+                            )
+                            return (
+                              <CommandItem
+                                key={category.id}
+                                value={category.name}
+                                onSelect={() => {
+                                  const current = field.value ?? []
+                                  const updated = isSelected
+                                    ? current.filter((id) => id !== category.id)
+                                    : [...current, category.id]
+                                  field.onChange(updated)
+                                  form.setValue('categoryId', updated[0] ?? '')
+                                }}
+                                className="cursor-pointer"
+                              >
+                                <Check
+                                  className={cn(
+                                    'mr-2 size-4',
+                                    isSelected ? 'opacity-100' : 'opacity-0',
+                                  )}
+                                />
+                                {category.name}
+                              </CommandItem>
+                            )
+                          })}
+                        </ScrollArea>
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
+              {selectedCategoryIds.length > 0 && (
+                <div className="flex flex-wrap items-center gap-2 pt-1">
+                  {selectedCategoryIds.map((id) => {
+                    const cat = categories.find((c) => c.id === id)
+                    if (!cat) return null
+                    return (
+                      <Badge
+                        key={id}
+                        variant="secondary"
+                        className="flex items-center gap-1"
+                      >
+                        {cat.name}
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="size-4 p-0 hover:bg-transparent"
+                          onClick={() => {
+                            const updated = selectedCategoryIds.filter(
+                              (cid) => cid !== id,
+                            )
+                            field.onChange(updated)
+                            form.setValue('categoryId', updated[0] ?? '')
+                          }}
+                        >
+                          <X className="size-3" />
+                        </Button>
+                      </Badge>
+                    )
+                  })}
+                </div>
+              )}
               <FormMessage />
             </FormItem>
           )}

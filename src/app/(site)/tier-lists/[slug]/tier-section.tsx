@@ -39,6 +39,9 @@ type TierListProduct = Pick<
     cashback: { value: number; provider: string }
     discounts: { discount: string }[]
   }[]
+  category: {
+    slug: string
+  }
 }
 
 type TierWithProducts = Tier & {
@@ -56,7 +59,7 @@ interface TierSectionProps {
   onRemoveProduct: (productId: string) => void
   onReorderProducts: (products: TierWithProducts['products']) => void
   onUpdateNote: (productId: string, note: string) => void
-  categorySlug: string
+  categorySlugs: string[]
 }
 
 export function TierSection({
@@ -68,7 +71,7 @@ export function TierSection({
   onRemoveProduct,
   onReorderProducts,
   onUpdateNote,
-  categorySlug,
+  categorySlugs,
 }: TierSectionProps) {
   return (
     <section
@@ -194,7 +197,7 @@ export function TierSection({
                     onRemove={() => onRemoveProduct(tp.product.id)}
                     note={tp.note}
                     onNoteChange={(note) => onUpdateNote(tp.product.id, note)}
-                    categorySlug={categorySlug}
+                    categorySlugs={categorySlugs}
                     dragHandle={<SortableItemHandle className="size-full" />}
                   />
                 </SortableItem>
@@ -211,7 +214,7 @@ export function TierSection({
                     rank={index + 1}
                     editMode={false}
                     note={tp.note}
-                    categorySlug={categorySlug}
+                    categorySlugs={categorySlugs}
                   />
                 )
               }}
@@ -226,7 +229,7 @@ export function TierSection({
                 rank={index + 1}
                 editMode={false}
                 note={tp.note}
-                categorySlug={categorySlug}
+                categorySlugs={categorySlugs}
               />
             ))}
           </div>

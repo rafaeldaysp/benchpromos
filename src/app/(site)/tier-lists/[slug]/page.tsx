@@ -21,6 +21,11 @@ const GET_TIER_LIST = gql`
         name
         slug
       }
+      categories {
+        id
+        name
+        slug
+      }
       tiers {
         id
         name
@@ -37,6 +42,9 @@ const GET_TIER_LIST = gql`
             imageUrl
             slug
             categoryId
+            category {
+              slug
+            }
             deals {
               price
               availability
@@ -74,12 +82,13 @@ type TierListProductDeal = {
 
 type TierListData = TierList & {
   category: Pick<Category, 'id' | 'name' | 'slug'>
+  categories: Pick<Category, 'id' | 'name' | 'slug'>[]
   tiers: (Tier & {
     products: (TierProduct & {
       product: Pick<
         Product,
         'id' | 'name' | 'imageUrl' | 'slug' | 'categoryId'
-      > & { deals: TierListProductDeal[] }
+      > & { deals: TierListProductDeal[]; category: { slug: string } }
     })[]
   })[]
 }

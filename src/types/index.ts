@@ -278,6 +278,7 @@ export type TierList = {
   slug: string
   description?: string | null
   categoryId: string
+  categoryIds: string[]
   createdAt: string
   updatedAt: string
 }

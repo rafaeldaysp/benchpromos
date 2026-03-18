@@ -6,6 +6,7 @@ import {
   Layers,
   Package,
   Pencil,
+  Play,
   Plus,
   Save,
   Trash2,
@@ -70,6 +71,9 @@ type TierListProduct = Pick<
     cashback: { value: number; provider: string }
     discounts: { discount: string }[]
   }[]
+  category: {
+    slug: string
+  }
 }
 
 type TierWithProducts = Tier & {
@@ -80,6 +84,7 @@ type TierWithProducts = Tier & {
 
 type TierListData = TierList & {
   category: Pick<Category, 'id' | 'name' | 'slug'>
+  categories: Pick<Category, 'id' | 'name' | 'slug'>[]
   tiers: TierWithProducts[]
 }
 
@@ -160,6 +165,7 @@ export function TierListMain({ tierList, isAdmin }: TierListMainProps) {
       variables: {
         updateTierListInput: {
           id: tierList.id,
+          categoryIds: allCategories.map((c) => c.id),
           tiers: tiers.map((tier, tierIndex) => ({
             id: tier.id.startsWith('new-') ? undefined : tier.id,
             name: tier.name,
@@ -293,6 +299,11 @@ export function TierListMain({ tierList, isAdmin }: TierListMainProps) {
 
   const activeTier = tiers.find((t) => t.id === activeTierId)
 
+  const allCategories =
+    tierList.categories.length > 0 ? tierList.categories : [tierList.category]
+
+  const categorySlugs = allCategories.map((c) => c.slug)
+
   const totalProducts = tiers.reduce(
     (acc, tier) => acc + tier.products.length,
     0,
@@ -327,12 +338,15 @@ export function TierListMain({ tierList, isAdmin }: TierListMainProps) {
               >
                 <Crown className="size-4" />
               </div>
-              <Badge
-                variant="secondary"
-                className="text-[11px] font-semibold uppercase tracking-wider"
-              >
-                {tierList.category.name}
-              </Badge>
+              {allCategories.map((cat) => (
+                <Badge
+                  key={cat.id}
+                  variant="secondary"
+                  className="text-[11px] font-semibold uppercase tracking-wider"
+                >
+                  {cat.name}
+                </Badge>
+              ))}
             </div>
 
             {/* Title */}
@@ -377,6 +391,31 @@ export function TierListMain({ tierList, isAdmin }: TierListMainProps) {
         </div>
       </header>
 
+      {/* Video Section */}
+      {/*<div className="px-4 sm:container">
+        <div className="max-w-3xl">
+          <div className="flex items-center gap-2 pb-4">
+            <div className="flex size-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
+              <Play className="size-4" />
+            </div>
+            <h2 className="text-lg font-semibold text-foreground">
+              Assista a análise
+            </h2>
+          </div>
+          <div className="overflow-hidden rounded-xl border bg-card shadow-sm">
+            <div className="relative aspect-video w-full">
+              <iframe
+                src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+                title="Análise em vídeo"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                className="absolute inset-0 size-full"
+              />
+            </div>
+          </div>
+        </div>
+      </div>*/}
+
       {/* Tiers */}
       <div className="px-4 py-10 sm:container">
         <div className="flex flex-col gap-5">
@@ -397,7 +436,7 @@ export function TierListMain({ tierList, isAdmin }: TierListMainProps) {
               onUpdateNote={(productId, note) =>
                 handleUpdateNote(tier.id, productId, note)
               }
-              categorySlug={tierList.category.slug}
+              categorySlugs={categorySlugs}
             />
           ))}
         </div>
@@ -491,7 +530,7 @@ export function TierListMain({ tierList, isAdmin }: TierListMainProps) {
         targetTierName={activeTier?.name ?? ''}
         onAddProduct={handleAddProduct}
         assignedProductIds={assignedProductIds}
-        categorySlug={tierList.category.slug}
+        categorySlugs={categorySlugs}
         priceLimit={activeTier?.priceLimit ?? null}
       />
 

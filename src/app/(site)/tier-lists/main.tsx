@@ -18,6 +18,7 @@ import type { Category, TierList } from '@/types'
 
 type TierListItem = TierList & {
   category: Pick<Category, 'id' | 'name' | 'slug'>
+  categories: Pick<Category, 'id' | 'name' | 'slug'>[]
   tiers: {
     id: string
     name: string
@@ -74,13 +75,21 @@ export function TierListsMain({
                   />
 
                   <div className="flex flex-1 flex-col gap-4 p-5">
-                    {/* Category badge */}
-                    <Badge
-                      variant="secondary"
-                      className="w-fit text-[11px] font-semibold uppercase tracking-wider"
-                    >
-                      {tierList.category.name}
-                    </Badge>
+                    {/* Category badges */}
+                    <div className="flex flex-wrap gap-1.5">
+                      {(tierList.categories.length > 0
+                        ? tierList.categories
+                        : [tierList.category]
+                      ).map((cat) => (
+                        <Badge
+                          key={cat.id}
+                          variant="secondary"
+                          className="w-fit text-[11px] font-semibold uppercase tracking-wider"
+                        >
+                          {cat.name}
+                        </Badge>
+                      ))}
+                    </div>
 
                     {/* Title */}
                     <h3 className="text-lg font-bold leading-tight text-foreground group-hover:text-primary transition-colors">

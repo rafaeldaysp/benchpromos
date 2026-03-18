@@ -1,10 +1,21 @@
 import * as z from 'zod'
 
-export const tierListSchema = z.object({
-  title: z.string().min(1, 'Campo obrigatório'),
-  description: z.string().optional(),
-  categoryId: z.string().min(1, 'Selecione uma categoria'),
-})
+export const tierListSchema = z
+  .object({
+    title: z.string().min(1, 'Campo obrigatório'),
+    description: z.string().optional(),
+    categoryId: z.string().optional(),
+    categoryIds: z.array(z.string()).optional(),
+  })
+  .refine(
+    (data) =>
+      (data.categoryIds && data.categoryIds.length > 0) ||
+      (data.categoryId && data.categoryId.length > 0),
+    {
+      message: 'Selecione ao menos uma categoria',
+      path: ['categoryIds'],
+    },
+  )
 
 export const tierSchema = z
   .object({

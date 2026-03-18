@@ -83,6 +83,9 @@ type TierListProduct = Pick<
       discount: string
     }[]
   }[]
+  category: {
+    slug: string
+  }
 }
 
 interface ProductPickerSheetProps {
@@ -91,7 +94,7 @@ interface ProductPickerSheetProps {
   targetTierName: string
   onAddProduct: (product: TierListProduct) => void
   assignedProductIds: Set<string>
-  categorySlug: string
+  categorySlugs: string[]
   priceLimit?: number | null
 }
 
@@ -101,7 +104,7 @@ export function ProductPickerSheet({
   targetTierName,
   onAddProduct,
   assignedProductIds,
-  categorySlug,
+  categorySlugs,
   priceLimit,
 }: ProductPickerSheetProps) {
   const [searchInput, setSearchInput] = React.useState('')
@@ -212,7 +215,7 @@ export function ProductPickerSheet({
             search={debouncedSearch}
             assignedProductIds={assignedProductIds}
             onAddProduct={onAddProduct}
-            categorySlug={categorySlug}
+            categorySlugs={categorySlugs}
             priceRange={debouncedPrice}
           />
         </React.Suspense>
@@ -225,7 +228,7 @@ interface ProductPickerListProps {
   search: string
   assignedProductIds: Set<string>
   onAddProduct: (product: TierListProduct) => void
-  categorySlug: string
+  categorySlugs: string[]
   priceRange: [number, number]
 }
 
@@ -233,7 +236,7 @@ function ProductPickerList({
   search,
   assignedProductIds,
   onAddProduct,
-  categorySlug,
+  categorySlugs,
   priceRange,
 }: ProductPickerListProps) {
   const [isPending, startTransition] = React.useTransition()
@@ -249,7 +252,7 @@ function ProductPickerList({
     variables: {
       input: {
         search,
-        category: categorySlug,
+        categories: categorySlugs,
         pagination: {
           limit: PRODUCTS_PER_PAGE,
           page: 1,
@@ -273,7 +276,7 @@ function ProductPickerList({
         variables: {
           input: {
             search,
-            category: categorySlug,
+            categories: categorySlugs,
             pagination: {
               limit: PRODUCTS_PER_PAGE,
               page: page + 1,

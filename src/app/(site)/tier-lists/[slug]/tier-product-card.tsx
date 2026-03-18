@@ -23,6 +23,9 @@ type TierListProduct = Pick<
     cashback: { value: number; provider: string }
     discounts: { discount: string }[]
   }[]
+  category: {
+    slug: string
+  }
 }
 
 interface TierProductCardProps {
@@ -32,7 +35,7 @@ interface TierProductCardProps {
   onRemove?: () => void
   note?: string
   onNoteChange?: (note: string) => void
-  categorySlug: string
+  categorySlugs: string[]
   dragHandle?: React.ReactNode
 }
 
@@ -43,7 +46,7 @@ export function TierProductCard({
   onRemove,
   note,
   onNoteChange,
-  categorySlug,
+  categorySlugs,
   dragHandle,
 }: TierProductCardProps) {
   const content = (
@@ -152,5 +155,7 @@ export function TierProductCard({
     return content
   }
 
-  return <Link href={`/${categorySlug}/${product.slug}`}>{content}</Link>
+  return (
+    <Link href={`/${product.category.slug}/${product.slug}`}>{content}</Link>
+  )
 }
