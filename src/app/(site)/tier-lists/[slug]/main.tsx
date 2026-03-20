@@ -152,13 +152,14 @@ export function TierListMain({ tierList, isAdmin }: TierListMainProps) {
 
   const assignedProductIds = React.useMemo(() => {
     const ids = new Set<string>()
-    for (const tier of tiers) {
-      for (const tp of tier.products) {
+    const activeTier = tiers.find((t) => t.id === activeTierId)
+    if (activeTier) {
+      for (const tp of activeTier.products) {
         ids.add(tp.product.id)
       }
     }
     return ids
-  }, [tiers])
+  }, [tiers, activeTierId])
 
   function handleSave() {
     updateTierList({
