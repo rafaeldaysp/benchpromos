@@ -14,6 +14,7 @@ const GET_DEALS_DASHBOARD = gql`
     categories {
       id
       name
+      slug
     }
   }
 `
@@ -21,7 +22,7 @@ const GET_DEALS_DASHBOARD = gql`
 export default async function DealsDashboardPage() {
   const { data } = await getClient().query<{
     retailers: Retailer[]
-    categories: Pick<Category, 'id' | 'name'>[]
+    categories: Pick<Category, 'id' | 'name' | 'slug'>[]
   }>({
     query: GET_DEALS_DASHBOARD,
   })

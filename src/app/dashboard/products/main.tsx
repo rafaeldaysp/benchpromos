@@ -92,7 +92,7 @@ interface ProductsMainProps {
 }
 
 export function ProductsMain({ filters, categories }: ProductsMainProps) {
-  const [isLoading, startTransition] = React.useTransition()
+  const [, startTransition] = React.useTransition()
   const router = useRouter()
   const pathname = usePathname()
   const { openDialogs, setOpenDialog } = useFormStore()
@@ -102,6 +102,12 @@ export function ProductsMain({ filters, categories }: ProductsMainProps) {
 
   const initialSorting = searchParams.get('sort')
   const initialCategory = searchParams.get('category')
+  const selectedSorting =
+    selectOptions.find((option) => option.value === initialSorting)?.value ??
+    defaultSorting
+  const selectedCategory =
+    categories.find((category) => category.slug === initialCategory)?.slug ??
+    'none'
 
   const [selectedProduct, setSelectedProduct] = React.useState<
     Product & {
@@ -113,9 +119,6 @@ export function ProductsMain({ filters, categories }: ProductsMainProps) {
   const [productSuggestions, setProductSuggestions] = React.useState<
     (Product & { category: { name: string } })[]
   >([])
-
-  const [selectedCategory, setSelectedCategory] = React.useState<Category>()
-
   const [deleteProduct] = useMutation(DELETE_PRODUCT, {
     context: {
       headers: {
@@ -163,10 +166,7 @@ export function ProductsMain({ filters, categories }: ProductsMainProps) {
       <div className="flex flex-col justify-between gap-2 sm:flex-row">
         <div className="flex flex-col gap-2 sm:flex-row">
           <Select
-            defaultValue={
-              selectOptions.find((option) => option.value === initialSorting)
-                ?.value ?? defaultSorting
-            }
+            value={selectedSorting}
             onValueChange={(value) => {
               startTransition(() => {
                 router.push(
@@ -190,7 +190,7 @@ export function ProductsMain({ filters, categories }: ProductsMainProps) {
           </Select>
 
           <Select
-            defaultValue={selectedCategory?.slug ?? initialCategory ?? 'none'}
+            value={selectedCategory}
             onValueChange={(value) => {
               startTransition(() => {
                 router.push(
@@ -205,12 +205,14 @@ export function ProductsMain({ filters, categories }: ProductsMainProps) {
               <SelectValue placeholder="Categoria" />
             </SelectTrigger>
             <SelectContent className="w-full sm:w-60">
-              <SelectItem value={'none'}>Todos</SelectItem>
-              {categories.map((option) => (
-                <SelectItem key={option.slug} value={option.slug}>
-                  {option.name}
-                </SelectItem>
-              ))}
+              <ScrollArea className="h-80">
+                <SelectItem value="none">Todos</SelectItem>
+                {categories.map((option) => (
+                  <SelectItem key={option.slug} value={option.slug}>
+                    {option.name}
+                  </SelectItem>
+                ))}
+              </ScrollArea>
             </SelectContent>
           </Select>
         </div>

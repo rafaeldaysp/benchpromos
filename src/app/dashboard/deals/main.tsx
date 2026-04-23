@@ -157,7 +157,7 @@ const defaultSorting = 'lastUpdate'
 
 interface DealsMainProps {
   retailers: Retailer[]
-  categories: Pick<Category, 'id' | 'name'>[]
+  categories: Pick<Category, 'id' | 'name' | 'slug'>[]
 }
 
 export function DealsMain({ retailers, categories }: DealsMainProps) {
@@ -170,7 +170,7 @@ export function DealsMain({ retailers, categories }: DealsMainProps) {
   const [selectedRetailer, setSelectedRetailer] =
     React.useState<(typeof retailers)[number]>()
   const [selectedDealIds, setSelectedDealIds] = React.useState<string[]>([])
-  const [selectedCategory, setSelectedCategory] =
+  const [selectedDealsCategory, setSelectedDealsCategory] =
     React.useState<(typeof categories)[number]>()
   const [retailerIsSellerSwitch, setRetailerIsSellerSwitch] =
     React.useState(false)
@@ -181,6 +181,13 @@ export function DealsMain({ retailers, categories }: DealsMainProps) {
   const { createQueryString } = useQueryString()
 
   const initialSorting = searchParams.get('sort')
+  const initialCategory = searchParams.get('category')
+  const selectedSorting =
+    selectOptions.find((option) => option.value === initialSorting)?.value ??
+    defaultSorting
+  const selectedProductsCategory =
+    categories.find((category) => category.slug === initialCategory)?.slug ??
+    'none'
 
   const { data, loading: isLoadingDeals } = useQuery<{
     deals: (Deal & {
@@ -237,7 +244,7 @@ export function DealsMain({ retailers, categories }: DealsMainProps) {
       }
     })
     .filter((deal) =>
-      deal.product.category.id.includes(selectedCategory?.id ?? ''),
+      deal.product.category.id.includes(selectedDealsCategory?.id ?? ''),
     )
     .filter((deal) => {
       if (!retailerIsSellerSwitch) return true
@@ -360,10 +367,12 @@ export function DealsMain({ retailers, categories }: DealsMainProps) {
                 </Dialog>
 
                 <Select
-                  defaultValue=""
+                  value={selectedDealsCategory?.id ?? 'none'}
                   onValueChange={(value) => {
-                    setSelectedCategory(
-                      categories.find((category) => category.id === value),
+                    setSelectedDealsCategory(
+                      value === 'none'
+                        ? undefined
+                        : categories.find((category) => category.id === value),
                     )
                   }}
                 >
@@ -372,7 +381,7 @@ export function DealsMain({ retailers, categories }: DealsMainProps) {
                   </SelectTrigger>
                   <SelectContent>
                     <ScrollArea className="h-80">
-                      <SelectItem value="">Todoss</SelectItem>
+                      <SelectItem value="none">Todos</SelectItem>
                       {categories.map((category) => (
                         <SelectItem key={category.id} value={category.id}>
                           {category.name}
@@ -630,32 +639,58 @@ export function DealsMain({ retailers, categories }: DealsMainProps) {
 
         <TabsContent value="products">
           <div className="space-y-4">
-            <Select
-              defaultValue={
-                selectOptions.find((option) => option.value === initialSorting)
-                  ?.value ?? defaultSorting
-              }
-              onValueChange={(value) => {
-                React.startTransition(() => {
-                  router.push(
-                    `${pathname}?${createQueryString({
-                      sort: value === defaultSorting ? null : value,
-                    })}`,
-                  )
-                })
-              }}
-            >
-              <SelectTrigger className="w-full sm:w-60">
-                <SelectValue placeholder="Selecione a ordem dos produtos" />
-              </SelectTrigger>
-              <SelectContent className="w-full sm:w-60">
-                {selectOptions.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <div className="flex flex-col gap-2 sm:flex-row">
+              <Select
+                value={selectedSorting}
+                onValueChange={(value) => {
+                  React.startTransition(() => {
+                    router.push(
+                      `${pathname}?${createQueryString({
+                        sort: value === defaultSorting ? null : value,
+                      })}`,
+                    )
+                  })
+                }}
+              >
+                <SelectTrigger className="w-full sm:w-60">
+                  <SelectValue placeholder="Selecione a ordem dos produtos" />
+                </SelectTrigger>
+                <SelectContent className="w-full sm:w-60">
+                  {selectOptions.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <Select
+                value={selectedProductsCategory}
+                onValueChange={(value) => {
+                  React.startTransition(() => {
+                    router.push(
+                      `${pathname}?${createQueryString({
+                        category: value === 'none' ? null : value,
+                      })}`,
+                    )
+                  })
+                }}
+              >
+                <SelectTrigger className="w-full sm:w-60">
+                  <SelectValue placeholder="Categoria" />
+                </SelectTrigger>
+                <SelectContent className="w-full sm:w-60">
+                  <ScrollArea className="h-80">
+                    <SelectItem value="none">Todos</SelectItem>
+                    {categories.map((category) => (
+                      <SelectItem key={category.slug} value={category.slug}>
+                        {category.name}
+                      </SelectItem>
+                    ))}
+                  </ScrollArea>
+                </SelectContent>
+              </Select>
+            </div>
 
             <DashboardProducts>
               {({ products }) =>
@@ -666,7 +701,7 @@ export function DealsMain({ retailers, categories }: DealsMainProps) {
                     onClick={() => {
                       setSelectedProduct(product)
                       setSelectedDealIds([])
-                      setSelectedCategory(undefined)
+                      setSelectedDealsCategory(undefined)
                     }}
                   >
                     <DashboardItemCard.Image src={product.imageUrl} alt="" />
@@ -711,7 +746,7 @@ export function DealsMain({ retailers, categories }: DealsMainProps) {
                       onClick={() => {
                         setSelectedRetailer(retailer)
                         setSelectedDealIds([])
-                        setSelectedCategory(undefined)
+                        setSelectedDealsCategory(undefined)
                       }}
                     >
                       <DashboardItemCard.Content>
