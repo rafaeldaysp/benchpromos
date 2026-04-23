@@ -13,6 +13,7 @@ import { removeNullValues } from '@/utils'
 import { Button } from './ui/button'
 
 const PRODUCTS_PER_PAGE = 12
+const sortOptions = ['relevance', 'lastAdded'] as const
 
 const GET_PRODUCTS = gql`
   query GetProducts($input: GetProductsInput) {
@@ -72,7 +73,10 @@ export function DashboardProducts({ children }: DashboardProductsProps) {
 
   const searchParams = useSearchParams()
 
-  const sortBy = searchParams.get('sort')
+  const sortParam = searchParams.get('sort')
+  const sortBy = sortOptions.some((option) => option === sortParam)
+    ? sortParam
+    : null
   const category = searchParams.get('category')
 
   const { data, fetchMore } = useSuspenseQuery<{

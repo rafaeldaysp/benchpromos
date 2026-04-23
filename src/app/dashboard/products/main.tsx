@@ -78,7 +78,13 @@ const selectOptions = [
     label: 'Última atualização',
     value: 'lastUpdate',
   },
+  {
+    label: 'Últimos adicionados',
+    value: 'lastAdded',
+  },
 ]
+
+const defaultSorting = 'lastUpdate'
 
 interface ProductsMainProps {
   filters: Filter[]
@@ -159,13 +165,13 @@ export function ProductsMain({ filters, categories }: ProductsMainProps) {
           <Select
             defaultValue={
               selectOptions.find((option) => option.value === initialSorting)
-                ?.value ?? 'lastUpdate'
+                ?.value ?? defaultSorting
             }
             onValueChange={(value) => {
               startTransition(() => {
                 router.push(
                   `${pathname}?${createQueryString({
-                    sort: value === 'relevance' ? value : null,
+                    sort: value === defaultSorting ? null : value,
                   })}`,
                 )
               })
