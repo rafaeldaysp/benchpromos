@@ -99,6 +99,7 @@ export function DashboardProducts({ children }: DashboardProductsProps) {
         },
         sortBy,
         category,
+        sortByDeals: false,
       },
     },
   })
@@ -121,6 +122,7 @@ export function DashboardProducts({ children }: DashboardProductsProps) {
             },
             sortBy,
             category,
+            sortByDeals: false,
           },
         },
         updateQuery(previousResult, { fetchMoreResult }) {
