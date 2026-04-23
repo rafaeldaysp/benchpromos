@@ -4,7 +4,7 @@ import { gql, useMutation, useQuery } from '@apollo/client'
 import dayjs from 'dayjs'
 import 'dayjs/locale/pt-br'
 import relativeTime from 'dayjs/plugin/relativeTime'
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import * as React from 'react'
 import { toast } from 'sonner'
 
@@ -61,6 +61,7 @@ import { Switch } from '@/components/ui/switch'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
+import { useQueryString } from '@/hooks/use-query-string'
 import { cn } from '@/lib/utils'
 import type {
   Cashback,
@@ -137,6 +138,23 @@ const GET_DEALS = gql`
   }
 `
 
+const selectOptions = [
+  {
+    label: 'Relevância',
+    value: 'relevance',
+  },
+  {
+    label: 'Última atualização',
+    value: 'lastUpdate',
+  },
+  {
+    label: 'Últimos adicionados',
+    value: 'lastAdded',
+  },
+]
+
+const defaultSorting = 'lastUpdate'
+
 interface DealsMainProps {
   retailers: Retailer[]
   categories: Pick<Category, 'id' | 'name'>[]
@@ -158,6 +176,11 @@ export function DealsMain({ retailers, categories }: DealsMainProps) {
     React.useState(false)
   const { openDialogs, setOpenDialog } = useFormStore()
   const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+  const { createQueryString } = useQueryString()
+
+  const initialSorting = searchParams.get('sort')
 
   const { data, loading: isLoadingDeals } = useQuery<{
     deals: (Deal & {
@@ -606,27 +629,56 @@ export function DealsMain({ retailers, categories }: DealsMainProps) {
         </TabsList>
 
         <TabsContent value="products">
-          <DashboardProducts>
-            {({ products }) =>
-              products.map((product) => (
-                <DashboardItemCard.Root
-                  key={product.id}
-                  className="cursor-pointer"
-                  onClick={() => {
-                    setSelectedProduct(product)
-                    setSelectedDealIds([])
-                    setSelectedCategory(undefined)
-                  }}
-                >
-                  <DashboardItemCard.Image src={product.imageUrl} alt="" />
+          <div className="space-y-4">
+            <Select
+              defaultValue={
+                selectOptions.find((option) => option.value === initialSorting)
+                  ?.value ?? defaultSorting
+              }
+              onValueChange={(value) => {
+                React.startTransition(() => {
+                  router.push(
+                    `${pathname}?${createQueryString({
+                      sort: value === defaultSorting ? null : value,
+                    })}`,
+                  )
+                })
+              }}
+            >
+              <SelectTrigger className="w-full sm:w-60">
+                <SelectValue placeholder="Selecione a ordem dos produtos" />
+              </SelectTrigger>
+              <SelectContent className="w-full sm:w-60">
+                {selectOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
 
-                  <DashboardItemCard.Content>
-                    <p className="text-sm leading-7">{product.name}</p>
-                  </DashboardItemCard.Content>
-                </DashboardItemCard.Root>
-              ))
-            }
-          </DashboardProducts>
+            <DashboardProducts>
+              {({ products }) =>
+                products.map((product) => (
+                  <DashboardItemCard.Root
+                    key={product.id}
+                    className="cursor-pointer"
+                    onClick={() => {
+                      setSelectedProduct(product)
+                      setSelectedDealIds([])
+                      setSelectedCategory(undefined)
+                    }}
+                  >
+                    <DashboardItemCard.Image src={product.imageUrl} alt="" />
+
+                    <DashboardItemCard.Content>
+                      <p className="text-sm leading-7">{product.name}</p>
+                    </DashboardItemCard.Content>
+                  </DashboardItemCard.Root>
+                ))
+              }
+            </DashboardProducts>
+          </div>
         </TabsContent>
 
         <TabsContent value="retailers">
