@@ -14,6 +14,8 @@ export const env = createEnv({
     GOOGLE_CLIENT_SECRET: z.string().min(1),
     NOTION_DATABASE_ID: z.string().min(1),
     NOTION_TOKEN: z.string().min(1),
+    TELEGRAM_BOT_TOKEN: z.string().min(1).optional(),
+    TELEGRAM_CHAT_ID: z.string().min(1).optional(),
   },
   /*
    * Environment variables available on the client (and server).
@@ -47,6 +49,8 @@ export const env = createEnv({
     NEXT_PUBLIC_GTM: process.env.NEXT_PUBLIC_GTM,
     NOTION_DATABASE_ID: process.env.NOTION_DATABASE_ID,
     NOTION_TOKEN: process.env.NOTION_TOKEN,
+    TELEGRAM_BOT_TOKEN: process.env.TELEGRAM_BOT_TOKEN,
+    TELEGRAM_CHAT_ID: process.env.TELEGRAM_CHAT_ID,
     NEXT_PUBLIC_GOOGLE_ADSENSE_CLIENT:
       process.env.NEXT_PUBLIC_GOOGLE_ADSENSE_CLIENT,
   },

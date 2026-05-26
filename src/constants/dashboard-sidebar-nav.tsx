@@ -29,6 +29,13 @@ export const dashboardSidebarItems = [
     items: [],
   },
   {
+    title: 'Telegram',
+    url: '/dashboard/telegram',
+    icon: Icons.Send,
+    isActive: true,
+    items: [],
+  },
+  {
     title: 'Produtos',
     url: '/dashboard/products',
     icon: PackageSearch,
