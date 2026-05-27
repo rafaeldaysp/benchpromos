@@ -51,7 +51,6 @@ const highlightOptions = [
 
 const defaultValues: Partial<Inputs> = {
   applyCouponDiscount: true,
-  callout: '',
   caption: '',
   coupon: '',
   couponDiscount: '',
@@ -104,7 +103,6 @@ export function TelegramForm() {
   const maxCouponDiscount = form.watch('maxCouponDiscount')
   const priceCondition = form.watch('priceCondition')
   const highlight = form.watch('highlight')
-  const callout = form.watch('callout')
   const caption = form.watch('caption')
   const note = form.watch('note')
   const totalInstallmentPrice = form.watch('totalInstallmentPrice')
@@ -117,7 +115,6 @@ export function TelegramForm() {
   )
   const previewMessage = {
     applyCouponDiscount: applyCouponDiscount ?? true,
-    callout: callout || undefined,
     caption: caption || undefined,
     coupon: coupon || undefined,
     couponDiscount: couponDiscount || undefined,
@@ -195,6 +192,24 @@ export function TelegramForm() {
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+              <FormField
+                control={form.control}
+                name="title"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Título</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Notebook Gamer Dell G15..."
+                        aria-invalid={!!form.formState.errors.title}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
               <div className="grid gap-5 md:grid-cols-[minmax(0,1fr)_160px]">
                 <FormField
                   control={form.control}
@@ -256,24 +271,6 @@ export function TelegramForm() {
 
               <FormField
                 control={form.control}
-                name="callout"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Chamada</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Mchose V9 Pro da Havit?!"
-                        aria-invalid={!!form.formState.errors.callout}
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
                 name="imageUrl"
                 render={({ field }) => (
                   <FormItem>
@@ -282,24 +279,6 @@ export function TelegramForm() {
                       <Input
                         placeholder="https://cdn.exemplo.com/produto.png"
                         aria-invalid={!!form.formState.errors.imageUrl}
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="title"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Título</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Notebook Gamer Dell G15..."
-                        aria-invalid={!!form.formState.errors.title}
                         {...field}
                       />
                     </FormControl>
