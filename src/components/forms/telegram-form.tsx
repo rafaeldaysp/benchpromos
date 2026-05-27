@@ -30,7 +30,13 @@ import {
 } from '@/components/ui/select'
 import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
-import { buildTelegramPostText } from '@/lib/telegram'
+import {
+  buildTelegramPostText,
+  calculateTelegramCouponDiscountCents,
+  formatTelegramPrice,
+  getTelegramEffectiveInstallmentPrice,
+  getTelegramEffectivePrice,
+} from '@/lib/telegram'
 import { telegramMessageSchema } from '@/lib/validations/telegram'
 
 type Inputs = z.infer<typeof telegramMessageSchema>
@@ -44,6 +50,7 @@ const highlightOptions = [
 ]
 
 const defaultValues: Partial<Inputs> = {
+  applyCouponDiscount: true,
   callout: '',
   caption: '',
   coupon: '',
@@ -51,7 +58,9 @@ const defaultValues: Partial<Inputs> = {
   highlight: undefined,
   imageUrl: '',
   installments: undefined,
+  maxCouponDiscount: undefined,
   note: '',
+  priceCondition: '',
   sponsored: true,
   title: '',
   totalInstallmentPrice: undefined,
@@ -91,6 +100,9 @@ export function TelegramForm() {
   const url = form.watch('url')
   const coupon = form.watch('coupon')
   const couponDiscount = form.watch('couponDiscount')
+  const applyCouponDiscount = form.watch('applyCouponDiscount')
+  const maxCouponDiscount = form.watch('maxCouponDiscount')
+  const priceCondition = form.watch('priceCondition')
   const highlight = form.watch('highlight')
   const callout = form.watch('callout')
   const caption = form.watch('caption')
@@ -103,21 +115,40 @@ export function TelegramForm() {
     () => getPreviewImageUrl(imageUrl),
     [imageUrl],
   )
-  const previewText = buildTelegramPostText({
+  const previewMessage = {
+    applyCouponDiscount: applyCouponDiscount ?? true,
     callout: callout || undefined,
     caption: caption || undefined,
     coupon: coupon || undefined,
-    couponDiscount: couponDiscount || 'Com Cupom',
+    couponDiscount: couponDiscount || undefined,
     highlight: highlight || undefined,
     imageUrl: imageUrl || 'https://benchpromos.com.br/preview.png',
     installments,
+    maxCouponDiscount,
     note: note || undefined,
+    priceCondition: priceCondition || undefined,
     price: price || 0,
     sponsored: sponsored ?? true,
     title: title || 'Nome da promoção',
     totalInstallmentPrice,
     url: url || 'https://benchpromos.com.br/promocao/produto/id',
+  }
+  const couponDiscountValue = calculateTelegramCouponDiscountCents({
+    couponDiscount,
+    maxCouponDiscount,
+    price: price || 0,
   })
+  const installmentCouponDiscountValue = totalInstallmentPrice
+    ? calculateTelegramCouponDiscountCents({
+        couponDiscount,
+        maxCouponDiscount,
+        price: totalInstallmentPrice,
+      })
+    : 0
+  const effectivePrice = getTelegramEffectivePrice(previewMessage)
+  const effectiveInstallmentPrice =
+    getTelegramEffectiveInstallmentPrice(previewMessage)
+  const previewText = buildTelegramPostText(previewMessage)
 
   async function onSubmit(data: Inputs) {
     setIsLoading(true)
@@ -301,7 +332,7 @@ export function TelegramForm() {
                   name="price"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Preço</FormLabel>
+                      <FormLabel>Preço base</FormLabel>
                       <FormControl>
                         <PriceInput
                           placeholder="4.447,00"
@@ -320,13 +351,51 @@ export function TelegramForm() {
 
                 <FormField
                   control={form.control}
-                  name="couponDiscount"
+                  name="priceCondition"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Condição do preço</FormLabel>
                       <FormControl>
                         <Input
                           placeholder="Com Cupom, À Vista ou Parcelado em 10x"
+                          aria-invalid={!!form.formState.errors.priceCondition}
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <div className="grid gap-5 md:grid-cols-2">
+                <FormField
+                  control={form.control}
+                  name="coupon"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Cupom</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="BENCH10"
+                          aria-invalid={!!form.formState.errors.coupon}
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="couponDiscount"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Desconto do cupom</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="10%, 100 ou 10% + 100"
                           aria-invalid={!!form.formState.errors.couponDiscount}
                           {...field}
                         />
@@ -337,23 +406,85 @@ export function TelegramForm() {
                 />
               </div>
 
-              <FormField
-                control={form.control}
-                name="coupon"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Cupom</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="BENCH10"
-                        aria-invalid={!!form.formState.errors.coupon}
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
+              <div className="grid gap-5 md:grid-cols-[minmax(0,1fr)_220px]">
+                <FormField
+                  control={form.control}
+                  name="maxCouponDiscount"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Desconto máximo</FormLabel>
+                      <FormControl>
+                        <PriceInput
+                          placeholder="150,00"
+                          value={field.value ? field.value / 100 : undefined}
+                          onValueChange={({ floatValue }) =>
+                            field.onChange(
+                              floatValue ? ~~(floatValue * 100) : undefined,
+                            )
+                          }
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="applyCouponDiscount"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Auto aplicar</FormLabel>
+                      <div className="flex h-9 items-center justify-between rounded-md border border-input px-3 shadow-sm">
+                        <Label
+                          htmlFor="telegram-apply-coupon-discount"
+                          className="text-sm font-normal text-muted-foreground"
+                        >
+                          Ativo
+                        </Label>
+                        <FormControl>
+                          <Switch
+                            id="telegram-apply-coupon-discount"
+                            checked={field.value ?? true}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              {applyCouponDiscount &&
+                (couponDiscountValue > 0 ||
+                  installmentCouponDiscountValue > 0) && (
+                  <div className="space-y-1 rounded-md bg-muted/60 px-3 py-2 text-sm text-muted-foreground shadow-[inset_0_0_0_1px_rgba(0,0,0,0.06)] dark:shadow-[inset_0_0_0_1px_rgba(255,255,255,0.08)]">
+                    <div>
+                      À vista: desconto{' '}
+                      <span className="font-medium tabular-nums text-foreground">
+                        {formatTelegramPrice(couponDiscountValue)}
+                      </span>{' '}
+                      • preço no post{' '}
+                      <span className="font-medium tabular-nums text-foreground">
+                        {formatTelegramPrice(effectivePrice)}
+                      </span>
+                    </div>
+
+                    {effectiveInstallmentPrice && totalInstallmentPrice && (
+                      <div>
+                        Parcelado: desconto{' '}
+                        <span className="font-medium tabular-nums text-foreground">
+                          {formatTelegramPrice(installmentCouponDiscountValue)}
+                        </span>{' '}
+                        • preço no post{' '}
+                        <span className="font-medium tabular-nums text-foreground">
+                          {formatTelegramPrice(effectiveInstallmentPrice)}
+                        </span>
+                      </div>
+                    )}
+                  </div>
                 )}
-              />
 
               <div className="grid gap-5 md:grid-cols-2">
                 <FormField

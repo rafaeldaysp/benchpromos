@@ -17,6 +17,113 @@ function formatPrice(priceInCents: number) {
   return priceFormatter.format(priceInCents / 100)
 }
 
+function parseNumberText(value: string) {
+  const cleaned = value.replace(/[^\d,.-]/g, '')
+
+  if (!cleaned) return null
+
+  const normalized = cleaned.includes(',')
+    ? cleaned.replace(/\./g, '').replace(',', '.')
+    : cleaned.replace(/\.(?=\d{3}(\D|$))/g, '')
+  const parsed = Number(normalized)
+
+  return Number.isFinite(parsed) ? parsed : null
+}
+
+function parseAbsoluteDiscountCents(value: string) {
+  const parsed = parseNumberText(value)
+
+  return parsed === null ? null : Math.round(parsed * 100)
+}
+
+function parsePercentDiscountCents(value: string, priceInCents: number) {
+  const parsed = parseNumberText(value.replace('%', ''))
+
+  return parsed === null ? null : Math.round(priceInCents * (parsed / 100))
+}
+
+function parseTelegramCouponDiscountPart(
+  discount: string,
+  priceInCents: number,
+) {
+  return discount.includes('%')
+    ? parsePercentDiscountCents(discount, priceInCents)
+    : parseAbsoluteDiscountCents(discount)
+}
+
+export function isTelegramCouponDiscountParseable(couponDiscount: string) {
+  const discounts = couponDiscount
+    .split('+')
+    .map((discount) => discount.trim())
+    .filter(Boolean)
+
+  return (
+    discounts.length > 0 &&
+    discounts.every(
+      (discount) => parseTelegramCouponDiscountPart(discount, 10000) !== null,
+    )
+  )
+}
+
+export function calculateTelegramCouponDiscountCents({
+  price,
+  couponDiscount,
+  maxCouponDiscount,
+}: Pick<
+  TelegramMessageInput,
+  'couponDiscount' | 'maxCouponDiscount' | 'price'
+>) {
+  if (!couponDiscount) return 0
+
+  const discountInCents = couponDiscount
+    .split('+')
+    .map((discount) => discount.trim())
+    .filter(Boolean)
+    .reduce((total, discount) => {
+      const parsedDiscount = parseTelegramCouponDiscountPart(discount, price)
+
+      return total + (parsedDiscount ?? 0)
+    }, 0)
+  const cappedDiscount = maxCouponDiscount
+    ? Math.min(discountInCents, maxCouponDiscount)
+    : discountInCents
+
+  return Math.max(0, Math.min(cappedDiscount, price))
+}
+
+export function getTelegramEffectivePrice(message: TelegramMessageInput) {
+  if (!message.applyCouponDiscount) return message.price
+
+  return (
+    message.price -
+    calculateTelegramCouponDiscountCents({
+      couponDiscount: message.couponDiscount,
+      maxCouponDiscount: message.maxCouponDiscount,
+      price: message.price,
+    })
+  )
+}
+
+export function getTelegramEffectiveInstallmentPrice(
+  message: TelegramMessageInput,
+) {
+  if (!message.totalInstallmentPrice) return undefined
+  if (!message.applyCouponDiscount) return message.totalInstallmentPrice
+
+  return (
+    message.totalInstallmentPrice -
+    calculateTelegramCouponDiscountCents({
+      couponDiscount: message.couponDiscount,
+      maxCouponDiscount: message.maxCouponDiscount,
+      price: message.totalInstallmentPrice,
+    })
+  )
+}
+
+export function formatTelegramPrice(priceInCents: number) {
+  return formatPrice(priceInCents)
+}
+
 function formatPriceLine(
   priceInCents: number,
   label: string | undefined,
@@ -34,7 +141,13 @@ export function buildTelegramPostText(
 ) {
   const html = options.html ?? false
   const lines: string[] = []
-  const formattedPrice = formatValue(formatPrice(message.price), html)
+  const effectivePrice = getTelegramEffectivePrice(message)
+  const formattedPrice = formatValue(formatPrice(effectivePrice), html)
+  const priceCondition =
+    message.priceCondition ??
+    (message.applyCouponDiscount && message.couponDiscount
+      ? 'Com Cupom'
+      : undefined)
 
   if (message.highlight) {
     lines.push(`⭐️ ${formatValue(message.highlight.toUpperCase(), html)}! ⭐️`)
@@ -63,15 +176,18 @@ export function buildTelegramPostText(
     lines.push(`🎟 Cupom: ${formatValue(message.coupon, html)}`)
   }
 
-  lines.push(formatPriceLine(message.price, message.couponDiscount, html))
+  lines.push(formatPriceLine(effectivePrice, priceCondition, html))
 
   if (message.totalInstallmentPrice) {
+    const effectiveInstallmentPrice =
+      getTelegramEffectiveInstallmentPrice(message) ??
+      message.totalInstallmentPrice
     const installmentLabel = message.installments
       ? `Parcelado em ${message.installments}x`
       : 'Parcelado'
 
     lines.push(
-      formatPriceLine(message.totalInstallmentPrice, installmentLabel, html),
+      formatPriceLine(effectiveInstallmentPrice, installmentLabel, html),
     )
   }
 

@@ -1,5 +1,7 @@
 import * as z from 'zod'
 
+import { isTelegramCouponDiscountParseable } from '@/lib/telegram'
+
 function isHttpUrl(value: string) {
   try {
     const url = new URL(value)
@@ -48,7 +50,13 @@ export const telegramMessageSchema = z.object({
     .url('Endereço inválido')
     .refine(isHttpUrl, 'Endereço inválido'),
   coupon: optionalText(80),
-  couponDiscount: optionalText(80),
+  couponDiscount: optionalText(80).refine(
+    (value) => !value || isTelegramCouponDiscountParseable(value),
+    'Use um desconto como 10%, 100 ou 10% + 100',
+  ),
+  applyCouponDiscount: z.boolean().default(true),
+  maxCouponDiscount: optionalCentsSchema,
+  priceCondition: optionalText(80),
   highlight: optionalText(80),
   callout: optionalText(140),
   caption: optionalText(220),
