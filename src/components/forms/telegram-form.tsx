@@ -315,7 +315,7 @@ export function TelegramForm() {
                       <FormControl>
                         <PriceInput
                           placeholder="4.447,00"
-                          value={field.value ? field.value / 100 : undefined}
+                          value={field.value ? field.value / 100 : ''}
                           onValueChange={({ floatValue }) =>
                             field.onChange(
                               floatValue ? ~~(floatValue * 100) : undefined,
@@ -339,6 +339,56 @@ export function TelegramForm() {
                           placeholder="Com Cupom, À Vista ou Parcelado em 10x"
                           aria-invalid={!!form.formState.errors.priceCondition}
                           {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <div className="grid gap-5 md:grid-cols-2">
+                <FormField
+                  control={form.control}
+                  name="totalInstallmentPrice"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Preço parcelado</FormLabel>
+                      <FormControl>
+                        <PriceInput
+                          placeholder="4.827,34"
+                          value={field.value ? field.value / 100 : ''}
+                          onValueChange={({ floatValue }) =>
+                            field.onChange(
+                              floatValue ? ~~(floatValue * 100) : undefined,
+                            )
+                          }
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="installments"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Parcelas</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          min={1}
+                          placeholder="12"
+                          value={field.value ?? ''}
+                          onChange={(event) =>
+                            field.onChange(
+                              event.target.value
+                                ? Number(event.target.value)
+                                : undefined,
+                            )
+                          }
                         />
                       </FormControl>
                       <FormMessage />
@@ -391,11 +441,11 @@ export function TelegramForm() {
                   name="maxCouponDiscount"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Desconto máximo</FormLabel>
+                      <FormLabel>Cupom Desconto máximo</FormLabel>
                       <FormControl>
                         <PriceInput
                           placeholder="150,00"
-                          value={field.value ? field.value / 100 : undefined}
+                          value={field.value ? field.value / 100 : ''}
                           onValueChange={({ floatValue }) =>
                             field.onChange(
                               floatValue ? ~~(floatValue * 100) : undefined,
@@ -464,56 +514,6 @@ export function TelegramForm() {
                     )}
                   </div>
                 )}
-
-              <div className="grid gap-5 md:grid-cols-2">
-                <FormField
-                  control={form.control}
-                  name="totalInstallmentPrice"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Preço parcelado</FormLabel>
-                      <FormControl>
-                        <PriceInput
-                          placeholder="4.827,34"
-                          value={field.value ? field.value / 100 : undefined}
-                          onValueChange={({ floatValue }) =>
-                            field.onChange(
-                              floatValue ? ~~(floatValue * 100) : undefined,
-                            )
-                          }
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="installments"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Parcelas</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="number"
-                          min={1}
-                          placeholder="12"
-                          value={field.value ?? ''}
-                          onChange={(event) =>
-                            field.onChange(
-                              event.target.value
-                                ? Number(event.target.value)
-                                : undefined,
-                            )
-                          }
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
 
               <FormField
                 control={form.control}
