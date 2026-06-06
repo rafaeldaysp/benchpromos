@@ -29,7 +29,7 @@ export const dashboardSidebarItems = [
     items: [],
   },
   {
-    title: 'Telegram',
+    title: 'Enviar',
     url: '/dashboard/telegram',
     icon: Icons.Send,
     isActive: true,

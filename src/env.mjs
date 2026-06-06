@@ -16,6 +16,10 @@ export const env = createEnv({
     NOTION_TOKEN: z.string().min(1),
     TELEGRAM_BOT_TOKEN: z.string().min(1).optional(),
     TELEGRAM_CHAT_ID: z.string().min(1).optional(),
+    WHATSMIAU_API_URL: z.string().url().default('https://api.whatsmiau.dev/v2'),
+    WHATSMIAU_API_KEY: z.string().min(1).optional(),
+    WHATSMIAU_INSTANCE: z.string().min(1).optional(),
+    WHATSMIAU_DEFAULT_CHAT: z.string().min(1).optional(),
   },
   /*
    * Environment variables available on the client (and server).
@@ -51,6 +55,10 @@ export const env = createEnv({
     NOTION_TOKEN: process.env.NOTION_TOKEN,
     TELEGRAM_BOT_TOKEN: process.env.TELEGRAM_BOT_TOKEN,
     TELEGRAM_CHAT_ID: process.env.TELEGRAM_CHAT_ID,
+    WHATSMIAU_API_URL: process.env.WHATSMIAU_API_URL,
+    WHATSMIAU_API_KEY: process.env.WHATSMIAU_API_KEY,
+    WHATSMIAU_INSTANCE: process.env.WHATSMIAU_INSTANCE,
+    WHATSMIAU_DEFAULT_CHAT: process.env.WHATSMIAU_DEFAULT_CHAT,
     NEXT_PUBLIC_GOOGLE_ADSENSE_CLIENT:
       process.env.NEXT_PUBLIC_GOOGLE_ADSENSE_CLIENT,
   },

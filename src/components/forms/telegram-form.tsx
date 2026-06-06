@@ -41,6 +41,21 @@ import { telegramMessageSchema } from '@/lib/validations/telegram'
 
 type Inputs = z.infer<typeof telegramMessageSchema>
 
+const CHANNELS = {
+  telegram: {
+    label: 'Telegram',
+    endpoint: '/api/telegram',
+    icon: Icons.Send,
+  },
+  whatsapp: {
+    label: 'WhatsApp',
+    endpoint: '/api/whatsapp',
+    icon: Icons.MessageCircle,
+  },
+} as const
+
+type Channel = keyof typeof CHANNELS
+
 const highlightOptions = [
   'PARCELADO',
   'PREÇO HISTÓRICO',
@@ -86,8 +101,38 @@ async function getResponseMessage(response: Response) {
   return body?.message
 }
 
-export function TelegramForm() {
+async function sendToChannel(channel: Channel, data: Inputs) {
+  const { label, endpoint } = CHANNELS[channel]
+
+  const response = await fetch(endpoint, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  })
+
+  const responseMessage = await getResponseMessage(response)
+
+  if (!response.ok) {
+    throw new Error(
+      responseMessage ?? `Não foi possível enviar para o ${label}.`,
+    )
+  }
+
+  return responseMessage ?? `Mensagem enviada para o ${label}.`
+}
+
+interface TelegramFormProps {
+  whatsappEnabled?: boolean
+}
+
+export function TelegramForm({ whatsappEnabled = false }: TelegramFormProps) {
   const [isLoading, setIsLoading] = React.useState(false)
+  const [channels, setChannels] = React.useState<Record<Channel, boolean>>({
+    telegram: true,
+    whatsapp: whatsappEnabled,
+  })
   const form = useForm<Inputs>({
     resolver: zodResolver(telegramMessageSchema),
     defaultValues,
@@ -148,33 +193,51 @@ export function TelegramForm() {
   const previewText = buildTelegramPostText(previewMessage)
 
   async function onSubmit(data: Inputs) {
+    const selectedChannels = (Object.keys(CHANNELS) as Channel[]).filter(
+      (channel) =>
+        channels[channel] && (channel !== 'whatsapp' || whatsappEnabled),
+    )
+
+    if (selectedChannels.length === 0) {
+      toast.error('Selecione ao menos um canal.')
+      return
+    }
+
     setIsLoading(true)
 
     try {
-      const response = await fetch('/api/telegram', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      })
+      const results = await Promise.all(
+        selectedChannels.map(async (channel) => {
+          try {
+            return {
+              channel,
+              ok: true as const,
+              message: await sendToChannel(channel, data),
+            }
+          } catch (error) {
+            return {
+              channel,
+              ok: false as const,
+              message:
+                error instanceof Error
+                  ? error.message
+                  : `Não foi possível enviar para o ${CHANNELS[channel].label}.`,
+            }
+          }
+        }),
+      )
 
-      const responseMessage = await getResponseMessage(response)
-
-      if (!response.ok) {
-        throw new Error(
-          responseMessage ?? 'Não foi possível enviar para o Telegram.',
-        )
+      for (const result of results) {
+        if (result.ok) {
+          toast.success(result.message)
+        } else {
+          toast.error(result.message)
+        }
       }
 
-      toast.success(responseMessage ?? 'Mensagem enviada para o Telegram.')
-      form.reset(defaultValues)
-    } catch (error) {
-      toast.error(
-        error instanceof Error
-          ? error.message
-          : 'Não foi possível enviar para o Telegram.',
-      )
+      if (results.every((result) => result.ok)) {
+        form.reset(defaultValues)
+      }
     } finally {
       setIsLoading(false)
     }
@@ -186,12 +249,50 @@ export function TelegramForm() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-base">
             <Icons.Send className="size-4 text-primary" aria-hidden="true" />
-            Envio para Telegram
+            {whatsappEnabled
+              ? 'Envio para Telegram e WhatsApp'
+              : 'Envio para Telegram'}
           </CardTitle>
         </CardHeader>
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+              {whatsappEnabled && (
+                <div className="space-y-2">
+                  <Label>Canais</Label>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    {(Object.keys(CHANNELS) as Channel[]).map((channel) => {
+                      const { label, icon: Icon } = CHANNELS[channel]
+
+                      return (
+                        <div
+                          key={channel}
+                          className="flex h-9 items-center justify-between rounded-md border border-input px-3 shadow-sm"
+                        >
+                          <Label
+                            htmlFor={`channel-${channel}`}
+                            className="flex items-center gap-2 text-sm font-normal text-muted-foreground"
+                          >
+                            <Icon className="size-4" aria-hidden="true" />
+                            {label}
+                          </Label>
+                          <Switch
+                            id={`channel-${channel}`}
+                            checked={channels[channel]}
+                            onCheckedChange={(checked) =>
+                              setChannels((current) => ({
+                                ...current,
+                                [channel]: checked,
+                              }))
+                            }
+                          />
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+              )}
+
               <FormField
                 control={form.control}
                 name="title"

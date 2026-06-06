@@ -2,6 +2,10 @@
 
 import { TelegramForm } from '@/components/forms/telegram-form'
 
-export function TelegramMain() {
-  return <TelegramForm />
+interface TelegramMainProps {
+  whatsappEnabled: boolean
+}
+
+export function TelegramMain({ whatsappEnabled }: TelegramMainProps) {
+  return <TelegramForm whatsappEnabled={whatsappEnabled} />
 }
