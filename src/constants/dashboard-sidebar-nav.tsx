@@ -36,6 +36,13 @@ export const dashboardSidebarItems = [
     items: [],
   },
   {
+    title: 'WhatsApp',
+    url: '/dashboard/whatsapp-groups',
+    icon: Icons.MessageCircle,
+    isActive: true,
+    items: [],
+  },
+  {
     title: 'Produtos',
     url: '/dashboard/products',
     icon: PackageSearch,

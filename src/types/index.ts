@@ -90,6 +90,14 @@ export type Cashback = {
   updatedAt: string
 }
 
+export type WhatsappGroup = {
+  id: string
+  url: string
+  active: boolean
+  createdAt: string
+  updatedAt: string
+}
+
 export type Filter = {
   id: string
   name: string
