@@ -90,9 +90,9 @@ export function headerOptions({ categories }: HeaderOptionsProps) {
 
 export const externalLinkOptions: headerOption[] = [
   {
-    title: 'WhatsApp',
-    slug: 'https://benchpromos.com/whatsapp',
-    icon: Icons.WhatsApp,
+    title: 'Comunidades',
+    slug: 'https://benchpromos.com/comunidades',
+    icon: Icons.MessageCircle,
   },
   {
     title: 'YouTube',

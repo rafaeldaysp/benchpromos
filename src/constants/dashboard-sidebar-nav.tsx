@@ -36,8 +36,8 @@ export const dashboardSidebarItems = [
     items: [],
   },
   {
-    title: 'WhatsApp',
-    url: '/dashboard/whatsapp-groups',
+    title: 'Redes sociais',
+    url: '/dashboard/social-media',
     icon: Icons.MessageCircle,
     isActive: true,
     items: [],

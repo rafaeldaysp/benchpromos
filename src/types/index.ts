@@ -90,9 +90,25 @@ export type Cashback = {
   updatedAt: string
 }
 
-export type WhatsappGroup = {
+export type SocialMediaPlatform =
+  | 'WHATSAPP'
+  | 'TELEGRAM'
+  | 'DISCORD'
+  | 'YOUTUBE'
+
+export type SocialMediaType =
+  | 'GENERAL_OFFERS'
+  | 'TECH_OFFERS'
+  | 'COMMUNICATION'
+  | 'CONTENT'
+
+export type SocialMediaLink = {
   id: string
   url: string
+  title?: string
+  description?: string
+  platform: SocialMediaPlatform
+  type: SocialMediaType
   active: boolean
   createdAt: string
   updatedAt: string
