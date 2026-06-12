@@ -7,6 +7,7 @@ type IconType = ComponentType<{ className?: string }>
 
 interface PlatformMeta {
   label: string
+  tagline: string
   cta: string
   color: string
   icon: IconType
@@ -23,24 +24,28 @@ export const socialMediaPlatformMeta: Record<
 > = {
   WHATSAPP: {
     label: 'WhatsApp',
+    tagline: 'Ofertas e novidades diretas no seu bolso.',
     cta: 'Entrar no grupo',
     color: '#25D366',
     icon: Icons.WhatsApp,
   },
   TELEGRAM: {
     label: 'Telegram',
+    tagline: 'Um canal rápido, organizado e sem ruído.',
     cta: 'Entrar no canal',
     color: '#229ED9',
     icon: Icons.Telegram,
   },
   DISCORD: {
     label: 'Discord',
+    tagline: 'Troque ideia com a comunidade em tempo real.',
     cta: 'Entrar no servidor',
     color: '#5865F2',
     icon: Icons.Discord,
   },
   YOUTUBE: {
     label: 'YouTube',
+    tagline: 'Reviews, análises e novidades em vídeo.',
     cta: 'Inscrever-se',
     color: '#FF0000',
     icon: Icons.YoutubeIcon,

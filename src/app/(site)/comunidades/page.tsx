@@ -1,8 +1,9 @@
 import { gql } from '@apollo/client'
+import { ArrowUpRight } from 'lucide-react'
 import { type Metadata } from 'next'
 import Link from 'next/link'
 
-import { Button } from '@/components/ui/button'
+import { Icons } from '@/components/icons'
 import {
   socialMediaPlatformMeta,
   socialMediaTypeMeta,
@@ -29,6 +30,12 @@ const GET_ACTIVE_SOCIAL_MEDIA_LINKS = gql`
   }
 `
 
+const benefits = [
+  { icon: Icons.DollarSign, label: 'Ofertas em primeira mão' },
+  { icon: Icons.Tag, label: 'Cupons exclusivos' },
+  { icon: Icons.BellRing, label: 'Alertas de preço' },
+]
+
 export default async function CommunitiesPage() {
   const { data } = await getClient().query<{
     activeSocialMediaLinks: SocialMediaLink[]
@@ -49,78 +56,105 @@ export default async function CommunitiesPage() {
     .filter((group) => group.links.length > 0)
 
   return (
-    <main className="relative overflow-hidden px-4 py-16 sm:py-20">
-      {/* Ambient glow */}
+    <main className="relative overflow-hidden">
+      {/* Subtle ambient backdrop */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute left-1/2 top-0 -z-10 size-[640px] max-w-full -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/15 blur-3xl"
+        className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-80 bg-gradient-to-b from-primary/5 to-transparent"
       />
 
-      <div className="mx-auto w-full max-w-4xl">
+      <div className="mx-auto w-full max-w-4xl px-4 py-16 sm:py-24">
         {/* Hero */}
-        <header className="space-y-3 text-center duration-700 animate-in fade-in-0 slide-in-from-bottom-3 fill-mode-both">
-          <h1 className="text-balance text-3xl font-bold tracking-tight sm:text-4xl">
-            Faça parte das nossas comunidades
-          </h1>
-          <p className="mx-auto max-w-xl text-pretty text-muted-foreground">
-            Escolha onde você quer acompanhar o Bench Promos e seja o primeiro a
-            saber das melhores ofertas de tecnologia.
+        <header className="mx-auto max-w-2xl text-center">
+          <p className="text-sm font-semibold uppercase tracking-widest text-primary duration-700 animate-in fade-in-0 slide-in-from-bottom-2 fill-mode-both">
+            Comunidades
           </p>
+          <h1
+            className="mt-3 text-balance text-4xl font-bold tracking-tight duration-700 animate-in fade-in-0 slide-in-from-bottom-2 fill-mode-both sm:text-5xl"
+            style={{ animationDelay: '80ms' }}
+          >
+            Acompanhe o Bench Promos onde você preferir
+          </h1>
+          <p
+            className="mx-auto mt-4 max-w-xl text-pretty text-muted-foreground duration-700 animate-in fade-in-0 slide-in-from-bottom-2 fill-mode-both sm:text-lg"
+            style={{ animationDelay: '160ms' }}
+          >
+            Entre nas nossas comunidades e seja o primeiro a saber das melhores
+            ofertas de tecnologia.
+          </p>
+
+          <div
+            className="mx-auto mt-8 flex max-w-fit flex-wrap items-center justify-center gap-x-6 gap-y-2 rounded-2xl border bg-card/50 px-6 py-3 backdrop-blur-sm duration-700 animate-in fade-in-0 slide-in-from-bottom-2 fill-mode-both"
+            style={{ animationDelay: '240ms' }}
+          >
+            {benefits.map((benefit) => (
+              <div
+                key={benefit.label}
+                className="flex items-center gap-2 text-sm font-medium"
+              >
+                <benefit.icon
+                  className="size-4 text-primary"
+                  aria-hidden="true"
+                />
+                {benefit.label}
+              </div>
+            ))}
+          </div>
         </header>
 
+        {/* Communities */}
         {groups.length > 0 ? (
-          <div className="mt-12 space-y-12">
+          <div className="mt-16 space-y-12 sm:mt-20">
             {groups.map((group, groupIndex) => (
               <section
                 key={group.type}
-                className="space-y-5 duration-700 animate-in fade-in-0 slide-in-from-bottom-3 fill-mode-both"
-                style={{ animationDelay: `${120 + groupIndex * 120}ms` }}
+                className="duration-700 animate-in fade-in-0 slide-in-from-bottom-3 fill-mode-both"
+                style={{ animationDelay: `${320 + groupIndex * 100}ms` }}
               >
-                <div className="space-y-1">
-                  <h2 className="text-balance text-xl font-semibold tracking-tight">
+                <div className="mb-4 flex items-baseline gap-3">
+                  <h2 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
                     {group.meta.label}
                   </h2>
-                  <p className="text-pretty text-sm text-muted-foreground">
-                    {group.meta.description}
-                  </p>
+                  <div className="h-px flex-1 bg-gradient-to-r from-border to-transparent" />
                 </div>
 
-                <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                <ul className="grid gap-3 sm:grid-cols-2">
                   {group.links.map((link) => {
                     const platform = socialMediaPlatformMeta[link.platform]
 
                     return (
-                      <li
-                        key={link.id}
-                        className="flex flex-col items-center gap-4 rounded-2xl border bg-card/80 p-6 text-center shadow-[0_1px_1px_rgba(0,0,0,0.04),0_8px_24px_-12px_rgba(0,0,0,0.18)] backdrop-blur-sm transition-transform hover:-translate-y-0.5"
-                      >
-                        <div
-                          className="flex size-14 items-center justify-center rounded-2xl text-white"
-                          style={{
-                            backgroundColor: platform.color,
-                            boxShadow: `0 8px 24px -8px ${platform.color}b3`,
-                          }}
+                      <li key={link.id}>
+                        <Link
+                          href={link.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          aria-label={`${platform.label} — ${platform.cta}`}
+                          className="group flex items-center gap-4 rounded-2xl border bg-card p-4 shadow-sm transition-[transform,box-shadow,border-color] hover:-translate-y-0.5 hover:border-foreground/15 hover:shadow-md sm:p-5"
                         >
-                          <platform.icon className="size-7" />
-                        </div>
-                        <p className="font-semibold">{platform.label}</p>
-                        <Button
-                          asChild
-                          className="w-full gap-2 rounded-xl text-white transition-[transform,opacity] hover:opacity-90 active:scale-[0.96]"
-                          style={{ backgroundColor: platform.color }}
-                        >
-                          <Link
-                            href={link.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
+                          <span
+                            className="flex size-12 shrink-0 items-center justify-center rounded-xl text-white"
+                            style={{ backgroundColor: platform.color }}
                           >
                             <platform.icon
-                              className="size-4"
+                              className="size-6"
                               aria-hidden="true"
                             />
-                            {platform.cta}
-                          </Link>
-                        </Button>
+                          </span>
+
+                          <div className="min-w-0 flex-1">
+                            <p className="font-semibold leading-tight">
+                              {platform.label}
+                            </p>
+                            <p className="mt-0.5 truncate text-sm text-muted-foreground">
+                              {platform.tagline}
+                            </p>
+                          </div>
+
+                          <ArrowUpRight
+                            className="size-5 shrink-0 text-muted-foreground transition-[transform,color] group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-foreground"
+                            aria-hidden="true"
+                          />
+                        </Link>
                       </li>
                     )
                   })}
@@ -129,8 +163,14 @@ export default async function CommunitiesPage() {
             ))}
           </div>
         ) : (
-          <div className="mx-auto mt-12 max-w-md rounded-2xl border border-dashed bg-muted/40 px-4 py-10 text-center text-sm text-muted-foreground">
-            Nossas comunidades estarão disponíveis em breve. Volte logo! 💚
+          <div className="mx-auto mt-16 max-w-md rounded-2xl border bg-card px-6 py-12 text-center shadow-sm">
+            <div className="mx-auto flex size-14 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+              <Icons.MessageCircle className="size-7" aria-hidden="true" />
+            </div>
+            <p className="mt-4 font-semibold">Em breve</p>
+            <p className="mt-1 text-pretty text-sm text-muted-foreground">
+              Nossas comunidades estarão disponíveis em breve. Volte logo! 💚
+            </p>
           </div>
         )}
       </div>
