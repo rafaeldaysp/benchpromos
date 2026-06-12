@@ -1,11 +1,6 @@
 'use client'
 
-import {
-  AnimatePresence,
-  motion,
-  useReducedMotion,
-  type Variants,
-} from 'framer-motion'
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import Link from 'next/link'
 import { LayoutGrid, Users } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
@@ -66,24 +61,21 @@ export function SocialMediaFab({ links }: SocialMediaFabProps) {
     }
   }
 
-  const listVariants: Variants = {
-    hidden: {},
-    visible: { transition: { staggerChildren: 0.04, staggerDirection: -1 } },
-    exit: { transition: { staggerChildren: 0.03, staggerDirection: 1 } },
-  }
-
-  const itemVariants: Variants = {
-    hidden: reduceMotion ? { opacity: 0 } : { opacity: 0, y: 8, scale: 0.9 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      scale: 1,
-      transition: { type: 'spring', duration: 0.3, bounce: 0 },
-    },
-    exit: reduceMotion
-      ? { opacity: 0, transition: { duration: 0.1 } }
-      : { opacity: 0, y: 8, scale: 0.95, transition: { duration: 0.12 } },
-  }
+  // Animate the whole menu as one unit so every option lights up together,
+  // instead of revealing one after another.
+  const menuMotion = reduceMotion
+    ? {
+        initial: { opacity: 0 },
+        animate: { opacity: 1 },
+        exit: { opacity: 0 },
+        transition: { duration: 0.12 },
+      }
+    : {
+        initial: { opacity: 0, y: 8, scale: 0.98 },
+        animate: { opacity: 1, y: 0, scale: 1 },
+        exit: { opacity: 0, y: 8, scale: 0.98 },
+        transition: { duration: 0.18, ease: 'easeOut' as const },
+      }
 
   return (
     <div
@@ -96,17 +88,14 @@ export function SocialMediaFab({ links }: SocialMediaFabProps) {
         {open && (
           <motion.ul
             key="social-fab-menu"
-            initial="hidden"
-            animate="visible"
-            exit="exit"
-            variants={listVariants}
+            {...menuMotion}
             className="flex flex-col items-start gap-2.5"
           >
             {platformLinks.map((link) => {
               const platform = socialMediaPlatformMeta[link.platform]
 
               return (
-                <motion.li key={link.id} variants={itemVariants}>
+                <li key={link.id}>
                   <FabOption
                     href={link.url}
                     label={platform.label}
@@ -115,11 +104,11 @@ export function SocialMediaFab({ links }: SocialMediaFabProps) {
                   >
                     <platform.icon className="size-5" aria-hidden="true" />
                   </FabOption>
-                </motion.li>
+                </li>
               )
             })}
 
-            <motion.li variants={itemVariants}>
+            <li>
               <FabOption
                 href="/comunidades"
                 label="Ver todas"
@@ -127,7 +116,7 @@ export function SocialMediaFab({ links }: SocialMediaFabProps) {
               >
                 <LayoutGrid className="size-5" aria-hidden="true" />
               </FabOption>
-            </motion.li>
+            </li>
           </motion.ul>
         )}
       </AnimatePresence>
