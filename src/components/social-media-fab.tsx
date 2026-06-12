@@ -132,55 +132,37 @@ export function SocialMediaFab({ links }: SocialMediaFabProps) {
         )}
       </AnimatePresence>
 
-      <motion.div
-        initial={reduceMotion ? false : { scale: 0.6, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ type: 'spring', duration: 0.5, bounce: 0.35, delay: 0.3 }}
-        className="relative"
-      >
-        {/* Attention pulse */}
-        {!open && !reduceMotion && (
-          <motion.span
-            aria-hidden="true"
-            className="absolute inset-0 rounded-full bg-primary"
-            initial={{ opacity: 0.45, scale: 1 }}
-            animate={{ opacity: 0, scale: 1.7 }}
-            transition={{ duration: 2.2, repeat: Infinity, ease: 'easeOut' }}
-          />
+      <Link
+        href="/comunidades"
+        onClick={handleFabClick}
+        aria-expanded={open}
+        aria-haspopup="menu"
+        aria-label="Comunidades do Bench Promos"
+        className={cn(
+          'relative flex size-14 items-center justify-center rounded-full',
+          'border border-white/10 bg-gradient-to-br from-primary to-primary/80 text-primary-foreground',
+          'shadow-[0_8px_24px_-6px_hsl(var(--primary)/0.45),0_10px_28px_-8px_rgba(0,0,0,0.35)]',
+          'outline-none ring-offset-2 ring-offset-background transition-transform',
+          'hover:scale-[1.04] focus-visible:ring-2 focus-visible:ring-ring active:scale-[0.96]',
         )}
-
-        <Link
-          href="/comunidades"
-          onClick={handleFabClick}
-          aria-expanded={open}
-          aria-haspopup="menu"
-          aria-label="Comunidades do Bench Promos"
-          className={cn(
-            'relative flex size-14 items-center justify-center rounded-full',
-            'border border-white/10 bg-gradient-to-br from-primary to-primary/80 text-primary-foreground',
-            'shadow-[0_8px_24px_-6px_hsl(var(--primary)/0.45),0_10px_28px_-8px_rgba(0,0,0,0.35)]',
-            'outline-none ring-offset-2 ring-offset-background transition-transform',
-            'hover:scale-[1.04] focus-visible:ring-2 focus-visible:ring-ring active:scale-[0.96]',
-          )}
-        >
-          <AnimatePresence initial={false} mode="popLayout">
-            <motion.span
-              key={open ? 'close' : 'open'}
-              initial={{ opacity: 0, scale: 0.25, filter: 'blur(4px)' }}
-              animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
-              exit={{ opacity: 0, scale: 0.25, filter: 'blur(4px)' }}
-              transition={{ type: 'spring', duration: 0.3, bounce: 0 }}
-              className="absolute"
-            >
-              {open ? (
-                <Icons.X className="size-6" aria-hidden="true" />
-              ) : (
-                <Users className="size-6" aria-hidden="true" />
-              )}
-            </motion.span>
-          </AnimatePresence>
-        </Link>
-      </motion.div>
+      >
+        <AnimatePresence initial={false} mode="popLayout">
+          <motion.span
+            key={open ? 'close' : 'open'}
+            initial={{ opacity: 0, scale: 0.25, filter: 'blur(4px)' }}
+            animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
+            exit={{ opacity: 0, scale: 0.25, filter: 'blur(4px)' }}
+            transition={{ type: 'spring', duration: 0.3, bounce: 0 }}
+            className="absolute"
+          >
+            {open ? (
+              <Icons.X className="size-6" aria-hidden="true" />
+            ) : (
+              <Users className="size-6" aria-hidden="true" />
+            )}
+          </motion.span>
+        </AnimatePresence>
+      </Link>
     </div>
   )
 }
