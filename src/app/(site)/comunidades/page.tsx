@@ -23,6 +23,7 @@ const GET_ACTIVE_SOCIAL_MEDIA_LINKS = gql`
     activeSocialMediaLinks {
       id
       url
+      description
       platform
       type
       active
@@ -70,30 +71,21 @@ export default async function CommunitiesPage() {
       <div className="mx-auto w-full max-w-2xl">
         {/* Hero */}
         <header className="text-center">
-          <div className="flex justify-center duration-700 animate-in fade-in-0 zoom-in-95 fill-mode-both">
+          <div className="flex justify-center">
             <div className="flex size-16 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-[0_8px_24px_-8px_hsl(var(--primary)/0.6)]">
               <Users className="size-8" aria-hidden="true" />
             </div>
           </div>
 
-          <h1
-            className="mt-6 text-balance text-3xl font-bold tracking-tight duration-700 animate-in fade-in-0 slide-in-from-bottom-3 fill-mode-both sm:text-4xl"
-            style={{ animationDelay: '120ms' }}
-          >
+          <h1 className="mt-6 text-balance text-3xl font-bold tracking-tight sm:text-4xl">
             Acompanhe o Bench Promos onde você preferir
           </h1>
-          <p
-            className="mx-auto mt-3 max-w-md text-pretty text-muted-foreground duration-700 animate-in fade-in-0 slide-in-from-bottom-3 fill-mode-both"
-            style={{ animationDelay: '120ms' }}
-          >
+          <p className="mx-auto mt-3 max-w-md text-pretty text-muted-foreground">
             Entre nas nossas comunidades e seja o primeiro a saber das melhores
             ofertas de tecnologia.
           </p>
 
-          <div
-            className="mx-auto mt-6 flex max-w-fit flex-wrap items-center justify-center gap-x-5 gap-y-2 rounded-2xl border bg-card/50 px-5 py-2.5 backdrop-blur-sm duration-700 animate-in fade-in-0 slide-in-from-bottom-3 fill-mode-both"
-            style={{ animationDelay: '240ms' }}
-          >
+          <div className="mx-auto mt-6 flex max-w-fit flex-wrap items-center justify-center gap-x-5 gap-y-2 rounded-2xl border bg-card/50 px-5 py-2.5 backdrop-blur-sm">
             {benefits.map((benefit) => (
               <div
                 key={benefit.label}
@@ -112,11 +104,10 @@ export default async function CommunitiesPage() {
         {/* Stacked type cards */}
         {groups.length > 0 ? (
           <div className="mt-12 space-y-5">
-            {groups.map((group, groupIndex) => (
+            {groups.map((group) => (
               <section
                 key={group.type}
-                className="rounded-3xl border bg-card/80 p-5 shadow-[0_1px_1px_rgba(0,0,0,0.04),0_8px_24px_-12px_rgba(0,0,0,0.18)] backdrop-blur-sm duration-700 animate-in fade-in-0 slide-in-from-bottom-3 fill-mode-both sm:p-6"
-                style={{ animationDelay: `${320 + groupIndex * 100}ms` }}
+                className="rounded-3xl border bg-card/80 p-5 shadow-[0_1px_1px_rgba(0,0,0,0.04),0_8px_24px_-12px_rgba(0,0,0,0.18)] backdrop-blur-sm sm:p-6"
               >
                 <div className="mb-4">
                   <h2 className="font-semibold tracking-tight">
@@ -154,8 +145,8 @@ export default async function CommunitiesPage() {
                             <p className="text-sm font-medium leading-tight">
                               {platform.label}
                             </p>
-                            <p className="mt-0.5 truncate text-xs text-muted-foreground">
-                              {platform.tagline}
+                            <p className="mt-0.5 line-clamp-2 text-xs text-muted-foreground">
+                              {link.description || platform.tagline}
                             </p>
                           </div>
 

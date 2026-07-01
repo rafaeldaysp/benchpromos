@@ -227,11 +227,15 @@ export function SocialMediaLinkForm({
               <FormLabel>Descrição (opcional)</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="Nota interna"
+                  placeholder="Ex.: Cupons e ofertas relâmpago"
                   {...field}
                   value={field.value ?? ''}
                 />
               </FormControl>
+              <FormDescription>
+                Aparece abaixo do nome da plataforma na página pública. Se
+                vazia, usamos um texto padrão.
+              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
