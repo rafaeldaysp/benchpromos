@@ -41,20 +41,43 @@ import { telegramMessageSchema } from '@/lib/validations/telegram'
 
 type Inputs = z.infer<typeof telegramMessageSchema>
 
-const CHANNELS = {
-  telegram: {
-    label: 'Telegram',
+// `requires` gates a destination behind a server-side capability flag passed
+// down as props. Destinations without it are always available.
+const DESTINATIONS = {
+  'telegram-general': {
+    label: 'Ofertas gerais',
+    channel: 'Telegram',
     endpoint: '/api/telegram',
+    payload: { target: 'general' },
+    icon: Icons.Send,
+  },
+  'telegram-tech': {
+    label: 'Ofertas de tecnologia',
+    channel: 'Telegram',
+    endpoint: '/api/telegram',
+    payload: { target: 'tech' },
     icon: Icons.Send,
   },
   whatsapp: {
     label: 'WhatsApp',
+    channel: 'WhatsApp',
     endpoint: '/api/whatsapp',
+    payload: {},
     icon: Icons.MessageCircle,
+    requires: 'whatsapp',
+  },
+  discord: {
+    label: 'Discord',
+    channel: 'Discord',
+    endpoint: '/api/discord',
+    payload: {},
+    icon: Icons.Discord,
+    requires: 'discord',
   },
 } as const
 
-type Channel = keyof typeof CHANNELS
+type Destination = keyof typeof DESTINATIONS
+type Capability = 'whatsapp' | 'discord'
 
 const highlightOptions = [
   'PARCELADO',
@@ -101,38 +124,56 @@ async function getResponseMessage(response: Response) {
   return body?.message
 }
 
-async function sendToChannel(channel: Channel, data: Inputs) {
-  const { label, endpoint } = CHANNELS[channel]
+async function sendToDestination(destination: Destination, data: Inputs) {
+  const { label, endpoint, payload } = DESTINATIONS[destination]
 
   const response = await fetch(endpoint, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(data),
+    body: JSON.stringify({ ...data, ...payload }),
   })
 
   const responseMessage = await getResponseMessage(response)
 
   if (!response.ok) {
-    throw new Error(
-      responseMessage ?? `Não foi possível enviar para o ${label}.`,
-    )
+    throw new Error(responseMessage ?? `Não foi possível enviar para ${label}.`)
   }
 
-  return responseMessage ?? `Mensagem enviada para o ${label}.`
+  return responseMessage ?? `Mensagem enviada para ${label}.`
 }
 
 interface TelegramFormProps {
   whatsappEnabled?: boolean
+  discordEnabled?: boolean
 }
 
-export function TelegramForm({ whatsappEnabled = false }: TelegramFormProps) {
+export function TelegramForm({
+  whatsappEnabled = false,
+  discordEnabled = false,
+}: TelegramFormProps) {
   const [isLoading, setIsLoading] = React.useState(false)
-  const [channels, setChannels] = React.useState<Record<Channel, boolean>>({
-    telegram: true,
+  const [destinations, setDestinations] = React.useState<
+    Record<Destination, boolean>
+  >({
+    'telegram-general': true,
+    'telegram-tech': false,
     whatsapp: whatsappEnabled,
+    discord: discordEnabled,
   })
+
+  const capabilities: Record<Capability, boolean> = {
+    whatsapp: whatsappEnabled,
+    discord: discordEnabled,
+  }
+
+  const isDestinationAvailable = (destination: Destination) => {
+    const requires = (DESTINATIONS[destination] as { requires?: Capability })
+      .requires
+
+    return !requires || capabilities[requires]
+  }
   const form = useForm<Inputs>({
     resolver: zodResolver(telegramMessageSchema),
     defaultValues,
@@ -193,13 +234,15 @@ export function TelegramForm({ whatsappEnabled = false }: TelegramFormProps) {
   const previewText = buildTelegramPostText(previewMessage)
 
   async function onSubmit(data: Inputs) {
-    const selectedChannels = (Object.keys(CHANNELS) as Channel[]).filter(
-      (channel) =>
-        channels[channel] && (channel !== 'whatsapp' || whatsappEnabled),
+    const selectedDestinations = (
+      Object.keys(DESTINATIONS) as Destination[]
+    ).filter(
+      (destination) =>
+        destinations[destination] && isDestinationAvailable(destination),
     )
 
-    if (selectedChannels.length === 0) {
-      toast.error('Selecione ao menos um canal.')
+    if (selectedDestinations.length === 0) {
+      toast.error('Selecione ao menos um destino.')
       return
     }
 
@@ -207,21 +250,21 @@ export function TelegramForm({ whatsappEnabled = false }: TelegramFormProps) {
 
     try {
       const results = await Promise.all(
-        selectedChannels.map(async (channel) => {
+        selectedDestinations.map(async (destination) => {
           try {
             return {
-              channel,
+              destination,
               ok: true as const,
-              message: await sendToChannel(channel, data),
+              message: await sendToDestination(destination, data),
             }
           } catch (error) {
             return {
-              channel,
+              destination,
               ok: false as const,
               message:
                 error instanceof Error
                   ? error.message
-                  : `Não foi possível enviar para o ${CHANNELS[channel].label}.`,
+                  : `Não foi possível enviar para ${DESTINATIONS[destination].label}.`,
             }
           }
         }),
@@ -257,41 +300,50 @@ export function TelegramForm({ whatsappEnabled = false }: TelegramFormProps) {
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-              {whatsappEnabled && (
-                <div className="space-y-2">
-                  <Label>Canais</Label>
-                  <div className="grid gap-3 sm:grid-cols-2">
-                    {(Object.keys(CHANNELS) as Channel[]).map((channel) => {
-                      const { label, icon: Icon } = CHANNELS[channel]
+              <div className="space-y-2">
+                <Label>Destinos</Label>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  {(Object.keys(DESTINATIONS) as Destination[])
+                    .filter(isDestinationAvailable)
+                    .map((destination) => {
+                      const {
+                        label,
+                        channel,
+                        icon: Icon,
+                      } = DESTINATIONS[destination]
 
                       return (
                         <div
-                          key={channel}
+                          key={destination}
                           className="flex h-9 items-center justify-between rounded-md border border-input px-3 shadow-sm"
                         >
                           <Label
-                            htmlFor={`channel-${channel}`}
+                            htmlFor={`destination-${destination}`}
                             className="flex items-center gap-2 text-sm font-normal text-muted-foreground"
                           >
                             <Icon className="size-4" aria-hidden="true" />
-                            {label}
+                            <span>
+                              {label}
+                              <span className="ml-1 text-xs text-muted-foreground/70">
+                                {channel}
+                              </span>
+                            </span>
                           </Label>
                           <Switch
-                            id={`channel-${channel}`}
-                            checked={channels[channel]}
+                            id={`destination-${destination}`}
+                            checked={destinations[destination]}
                             onCheckedChange={(checked) =>
-                              setChannels((current) => ({
+                              setDestinations((current) => ({
                                 ...current,
-                                [channel]: checked,
+                                [destination]: checked,
                               }))
                             }
                           />
                         </div>
                       )
                     })}
-                  </div>
                 </div>
-              )}
+              </div>
 
               <FormField
                 control={form.control}

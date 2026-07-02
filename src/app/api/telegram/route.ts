@@ -25,9 +25,17 @@ export async function POST(request: Request) {
     )
   }
 
-  if (!env.TELEGRAM_BOT_TOKEN || !env.TELEGRAM_CHAT_ID) {
+  const target = body?.target === 'tech' ? 'tech' : 'general'
+  const chatId =
+    target === 'tech' ? env.TELEGRAM_TECH_CHAT_ID : env.TELEGRAM_CHAT_ID
+  const targetLabel =
+    target === 'tech' ? 'Ofertas de tecnologia' : 'Ofertas gerais'
+  const chatIdEnvName =
+    target === 'tech' ? 'TELEGRAM_TECH_CHAT_ID' : 'TELEGRAM_CHAT_ID'
+
+  if (!env.TELEGRAM_BOT_TOKEN || !chatId) {
     return NextResponse.json(
-      { message: 'Configure TELEGRAM_BOT_TOKEN e TELEGRAM_CHAT_ID.' },
+      { message: `Configure TELEGRAM_BOT_TOKEN e ${chatIdEnvName}.` },
       { status: 500 },
     )
   }
@@ -43,7 +51,7 @@ export async function POST(request: Request) {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          chat_id: env.TELEGRAM_CHAT_ID,
+          chat_id: chatId,
           photo: parsedMessage.data.imageUrl,
           caption: buildTelegramCaption(parsedMessage.data),
           parse_mode: 'HTML',
@@ -71,5 +79,7 @@ export async function POST(request: Request) {
     )
   }
 
-  return NextResponse.json({ message: 'Mensagem enviada com sucesso.' })
+  return NextResponse.json({
+    message: `Enviado para ${targetLabel} (Telegram).`,
+  })
 }
