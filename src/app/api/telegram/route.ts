@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server'
 
 import { env } from '@/env.mjs'
 import { authOptions } from '@/lib/auth'
-import { buildTelegramCaption, buildTelegramPlainCaption } from '@/lib/telegram'
+import { buildTelegramPlainCaption } from '@/lib/telegram'
 import { telegramMessageSchema } from '@/lib/validations/telegram'
 
 export const dynamic = 'force-dynamic'
@@ -41,60 +41,83 @@ export async function POST(request: Request) {
   }
 
   const message = parsedMessage.data
+  const caption = buildTelegramPlainCaption(message)
   const sendPhotoUrl = `https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendPhoto`
 
-  async function sendPhoto(caption: string, parseMode?: 'HTML') {
-    return fetch(sendPhotoUrl, {
+  // Mirrors the backend sendTelegramPhoto: same body shape, Markdown parse
+  // mode, and full response logged. `parseMode` is dropped on the retry.
+  async function sendPhoto(parseMode?: 'Markdown') {
+    const payload = {
+      photo: message.imageUrl,
+      caption,
+      chat_id: chatId,
+      ...(parseMode ? { parse_mode: parseMode } : {}),
+    }
+
+    console.log('[api/telegram] sendPhoto request', { target, ...payload })
+
+    const response = await fetch(sendPhotoUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        chat_id: chatId,
-        photo: message.imageUrl,
-        caption,
-        ...(parseMode ? { parse_mode: parseMode } : {}),
-      }),
+      body: JSON.stringify(payload),
       cache: 'no-store',
     })
+
+    const responseBody = await response.json().catch(() => null)
+
+    console.log('[api/telegram] sendPhoto response', {
+      target,
+      status: response.status,
+      ok: response.ok,
+      body: responseBody,
+    })
+
+    return { response, body: responseBody }
   }
 
-  let telegramResponse: Response
+  let result
 
   try {
-    telegramResponse = await sendPhoto(buildTelegramCaption(message), 'HTML')
-  } catch {
+    result = await sendPhoto('Markdown')
+  } catch (error) {
+    console.error('[api/telegram] fetch failed', error)
+
     return NextResponse.json(
       { message: 'Não foi possível conectar ao Telegram.' },
       { status: 502 },
     )
   }
 
-  let telegramBody = await telegramResponse.json().catch(() => null)
+  // If Telegram rejects the Markdown (e.g. an unbalanced entity), retry once
+  // as plain text with no parse_mode so the post still goes out.
+  if (!result.response.ok || result.body?.ok === false) {
+    console.warn(
+      '[api/telegram] Markdown send rejected, retrying as plain text:',
+      result.body?.description,
+    )
 
-  // If Telegram rejects the formatted caption (e.g. an entity parse error),
-  // retry once as plain text (no parse_mode) so the post still goes out.
-  if (!telegramResponse.ok || telegramBody?.ok === false) {
     try {
-      telegramResponse = await sendPhoto(buildTelegramPlainCaption(message))
-    } catch {
+      result = await sendPhoto()
+    } catch (error) {
+      console.error('[api/telegram] fetch failed', error)
+
       return NextResponse.json(
         { message: 'Não foi possível conectar ao Telegram.' },
         { status: 502 },
       )
     }
-
-    telegramBody = await telegramResponse.json().catch(() => null)
   }
 
-  if (!telegramResponse.ok || telegramBody?.ok === false) {
+  if (!result.response.ok || result.body?.ok === false) {
     return NextResponse.json(
       {
         message:
-          telegramBody?.description ??
+          result.body?.description ??
           'Não foi possível enviar a mensagem para o Telegram.',
       },
-      { status: telegramResponse.status || 502 },
+      { status: result.response.status || 502 },
     )
   }
 
