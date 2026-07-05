@@ -40,7 +40,9 @@ import {
 import {
   DESTINATIONS,
   DestinationToggles,
+  DiscordRolesInput,
   isDestinationAvailable,
+  isDiscordSelected,
   sendToDestination,
   type Capability,
   type Destination,
@@ -99,11 +101,14 @@ export function TelegramForm({
   const [destinations, setDestinations] = React.useState<
     Record<Destination, boolean>
   >({
+    // Only the Gerais channels are on by default; the rest are opt-in.
     'telegram-general': true,
     'telegram-tech': false,
-    whatsapp: whatsappEnabled,
-    discord: discordEnabled,
+    whatsapp: false,
+    'discord-gerais': discordEnabled,
+    'discord-promocoes': false,
   })
+  const [discordRoles, setDiscordRoles] = React.useState<string[]>([])
 
   const capabilities: Record<Capability, boolean> = {
     whatsapp: whatsappEnabled,
@@ -196,6 +201,7 @@ export function TelegramForm({
                 // Telegram dashboard: post the image as its own message on
                 // Discord, before the text (ignored by other channels).
                 discordImageFirst: true,
+                discordRoles,
               }),
             }
           } catch (error) {
@@ -221,6 +227,7 @@ export function TelegramForm({
 
       if (results.every((result) => result.ok)) {
         form.reset(defaultValues)
+        setDiscordRoles([])
       }
     } finally {
       setIsLoading(false)
@@ -253,6 +260,12 @@ export function TelegramForm({
                     }))
                   }
                 />
+                {isDiscordSelected(destinations) && (
+                  <DiscordRolesInput
+                    value={discordRoles}
+                    onChange={setDiscordRoles}
+                  />
+                )}
               </div>
 
               <FormField

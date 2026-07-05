@@ -25,18 +25,39 @@ export async function POST(request: Request) {
     )
   }
 
-  if (!env.DISCORD_WEBHOOK_URL) {
+  const target = body?.target === 'gerais' ? 'gerais' : 'promocoes'
+  const webhookBase =
+    target === 'gerais'
+      ? env.DISCORD_GERAIS_WEBHOOK_URL
+      : env.DISCORD_PROMOCOES_WEBHOOK_URL
+  const webhookEnvName =
+    target === 'gerais'
+      ? 'DISCORD_GERAIS_WEBHOOK_URL'
+      : 'DISCORD_PROMOCOES_WEBHOOK_URL'
+
+  if (!webhookBase) {
     return NextResponse.json(
-      { message: 'Configure DISCORD_WEBHOOK_URL.' },
+      { message: `Configure ${webhookEnvName}.` },
       { status: 500 },
     )
   }
 
   const message = parsedMessage.data
 
+  // Role marks are literal text prepended to the top of the message. Only
+  // @everyone / @here actually ping (Discord parses them by default); named
+  // roles render as text.
+  const roleMarks = Array.isArray(body?.discordRoles)
+    ? (body.discordRoles as unknown[]).filter(
+        (role): role is string =>
+          typeof role === 'string' && role.trim() !== '',
+      )
+    : []
+  const rolePrefix = roleMarks.length > 0 ? `${roleMarks.join(' ')}\n\n` : ''
+
   // `wait=true` makes Discord validate and return the created message, so we
   // get a real status code instead of a fire-and-forget 204.
-  const webhookUrl = `${env.DISCORD_WEBHOOK_URL}?wait=true`
+  const webhookUrl = `${webhookBase}?wait=true`
 
   async function postToDiscord(body: Record<string, unknown>) {
     let response: Response
@@ -85,11 +106,12 @@ export async function POST(request: Request) {
   }
 
   const textError = await postToDiscord({
-    // Plain message: the same formatted post used on the other channels.
-    content: buildTelegramPostText(message),
+    // Plain message: the same formatted post used on the other channels, with
+    // any role marks at the very top.
+    content: `${rolePrefix}${buildTelegramPostText(message)}`,
   })
 
   if (textError) return textError
 
-  return NextResponse.json({ message: 'Enviado para o Discord.' })
+  return NextResponse.json({ message: `Enviado para o Discord (#${target}).` })
 }

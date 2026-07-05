@@ -5,7 +5,9 @@ import { SalesMain } from './main'
 
 export default async function SalesDashboardPage() {
   const whatsappEnabled = getWhatsmiauServerConfig() !== null
-  const discordEnabled = Boolean(env.DISCORD_WEBHOOK_URL)
+  const discordEnabled =
+    Boolean(env.DISCORD_GERAIS_WEBHOOK_URL) ||
+    Boolean(env.DISCORD_PROMOCOES_WEBHOOK_URL)
 
   return (
     <div className="space-y-6">

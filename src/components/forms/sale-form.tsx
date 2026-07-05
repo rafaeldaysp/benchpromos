@@ -37,7 +37,9 @@ import { saleToTelegramMessage } from '@/lib/sale-to-telegram'
 import {
   DESTINATIONS,
   DestinationToggles,
+  DiscordRolesInput,
   isDestinationAvailable,
+  isDiscordSelected,
   sendToDestination,
   type Capability,
   type Destination,
@@ -209,8 +211,10 @@ export function SaleForm({
     'telegram-general': false,
     'telegram-tech': true,
     whatsapp: false,
-    discord: false,
+    'discord-gerais': false,
+    'discord-promocoes': false,
   })
+  const [shareDiscordRoles, setShareDiscordRoles] = React.useState<string[]>([])
 
   function handleDiscountChange(discountIds: string[]) {
     form.setValue('discountIds', discountIds)
@@ -324,7 +328,9 @@ export function SaleForm({
         try {
           return {
             ok: true as const,
-            message: await sendToDestination(destination, message),
+            message: await sendToDestination(destination, message, {
+              discordRoles: shareDiscordRoles,
+            }),
           }
         } catch (error) {
           return {
@@ -872,6 +878,12 @@ export function SaleForm({
                 }))
               }
             />
+            {isDiscordSelected(shareDestinations) && (
+              <DiscordRolesInput
+                value={shareDiscordRoles}
+                onChange={setShareDiscordRoles}
+              />
+            )}
           </div>
         )}
 
