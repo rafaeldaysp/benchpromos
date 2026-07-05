@@ -171,11 +171,9 @@ export function DiscordRolesInput({ value, onChange }: DiscordRolesInputProps) {
   const [input, setInput] = React.useState('')
 
   function addRole() {
-    const trimmed = input.trim()
+    const role = input.trim()
 
-    if (!trimmed) return
-
-    const role = trimmed.startsWith('@') ? trimmed : `@${trimmed}`
+    if (!role) return
 
     if (!value.includes(role)) onChange([...value, role])
 
