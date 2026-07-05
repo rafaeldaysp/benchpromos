@@ -28,7 +28,8 @@ const centsSchema = z.preprocess(
       required_error: 'Campo obrigatório',
     })
     .int()
-    .positive('Campo obrigatório'),
+    // 0 is allowed (e.g. giveaways) — the price line is then hidden in the post.
+    .min(0, 'Campo obrigatório'),
 )
 
 const optionalCentsSchema = z.preprocess(

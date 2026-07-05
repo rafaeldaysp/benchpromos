@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server'
 
 import { env } from '@/env.mjs'
 import { authOptions } from '@/lib/auth'
-import { buildTelegramCaption } from '@/lib/telegram'
+import { buildTelegramCaption, buildTelegramPlainCaption } from '@/lib/telegram'
 import { telegramMessageSchema } from '@/lib/validations/telegram'
 
 export const dynamic = 'force-dynamic'
@@ -40,25 +40,29 @@ export async function POST(request: Request) {
     )
   }
 
+  const message = parsedMessage.data
+  const sendPhotoUrl = `https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendPhoto`
+
+  async function sendPhoto(caption: string, parseMode?: 'HTML') {
+    return fetch(sendPhotoUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        chat_id: chatId,
+        photo: message.imageUrl,
+        caption,
+        ...(parseMode ? { parse_mode: parseMode } : {}),
+      }),
+      cache: 'no-store',
+    })
+  }
+
   let telegramResponse: Response
 
   try {
-    telegramResponse = await fetch(
-      `https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendPhoto`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          chat_id: chatId,
-          photo: parsedMessage.data.imageUrl,
-          caption: buildTelegramCaption(parsedMessage.data),
-          parse_mode: 'HTML',
-        }),
-        cache: 'no-store',
-      },
-    )
+    telegramResponse = await sendPhoto(buildTelegramCaption(message), 'HTML')
   } catch {
     return NextResponse.json(
       { message: 'Não foi possível conectar ao Telegram.' },
@@ -66,7 +70,22 @@ export async function POST(request: Request) {
     )
   }
 
-  const telegramBody = await telegramResponse.json().catch(() => null)
+  let telegramBody = await telegramResponse.json().catch(() => null)
+
+  // If Telegram rejects the formatted caption (e.g. an entity parse error),
+  // retry once as plain text (no parse_mode) so the post still goes out.
+  if (!telegramResponse.ok || telegramBody?.ok === false) {
+    try {
+      telegramResponse = await sendPhoto(buildTelegramPlainCaption(message))
+    } catch {
+      return NextResponse.json(
+        { message: 'Não foi possível conectar ao Telegram.' },
+        { status: 502 },
+      )
+    }
+
+    telegramBody = await telegramResponse.json().catch(() => null)
+  }
 
   if (!telegramResponse.ok || telegramBody?.ok === false) {
     return NextResponse.json(

@@ -134,6 +134,7 @@ export function SalesMain({
               <SheetTitle>ADICIONAR PROMOÇÃO</SheetTitle>
             </SheetHeader>
             <SaleForm
+              enableShare
               whatsappEnabled={whatsappEnabled}
               discordEnabled={discordEnabled}
               productSlug={selectedProduct?.slug ?? null}
@@ -305,6 +306,9 @@ export function SalesMain({
                         </SheetHeader>
                         <SaleForm
                           mode="update"
+                          enableShare
+                          whatsappEnabled={whatsappEnabled}
+                          discordEnabled={discordEnabled}
                           sale={sale}
                           productSlug={selectedProduct?.slug}
                         />

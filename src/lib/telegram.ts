@@ -13,6 +13,23 @@ function formatValue(value: string, html: boolean) {
   return html ? escapeHtml(value) : value
 }
 
+// Telegram caps sendPhoto captions at 1024 characters (counted on the parsed
+// text). We truncate the plain text and escape afterwards, so a cut can never
+// split an HTML entity.
+const TELEGRAM_CAPTION_LIMIT = 1024
+
+function truncateForTelegram(text: string) {
+  if (text.length <= TELEGRAM_CAPTION_LIMIT) return text
+
+  const limit = TELEGRAM_CAPTION_LIMIT - 1 // room for the ellipsis
+  const slice = text.slice(0, limit)
+  const lastBreak = slice.lastIndexOf('\n')
+  // Prefer ending on a line break when one is reasonably close to the limit.
+  const cut = lastBreak > limit - 300 ? slice.slice(0, lastBreak) : slice
+
+  return `${cut.trimEnd()}…`
+}
+
 function formatPrice(priceInCents: number) {
   return priceFormatter.format(priceInCents / 100)
 }
@@ -159,8 +176,12 @@ export function buildTelegramPostText(
     lines.push('')
   }
 
+  // A zero price is omitted entirely (from the title and the 💸 line) so posts
+  // like giveaways don't show a "R$ 0,00".
+  const titlePrice = effectivePrice > 0 ? ` - ${formattedPrice}` : ''
+
   lines.push(
-    `🔥 ${formatValue(message.title, html)} - ${formattedPrice} 🔥${
+    `🔥 ${formatValue(message.title, html)}${titlePrice} 🔥${
       message.sponsored ? ' #anúncio' : ''
     }`,
   )
@@ -170,25 +191,32 @@ export function buildTelegramPostText(
     lines.push(`🔴 ${formatValue(message.caption, html)} 🔴`)
   }
 
-  lines.push('')
+  const hasPriceBlock =
+    effectivePrice > 0 || !!message.coupon || !!message.totalInstallmentPrice
 
-  if (message.coupon) {
-    lines.push(`🎟 Cupom: ${formatValue(message.coupon, html)}`)
-  }
+  if (hasPriceBlock) {
+    lines.push('')
 
-  lines.push(formatPriceLine(effectivePrice, priceCondition, html))
+    if (message.coupon) {
+      lines.push(`🎟 Cupom: ${formatValue(message.coupon, html)}`)
+    }
 
-  if (message.totalInstallmentPrice) {
-    const effectiveInstallmentPrice =
-      getTelegramEffectiveInstallmentPrice(message) ??
-      message.totalInstallmentPrice
-    const installmentLabel = message.installments
-      ? `Parcelado em ${message.installments}x`
-      : 'Parcelado'
+    if (effectivePrice > 0) {
+      lines.push(formatPriceLine(effectivePrice, priceCondition, html))
+    }
 
-    lines.push(
-      formatPriceLine(effectiveInstallmentPrice, installmentLabel, html),
-    )
+    if (message.totalInstallmentPrice) {
+      const effectiveInstallmentPrice =
+        getTelegramEffectiveInstallmentPrice(message) ??
+        message.totalInstallmentPrice
+      const installmentLabel = message.installments
+        ? `Parcelado em ${message.installments}x`
+        : 'Parcelado'
+
+      lines.push(
+        formatPriceLine(effectiveInstallmentPrice, installmentLabel, html),
+      )
+    }
   }
 
   lines.push('')
@@ -225,6 +253,16 @@ export function buildTelegramPostText(
   return lines.join('\n')
 }
 
+/**
+ * HTML caption for Telegram's sendPhoto, capped at the 1024-char limit. The
+ * post text has no HTML tags, so we truncate the plain text and escape it —
+ * equivalent to the per-field HTML escaping, but length-safe.
+ */
 export function buildTelegramCaption(message: TelegramMessageInput) {
-  return buildTelegramPostText(message, { html: true })
+  return escapeHtml(truncateForTelegram(buildTelegramPostText(message)))
+}
+
+/** Plain-text, length-capped caption used as a fallback when HTML is rejected. */
+export function buildTelegramPlainCaption(message: TelegramMessageInput) {
+  return truncateForTelegram(buildTelegramPostText(message))
 }

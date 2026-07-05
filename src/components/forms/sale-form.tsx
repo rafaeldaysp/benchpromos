@@ -82,6 +82,7 @@ const UPDATE_SALE = gql`
   mutation ($input: UpdateSaleInput!) {
     updateSale(updateSaleInput: $input) {
       id
+      slug
       discounts {
         id
         label
@@ -151,6 +152,8 @@ interface SaleFormProps {
   productSlug?: string | null
   whatsappEnabled?: boolean
   discordEnabled?: boolean
+  /** Show the channel-share section (dashboard only, not the storefront card). */
+  enableShare?: boolean
   sale?: { id?: string } & Partial<Inputs> & {
       discounts?: Discount[]
     }
@@ -161,6 +164,7 @@ export function SaleForm({
   productSlug,
   whatsappEnabled = false,
   discordEnabled = false,
+  enableShare = false,
   sale,
 }: SaleFormProps) {
   const form = useForm<Inputs>({
@@ -207,9 +211,10 @@ export function SaleForm({
   const [shareDestinations, setShareDestinations] = React.useState<
     Record<Destination, boolean>
   >({
-    // Only Tecnologia is on by default; the admin opts into the rest.
+    // On create, Tecnologia is on by default; on edit (a manual retry) every
+    // channel starts off so nothing re-shares unless explicitly enabled.
     'telegram-general': false,
-    'telegram-tech': true,
+    'telegram-tech': mode === 'create',
     whatsapp: false,
     'discord-gerais': false,
     'discord-promocoes': false,
@@ -363,10 +368,12 @@ export function SaleForm({
         toast.error(error.message)
       },
       onCompleted(mutationData, _clientOptions) {
-        if (mode === 'create' && mutationData?.createSale) {
-          // Fire-and-forget: a share failure must not affect sale creation.
-          // Runs before form.reset() so it captures the live form values.
-          void shareCreatedSale(mutationData.createSale)
+        // Works for both create and update (edit is a manual retry surface).
+        // Fire-and-forget before form.reset() so it captures the live values.
+        const savedSale = mutationData?.createSale ?? mutationData?.updateSale
+
+        if (enableShare && savedSale) {
+          void shareCreatedSale(savedSale)
         }
 
         form.reset()
@@ -865,7 +872,7 @@ export function SaleForm({
           </div>
         )}
 
-        {mode === 'create' && (
+        {enableShare && (
           <div className="space-y-2 rounded-md border border-input p-3">
             <Label className="text-sm">Compartilhar nos canais</Label>
             <DestinationToggles
