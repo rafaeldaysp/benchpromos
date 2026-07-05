@@ -16,11 +16,29 @@ export async function POST(request: Request) {
   }
 
   const body = await request.json().catch(() => null)
+
+  console.log('[api/telegram] incoming body', body)
+
   const parsedMessage = telegramMessageSchema.safeParse(body)
 
   if (!parsedMessage.success) {
+    const fieldErrors = parsedMessage.error.flatten().fieldErrors
+
+    console.error('[api/telegram] validation failed', {
+      body,
+      fieldErrors,
+    })
+
+    const invalidFields = Object.keys(fieldErrors)
+
     return NextResponse.json(
-      { message: 'Revise os campos e tente novamente.' },
+      {
+        message:
+          invalidFields.length > 0
+            ? `Campos inválidos: ${invalidFields.join(', ')}.`
+            : 'Revise os campos e tente novamente.',
+        fieldErrors,
+      },
       { status: 400 },
     )
   }

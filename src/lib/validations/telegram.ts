@@ -32,8 +32,19 @@ const centsSchema = z.preprocess(
     .min(0, 'Campo obrigatório'),
 )
 
+// Treat empty / null / 0 / non-numeric as "not provided". Callers (e.g. the
+// sale form) default empty number fields to 0, which must not fail an
+// optional-positive field.
+function toOptionalPositiveInt(value: unknown) {
+  if (value === '' || value == null) return undefined
+
+  const num = Number(value)
+
+  return Number.isFinite(num) && num > 0 ? num : undefined
+}
+
 const optionalCentsSchema = z.preprocess(
-  (value) => (value === '' || value == null ? undefined : Number(value)),
+  toOptionalPositiveInt,
   z.number().int().positive('Campo obrigatório').optional(),
 )
 
@@ -64,7 +75,7 @@ export const telegramMessageSchema = z.object({
   note: optionalText(180),
   totalInstallmentPrice: optionalCentsSchema,
   installments: z.preprocess(
-    (value) => (value === '' || value == null ? undefined : Number(value)),
+    toOptionalPositiveInt,
     z.number().int().positive('Campo obrigatório').optional(),
   ),
   sponsored: z.boolean().default(true),
