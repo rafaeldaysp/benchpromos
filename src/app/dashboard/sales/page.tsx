@@ -1,7 +1,12 @@
 import { Separator } from '@/components/ui/separator'
+import { env } from '@/env.mjs'
+import { getWhatsmiauServerConfig } from '@/lib/whatsmiau'
 import { SalesMain } from './main'
 
 export default async function SalesDashboardPage() {
+  const whatsappEnabled = getWhatsmiauServerConfig() !== null
+  const discordEnabled = Boolean(env.DISCORD_WEBHOOK_URL)
+
   return (
     <div className="space-y-6">
       <div>
@@ -11,7 +16,10 @@ export default async function SalesDashboardPage() {
         </p>
       </div>
       <Separator />
-      <SalesMain />
+      <SalesMain
+        whatsappEnabled={whatsappEnabled}
+        discordEnabled={discordEnabled}
+      />
     </div>
   )
 }

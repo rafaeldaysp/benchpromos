@@ -33,6 +33,15 @@ import {
 import { Textarea } from '@/components/ui/textarea'
 import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
+import { saleToTelegramMessage } from '@/lib/sale-to-telegram'
+import {
+  DESTINATIONS,
+  DestinationToggles,
+  isDestinationAvailable,
+  sendToDestination,
+  type Capability,
+  type Destination,
+} from '@/lib/telegram-destinations'
 import { saleSchema } from '@/lib/validations/sale'
 import type { Cashback, Category, Coupon, Discount, Retailer } from '@/types'
 import { couponFormatter } from '@/utils/formatter'
@@ -62,6 +71,7 @@ const CREATE_SALE = gql`
   mutation ($input: CreateSaleInput!) {
     createSale(createSaleInput: $input) {
       id
+      slug
     }
   }
 `
@@ -90,6 +100,7 @@ const GET_DATA = gql`
       id
       provider
       value
+      affiliatedUrl
       retailer {
         id
         name
@@ -136,6 +147,8 @@ const defaultValues: Partial<Inputs> = {
 interface SaleFormProps {
   mode?: 'create' | 'update'
   productSlug?: string | null
+  whatsappEnabled?: boolean
+  discordEnabled?: boolean
   sale?: { id?: string } & Partial<Inputs> & {
       discounts?: Discount[]
     }
@@ -144,6 +157,8 @@ interface SaleFormProps {
 export function SaleForm({
   mode = 'create',
   productSlug,
+  whatsappEnabled = false,
+  discordEnabled = false,
   sale,
 }: SaleFormProps) {
   const form = useForm<Inputs>({
@@ -158,7 +173,10 @@ export function SaleForm({
 
   const { data, loading: isSaleFormDataLoading } = useQuery<{
     categories: Omit<Category, 'subcategories'>[]
-    cashbacks: (Pick<Cashback, 'id' | 'provider' | 'value'> & {
+    cashbacks: (Pick<
+      Cashback,
+      'id' | 'provider' | 'value' | 'affiliatedUrl'
+    > & {
       retailer: Retailer
     })[]
     coupons: (Pick<Coupon, 'id' | 'code' | 'discount'> & {
@@ -179,6 +197,20 @@ export function SaleForm({
   const [selectedDiscounts, setSelectedDiscounts] = React.useState<Discount[]>(
     sale?.discounts ?? [],
   )
+
+  const shareCapabilities: Record<Capability, boolean> = {
+    whatsapp: whatsappEnabled,
+    discord: discordEnabled,
+  }
+  const [shareDestinations, setShareDestinations] = React.useState<
+    Record<Destination, boolean>
+  >({
+    // Only Tecnologia is on by default; the admin opts into the rest.
+    'telegram-general': false,
+    'telegram-tech': true,
+    whatsapp: false,
+    discord: false,
+  })
 
   function handleDiscountChange(discountIds: string[]) {
     form.setValue('discountIds', discountIds)
@@ -246,6 +278,72 @@ export function SaleForm({
     setSelectedDiscounts([])
   }
 
+  async function shareCreatedSale(createdSale: { id: string; slug: string }) {
+    const selected = (Object.keys(DESTINATIONS) as Destination[]).filter(
+      (destination) =>
+        shareDestinations[destination] &&
+        isDestinationAvailable(destination, shareCapabilities),
+    )
+
+    if (selected.length === 0) return
+
+    // Read synchronously before the caller runs form.reset().
+    const values = form.getValues()
+    const selectedCoupon = data?.coupons.find(
+      (coupon) => coupon.id === values.couponId,
+    )
+    const selectedCashback = data?.cashbacks.find(
+      (cashback) => cashback.id === values.cashbackId,
+    )
+
+    const message = saleToTelegramMessage({
+      id: createdSale.id,
+      slug: createdSale.slug,
+      title: values.title,
+      imageUrl: values.imageUrl,
+      price: values.price,
+      totalInstallmentPrice: values.totalInstallmentPrice,
+      installments: values.installments,
+      caption: values.caption,
+      label: values.label,
+      review: values.review,
+      couponCode: selectedCoupon?.code || values.coupon || undefined,
+      couponDiscount: selectedCoupon?.discount,
+      cashback: selectedCashback
+        ? {
+            value: selectedCashback.value,
+            provider: selectedCashback.provider,
+            affiliatedUrl: selectedCashback.affiliatedUrl,
+          }
+        : undefined,
+      discountValues: selectedDiscounts.map((discount) => discount.discount),
+    })
+
+    const results = await Promise.all(
+      selected.map(async (destination) => {
+        try {
+          return {
+            ok: true as const,
+            message: await sendToDestination(destination, message),
+          }
+        } catch (error) {
+          return {
+            ok: false as const,
+            message:
+              error instanceof Error
+                ? error.message
+                : `Não foi possível enviar para ${DESTINATIONS[destination].label}.`,
+          }
+        }
+      }),
+    )
+
+    for (const result of results) {
+      if (result.ok) toast.success(result.message)
+      else toast.error(result.message)
+    }
+  }
+
   const [mutateSale, { loading: isLoading }] = useMutation(
     mode === 'create' ? CREATE_SALE : UPDATE_SALE,
     {
@@ -258,7 +356,13 @@ export function SaleForm({
       onError(error, _clientOptions) {
         toast.error(error.message)
       },
-      onCompleted(_data, _clientOptions) {
+      onCompleted(mutationData, _clientOptions) {
+        if (mode === 'create' && mutationData?.createSale) {
+          // Fire-and-forget: a share failure must not affect sale creation.
+          // Runs before form.reset() so it captures the live form values.
+          void shareCreatedSale(mutationData.createSale)
+        }
+
         form.reset()
 
         setOpenDialog(
@@ -266,12 +370,12 @@ export function SaleForm({
           false,
         )
 
-        const message =
+        toast.success(
           mode === 'create'
             ? 'Promoção cadastrada com sucesso.'
-            : 'Promoção atualizada com sucesso.'
+            : 'Promoção atualizada com sucesso.',
+        )
 
-        toast.success(message)
         router.refresh()
       },
     },
@@ -752,6 +856,22 @@ export function SaleForm({
             <Label className="w-max text-sm" htmlFor="createDeal">
               Criar oferta para o produto
             </Label>
+          </div>
+        )}
+
+        {mode === 'create' && (
+          <div className="space-y-2 rounded-md border border-input p-3">
+            <Label className="text-sm">Compartilhar nos canais</Label>
+            <DestinationToggles
+              destinations={shareDestinations}
+              capabilities={shareCapabilities}
+              onToggle={(destination, checked) =>
+                setShareDestinations((current) => ({
+                  ...current,
+                  [destination]: checked,
+                }))
+              }
+            />
           </div>
         )}
 

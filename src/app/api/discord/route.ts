@@ -34,43 +34,62 @@ export async function POST(request: Request) {
 
   const message = parsedMessage.data
 
-  let discordResponse: Response
+  // `wait=true` makes Discord validate and return the created message, so we
+  // get a real status code instead of a fire-and-forget 204.
+  const webhookUrl = `${env.DISCORD_WEBHOOK_URL}?wait=true`
 
-  try {
-    // `wait=true` makes Discord validate and return the created message, so we
-    // get a real status code instead of a fire-and-forget 204.
-    discordResponse = await fetch(`${env.DISCORD_WEBHOOK_URL}?wait=true`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        // Plain message: the same formatted post used on the other channels.
-        // The product URL already renders a preview (with image), so we don't
-        // send the image separately.
-        content: buildTelegramPostText(message),
-      }),
-      cache: 'no-store',
+  async function postToDiscord(body: Record<string, unknown>) {
+    let response: Response
+
+    try {
+      response = await fetch(webhookUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
+        cache: 'no-store',
+      })
+    } catch {
+      return NextResponse.json(
+        { message: 'Não foi possível conectar ao Discord.' },
+        { status: 502 },
+      )
+    }
+
+    if (!response.ok) {
+      const discordBody = await response.json().catch(() => null)
+
+      return NextResponse.json(
+        {
+          message:
+            discordBody?.message ??
+            'Não foi possível enviar a mensagem para o Discord.',
+        },
+        { status: response.status || 502 },
+      )
+    }
+
+    return null
+  }
+
+  // When requested (Telegram dashboard), post the image as its own message
+  // first, then the text. Otherwise a single message whose product URL renders
+  // the preview.
+  if (body?.discordImageFirst && message.imageUrl) {
+    const imageError = await postToDiscord({
+      embeds: [{ image: { url: message.imageUrl } }],
     })
-  } catch {
-    return NextResponse.json(
-      { message: 'Não foi possível conectar ao Discord.' },
-      { status: 502 },
-    )
+
+    if (imageError) return imageError
   }
 
-  if (!discordResponse.ok) {
-    const discordBody = await discordResponse.json().catch(() => null)
+  const textError = await postToDiscord({
+    // Plain message: the same formatted post used on the other channels.
+    content: buildTelegramPostText(message),
+  })
 
-    return NextResponse.json(
-      {
-        message:
-          discordBody?.message ??
-          'Não foi possível enviar a mensagem para o Discord.',
-      },
-      { status: discordResponse.status || 502 },
-    )
-  }
+  if (textError) return textError
 
   return NextResponse.json({ message: 'Enviado para o Discord.' })
 }

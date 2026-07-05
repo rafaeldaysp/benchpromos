@@ -199,6 +199,29 @@ export function buildTelegramPostText(
     lines.push(`🔸 ${formatValue(message.note, html)}`)
   }
 
+  if (message.cashback) {
+    lines.push('')
+    lines.push(
+      `🟢 Tem ${message.cashback.value}% de Cashback via ${formatValue(
+        message.cashback.provider,
+        html,
+      )}, se você não utiliza, entra aqui > ${formatValue(
+        message.cashback.affiliatedUrl,
+        html,
+      )} 🟢`,
+    )
+  }
+
+  if (message.review) {
+    lines.push('')
+    lines.push(
+      message.review
+        .split('\n\n')
+        .map((paragraph) => `🔸 ${formatValue(paragraph, html)}`)
+        .join('\n\n'),
+    )
+  }
+
   return lines.join('\n')
 }
 

@@ -67,6 +67,14 @@ export const telegramMessageSchema = z.object({
     z.number().int().positive('Campo obrigatório').optional(),
   ),
   sponsored: z.boolean().default(true),
+  review: optionalText(2000),
+  cashback: z
+    .object({
+      value: z.number(),
+      provider: z.string().min(1),
+      affiliatedUrl: z.string().min(1),
+    })
+    .optional(),
 })
 
 export type TelegramMessageInput = z.infer<typeof telegramMessageSchema>

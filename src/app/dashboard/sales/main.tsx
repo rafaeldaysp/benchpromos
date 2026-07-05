@@ -58,7 +58,15 @@ const DELETE_SALE = gql`
   }
 `
 
-export function SalesMain() {
+interface SalesMainProps {
+  whatsappEnabled?: boolean
+  discordEnabled?: boolean
+}
+
+export function SalesMain({
+  whatsappEnabled = false,
+  discordEnabled = false,
+}: SalesMainProps = {}) {
   const [selectedSale, setSelectedSale] = React.useState<
     Sale & {
       product: Pick<Product, 'slug' | 'name' | 'imageUrl'> & {
@@ -126,6 +134,8 @@ export function SalesMain() {
               <SheetTitle>ADICIONAR PROMOÇÃO</SheetTitle>
             </SheetHeader>
             <SaleForm
+              whatsappEnabled={whatsappEnabled}
+              discordEnabled={discordEnabled}
               productSlug={selectedProduct?.slug ?? null}
               sale={{
                 title: selectedProduct?.name ?? '',

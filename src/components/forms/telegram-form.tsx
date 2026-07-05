@@ -37,47 +37,17 @@ import {
   getTelegramEffectiveInstallmentPrice,
   getTelegramEffectivePrice,
 } from '@/lib/telegram'
+import {
+  DESTINATIONS,
+  DestinationToggles,
+  isDestinationAvailable,
+  sendToDestination,
+  type Capability,
+  type Destination,
+} from '@/lib/telegram-destinations'
 import { telegramMessageSchema } from '@/lib/validations/telegram'
 
 type Inputs = z.infer<typeof telegramMessageSchema>
-
-// `requires` gates a destination behind a server-side capability flag passed
-// down as props. Destinations without it are always available.
-const DESTINATIONS = {
-  'telegram-general': {
-    label: 'Ofertas gerais',
-    channel: 'Telegram',
-    endpoint: '/api/telegram',
-    payload: { target: 'general' },
-    icon: Icons.Send,
-  },
-  'telegram-tech': {
-    label: 'Ofertas de tecnologia',
-    channel: 'Telegram',
-    endpoint: '/api/telegram',
-    payload: { target: 'tech' },
-    icon: Icons.Send,
-  },
-  whatsapp: {
-    label: 'WhatsApp',
-    channel: 'WhatsApp',
-    endpoint: '/api/whatsapp',
-    payload: {},
-    icon: Icons.MessageCircle,
-    requires: 'whatsapp',
-  },
-  discord: {
-    label: 'Discord',
-    channel: 'Discord',
-    endpoint: '/api/discord',
-    payload: {},
-    icon: Icons.Discord,
-    requires: 'discord',
-  },
-} as const
-
-type Destination = keyof typeof DESTINATIONS
-type Capability = 'whatsapp' | 'discord'
 
 const highlightOptions = [
   'PARCELADO',
@@ -116,34 +86,6 @@ function getPreviewImageUrl(imageUrl?: string) {
   }
 }
 
-async function getResponseMessage(response: Response) {
-  const body = (await response.json().catch(() => null)) as {
-    message?: string
-  } | null
-
-  return body?.message
-}
-
-async function sendToDestination(destination: Destination, data: Inputs) {
-  const { label, endpoint, payload } = DESTINATIONS[destination]
-
-  const response = await fetch(endpoint, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ ...data, ...payload }),
-  })
-
-  const responseMessage = await getResponseMessage(response)
-
-  if (!response.ok) {
-    throw new Error(responseMessage ?? `Não foi possível enviar para ${label}.`)
-  }
-
-  return responseMessage ?? `Mensagem enviada para ${label}.`
-}
-
 interface TelegramFormProps {
   whatsappEnabled?: boolean
   discordEnabled?: boolean
@@ -168,12 +110,6 @@ export function TelegramForm({
     discord: discordEnabled,
   }
 
-  const isDestinationAvailable = (destination: Destination) => {
-    const requires = (DESTINATIONS[destination] as { requires?: Capability })
-      .requires
-
-    return !requires || capabilities[requires]
-  }
   const form = useForm<Inputs>({
     resolver: zodResolver(telegramMessageSchema),
     defaultValues,
@@ -238,7 +174,8 @@ export function TelegramForm({
       Object.keys(DESTINATIONS) as Destination[]
     ).filter(
       (destination) =>
-        destinations[destination] && isDestinationAvailable(destination),
+        destinations[destination] &&
+        isDestinationAvailable(destination, capabilities),
     )
 
     if (selectedDestinations.length === 0) {
@@ -255,7 +192,11 @@ export function TelegramForm({
             return {
               destination,
               ok: true as const,
-              message: await sendToDestination(destination, data),
+              message: await sendToDestination(destination, data, {
+                // Telegram dashboard: post the image as its own message on
+                // Discord, before the text (ignored by other channels).
+                discordImageFirst: true,
+              }),
             }
           } catch (error) {
             return {
@@ -302,47 +243,16 @@ export function TelegramForm({
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
               <div className="space-y-2">
                 <Label>Destinos</Label>
-                <div className="grid gap-3 sm:grid-cols-2">
-                  {(Object.keys(DESTINATIONS) as Destination[])
-                    .filter(isDestinationAvailable)
-                    .map((destination) => {
-                      const {
-                        label,
-                        channel,
-                        icon: Icon,
-                      } = DESTINATIONS[destination]
-
-                      return (
-                        <div
-                          key={destination}
-                          className="flex h-9 items-center justify-between rounded-md border border-input px-3 shadow-sm"
-                        >
-                          <Label
-                            htmlFor={`destination-${destination}`}
-                            className="flex items-center gap-2 text-sm font-normal text-muted-foreground"
-                          >
-                            <Icon className="size-4" aria-hidden="true" />
-                            <span>
-                              {label}
-                              <span className="ml-1 text-xs text-muted-foreground/70">
-                                {channel}
-                              </span>
-                            </span>
-                          </Label>
-                          <Switch
-                            id={`destination-${destination}`}
-                            checked={destinations[destination]}
-                            onCheckedChange={(checked) =>
-                              setDestinations((current) => ({
-                                ...current,
-                                [destination]: checked,
-                              }))
-                            }
-                          />
-                        </div>
-                      )
-                    })}
-                </div>
+                <DestinationToggles
+                  destinations={destinations}
+                  capabilities={capabilities}
+                  onToggle={(destination, checked) =>
+                    setDestinations((current) => ({
+                      ...current,
+                      [destination]: checked,
+                    }))
+                  }
+                />
               </div>
 
               <FormField
