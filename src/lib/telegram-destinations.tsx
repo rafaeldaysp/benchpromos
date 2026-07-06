@@ -1,10 +1,6 @@
 'use client'
 
-import * as React from 'react'
-
 import { Icons } from '@/components/icons'
-import { Badge } from '@/components/ui/badge'
-import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import type { TelegramMessageInput } from '@/lib/validations/telegram'
@@ -154,71 +150,6 @@ export function DestinationToggles({
             </div>
           )
         })}
-    </div>
-  )
-}
-
-interface DiscordRolesInputProps {
-  value: string[]
-  onChange: (roles: string[]) => void
-}
-
-/**
- * Chip input for Discord role marks. Type "@cargo" and press Enter to add;
- * the marks are prepended (as literal text) to the top of the Discord message.
- */
-export function DiscordRolesInput({ value, onChange }: DiscordRolesInputProps) {
-  const [input, setInput] = React.useState('')
-
-  function addRole() {
-    const role = input.trim()
-
-    if (!role) return
-
-    if (!value.includes(role)) onChange([...value, role])
-
-    setInput('')
-  }
-
-  return (
-    <div className="space-y-2">
-      <Label className="text-xs text-muted-foreground">
-        Marcar cargos no Discord (opcional)
-      </Label>
-      {value.length > 0 && (
-        <div className="flex flex-wrap gap-1.5">
-          {value.map((role) => (
-            <Badge key={role} variant="secondary" className="gap-1">
-              {role}
-              <button
-                type="button"
-                onClick={() => onChange(value.filter((item) => item !== role))}
-                aria-label={`Remover ${role}`}
-                className="text-muted-foreground hover:text-foreground"
-              >
-                <Icons.X className="size-3" aria-hidden="true" />
-              </button>
-            </Badge>
-          ))}
-        </div>
-      )}
-      <Input
-        value={input}
-        onChange={(event) => setInput(event.target.value)}
-        onKeyDown={(event) => {
-          if (event.key === 'Enter') {
-            event.preventDefault()
-            addRole()
-          } else if (
-            event.key === 'Backspace' &&
-            input === '' &&
-            value.length > 0
-          ) {
-            onChange(value.slice(0, -1))
-          }
-        }}
-        placeholder="@cargo e Enter"
-      />
     </div>
   )
 }

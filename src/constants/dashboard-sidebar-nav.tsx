@@ -1,5 +1,6 @@
 import { Icons } from '@/components/icons'
 import {
+  AtSign,
   Award,
   DollarSign,
   Gift,
@@ -82,6 +83,13 @@ export const dashboardSidebarItems = [
     url: '/dashboard/discounts',
     isActive: true,
     icon: Percent,
+    items: [],
+  },
+  {
+    title: 'Cargos Discord',
+    url: '/dashboard/discord-roles',
+    isActive: true,
+    icon: AtSign,
     items: [],
   },
   {

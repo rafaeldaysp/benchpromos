@@ -47,6 +47,14 @@ export type Coupon = {
   updatedAt: string
 }
 
+export type DiscordRole = {
+  id: string
+  name: string
+  value: string
+  createdAt: string
+  updatedAt: string
+}
+
 export type Discount = {
   id: string
   discount: string

@@ -37,10 +37,10 @@ import {
   getTelegramEffectiveInstallmentPrice,
   getTelegramEffectivePrice,
 } from '@/lib/telegram'
+import { DiscordRolesSelector } from '@/components/discord-roles-selector'
 import {
   DESTINATIONS,
   DestinationToggles,
-  DiscordRolesInput,
   isDestinationAvailable,
   isDiscordSelected,
   sendToDestination,
@@ -261,7 +261,7 @@ export function TelegramForm({
                   }
                 />
                 {isDiscordSelected(destinations) && (
-                  <DiscordRolesInput
+                  <DiscordRolesSelector
                     value={discordRoles}
                     onChange={setDiscordRoles}
                   />

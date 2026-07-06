@@ -34,10 +34,10 @@ import { Textarea } from '@/components/ui/textarea'
 import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
 import { saleToTelegramMessage } from '@/lib/sale-to-telegram'
+import { DiscordRolesSelector } from '@/components/discord-roles-selector'
 import {
   DESTINATIONS,
   DestinationToggles,
-  DiscordRolesInput,
   isDestinationAvailable,
   isDiscordSelected,
   sendToDestination,
@@ -886,7 +886,7 @@ export function SaleForm({
               }
             />
             {isDiscordSelected(shareDestinations) && (
-              <DiscordRolesInput
+              <DiscordRolesSelector
                 value={shareDiscordRoles}
                 onChange={setShareDiscordRoles}
               />
