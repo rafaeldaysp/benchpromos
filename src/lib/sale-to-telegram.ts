@@ -18,26 +18,27 @@ export interface SaleToTelegramInput {
   /** Discount string of the selected coupon, e.g. "10%" or "100". */
   couponDiscount?: string
   cashback?: { value: number; provider: string; affiliatedUrl: string }
-  /** Discount strings of the selected discounts, e.g. ["10%", "50"]. */
-  discountValues: string[]
+  /** Selected discounts, e.g. [{ discount: "10%", label: "Moedas" }]. */
+  discounts: { discount: string; label?: string }[]
 }
 
 export function saleToTelegramMessage(
   input: SaleToTelegramInput,
 ): TelegramMessageInput {
   const cashbackPercent = input.cashback?.value
+  const discountValues = input.discounts.map((discount) => discount.discount)
   const effectivePrice = priceCalculator(
     input.price,
     input.couponDiscount,
     cashbackPercent,
-    input.discountValues,
+    discountValues,
   )
   const effectiveInstallmentPrice = input.totalInstallmentPrice
     ? priceCalculator(
         input.totalInstallmentPrice,
         input.couponDiscount,
         cashbackPercent,
-        input.discountValues,
+        discountValues,
       )
     : undefined
 
@@ -65,5 +66,6 @@ export function saleToTelegramMessage(
     sponsored: true,
     review: input.review || undefined,
     cashback: input.cashback,
+    discounts: input.discounts,
   }
 }

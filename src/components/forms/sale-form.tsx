@@ -325,7 +325,10 @@ export function SaleForm({
             affiliatedUrl: selectedCashback.affiliatedUrl,
           }
         : undefined,
-      discountValues: selectedDiscounts.map((discount) => discount.discount),
+      discounts: selectedDiscounts.map((discount) => ({
+        discount: discount.discount,
+        label: discount.label,
+      })),
     })
 
     const results = await Promise.all(

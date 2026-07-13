@@ -80,6 +80,16 @@ export const telegramMessageSchema = z.object({
   ),
   sponsored: z.boolean().default(true),
   review: optionalText(2000),
+  // Already subtracted from `price` by the caller; carried here only so the
+  // post can tell the reader where the lower price comes from.
+  discounts: z
+    .array(
+      z.object({
+        discount: z.string().min(1),
+        label: optionalText(80),
+      }),
+    )
+    .optional(),
   cashback: z
     .object({
       value: z.number(),

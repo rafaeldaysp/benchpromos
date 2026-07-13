@@ -1,5 +1,5 @@
 import type { TelegramMessageInput } from '@/lib/validations/telegram'
-import { priceFormatter } from '@/utils/formatter'
+import { couponFormatter, priceFormatter } from '@/utils/formatter'
 
 function escapeHtml(value: string) {
   return value
@@ -216,6 +216,13 @@ export function buildTelegramPostText(
       lines.push(
         formatPriceLine(effectiveInstallmentPrice, installmentLabel, html),
       )
+    }
+
+    for (const { discount, label } of message.discounts ?? []) {
+      const value = formatValue(couponFormatter(discount), html)
+      const source = label ? ` em ${formatValue(label, html)}` : ''
+
+      lines.push(`🏷 Já inclui ${value} de desconto${source}`)
     }
   }
 
