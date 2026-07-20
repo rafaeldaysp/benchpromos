@@ -387,7 +387,7 @@ export function TelegramForm({
                   name="price"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Preço base</FormLabel>
+                      <FormLabel>Preço base (opcional)</FormLabel>
                       <FormControl>
                         <PriceInput
                           placeholder="4.447,00"

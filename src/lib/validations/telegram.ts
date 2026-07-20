@@ -20,17 +20,15 @@ function optionalText(maxLength: number) {
   )
 }
 
-const centsSchema = z.preprocess(
-  (value) => (value === '' || value == null ? undefined : Number(value)),
-  z
-    .number({
-      invalid_type_error: 'Campo obrigatório',
-      required_error: 'Campo obrigatório',
-    })
-    .int()
-    // 0 is allowed (e.g. giveaways) — the price line is then hidden in the post.
-    .min(0, 'Campo obrigatório'),
-)
+// Price is optional. Empty / null / non-numeric falls back to 0, which hides
+// the price line in the post (e.g. giveaways).
+const priceSchema = z.preprocess((value) => {
+  if (value === '' || value == null) return 0
+
+  const num = Number(value)
+
+  return Number.isFinite(num) ? num : 0
+}, z.number().int().min(0))
 
 // Treat empty / null / 0 / non-numeric as "not provided". Callers (e.g. the
 // sale form) default empty number fields to 0, which must not fail an
@@ -55,7 +53,7 @@ export const telegramMessageSchema = z.object({
     .url('Endereço inválido')
     .refine(isHttpUrl, 'Endereço inválido'),
   title: z.string().min(1, 'Campo obrigatório').max(180).trim(),
-  price: centsSchema,
+  price: priceSchema,
   url: z
     .string()
     .min(1, 'Campo obrigatório')
