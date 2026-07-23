@@ -10,7 +10,6 @@ import { getClient } from '@/lib/apollo'
 import { type Category } from '@/types'
 import { gql } from '@apollo/client'
 import { cn } from '@/lib/utils'
-import { Icons } from '../icons'
 
 const GET_CATEGORIES = gql`
   query GetCategories {
@@ -35,36 +34,28 @@ export async function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-40 w-full bg-background">
-      <div className="container flex h-14 items-center max-sm:px-4">
+      <div className="container flex h-14 items-center gap-2 max-sm:px-4 sm:gap-3">
         <MainNav categories={categories} />
 
-        <div className="flex flex-1 justify-end">
-          <nav className="flex items-center space-x-2">
+        <div className="flex min-w-0 flex-1 justify-end">
+          <nav className="flex min-w-0 flex-1 items-center justify-end gap-2 sm:gap-2.5">
             <Combobox />
-
-            <div className="lg:hidden">
-              <Link
-                className={cn(
-                  buttonVariants({ variant: 'outline', size: 'icon' }),
-                )}
-                href={'/benchmarks'}
-              >
-                <Icons.BarChart4 className="size-4" />
-                <span className="sr-only">Mudar tema</span>
-              </Link>
-            </div>
-
-            <ModeToggle />
 
             {user ? (
               <UserAccountNav user={user} />
             ) : (
-              <Link
-                href="/sign-in"
-                className={buttonVariants({ variant: 'secondary' })}
-              >
-                Entrar
-              </Link>
+              <>
+                <ModeToggle />
+                <Link
+                  href="/sign-in"
+                  className={cn(
+                    buttonVariants({ variant: 'secondary' }),
+                    'h-10',
+                  )}
+                >
+                  Entrar
+                </Link>
+              </>
             )}
           </nav>
         </div>

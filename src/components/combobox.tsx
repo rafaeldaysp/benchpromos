@@ -124,23 +124,23 @@ export function Combobox() {
     <>
       <Button
         variant="outline"
-        className="relative size-9 p-0 xl:h-10 xl:w-[250px] xl:justify-start xl:px-3 xl:py-2"
+        className="relative h-10 min-w-0 flex-1 justify-start gap-0 px-3 py-2 transition-[background-color,color,transform] active:scale-[0.96] lg:w-[260px] lg:flex-none xl:w-[220px]"
         onClick={() => setIsOpen(true)}
       >
-        <Icons.Search className="size-4 xl:mr-2" aria-hidden="true" />
-        <div className="hidden w-[78%] xl:block">
-          <span className="line-clamp-1 break-all text-start">
-            {query.trim().length > 0 ? query : 'Procurar produtos...'}
+        <Icons.Search className="mr-2 size-4 shrink-0" aria-hidden="true" />
+        <div className="min-w-0 flex-1 lg:pr-14">
+          <span className="block truncate text-start">
+            {query.trim().length > 0 ? query : 'Procurar...'}
           </span>
         </div>
         <span className="sr-only">Procurar produtos</span>
-        <kbd className="pointer-events-none absolute right-1.5 top-2 hidden h-6 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 xl:flex">
+        <kbd className="pointer-events-none absolute right-2 top-1/2 hidden h-6 -translate-y-1/2 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 lg:flex">
           <span className="text-xs">Ctrl</span>K
         </kbd>
       </Button>
       <CommandDialog open={isOpen} onOpenChange={setIsOpen}>
         <CommandInput
-          placeholder="Procurar produtos..."
+          placeholder="Procurar..."
           value={query}
           onValueChange={setQuery}
         />

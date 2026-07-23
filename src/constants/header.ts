@@ -13,6 +13,11 @@ export function headerOptions({ categories }: HeaderOptionsProps) {
       icon: Icons.Laptop,
     },
     {
+      title: 'Monitores',
+      slug: 'monitores',
+      icon: Icons.Monitor,
+    },
+    {
       title: 'Periféricos',
       icon: Icons.Headphones,
       content: [
@@ -46,7 +51,7 @@ export function headerOptions({ categories }: HeaderOptionsProps) {
   )
 
   const more = {
-    title: 'Mais',
+    title: 'Categorias',
     icon: Icons.AlignLeft,
     content: othersCategories
       .map((category) => {

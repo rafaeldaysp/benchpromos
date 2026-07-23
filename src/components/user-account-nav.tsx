@@ -2,6 +2,7 @@
 
 import { type Session } from 'next-auth'
 import { signOut } from 'next-auth/react'
+import { useTheme } from 'next-themes'
 import Link from 'next/link'
 import * as React from 'react'
 
@@ -10,7 +11,12 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
   DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { UserAvatar } from '@/components/user-avatar'
@@ -20,9 +26,11 @@ interface UserAccountNavProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 export function UserAccountNav({ user }: UserAccountNavProps) {
+  const { setTheme, theme } = useTheme()
+
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="relative">
+      <DropdownMenuTrigger className="relative flex size-10 items-center justify-center rounded-md transition-transform active:scale-[0.96]">
         <UserAvatar
           user={{ name: user.name || null, image: user.image || null }}
           className="size-8"
@@ -64,6 +72,32 @@ export function UserAccountNav({ user }: UserAccountNavProps) {
             <span>Favoritos</span>
           </Link>
         </DropdownMenuItem>
+
+        <DropdownMenuSub>
+          <DropdownMenuSubTrigger className="cursor-pointer">
+            <Icons.Sun className="mr-2 size-4" />
+            <span>Tema</span>
+          </DropdownMenuSubTrigger>
+          <DropdownMenuSubContent>
+            <DropdownMenuRadioGroup
+              value={theme ?? 'system'}
+              onValueChange={setTheme}
+            >
+              <DropdownMenuRadioItem value="light">
+                <Icons.Sun className="mr-2 size-4" />
+                <span>Claro</span>
+              </DropdownMenuRadioItem>
+              <DropdownMenuRadioItem value="dark">
+                <Icons.Moon className="mr-2 size-4" />
+                <span>Escuro</span>
+              </DropdownMenuRadioItem>
+              <DropdownMenuRadioItem value="system">
+                <Icons.Laptop className="mr-2 size-4" />
+                <span>Sistema</span>
+              </DropdownMenuRadioItem>
+            </DropdownMenuRadioGroup>
+          </DropdownMenuSubContent>
+        </DropdownMenuSub>
 
         {user.role === 'ADMIN' && (
           <>
