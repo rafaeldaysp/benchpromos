@@ -11,6 +11,7 @@ import { Icons } from '@/components/icons'
 import { PriceInput } from '@/components/price-input'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Checkbox } from '@/components/ui/checkbox'
 import {
   Form,
   FormControl,
@@ -68,6 +69,7 @@ const defaultValues: Partial<Inputs> = {
   imageUrl: '',
   installments: undefined,
   maxCouponDiscount: undefined,
+  monospaceCoupon: false,
   note: '',
   priceCondition: '',
   sponsored: true,
@@ -135,6 +137,7 @@ export function TelegramForm({
   const totalInstallmentPrice = form.watch('totalInstallmentPrice')
   const installments = form.watch('installments')
   const sponsored = form.watch('sponsored')
+  const monospaceCoupon = form.watch('monospaceCoupon')
 
   const previewImageUrl = React.useMemo(
     () => getPreviewImageUrl(imageUrl),
@@ -149,6 +152,7 @@ export function TelegramForm({
     imageUrl: imageUrl || 'https://benchpromos.com.br/preview.png',
     installments,
     maxCouponDiscount,
+    monospaceCoupon: monospaceCoupon ?? false,
     note: note || undefined,
     priceCondition: priceCondition || undefined,
     price: price || 0,
@@ -172,7 +176,9 @@ export function TelegramForm({
   const effectivePrice = getTelegramEffectivePrice(previewMessage)
   const effectiveInstallmentPrice =
     getTelegramEffectiveInstallmentPrice(previewMessage)
-  const previewText = buildTelegramPostText(previewMessage)
+  const previewText = buildTelegramPostText(previewMessage, {
+    monospaceCoupon,
+  })
 
   async function onSubmit(data: Inputs) {
     const selectedDestinations = (
@@ -473,7 +479,7 @@ export function TelegramForm({
                 />
               </div>
 
-              <div className="grid gap-5 md:grid-cols-2">
+              <div className="grid gap-5 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_180px]">
                 <FormField
                   control={form.control}
                   name="coupon"
@@ -506,6 +512,30 @@ export function TelegramForm({
                         />
                       </FormControl>
                       <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="monospaceCoupon"
+                  render={({ field }) => (
+                    <FormItem className="flex h-9 items-center justify-between self-end rounded-md border border-input px-3 shadow-sm">
+                      <FormLabel
+                        htmlFor="telegram-monospace-coupon"
+                        className="text-sm font-normal text-muted-foreground"
+                      >
+                        Cupom copiável
+                      </FormLabel>
+                      <FormControl>
+                        <Checkbox
+                          id="telegram-monospace-coupon"
+                          checked={field.value}
+                          onCheckedChange={(checked) =>
+                            field.onChange(checked === true)
+                          }
+                        />
+                      </FormControl>
                     </FormItem>
                   )}
                 />

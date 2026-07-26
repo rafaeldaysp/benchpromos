@@ -220,6 +220,10 @@ export function SaleForm({
     'discord-promocoes': false,
   })
   const [shareDiscordRoles, setShareDiscordRoles] = React.useState<string[]>([])
+  const [shareMonospaceCoupon, setShareMonospaceCoupon] = React.useState(false)
+  const shareMonospaceCouponId = React.useId()
+  const isShareTelegramSelected =
+    shareDestinations['telegram-general'] || shareDestinations['telegram-tech']
 
   function handleDiscountChange(discountIds: string[]) {
     form.setValue('discountIds', discountIds)
@@ -318,6 +322,7 @@ export function SaleForm({
       review: values.review,
       couponCode: selectedCoupon?.code || values.coupon || undefined,
       couponDiscount: selectedCoupon?.discount,
+      monospaceCoupon: isShareTelegramSelected && shareMonospaceCoupon,
       cashback: selectedCashback
         ? {
             value: selectedCashback.value,
@@ -893,6 +898,23 @@ export function SaleForm({
                 value={shareDiscordRoles}
                 onChange={setShareDiscordRoles}
               />
+            )}
+            {isShareTelegramSelected && (
+              <div className="flex h-9 items-center justify-between rounded-md border border-input px-3 shadow-sm">
+                <Label
+                  htmlFor={shareMonospaceCouponId}
+                  className="text-sm font-normal text-muted-foreground"
+                >
+                  Cupom copiável no Telegram
+                </Label>
+                <Checkbox
+                  id={shareMonospaceCouponId}
+                  checked={shareMonospaceCoupon}
+                  onCheckedChange={(checked) =>
+                    setShareMonospaceCoupon(checked === true)
+                  }
+                />
+              </div>
             )}
           </div>
         )}

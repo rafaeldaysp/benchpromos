@@ -13,6 +13,14 @@ function formatValue(value: string, html: boolean) {
   return html ? escapeHtml(value) : value
 }
 
+function formatCoupon(value: string, options: TelegramPostTextOptions) {
+  const formattedValue = formatValue(value, options.html ?? false)
+
+  if (!options.monospaceCoupon || options.html) return formattedValue
+
+  return `\`${formattedValue.replace(/`/g, "'")}\``
+}
+
 // Telegram caps sendPhoto captions at 1024 characters (counted on the parsed
 // text). We truncate the plain text and escape afterwards, so a cut can never
 // split an HTML entity.
@@ -154,7 +162,7 @@ function formatPriceLine(
 
 export function buildTelegramPostText(
   message: TelegramMessageInput,
-  options: { html?: boolean } = {},
+  options: TelegramPostTextOptions = {},
 ) {
   const html = options.html ?? false
   const lines: string[] = []
@@ -198,7 +206,7 @@ export function buildTelegramPostText(
     lines.push('')
 
     if (message.coupon) {
-      lines.push(`🎟 Cupom: ${formatValue(message.coupon, html)}`)
+      lines.push(`🎟 Cupom: ${formatCoupon(message.coupon, options)}`)
     }
 
     if (effectivePrice > 0) {
@@ -265,11 +273,24 @@ export function buildTelegramPostText(
  * post text has no HTML tags, so we truncate the plain text and escape it —
  * equivalent to the per-field HTML escaping, but length-safe.
  */
-export function buildTelegramCaption(message: TelegramMessageInput) {
-  return escapeHtml(truncateForTelegram(buildTelegramPostText(message)))
+interface TelegramPostTextOptions {
+  html?: boolean
+  monospaceCoupon?: boolean
+}
+
+export function buildTelegramCaption(
+  message: TelegramMessageInput,
+  options: TelegramPostTextOptions = {},
+) {
+  return escapeHtml(
+    truncateForTelegram(buildTelegramPostText(message, options)),
+  )
 }
 
 /** Plain-text, length-capped caption used as a fallback when HTML is rejected. */
-export function buildTelegramPlainCaption(message: TelegramMessageInput) {
-  return truncateForTelegram(buildTelegramPostText(message))
+export function buildTelegramPlainCaption(
+  message: TelegramMessageInput,
+  options: TelegramPostTextOptions = {},
+) {
+  return truncateForTelegram(buildTelegramPostText(message, options))
 }

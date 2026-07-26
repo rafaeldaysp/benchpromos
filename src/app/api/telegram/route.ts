@@ -59,7 +59,9 @@ export async function POST(request: Request) {
   }
 
   const message = parsedMessage.data
-  const caption = buildTelegramPlainCaption(message)
+  const caption = buildTelegramPlainCaption(message, {
+    monospaceCoupon: message.monospaceCoupon,
+  })
   const sendPhotoUrl = `https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendPhoto`
 
   // Mirrors the backend sendTelegramPhoto: same body shape, Markdown parse

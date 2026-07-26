@@ -17,6 +17,7 @@ export interface SaleToTelegramInput {
   couponCode?: string
   /** Discount string of the selected coupon, e.g. "10%" or "100". */
   couponDiscount?: string
+  monospaceCoupon?: boolean
   cashback?: { value: number; provider: string; affiliatedUrl: string }
   /** Selected discounts, e.g. [{ discount: "10%", label: "Moedas" }]. */
   discounts: { discount: string; label?: string }[]
@@ -55,6 +56,7 @@ export function saleToTelegramMessage(
     couponDiscount: undefined,
     applyCouponDiscount: false,
     maxCouponDiscount: undefined,
+    monospaceCoupon: input.monospaceCoupon ?? false,
     priceCondition,
     highlight: input.label && input.label !== 'none' ? input.label : undefined,
     callout: undefined,
