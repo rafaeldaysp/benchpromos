@@ -77,7 +77,7 @@ export const telegramMessageSchema = z.object({
     z.number().int().positive('Campo obrigatório').optional(),
   ),
   sponsored: z.boolean().default(true),
-  monospaceCoupon: z.boolean().default(false),
+  monospaceCoupon: z.boolean().default(true),
   review: optionalText(2000),
   // Already subtracted from `price` by the caller; carried here only so the
   // post can tell the reader where the lower price comes from.

@@ -56,7 +56,7 @@ export function saleToTelegramMessage(
     couponDiscount: undefined,
     applyCouponDiscount: false,
     maxCouponDiscount: undefined,
-    monospaceCoupon: input.monospaceCoupon ?? false,
+    monospaceCoupon: input.monospaceCoupon ?? true,
     priceCondition,
     highlight: input.label && input.label !== 'none' ? input.label : undefined,
     callout: undefined,

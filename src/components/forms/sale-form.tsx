@@ -220,7 +220,7 @@ export function SaleForm({
     'discord-promocoes': false,
   })
   const [shareDiscordRoles, setShareDiscordRoles] = React.useState<string[]>([])
-  const [shareMonospaceCoupon, setShareMonospaceCoupon] = React.useState(false)
+  const [shareMonospaceCoupon, setShareMonospaceCoupon] = React.useState(true)
   const shareMonospaceCouponId = React.useId()
   const isShareTelegramSelected =
     shareDestinations['telegram-general'] || shareDestinations['telegram-tech']

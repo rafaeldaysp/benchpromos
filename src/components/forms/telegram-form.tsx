@@ -69,7 +69,7 @@ const defaultValues: Partial<Inputs> = {
   imageUrl: '',
   installments: undefined,
   maxCouponDiscount: undefined,
-  monospaceCoupon: false,
+  monospaceCoupon: true,
   note: '',
   priceCondition: '',
   sponsored: true,
