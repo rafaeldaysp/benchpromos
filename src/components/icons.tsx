@@ -55,6 +55,7 @@ import {
   Play,
   Plus,
   PlusCircle,
+  QrCode,
   Quote,
   Receipt,
   Reply,
@@ -153,6 +154,7 @@ export const Icons = {
   Share2,
   Gift,
   Coins,
+  QrCode,
   Google: ({ ...props }: LucideProps) => (
     <svg
       aria-hidden="true"

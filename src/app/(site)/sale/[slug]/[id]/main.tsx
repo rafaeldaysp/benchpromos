@@ -18,6 +18,7 @@ import { Icons } from '@/components/icons'
 import { LoginPopup } from '@/components/login-popup'
 import PriceChart from '@/components/product-price-chart'
 import { ProductSuggestions } from '@/components/product-suggestions'
+import { SaleQrCodeModal } from '@/components/sale-qr-code-modal'
 import { Comments } from '@/components/sales/comments'
 import { ReactionPopover } from '@/components/sales/reaction-popover'
 import { Reactions } from '@/components/sales/reactions'
@@ -476,6 +477,7 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
             <Icons.Share2 className="mr-2 size-4" />
             Compartilhar
           </Button>
+          <SaleQrCodeModal url={sale.url} />
           <Reactions
             apolloClient={client}
             reactions={sale.reactions}
