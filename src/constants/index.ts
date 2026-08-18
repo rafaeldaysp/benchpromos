@@ -45,6 +45,12 @@ export const notebooksCustomFilters = [
     type: 'show',
   },
   {
+    label: 'Somente Na Bateria',
+    slug: 'only-on-battery',
+    values: ['Na Bateria'],
+    type: 'only',
+  },
+  {
     label: 'Mostrar Desktops',
     slug: 'show-desktops',
     values: ['Desktop', 'PC'],

@@ -103,9 +103,19 @@ export default async function BenchmarkPage({
     ...toHideFromHidingCustomFilters,
   ]
 
+  const toKeepFromOnlyCustomFilters = notebooksCustomFilters.filter(
+    (customFilter) => customFilter.type == 'only' && filters[customFilter.slug],
+  )
+
   const results = (data?.benchmarkResults ?? []).filter(
     (result) =>
       //result.products.some((p) => (productsString ?? '').includes(p.slug)) ||
+      (!toKeepFromOnlyCustomFilters.length ||
+        toKeepFromOnlyCustomFilters.some((customFilter) =>
+          customFilter.values.some((value) =>
+            result.description?.includes(value),
+          ),
+        )) &&
       (!toHideFromCustomFilters.length ||
         !toHideFromCustomFilters.some((customFilter) =>
           customFilter.values.some((value) =>
