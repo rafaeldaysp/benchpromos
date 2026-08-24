@@ -3,7 +3,11 @@ import { NextResponse } from 'next/server'
 
 import { env } from '@/env.mjs'
 import { authOptions } from '@/lib/auth'
-import { buildTelegramPostText } from '@/lib/telegram'
+import {
+  DISCORD_MESSAGE_LIMIT,
+  buildTelegramPostText,
+  truncateForChannel,
+} from '@/lib/telegram'
 import { telegramMessageSchema } from '@/lib/validations/telegram'
 
 export const dynamic = 'force-dynamic'
@@ -107,8 +111,12 @@ export async function POST(request: Request) {
 
   const textError = await postToDiscord({
     // Plain message: the same formatted post used on the other channels, with
-    // any role marks at the very top.
-    content: `${rolePrefix}${buildTelegramPostText(message)}`,
+    // any role marks at the very top. Truncated as a whole — the role marks
+    // are part of the 2000-char budget Discord rejects the message over.
+    content: truncateForChannel(
+      `${rolePrefix}${buildTelegramPostText(message)}`,
+      DISCORD_MESSAGE_LIMIT,
+    ),
   })
 
   if (textError) return textError

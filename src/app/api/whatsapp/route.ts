@@ -2,7 +2,11 @@ import { getServerSession } from 'next-auth'
 import { NextResponse } from 'next/server'
 
 import { authOptions } from '@/lib/auth'
-import { buildTelegramPostText } from '@/lib/telegram'
+import {
+  WHATSAPP_CAPTION_LIMIT,
+  buildTelegramPostText,
+  truncateForChannel,
+} from '@/lib/telegram'
 import { telegramMessageSchema } from '@/lib/validations/telegram'
 import {
   WhatsmiauError,
@@ -71,7 +75,10 @@ export async function POST(request: Request) {
       number: config.defaultChat,
       media: parsedMessage.data.imageUrl,
       mediatype: 'image',
-      caption: buildTelegramPostText(parsedMessage.data),
+      caption: truncateForChannel(
+        buildTelegramPostText(parsedMessage.data),
+        WHATSAPP_CAPTION_LIMIT,
+      ),
     })
   } catch (error) {
     if (error instanceof WhatsmiauError) {

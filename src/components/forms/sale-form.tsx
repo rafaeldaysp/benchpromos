@@ -45,6 +45,7 @@ import {
   type Destination,
 } from '@/lib/telegram-destinations'
 import { saleSchema } from '@/lib/validations/sale'
+import { telegramMessageSchema } from '@/lib/validations/telegram'
 import type { Cashback, Category, Coupon, Discount, Retailer } from '@/types'
 import { couponFormatter } from '@/utils/formatter'
 import { Checkbox } from '../ui/checkbox'
@@ -291,15 +292,21 @@ export function SaleForm({
     setSelectedDiscounts([])
   }
 
-  async function shareCreatedSale(createdSale: { id: string; slug: string }) {
-    const selected = (Object.keys(DESTINATIONS) as Destination[]).filter(
+  function getSelectedDestinations() {
+    return (Object.keys(DESTINATIONS) as Destination[]).filter(
       (destination) =>
         shareDestinations[destination] &&
         isDestinationAvailable(destination, shareCapabilities),
     )
+  }
 
-    if (selected.length === 0) return
-
+  /**
+   * Builds the share payload from the live form values. `id`/`slug` only feed
+   * the sale URL, so passing placeholders yields a payload that validates
+   * identically to the real one — which is what lets us pre-flight it before
+   * the sale exists.
+   */
+  function buildShareMessage(sale: { id: string; slug: string }) {
     // Read synchronously before the caller runs form.reset().
     const values = form.getValues()
     const selectedCoupon = data?.coupons.find(
@@ -309,9 +316,9 @@ export function SaleForm({
       (cashback) => cashback.id === values.cashbackId,
     )
 
-    const message = saleToTelegramMessage({
-      id: createdSale.id,
-      slug: createdSale.slug,
+    return saleToTelegramMessage({
+      id: sale.id,
+      slug: sale.slug,
       title: values.title,
       imageUrl: values.imageUrl,
       price: values.price,
@@ -335,6 +342,35 @@ export function SaleForm({
         label: discount.label,
       })),
     })
+  }
+
+  /**
+   * Rejects a share payload the endpoints would 400 on, *before* the sale is
+   * created. Without this a rejected share leaves a saved sale with no post,
+   * and re-submitting the form to retry creates a duplicate sale.
+   */
+  function getShareValidationError() {
+    if (!enableShare || getSelectedDestinations().length === 0) return null
+
+    const parsed = telegramMessageSchema.safeParse(
+      buildShareMessage({ id: 'preflight', slug: 'preflight' }),
+    )
+
+    if (parsed.success) return null
+
+    const invalidFields = Object.keys(parsed.error.flatten().fieldErrors)
+
+    return `Não é possível publicar nos canais: revise ${invalidFields.join(
+      ', ',
+    )}.`
+  }
+
+  async function shareCreatedSale(createdSale: { id: string; slug: string }) {
+    const selected = getSelectedDestinations()
+
+    if (selected.length === 0) return
+
+    const message = buildShareMessage(createdSale)
 
     const results = await Promise.all(
       selected.map(async (destination) => {
@@ -360,6 +396,14 @@ export function SaleForm({
     for (const result of results) {
       if (result.ok) toast.success(result.message)
       else toast.error(result.message)
+    }
+
+    // The sale is already saved at this point. Say so explicitly, so a failed
+    // post isn't retried by creating the sale a second time.
+    if (results.some((result) => !result.ok)) {
+      toast.message(
+        'A promoção já está salva. Para tentar publicar de novo, edite-a — não cadastre outra.',
+      )
     }
   }
 
@@ -403,6 +447,14 @@ export function SaleForm({
   )
 
   async function onSubmit({ label, cashbackId, couponId, ...data }: Inputs) {
+    const shareValidationError = getShareValidationError()
+
+    if (shareValidationError) {
+      toast.error(shareValidationError)
+
+      return
+    }
+
     await mutateSale({
       variables: {
         input: {

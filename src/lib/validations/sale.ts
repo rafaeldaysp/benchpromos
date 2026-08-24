@@ -1,11 +1,29 @@
 import * as z from 'zod'
 
+function isHttpUrl(value: string) {
+  try {
+    const url = new URL(value)
+
+    return url.protocol === 'http:' || url.protocol === 'https:'
+  } catch {
+    return false
+  }
+}
+
 export const saleSchema = z.object({
   title: z
     .string()
     .min(1, 'Campo obrigatório')
     .transform((str) => str.replace(/[^\x00-\xFF]/g, '').trim()),
-  imageUrl: z.string().min(1, 'Campo obrigatório'),
+  // Must be an absolute http(s) URL: the share endpoints require one (Telegram
+  // fetches it by URL), and next/image only accepts absolute remote sources.
+  // Validating it here means a sale can never be saved with an image that the
+  // share step would then reject.
+  imageUrl: z
+    .string()
+    .min(1, 'Campo obrigatório')
+    .url('Endereço inválido')
+    .refine(isHttpUrl, 'Endereço inválido'),
   categoryId: z.string({ required_error: 'Selecione uma categoria' }),
   retailerId: z.string({ required_error: 'Selecione um varejista' }),
   price: z.coerce.number().int().gt(-1),

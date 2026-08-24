@@ -21,19 +21,26 @@ function formatCoupon(value: string, options: TelegramPostTextOptions) {
   return `\`${formattedValue.replace(/`/g, "'")}\``
 }
 
-// Telegram caps sendPhoto captions at 1024 characters (counted on the parsed
-// text). We truncate the plain text and escape afterwards, so a cut can never
-// split an HTML entity.
-const TELEGRAM_CAPTION_LIMIT = 1024
+// Every channel has its own hard limit on a single message. These are the
+// only length constraints in the system — no field is capped individually,
+// so the post is always built in full and cut down here, right before it is
+// sent. The link line comes before the review, so a cut drops the review
+// first and never the URL.
+//
+// Telegram counts the *parsed* caption, so we truncate the plain text and
+// escape afterwards — a cut can never split an HTML entity.
+export const TELEGRAM_CAPTION_LIMIT = 1024
+export const DISCORD_MESSAGE_LIMIT = 2000
+export const WHATSAPP_CAPTION_LIMIT = 4096
 
-function truncateForTelegram(text: string) {
-  if (text.length <= TELEGRAM_CAPTION_LIMIT) return text
+export function truncateForChannel(text: string, limit: number) {
+  if (text.length <= limit) return text
 
-  const limit = TELEGRAM_CAPTION_LIMIT - 1 // room for the ellipsis
-  const slice = text.slice(0, limit)
+  const max = Math.max(limit - 1, 0) // room for the ellipsis
+  const slice = text.slice(0, max)
   const lastBreak = slice.lastIndexOf('\n')
   // Prefer ending on a line break when one is reasonably close to the limit.
-  const cut = lastBreak > limit - 300 ? slice.slice(0, lastBreak) : slice
+  const cut = lastBreak > max - 300 ? slice.slice(0, lastBreak) : slice
 
   return `${cut.trimEnd()}…`
 }
@@ -283,7 +290,10 @@ export function buildTelegramCaption(
   options: TelegramPostTextOptions = {},
 ) {
   return escapeHtml(
-    truncateForTelegram(buildTelegramPostText(message, options)),
+    truncateForChannel(
+      buildTelegramPostText(message, options),
+      TELEGRAM_CAPTION_LIMIT,
+    ),
   )
 }
 
@@ -292,5 +302,8 @@ export function buildTelegramPlainCaption(
   message: TelegramMessageInput,
   options: TelegramPostTextOptions = {},
 ) {
-  return truncateForTelegram(buildTelegramPostText(message, options))
+  return truncateForChannel(
+    buildTelegramPostText(message, options),
+    TELEGRAM_CAPTION_LIMIT,
+  )
 }

@@ -12,11 +12,17 @@ function isHttpUrl(value: string) {
   }
 }
 
-function optionalText(maxLength: number) {
+// No length caps here on purpose. The only real limits are the per-channel
+// message limits, and those are enforced by truncating the *built* post right
+// before it is sent (see `truncateForChannel` in `lib/telegram.ts`). A cap on
+// an individual field can't express that limit — it only turns a post that
+// would have been truncated into a hard 400, after the sale was already
+// created.
+function optionalText() {
   return z.preprocess(
     (value) =>
       typeof value === 'string' && value.trim() === '' ? undefined : value,
-    z.string().max(maxLength).trim().optional(),
+    z.string().trim().optional(),
   )
 }
 
@@ -52,25 +58,25 @@ export const telegramMessageSchema = z.object({
     .min(1, 'Campo obrigatório')
     .url('Endereço inválido')
     .refine(isHttpUrl, 'Endereço inválido'),
-  title: z.string().min(1, 'Campo obrigatório').max(180).trim(),
+  title: z.string().min(1, 'Campo obrigatório').trim(),
   price: priceSchema,
   url: z
     .string()
     .min(1, 'Campo obrigatório')
     .url('Endereço inválido')
     .refine(isHttpUrl, 'Endereço inválido'),
-  coupon: optionalText(80),
-  couponDiscount: optionalText(80).refine(
+  coupon: optionalText(),
+  couponDiscount: optionalText().refine(
     (value) => !value || isTelegramCouponDiscountParseable(value),
     'Use um desconto como 10%, 100 ou 10% + 100',
   ),
   applyCouponDiscount: z.boolean().default(true),
   maxCouponDiscount: optionalCentsSchema,
-  priceCondition: optionalText(80),
-  highlight: optionalText(80),
-  callout: optionalText(140),
-  caption: optionalText(220),
-  note: optionalText(180),
+  priceCondition: optionalText(),
+  highlight: optionalText(),
+  callout: optionalText(),
+  caption: optionalText(),
+  note: optionalText(),
   totalInstallmentPrice: optionalCentsSchema,
   installments: z.preprocess(
     toOptionalPositiveInt,
@@ -78,14 +84,14 @@ export const telegramMessageSchema = z.object({
   ),
   sponsored: z.boolean().default(true),
   monospaceCoupon: z.boolean().default(true),
-  review: optionalText(2000),
+  review: optionalText(),
   // Already subtracted from `price` by the caller; carried here only so the
   // post can tell the reader where the lower price comes from.
   discounts: z
     .array(
       z.object({
         discount: z.string().min(1),
-        label: optionalText(80),
+        label: optionalText(),
       }),
     )
     .optional(),
