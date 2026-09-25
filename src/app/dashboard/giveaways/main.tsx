@@ -19,6 +19,7 @@ import { useState, useTransition, useEffect } from 'react'
 import confetti from 'canvas-confetti'
 
 import { GiveawayForm } from '@/components/forms/giveaway-form'
+import { invalidatePublicGiveaways } from '@/app/_actions/giveaways'
 import { Pagination } from '@/components/pagination'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
@@ -279,7 +280,7 @@ export default function GiveawaysMain({
   const [updateGiveaway, { loading: isLoading }] = useMutation(
     UPDATE_GIVEAWAY,
     {
-      onCompleted: (data) => {
+      onCompleted: async (data) => {
         if (data.updateGiveaway.status === 'OPEN') {
           toast.success(
             `Inscrições para ${data?.updateGiveaway.name} estão abertas agora.`,
@@ -289,6 +290,7 @@ export default function GiveawaysMain({
             `Inscrições para ${data?.updateGiveaway.name} estão fechadas.`,
           )
         }
+        await invalidatePublicGiveaways().catch(() => undefined)
         router.refresh()
       },
       onError: (error) => {
@@ -305,7 +307,7 @@ export default function GiveawaysMain({
   const [setGiveawayWinner, { loading: isLoadingWinner }] = useMutation(
     SET_GIVEAWAY_WINNER,
     {
-      onCompleted: (data) => {
+      onCompleted: async (data) => {
         setWinner(data.setGiveawayWinnerByIndex.winner)
         setIsDrawing(false)
         showConfetti()
@@ -319,6 +321,7 @@ export default function GiveawaysMain({
           setCurrentPrizeId(null)
         }, 5000)
 
+        await invalidatePublicGiveaways().catch(() => undefined)
         router.refresh()
       },
       onError: (error) => {
@@ -337,8 +340,9 @@ export default function GiveawaysMain({
   const [deleteGiveaway, { loading: isLoadingDelete }] = useMutation(
     DELETE_GIVEAWAY,
     {
-      onCompleted: () => {
+      onCompleted: async () => {
         toast.success('Sorteio deletado com sucesso!')
+        await invalidatePublicGiveaways().catch(() => undefined)
         router.refresh()
       },
       onError: (error) => {

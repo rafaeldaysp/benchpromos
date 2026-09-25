@@ -1,57 +1,10 @@
-import { gql } from '@apollo/client'
 import GiveawaysMain from './main'
-import { getClient } from '@/lib/apollo'
-import { type User } from 'next-auth'
-import { type Giveaway, type GiveawayRuleConfig } from '@/types'
 import { getCurrentUser, getCurrentUserToken } from '@/app/_actions/user'
-
-const GIVEAWAYS_PER_PAGE = 12
-
-const GET_PUBLIC_GIVEAWAYS = gql`
-  query GetPublicGiveaways($getGiveawaysInput: GetGiveawaysInput) {
-    giveaways(getGiveawaysInput: $getGiveawaysInput) {
-      distinctDates
-      statusCounts {
-        status
-        count
-      }
-      list {
-        id
-        name
-        description
-        drawAt
-        imageUrl
-        status
-        rules {
-          type
-          config
-        }
-        participantsCount
-        winnerId
-        winner {
-          id
-          name
-          email
-          image
-        }
-      }
-      userSubscribedIds
-    }
-    giveawayRulesConfig {
-      type
-      label
-      configSchema {
-        key
-        label
-        type
-        options {
-          value
-          label
-        }
-      }
-    }
-  }
-`
+import {
+  getPublicGiveaways,
+  getPublicGiveawayRules,
+  GIVEAWAYS_PER_PAGE,
+} from '@/lib/public-giveaways'
 
 interface GiveawaysPageProps {
   searchParams: {
@@ -64,46 +17,25 @@ interface GiveawaysPageProps {
 export default async function GiveawaysPage({
   searchParams,
 }: GiveawaysPageProps) {
-  const { status, page } = searchParams
-  const token = await getCurrentUserToken()
-  const currentUser = await getCurrentUser()
-  const currentPage = Number(page ?? '1')
-
-  const { data } = await getClient().query<{
-    giveaways: {
-      distinctDates: string[]
-      statusCounts: {
-        status: string
-        count: number
-      }[]
-      list: (Giveaway & {
-        participantsCount: number
-        winner: User | null
-      })[]
-      userSubscribedIds?: string[]
-    }
-    giveawayRulesConfig?: GiveawayRuleConfig[]
-  }>({
-    query: GET_PUBLIC_GIVEAWAYS,
-    variables: {
-      getGiveawaysInput: {
-        status: status || 'OPEN',
-        userId: currentUser?.id,
-        pagination: {
-          limit: GIVEAWAYS_PER_PAGE,
-          page: currentPage,
-        },
-      },
-    },
-  })
-
-  const userSubscribedIds = data?.giveaways.userSubscribedIds || []
-  const giveaways = data?.giveaways.list || []
-  const statusCounts = data?.giveaways.statusCounts
-  const rulesConfigData = data?.giveawayRulesConfig || []
+  const status = searchParams.status === 'COMPLETED' ? 'COMPLETED' : 'OPEN'
+  const requestedPage = Number(searchParams.page ?? '1')
+  const currentPage =
+    Number.isSafeInteger(requestedPage) &&
+    requestedPage > 0 &&
+    requestedPage <= 2147483647
+      ? requestedPage
+      : 1
+  const [data, rulesConfigData, currentUser, token] = await Promise.all([
+    getPublicGiveaways(status, currentPage),
+    getPublicGiveawayRules(),
+    getCurrentUser(),
+    getCurrentUserToken(),
+  ])
+  const giveaways = data.list
+  const statusCounts = data.statusCounts
   const pageCount = Math.ceil(
-    (data.giveaways.statusCounts.find((count) => count.status === status)
-      ?.count || 0) / GIVEAWAYS_PER_PAGE,
+    (statusCounts.find((count) => count.status === status)?.count || 0) /
+      GIVEAWAYS_PER_PAGE,
   )
 
   // Since we're filtering by status in the backend, all giveaways will be of the same type
@@ -112,11 +44,11 @@ export default async function GiveawaysPage({
 
   return (
     <GiveawaysMain
+      key={currentUser?.id ?? 'anonymous'}
       activeGiveaways={activeGiveaways}
       endedGiveaways={endedGiveaways}
-      currentUser={currentUser}
+      userId={currentUser?.id}
       token={token}
-      userSubscribedIds={userSubscribedIds}
       statusCounts={statusCounts}
       page={currentPage}
       pageCount={pageCount}

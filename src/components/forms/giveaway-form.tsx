@@ -22,6 +22,7 @@ import { Input } from '@/components/ui/input'
 import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
 import { giveawaySchema } from '@/lib/validations/giveaway'
+import { invalidatePublicGiveaways } from '@/app/_actions/giveaways'
 import { removeNullValues } from '@/utils'
 import { DateTimePicker } from '../ui/datetime-picker'
 import { ScrollArea } from '../ui/scroll-area'
@@ -153,7 +154,7 @@ export function GiveawayForm({ mode = 'create', giveaway }: GiveawayFormProps) {
       onError(error, _clientOptions) {
         toast.error(error.message)
       },
-      onCompleted(_data, _clientOptions) {
+      async onCompleted(_data, _clientOptions) {
         form.reset()
 
         setOpenDialog(
@@ -169,6 +170,8 @@ export function GiveawayForm({ mode = 'create', giveaway }: GiveawayFormProps) {
             : 'Sorteio atualizado com sucesso.'
 
         toast.success(message)
+        // The short cache TTL is the fallback if invalidation is unavailable.
+        await invalidatePublicGiveaways().catch(() => undefined)
         router.refresh()
       },
     },

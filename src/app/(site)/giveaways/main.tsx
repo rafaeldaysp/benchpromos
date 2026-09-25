@@ -7,7 +7,6 @@ import {
   CalendarIcon,
   Clock,
   Gift,
-  Heart,
   Trophy,
   Users,
   CheckCircle,
@@ -29,30 +28,14 @@ import { Pagination } from '@/components/pagination'
 
 import { cn } from '@/lib/utils'
 import { type Giveaway, type GiveawayRuleConfig } from '@/types'
-import { type Session, type User } from 'next-auth'
+import { type User } from 'next-auth'
 import { Icons } from '@/components/icons'
 import { ptBR } from 'date-fns/locale'
-import { gql, useMutation } from '@apollo/client'
-import { toast } from 'sonner'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useQueryString } from '@/hooks/use-query-string'
 import Link from 'next/link'
-
-const SUBSCRIBE_TO_GIVEAWAY = gql`
-  mutation SubscribeToGiveaway($giveawayId: ID!) {
-    addUserToGiveaway(giveawayId: $giveawayId) {
-      id
-    }
-  }
-`
-
-const LEAVE_GIVEAWAY = gql`
-  mutation LeaveGiveaway($giveawayId: ID!) {
-    removeUserFromGiveaway(giveawayId: $giveawayId) {
-      id
-    }
-  }
-`
+import { useGiveawayParticipation } from '@/hooks/use-giveaway-participation'
+import { ParticipationButton } from './participation-button'
 
 interface GiveawaysMainProps {
   activeGiveaways: (Giveaway & {
@@ -63,12 +46,11 @@ interface GiveawaysMainProps {
     participantsCount: number
     winner: User | null
   })[]
-  userSubscribedIds: string[]
   statusCounts: {
     status: string
     count: number
   }[]
-  currentUser?: Session['user']
+  userId?: string
   token?: string
   page: number
   pageCount: number
@@ -78,9 +60,8 @@ interface GiveawaysMainProps {
 export default function GiveawaysMain({
   activeGiveaways,
   endedGiveaways,
-  currentUser: _currentUser,
+  userId,
   token,
-  userSubscribedIds,
   statusCounts,
   page,
   pageCount,
@@ -94,6 +75,7 @@ export default function GiveawaysMain({
   const [isPending, startTransition] = useTransition()
   const pathname = usePathname()
   const { createQueryString } = useQueryString()
+  const participation = useGiveawayParticipation(userId, token)
 
   const rulesConfig = rulesConfigData || []
 
@@ -138,41 +120,6 @@ export default function GiveawaysMain({
     })
   }
 
-  const [subscribeToGiveaway, { loading: isLoadingSubscribe }] = useMutation(
-    SUBSCRIBE_TO_GIVEAWAY,
-    {
-      onCompleted: () => {
-        toast.success('Inscrição realizada com sucesso!')
-        router.refresh()
-      },
-      onError: (error) => {
-        toast.error(error.message)
-      },
-      context: {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      },
-    },
-  )
-
-  const [leaveGiveaway, { loading: isLoadingLeave }] = useMutation(
-    LEAVE_GIVEAWAY,
-    {
-      onCompleted: () => {
-        toast.success('Você saiu do sorteio!')
-        router.refresh()
-      },
-      onError: (error) => {
-        toast.error(error.message)
-      },
-      context: {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      },
-    },
-  )
   return (
     <main className="relative mx-auto space-y-8 px-4 py-10 sm:container">
       {/* Hero Section */}
@@ -193,6 +140,22 @@ export default function GiveawaysMain({
       </div>
 
       {/* Giveaways Tabs */}
+      {participation.unavailable && (
+        <div
+          role="alert"
+          className="flex flex-wrap items-center justify-center gap-3 text-sm"
+        >
+          <span>Não foi possível carregar suas inscrições.</span>
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={participation.loading}
+            onClick={() => void participation.retry()}
+          >
+            Tentar novamente
+          </Button>
+        </div>
+      )}
       <Tabs
         value={activeTab}
         onValueChange={handleTabChange}
@@ -224,7 +187,6 @@ export default function GiveawaysMain({
         <TabsContent value="active">
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
             {activeGiveaways.map((giveaway, index) => {
-              const subscribed = userSubscribedIds.includes(giveaway.id)
               const daysUntil = differenceInDays(
                 endOfDay(new Date(giveaway.drawAt)),
                 new Date(),
@@ -372,37 +334,11 @@ export default function GiveawaysMain({
                         </div>
                       )}
 
-                      {/* Subscribe/Leave Button */}
-                      <Button
-                        onClick={() =>
-                          subscribed
-                            ? leaveGiveaway({
-                                variables: { giveawayId: giveaway.id },
-                              })
-                            : subscribeToGiveaway({
-                                variables: { giveawayId: giveaway.id },
-                              })
-                        }
-                        disabled={isLoadingSubscribe || isLoadingLeave}
-                        className={cn(
-                          'w-full transition-all duration-300',
-                          subscribed
-                            ? 'bg-destructive hover:bg-destructive/90'
-                            : 'bg-primary hover:bg-primary/90',
-                        )}
-                      >
-                        {subscribed ? (
-                          <>
-                            <XCircle className="mr-2 size-4" />
-                            Sair do sorteio
-                          </>
-                        ) : (
-                          <>
-                            <Heart className="mr-2 size-4" />
-                            Inscrever-se
-                          </>
-                        )}
-                      </Button>
+                      <ParticipationButton
+                        id={giveaway.id}
+                        name={giveaway.name}
+                        participation={participation}
+                      />
                     </CardContent>
                   </Card>
                 </motion.div>
@@ -433,7 +369,7 @@ export default function GiveawaysMain({
         <TabsContent value="ended">
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
             {endedGiveaways.map((giveaway, index) => {
-              const subscribed = userSubscribedIds.includes(giveaway.id)
+              const subscribed = participation.subscribedIds.has(giveaway.id)
               const winner = giveaway.winner
 
               return (
@@ -574,7 +510,13 @@ export default function GiveawaysMain({
 
                       {/* User's participation status */}
                       <div className="flex items-center gap-2 text-sm">
-                        {subscribed ? (
+                        {participation.loading || participation.unavailable ? (
+                          <span className="text-muted-foreground">
+                            {participation.loading
+                              ? 'Verificando inscrição…'
+                              : 'Não foi possível verificar sua inscrição'}
+                          </span>
+                        ) : subscribed ? (
                           <>
                             <CheckCircle className="size-4 text-success" />
                             <span className="text-success">
