@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from 'react'
 import { gql, useMutation } from '@apollo/client'
 import { useQuery } from '@apollo/experimental-nextjs-app-support/ssr'
 import { toast } from 'sonner'
@@ -116,28 +117,85 @@ const useCommentSubmitStore = create<CommentSubmitStore>((set) => ({
     })),
 }))
 
+export const COMMENTS_PER_PAGE = 20
+
 export function useComments({
   saleId,
   replyToId,
+  fetchComments = true,
 }: {
   saleId: string
   replyToId?: string
+  fetchComments?: boolean
 }) {
   const commentSubmitStore = useCommentSubmitStore()
+  const variables = {
+    input: {
+      saleId,
+      replyToId,
+      paginationInput: { page: 1, limit: COMMENTS_PER_PAGE },
+    },
+  }
+  const [lastPageSize, setLastPageSize] = useState(COMMENTS_PER_PAGE)
+  const [loadingMore, setLoadingMore] = useState(false)
+  const nextPage = useRef(2)
+  const loadingMoreRef = useRef(false)
+  useEffect(() => {
+    nextPage.current = 2
+    setLastPageSize(COMMENTS_PER_PAGE)
+  }, [saleId, replyToId])
 
   const {
     data,
     client,
     previousData,
     loading: isLoading,
+    error,
+    refetch,
+    fetchMore,
   } = useQuery<GetCommentsQuery>(GET_COMMENTS, {
-    variables: {
-      input: {
-        saleId,
-        replyToId,
-      },
-    },
+    variables,
+    skip: !fetchComments,
   })
+
+  async function loadMore() {
+    if (loadingMoreRef.current || isLoading || !data) return
+    loadingMoreRef.current = true
+    setLoadingMore(true)
+    try {
+      const result = await fetchMore({
+        variables: {
+          input: {
+            ...variables.input,
+            paginationInput: {
+              page: nextPage.current,
+              limit: COMMENTS_PER_PAGE,
+            },
+          },
+        },
+        updateQuery(previous, { fetchMoreResult }) {
+          if (!fetchMoreResult) return previous
+          const seen = new Set(previous.comments.map(({ id }) => id))
+          return {
+            ...previous,
+            comments: [
+              ...previous.comments,
+              ...fetchMoreResult.comments.filter(({ id }) => !seen.has(id)),
+            ],
+          }
+        },
+      })
+      setLastPageSize(result.data.comments.length)
+      nextPage.current += 1
+    } catch {
+      toast.error(
+        'Não foi possível carregar mais comentários. Tente novamente.',
+      )
+    } finally {
+      loadingMoreRef.current = false
+      setLoadingMore(false)
+    }
+  }
 
   const cache = client.cache
   const comments = data?.comments
@@ -153,39 +211,28 @@ export function useComments({
 
         const existingData = cache.readQuery<GetCommentsQuery>({
           query: GET_COMMENTS,
-          variables: {
-            input: {
-              saleId,
-              replyToId,
-            },
-          },
+          variables,
         })
 
         const existingComments = existingData?.comments
 
-        if (!existingComments) return
-
-        cache.writeQuery({
-          query: GET_COMMENTS,
-          variables: {
-            input: {
-              saleId,
-              replyToId,
+        if (existingComments)
+          cache.writeQuery({
+            query: GET_COMMENTS,
+            variables,
+            data: {
+              comments: [
+                {
+                  ...newComment,
+                  likes: [],
+                  replies: [],
+                  likesCount: 0,
+                  repliesCount: 0,
+                },
+                ...existingComments,
+              ],
             },
-          },
-          data: {
-            comments: [
-              {
-                ...newComment,
-                likes: [],
-                replies: [],
-                likesCount: 0,
-                repliesCount: 0,
-              },
-              ...existingComments,
-            ],
-          },
-        })
+          })
 
         if (replyToId) {
           cache.modify({
@@ -374,6 +421,15 @@ export function useComments({
     updateComment,
     toggleCommentLike,
     isLoading,
+    error,
+    retry: () => refetch(),
+    loadMore,
+    loadingMore,
+    hasMore: Boolean(
+      comments &&
+        comments.length >= COMMENTS_PER_PAGE &&
+        lastPageSize === COMMENTS_PER_PAGE,
+    ),
     ...commentSubmitStore,
   }
 }

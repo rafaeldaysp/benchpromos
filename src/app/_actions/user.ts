@@ -1,12 +1,11 @@
 'use server'
 
-import { getServerSession } from 'next-auth/next'
 import { cookies } from 'next/headers'
 
-import { authOptions } from '@/lib/auth'
+import { getRequestSession } from '@/lib/server-session'
 
 export async function getCurrentUser() {
-  const session = await getServerSession(authOptions)
+  const session = await getRequestSession()
 
   return session?.user
 }

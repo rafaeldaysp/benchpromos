@@ -25,7 +25,7 @@ import {
 import { Skeleton } from '@/components/ui/skeleton'
 import { Toggle } from '@/components/ui/toggle'
 import { UserAvatar } from '@/components/user-avatar'
-import { useComments } from '@/hooks/use-comments'
+import { COMMENTS_PER_PAGE, useComments } from '@/hooks/use-comments'
 import { cn } from '@/lib/utils'
 import { LoginPopup } from '../login-popup'
 
@@ -39,7 +39,16 @@ interface CommentsProps {
 }
 
 export function Comments({ saleId, user, count }: CommentsProps) {
-  const { comments, previousComments, activeReplyCommentIds } = useComments({
+  const {
+    comments,
+    previousComments,
+    activeReplyCommentIds,
+    hasMore,
+    loadMore,
+    loadingMore,
+    error,
+    retry,
+  } = useComments({
     saleId,
   })
 
@@ -51,6 +60,11 @@ export function Comments({ saleId, user, count }: CommentsProps) {
       </span>
       <CommentSubmit saleId={saleId} user={user} />
 
+      {error && (
+        <Button variant="outline" onClick={() => void retry().catch(() => {})}>
+          Tentar carregar comentários novamente
+        </Button>
+      )}
       {comments ? (
         <ul className="space-y-2">
           {comments.map((comment) => {
@@ -113,17 +127,28 @@ export function Comments({ saleId, user, count }: CommentsProps) {
         </ul>
       ) : (
         <div className="space-y-10">
-          {Array.from({ length: count }).map((_, i) => (
-            <div key={i} className="flex space-x-2">
-              <Skeleton className="size-8 rounded-full" />
-              <div className="space-y-1">
-                <Skeleton className="h-3 w-32" />
-                <Skeleton className="h-3 w-32" />
-                <Skeleton className="h-3 w-52 sm:w-80" />
+          {Array.from({ length: Math.min(count, COMMENTS_PER_PAGE) }).map(
+            (_, i) => (
+              <div key={i} className="flex space-x-2">
+                <Skeleton className="size-8 rounded-full" />
+                <div className="space-y-1">
+                  <Skeleton className="h-3 w-32" />
+                  <Skeleton className="h-3 w-32" />
+                  <Skeleton className="h-3 w-52 sm:w-80" />
+                </div>
               </div>
-            </div>
-          ))}
+            ),
+          )}
         </div>
+      )}
+      {hasMore && (
+        <Button
+          variant="outline"
+          disabled={loadingMore}
+          onClick={() => void loadMore()}
+        >
+          {loadingMore ? 'Carregando...' : 'Carregar mais comentários'}
+        </Button>
       )}
     </div>
   )
@@ -137,26 +162,29 @@ interface RepliesProps {
 }
 
 function Replies({ saleId, replyToId, user, count }: RepliesProps) {
-  const { comments, isLoading } = useComments({
-    saleId,
-    replyToId,
-  })
+  const { comments, isLoading, hasMore, loadMore, loadingMore, error, retry } =
+    useComments({
+      saleId,
+      replyToId,
+    })
 
   return (
     <div>
       <ul>
         {isLoading && (
           <div className="space-y-10">
-            {Array.from({ length: count }).map((_, i) => (
-              <div key={i} className="flex space-x-2">
-                <Skeleton className="size-8 rounded-full" />
-                <div className="space-y-1">
-                  <Skeleton className="h-3 w-32" />
-                  <Skeleton className="h-3 w-32" />
-                  <Skeleton className="h-3 w-52 sm:w-80" />
+            {Array.from({ length: Math.min(count, COMMENTS_PER_PAGE) }).map(
+              (_, i) => (
+                <div key={i} className="flex space-x-2">
+                  <Skeleton className="size-8 rounded-full" />
+                  <div className="space-y-1">
+                    <Skeleton className="h-3 w-32" />
+                    <Skeleton className="h-3 w-32" />
+                    <Skeleton className="h-3 w-52 sm:w-80" />
+                  </div>
                 </div>
-              </div>
-            ))}
+              ),
+            )}
           </div>
         )}
         {comments?.map((comment) => (
@@ -172,6 +200,20 @@ function Replies({ saleId, replyToId, user, count }: RepliesProps) {
           </li>
         ))}
       </ul>
+      {error && (
+        <Button variant="outline" onClick={() => void retry().catch(() => {})}>
+          Tentar carregar respostas novamente
+        </Button>
+      )}
+      {hasMore && (
+        <Button
+          variant="outline"
+          disabled={loadingMore}
+          onClick={() => void loadMore()}
+        >
+          {loadingMore ? 'Carregando...' : 'Carregar mais respostas'}
+        </Button>
+      )}
     </div>
   )
 }
@@ -211,6 +253,7 @@ export function Comment({ saleId, comment, replyToId, user }: CommentProps) {
   } = useComments({
     saleId,
     replyToId,
+    fetchComments: false,
   })
 
   async function handleDeleteComment() {
@@ -380,6 +423,7 @@ function CommentSubmit({ saleId, commentId, user }: CommentSubmitProps) {
     useComments({
       saleId,
       replyToId: commentId,
+      fetchComments: false,
     })
 
   async function handleCreateComment() {
