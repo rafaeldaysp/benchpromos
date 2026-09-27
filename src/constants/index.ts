@@ -70,4 +70,5 @@ export const notebooksCustomFilters = [
   },
 ]
 
-export const MIN_SALES_DT = new Date().getTime() - 30 * 24 * 60 * 60 * 1000
+// A relative window lets visitors share the API cache without changing exact-date filters.
+export const RECENT_SALES_DAYS = 30

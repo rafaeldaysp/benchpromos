@@ -7,7 +7,7 @@ import { useInView } from 'react-intersection-observer'
 
 import { SaleCard } from '@/components/sales/sale-card'
 import { Skeleton } from '@/components/ui/skeleton'
-import { MIN_SALES_DT } from '@/constants'
+import { RECENT_SALES_DAYS } from '@/constants'
 import { GET_SALES, type GetSalesQuery } from '@/queries'
 import ScrollToTopButton from '../scroll-to-top-button'
 import { SalesNavSimplified } from './sales-nav-simplified'
@@ -41,7 +41,7 @@ export function Sales({ user, productSlug }: SalesProps) {
         productSlug,
         showExpired,
         categories,
-        minDt: MIN_SALES_DT,
+        recentDays: RECENT_SALES_DAYS,
       },
     },
   )
@@ -61,7 +61,7 @@ export function Sales({ user, productSlug }: SalesProps) {
           productSlug,
           showExpired,
           categories,
-          minDt: MIN_SALES_DT,
+          recentDays: RECENT_SALES_DAYS,
         },
         updateQuery(previousResult, { fetchMoreResult }) {
           const previousSales = previousResult.sales
