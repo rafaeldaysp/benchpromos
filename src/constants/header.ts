@@ -96,7 +96,7 @@ export function headerOptions({ categories }: HeaderOptionsProps) {
 export const externalLinkOptions: headerOption[] = [
   {
     title: 'Comunidades',
-    slug: 'https://benchpromos.com/comunidades',
+    slug: 'https://benchpromos.com.br/comunidades',
     icon: Icons.MessageCircle,
   },
   {

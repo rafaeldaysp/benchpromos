@@ -17,6 +17,16 @@ const nextConfig = {
       allowedOrigins: ['benchpromos.com.br'],
     },
   },
+  async redirects() {
+    return [
+      {
+        source: '/:path*',
+        has: [{ type: 'host', value: 'www.benchpromos.com.br' }],
+        destination: 'https://benchpromos.com.br/:path*',
+        permanent: true,
+      },
+    ]
+  },
   async rewrites() {
     return [
       {

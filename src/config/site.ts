@@ -1,3 +1,7 @@
+import { env } from '@/env.mjs'
+
+const siteUrl = env.NEXT_PUBLIC_APP_URL.replace(/\/+$/, '')
+
 export const links = [
   {
     title: 'YouTube',
@@ -17,8 +21,8 @@ export const siteConfig = {
   name: 'Bench Promos',
   description:
     'Um portal de tecnologia completo destinado ao mapeamento de ofertas e preços de produtos, publicações de testes de benchmarks realizados por nossa equipe e muito mais!',
-  url: 'https://benchpromos.com',
-  ogImage: 'https://benchpromos.com/opengraph-image.png',
+  url: siteUrl,
+  ogImage: `${siteUrl}/opengraph-image.png`,
   mainNav: [
     {
       title: 'Notebooks',

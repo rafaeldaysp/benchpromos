@@ -16,7 +16,7 @@ export default function PrivacyPolitics() {
         <p className="text-sm">
           Nosso compromisso é respeitar sua privacidade e garantir o sigilo de
           todas as informações que você nos fornece, através de nosso site{' '}
-          <Link href="/">https://www.benchpromos.com</Link>. Por isso, com o
+          <Link href="/">https://benchpromos.com.br</Link>. Por isso, com o
           objetivo de fornecer informações claras e precisas aos Titulares
           acerca do tratamento de dados pessoais, apresentamos nossa política de
           privacidade (“Política de Privacidade”).
@@ -65,7 +65,7 @@ export default function PrivacyPolitics() {
         </p>
         <p>
           3.2. Os links de nossos e-mails levam diretamente para o{' '}
-          <Link href="/">https://www.benchpromos.com</Link> ou para nossas redes
+          <Link href="/">https://benchpromos.com.br</Link> ou para nossas redes
           sociais.
         </p>
       </div>
@@ -99,7 +99,7 @@ export default function PrivacyPolitics() {
         </p>
         <p>
           4.4. Após o seu cadastro, o{' '}
-          <Link href="/">https://www.benchpromos.com.br</Link> envia um e-mail
+          <Link href="/">https://benchpromos.com.br</Link> envia um e-mail
           solicitando a confirmação da sua inscrição, e nunca envia e-mails com
           anexos executáveis (extensão exe, com, scr, bat) e links para
           download.
@@ -186,7 +186,7 @@ export default function PrivacyPolitics() {
           Publicaremos todas as alterações da Política de Privacidade no
           endereço{' '}
           <Link href="/politica-de-privacidade">
-            https://www.benchpromos.com/politica-de-privacidade
+            https://benchpromos.com.br/politica-de-privacidade
           </Link>
           , se as alterações forem significativas, colocaremos um aviso com mais
           destaque, incluindo, para alguns serviços, notificação por e-mail das
