@@ -1,10 +1,8 @@
 'use client'
 
-import { gql, useSuspenseQuery } from '@apollo/client'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import * as React from 'react'
 
-import { RECENT_SALES_DAYS } from '@/constants'
 import { useQueryString } from '@/hooks/use-query-string'
 import { type Category } from '@/types'
 import { Label } from '../ui/label'
@@ -12,16 +10,11 @@ import { ScrollArea, ScrollBar } from '../ui/scroll-area'
 import { Switch } from '../ui/switch'
 import { Toggle } from '../ui/toggle'
 
-const GET_CATEGORIES_RANK = gql`
-  query getCategoriesRank($recentDays: Int) {
-    salesCategoryRank(recentDays: $recentDays) {
-      name
-      slug
-    }
-  }
-`
-
-export function SalesNavSimplified() {
+export function SalesNavSimplified({
+  categories,
+}: {
+  categories: Pick<Category, 'name' | 'slug'>[]
+}) {
   const [isPending, startTransition] = React.useTransition()
   const router = useRouter()
   const pathname = usePathname()
@@ -30,16 +23,6 @@ export function SalesNavSimplified() {
     searchParams.get('categories')?.split('.') ?? [],
   )
   const { createQueryString } = useQueryString()
-
-  const { data } = useSuspenseQuery<{
-    salesCategoryRank: Pick<Category, 'name' | 'slug'>[]
-  }>(GET_CATEGORIES_RANK, {
-    variables: {
-      recentDays: RECENT_SALES_DAYS,
-    },
-  })
-
-  const categories = data.salesCategoryRank
 
   return (
     <div className="flex w-full flex-col justify-between gap-4 sm:flex-row">

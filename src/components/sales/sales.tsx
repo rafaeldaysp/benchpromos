@@ -8,7 +8,7 @@ import { useInView } from 'react-intersection-observer'
 import { SaleCard } from '@/components/sales/sale-card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { RECENT_SALES_DAYS } from '@/constants'
-import { GET_SALES, type GetSalesQuery } from '@/queries'
+import { GET_SALES_FEED, type GetSalesFeedQuery } from '@/queries'
 import ScrollToTopButton from '../scroll-to-top-button'
 import { SalesNavSimplified } from './sales-nav-simplified'
 
@@ -29,8 +29,8 @@ export function Sales({ user, productSlug }: SalesProps) {
   const showExpired = searchParams.get('expired') ? true : false
   const categories = searchParams.get('categories')?.split('.')
 
-  const { data, fetchMore, client } = useSuspenseQuery<GetSalesQuery>(
-    GET_SALES,
+  const { data, fetchMore, client } = useSuspenseQuery<GetSalesFeedQuery>(
+    GET_SALES_FEED,
     {
       refetchWritePolicy: 'overwrite',
       variables: {
@@ -89,7 +89,7 @@ export function Sales({ user, productSlug }: SalesProps) {
 
   return (
     <main className="space-y-4">
-      <SalesNavSimplified />
+      <SalesNavSimplified categories={data.salesCategoryRank} />
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {sales.map((sale) => (
