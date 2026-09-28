@@ -1,0 +1,371 @@
+{
+  "started_utc": "2026-09-28T14:59:52Z",
+  "source_file": "dump_2026-09-28_14_47_39.sql.gz",
+  "source_sha256": "a6b8243e8ba7157335f66bd6a1fb5f97cf45ad4cba23d3b57d6242f54748f2cf",
+  "application_sha256": "8acfa3ca6a33624c8d99cdf10e11a018267e0598817dca0bff8b4b4d6824bcb4",
+  "database": "benchpromos_restore_20260928_144739",
+  "verification": [
+    {
+      "table": "public.\"_BenchmarkResultsToProduct\"",
+      "rows": 7203,
+      "sum_sha256": "b3b60f580703bac36733dfa1f0a9a3b66291bd2de4d0eb6c8887faa6f0cdc96c",
+      "xor_sha256": "d3ba9411d3fb759f728b70cfe974981fd6543982e0f2bd2f0883324332267de8",
+      "matches_dump": true
+    },
+    {
+      "table": "public.\"_DealToDiscount\"",
+      "rows": 1,
+      "sum_sha256": "58a9df030c86c9f653489f1d4f9f9eee0a5da0f86a0d896b489f2c6ed0fece4f",
+      "xor_sha256": "58a9df030c86c9f653489f1d4f9f9eee0a5da0f86a0d896b489f2c6ed0fece4f",
+      "matches_dump": true
+    },
+    {
+      "table": "public.\"_DiscountToSale\"",
+      "rows": 50,
+      "sum_sha256": "bf33dc5811f60c03bb0cf004fc862a62f472fea945fb9af5d62acbd3b67d7aa6",
+      "xor_sha256": "2cab08be966ba28dd138090bd9e19ec3500b68481dcb6bce1821dcce918f5724",
+      "matches_dump": true
+    },
+    {
+      "table": "public.\"_ProductToUser\"",
+      "rows": 62993,
+      "sum_sha256": "ffb0101ba5bc23008f9cdf311f0e5000f390d844a22a05aa3d68b81619891a60",
+      "xor_sha256": "de4c7bf431022fd151ee3191a5b656c01e89f69384efaa5c03311e6187717e2c",
+      "matches_dump": true
+    },
+    {
+      "table": "public.\"_TierListCategories\"",
+      "rows": 6,
+      "sum_sha256": "115cfd9191e3289f91d4bad2d2f4b5ba29e1ef93cd293f341a87c59efa9835aa",
+      "xor_sha256": "7f7bbf095e38b6fcd3ed07231151f5b2cb17786a3ccfb2dbfa2f85eb913115c0",
+      "matches_dump": true
+    },
+    {
+      "table": "public._giveaway_participants",
+      "rows": 84150,
+      "sum_sha256": "1b2f8b69d105a515d03d04f76c7e8a8b61514ab64d87bc88689fb1052a611a43",
+      "xor_sha256": "4e5e0000ed3ece570dffaeb5bdb7c6984520b375e6a0c4997ba1a22d3c3bb083",
+      "matches_dump": true
+    },
+    {
+      "table": "public._prisma_migrations",
+      "rows": 75,
+      "sum_sha256": "85a64c5734d24327a0fe5bed609ac6d362d4f5d3d4c249020474b3b821ac8cf3",
+      "xor_sha256": "8652b7419a2065f91c980b5c72b9c9e893d8f8b614c619fae20f7d227ae9e16f",
+      "matches_dump": true
+    },
+    {
+      "table": "public.accounts",
+      "rows": 53419,
+      "sum_sha256": "14ebbc0140c6c34c2948dbce7323daf0c246c4f984a55f7fb63a1c5d76146264",
+      "xor_sha256": "b342b6264fdca11eed241e8fea7dd5693f89792deb5838f658811217ab778748",
+      "matches_dump": true
+    },
+    {
+      "table": "public.awards",
+      "rows": 1,
+      "sum_sha256": "dbbb260d5564c779d46f90da839a2b233c7c0c0f4b7fb01868b7362776543f0a",
+      "xor_sha256": "dbbb260d5564c779d46f90da839a2b233c7c0c0f4b7fb01868b7362776543f0a",
+      "matches_dump": true
+    },
+    {
+      "table": "public.awards_categories",
+      "rows": 34,
+      "sum_sha256": "f0db3d13f10e8ae65b2e575c4e76de27a0ca997f57a202555b0a18d21b84d7e3",
+      "xor_sha256": "f41459fa0c7e32751217f35d6e5126ef858a95dada545f582aa18182adf72ca5",
+      "matches_dump": true
+    },
+    {
+      "table": "public.awards_category_option_votes",
+      "rows": 84481,
+      "sum_sha256": "bc8ac44d328aea414a78e4dea45825c72fdeb585b428a2a1ee05e27a162772cd",
+      "xor_sha256": "be9c878b76736a5ddbfc2e8c0536c66c5b9a72f1e3d5b9cd69faa098dea1df41",
+      "matches_dump": true
+    },
+    {
+      "table": "public.awards_category_options",
+      "rows": 111,
+      "sum_sha256": "e9b0474f0006c7414d0823f5ce326277534e5a3b40bc2ae45bfe8b8562aa4e7c",
+      "xor_sha256": "43ed7fcd7c1d6f33cb5d7c666676d22138fb9323aea9c964615c86ab837f8d30",
+      "matches_dump": true
+    },
+    {
+      "table": "public.benchmarks",
+      "rows": 162,
+      "sum_sha256": "6d07119398a10568b9daaa575ae5ab34c0f3ac73d16aa57f130d27df8fd3d557",
+      "xor_sha256": "18e67dde904da3060b1a11ecd7fbf4d0fd28deb3bbfee36f2f883279b7fbfa97",
+      "matches_dump": true
+    },
+    {
+      "table": "public.benchmarks_results",
+      "rows": 5833,
+      "sum_sha256": "517978a59493487dab6427a22766692e37c4e7932bf5ba23749c6726da04f468",
+      "xor_sha256": "a8565b50136ef92ddc4f12f1ca1c379c62fcdedd72af8ebca4e562fb19a736b4",
+      "matches_dump": true
+    },
+    {
+      "table": "public.cashbacks",
+      "rows": 19,
+      "sum_sha256": "f5cfc9c94e71f6a7cdfc69fd0e955068dd1a83abc83673f478f19e36150aa63a",
+      "xor_sha256": "c4b07b72d3cad5318bddfb6d87558d97c62588fc4d980b134cdf16afb7dc77a6",
+      "matches_dump": true
+    },
+    {
+      "table": "public.categories",
+      "rows": 25,
+      "sum_sha256": "428b65fa22d1f5a10117b1548b7ff52c3cc43602a238128960a365e64ee2e09c",
+      "xor_sha256": "c55084b7c460a8adb96441d199ae41cc2eeb6283eb924c47ffed7219dea7d79c",
+      "matches_dump": true
+    },
+    {
+      "table": "public.comment_likes",
+      "rows": 1637,
+      "sum_sha256": "58981e50c7361bd5edaa9783f971e475ad1952823888474513282ebf4087d510",
+      "xor_sha256": "f19a2714602fb53f5071ca6cf9ad39572448fd82a2f2054c2c19ba51c91afc32",
+      "matches_dump": true
+    },
+    {
+      "table": "public.comments",
+      "rows": 6181,
+      "sum_sha256": "bd9c325504f87a7fd052012494d25b419ade3014fe00a880b6d7ccfc3fe82e45",
+      "xor_sha256": "8829ed97bd6a77d31d511716d40415a956d6f2db90a481acde19c14bc85df16d",
+      "matches_dump": true
+    },
+    {
+      "table": "public.coupons",
+      "rows": 486,
+      "sum_sha256": "f725f5f5990e98c93cda6dd8d29d5427d4cba9e12e7475010000e48a316e3c16",
+      "xor_sha256": "73d43231c706da634aa348b1ac18ed3dff042d0e4a980a3952aac86503227a7c",
+      "matches_dump": true
+    },
+    {
+      "table": "public.daily_products_statuses",
+      "rows": 1269604,
+      "sum_sha256": "305372dd7b4cdef3f84023249d5542b65b0ccffefe7c4ecf8701b3a102b3007b",
+      "xor_sha256": "034774b353c94ce390ba2c8249b1c4cdffe3bf7ec083b28b2c0be4299d246dc7",
+      "matches_dump": true
+    },
+    {
+      "table": "public.deals",
+      "rows": 4828,
+      "sum_sha256": "655a7e4cfeb2aa427a6c1babda326decf90a71cb17153d622181f5ddee44b154",
+      "xor_sha256": "2f9a743f2aab7f4812a947c31abbd6f90a098b9c359e72b03f343cff17d5b6e2",
+      "matches_dump": true
+    },
+    {
+      "table": "public.demo",
+      "rows": 0,
+      "sum_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "xor_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "matches_dump": true
+    },
+    {
+      "table": "public.discord_roles",
+      "rows": 16,
+      "sum_sha256": "691cc24d254dea2e8b5401139f16a50cc79de1252a49480f7f5c1cc0548cc093",
+      "xor_sha256": "2c4fa10bc70bcd0c2cea57378e6770928b3e2424d9e2a96744871314ec39e529",
+      "matches_dump": true
+    },
+    {
+      "table": "public.discounts",
+      "rows": 46,
+      "sum_sha256": "d2997755b30d3e456866aa1efd63c4e87b406823b7ef945c9a1cb3e24e153392",
+      "xor_sha256": "2245a245dfd801d7e611de95d415a4e9a371701f2b938626ef3931a619cda96e",
+      "matches_dump": true
+    },
+    {
+      "table": "public.filter_options",
+      "rows": 148,
+      "sum_sha256": "c35efcf9625e13833991026532a89a6276252ac554ca053708223c3c66e8f6ad",
+      "xor_sha256": "0fe5255b1048ff6bf857142c94d2e1a0651b7762058a672798d9d10ca3cf19cb",
+      "matches_dump": true
+    },
+    {
+      "table": "public.filters",
+      "rows": 29,
+      "sum_sha256": "2fcabcc53cea2ac6a3bdab7a4cb572ab2b2aa6ca9718b80e9ab39ed342097aba",
+      "xor_sha256": "4b3eb61762436f5bf7e8bc122b11af6842c796827627fb175d4fcef78680a4a2",
+      "matches_dump": true
+    },
+    {
+      "table": "public.giveaway_rules",
+      "rows": 3,
+      "sum_sha256": "eaaac542975d2e3d8721b720702782d97c8985794104ef997903a9060b6d16e4",
+      "xor_sha256": "09f55bc5b882f25968e9c0c78fb87f2f8746fa1ba47ace668e3974fa308be914",
+      "matches_dump": true
+    },
+    {
+      "table": "public.giveaways",
+      "rows": 187,
+      "sum_sha256": "43829fe56e1001004d7532431b32349c86a33b08febd2ecbf9853afa751f5938",
+      "xor_sha256": "f9506ed1f8a12e0b951592dee46877dacc6204d2ff77db3f3f2b380c22788bd8",
+      "matches_dump": true
+    },
+    {
+      "table": "public.price_range_categories",
+      "rows": 7,
+      "sum_sha256": "3a9cc8bb139165a5e29e011fdcc53fb54d45d578b3266c1dc8d9e00ad4d802e1",
+      "xor_sha256": "d7d819c225c898defc55aa3a6fda679ab2cfe69b4651f812b6edd534c4da27bd",
+      "matches_dump": true
+    },
+    {
+      "table": "public.price_range_products",
+      "rows": 64,
+      "sum_sha256": "c4d4f2b0aeb82ee5078fdc1c4a04d1b0814adcab4576024a876afdee8aac66c1",
+      "xor_sha256": "f8357d7dc5c45b209d5fdef5c7493689c8bfba985fb3d11d3208e27ee2bbf005",
+      "matches_dump": true
+    },
+    {
+      "table": "public.products",
+      "rows": 2627,
+      "sum_sha256": "fc8c6e097a832f717ab84318e68a2cb669e97e2a81bc3169ea52986b6d9f2352",
+      "xor_sha256": "fe662f825f78ad7cfd7aa1599dad43d19d4eee8ed080e8c7d3201e8c8f86d08c",
+      "matches_dump": true
+    },
+    {
+      "table": "public.products_filters_options",
+      "rows": 8533,
+      "sum_sha256": "958cd063f3eae3868e8926481570688e3e02de3863c28addcbaef853e7725ba9",
+      "xor_sha256": "6f57680c003eb4ab3e2226b6e3d249308c35203de3ebd2497616455e22d1bcd9",
+      "matches_dump": true
+    },
+    {
+      "table": "public.retailers",
+      "rows": 60,
+      "sum_sha256": "5812594f83db963131aec492fa2501a997fb51dedac18425004eb021453410a8",
+      "xor_sha256": "831c129de47a8973e53b9b80680bdc572d51fb3b2158c84d05011bb3a6b9ed2e",
+      "matches_dump": true
+    },
+    {
+      "table": "public.sales",
+      "rows": 20746,
+      "sum_sha256": "e3dcebda43435e923c1e4cb55c65b64b9f56a6cbb77fb712ce9955127941d733",
+      "xor_sha256": "2bab9e801c7c9a258d930b13d03aaa7cb031b167e7d21ab909c4290c34e4509b",
+      "matches_dump": true
+    },
+    {
+      "table": "public.sales_reactions",
+      "rows": 10394,
+      "sum_sha256": "bf8a54ff7e9855ef6c1df418fe7109c6bbaba264e07dfb58a3e3bb1d9a66595a",
+      "xor_sha256": "6213d74b703a8fb53308c8aecc2fe7db6d2e83aa88fb6feb0410c6e291459706",
+      "matches_dump": true
+    },
+    {
+      "table": "public.sessions",
+      "rows": 0,
+      "sum_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "xor_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "matches_dump": true
+    },
+    {
+      "table": "public.social_media_links",
+      "rows": 8,
+      "sum_sha256": "03132baf1923ab84f0dfebd001c01c85fafd1ee31a111ddb3e239eaff5c844df",
+      "xor_sha256": "23e412c2f53effebab998410cd8989a1a16f3324c506099e3c285aafaf85cb31",
+      "matches_dump": true
+    },
+    {
+      "table": "public.subcategories",
+      "rows": 5,
+      "sum_sha256": "e1f35bb831895491e7f89e5a830d7b544160a7d27a73c6815633e1889b68780a",
+      "xor_sha256": "d963d8ba2cca6011684e5cd2eb95ef7580204e587a74b16d532c9d1c97f67e58",
+      "matches_dump": true
+    },
+    {
+      "table": "public.subscriptions",
+      "rows": 2383,
+      "sum_sha256": "bca0c4d9f7e0dd0811ef1761cb03430a18ec64163f1ea614214b438bab71d2cf",
+      "xor_sha256": "92610033a5305a945cccfaaaeb3a5d220d6c415014293ef5b662c90db1492ae5",
+      "matches_dump": true
+    },
+    {
+      "table": "public.tier_lists",
+      "rows": 4,
+      "sum_sha256": "00ad744bc757133a3106086b9761cb15c698a5be1de7594a19791f5b1053a070",
+      "xor_sha256": "995590f440f8d50a6f0b9ea9e8d5372146afe6fde2946b5c6e5ee1c11aff913e",
+      "matches_dump": true
+    },
+    {
+      "table": "public.tier_products",
+      "rows": 71,
+      "sum_sha256": "39666127ec36f7a29ef02aa097ee9081e24d77cafdb6b6ed08bc6d4a4e4b1805",
+      "xor_sha256": "20c1ce4a92a3b097395a3b1f95a892ad0071462bb4be63a05aa36bde8a7e9f0b",
+      "matches_dump": true
+    },
+    {
+      "table": "public.tiers",
+      "rows": 36,
+      "sum_sha256": "18b1fac8eb07cfb92265081699a773d065e513717551f9d10665f6633aad399e",
+      "xor_sha256": "b087ea1edc79d7335c13526e8a2a968500622efd1486fad1d843104124f1383e",
+      "matches_dump": true
+    },
+    {
+      "table": "public.users",
+      "rows": 62395,
+      "sum_sha256": "a56e55a8365985492e45c738b88d6b239b9ff737564343992346a6e54f434cb1",
+      "xor_sha256": "a76291f42ce664a3db64c9898f8f2a29cfae397ff45022dc8cdb3a579ff7c861",
+      "matches_dump": true
+    },
+    {
+      "table": "public.users_categories_notifications",
+      "rows": 298,
+      "sum_sha256": "ca89c3b97d0173c5aa6dfa287f79c898b2f679737e10d87b346f01033fa41692",
+      "xor_sha256": "7f7b3c2b89f6cac689041e0251753bbe0fe2d76b0ab86ded48949c3ec08b42f8",
+      "matches_dump": true
+    },
+    {
+      "table": "public.users_products_notifications",
+      "rows": 61038,
+      "sum_sha256": "b2bdaaed95bd468094152c7f26126ab017ee29371ad7c2ec38a4435e1678bd04",
+      "xor_sha256": "e5f4a890e62d13378d93579e1a3f70dde4ddd13086ca34809ac65d277a3994e0",
+      "matches_dump": true
+    },
+    {
+      "table": "public.verificationtokens",
+      "rows": 0,
+      "sum_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "xor_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "matches_dump": true
+    }
+  ],
+  "previous_database_backup": "before-restore.dump",
+  "catalog": {
+    "tables": 46,
+    "enums": 7,
+    "sequences": 6,
+    "foreign_keys": 62,
+    "constraints": 100,
+    "unvalidated_constraints": 0,
+    "invalid_indexes": 0,
+    "wrong_owner_objects": 0
+  },
+  "sequences": [
+    {
+      "name": "public.awards_categories_priority_seq",
+      "matches_dump": true
+    },
+    {
+      "name": "public.categories_priority_seq",
+      "matches_dump": true
+    },
+    {
+      "name": "public.deals_priority_seq",
+      "matches_dump": true
+    },
+    {
+      "name": "public.filter_options_priority_seq",
+      "matches_dump": true
+    },
+    {
+      "name": "public.filters_priority_seq",
+      "matches_dump": true
+    },
+    {
+      "name": "public.subcategories_priority_seq",
+      "matches_dump": true
+    }
+  ],
+  "total_rows": 1750397,
+  "verified_utc": "2026-09-28T15:00:20Z",
+  "passed": true
+}

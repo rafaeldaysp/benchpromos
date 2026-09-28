@@ -1,0 +1,26 @@
+# syntax=docker/dockerfile:1
+# Matches the Node 22 standalone build used on the production VPS.
+FROM node:22-alpine AS build
+WORKDIR /app
+RUN apk add --no-cache libc6-compat
+COPY package*.json ./
+RUN npm ci
+COPY . .
+ENV NEXT_TELEMETRY_DISABLED=1
+ARG NEXT_PUBLIC_APP_URL
+ARG NEXT_PUBLIC_API_URL
+ARG NEXT_PUBLIC_API_KEY
+ARG NEXT_PUBLIC_GTAG
+ARG NEXT_PUBLIC_GTM
+ARG NEXT_PUBLIC_GOOGLE_ADSENSE_CLIENT
+RUN --mount=type=secret,id=web_env,target=/app/.env,required=true npm run build && find .next/standalone -maxdepth 1 -type f -name '.env*' -delete
+
+FROM node:22-alpine AS production
+WORKDIR /app
+ENV NODE_ENV=production NEXT_TELEMETRY_DISABLED=1 PORT=3000 HOSTNAME=0.0.0.0
+COPY --from=build --chown=node:node /app/public ./public
+COPY --from=build --chown=node:node /app/.next/standalone ./
+COPY --from=build --chown=node:node /app/.next/static ./.next/static
+USER node
+EXPOSE 3000
+CMD ["node", "server.js"]

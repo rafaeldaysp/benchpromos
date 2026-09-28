@@ -1,0 +1,54 @@
+# Production deployment managed by Dokploy; secrets are provided in its Environment tab.
+services:
+  web:
+    image: benchpromos-web:main
+    build:
+      context: .
+      dockerfile: Dockerfile.production
+      secrets:
+        - web_env
+      args:
+        NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL}
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
+        NEXT_PUBLIC_API_KEY: ${NEXT_PUBLIC_API_KEY}
+        NEXT_PUBLIC_GTAG: ${NEXT_PUBLIC_GTAG}
+        NEXT_PUBLIC_GTM: ${NEXT_PUBLIC_GTM}
+        NEXT_PUBLIC_GOOGLE_ADSENSE_CLIENT: ${NEXT_PUBLIC_GOOGLE_ADSENSE_CLIENT}
+    pull_policy: never
+    env_file:
+      - .env
+    environment:
+      HOSTNAME: 0.0.0.0
+      PORT: "3000"
+      NODE_ENV: production
+      NEXT_TELEMETRY_DISABLED: "1"
+    restart: unless-stopped
+    init: true
+    networks:
+      - dokploy-network
+    expose:
+      - "3000"
+    stop_grace_period: 30s
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - fetch('http://127.0.0.1:3000/api/auth/providers').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    deploy:
+      replicas: 16
+networks:
+  dokploy-network:
+    external: true
+secrets:
+  web_env:
+    file: .env
