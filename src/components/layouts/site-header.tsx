@@ -10,6 +10,7 @@ import { getClient } from '@/lib/apollo'
 import { type Category } from '@/types'
 import { gql } from '@apollo/client'
 import { cn } from '@/lib/utils'
+import { Icons } from '../icons'
 
 const GET_CATEGORIES = gql`
   query GetCategories {
@@ -49,11 +50,10 @@ export async function SiteHeader() {
                 <Link
                   href="/sign-in"
                   className={cn(
-                    buttonVariants({ variant: 'secondary' }),
-                    'h-10',
+                    buttonVariants({ variant: 'secondary', size: 'icon' }),
                   )}
                 >
-                  Entrar
+                  <Icons.LogIn className="size-4" />
                 </Link>
               </>
             )}

@@ -21,7 +21,7 @@ The production images are `benchpromos-api:main` and `benchpromos-web:main`. The
 - The API's migration service runs `prisma migrate deploy` before HTTP processes start. The production Compose file does not create or replace PostgreSQL.
 - API database pool URLs are separate Dokploy variables: `API_DATABASE_URL` (3 connections per replica), `MIGRATION_DATABASE_URL` (2), and `WORKER_DATABASE_URL` (4). Each points to the restored `benchpromos` database. `DATABASE_URL` remains available as the base connection setting.
 - `REDIS_URL` and `REDIS_PASSWORD` preserve the existing private Redis configuration. Redis has no published host port.
-- `WORKER_REPLICAS=0` keeps scheduled jobs paused across deployments; the Compose default is also zero. Do not resume notifications without the owner's approval and coordination with the former server. HTTP processes always set `RUN_PRODUCT_JOBS=false`.
+- `WORKER_REPLICAS=1` in Dokploy runs the single scheduled-jobs worker (enabled 2026-09-28 after the production cutover). Never set it above 1: each worker sends product notifications independently, so extra workers send duplicates. Set it to `0` and redeploy to pause jobs; the Compose default is also zero. HTTP processes always set `RUN_PRODUCT_JOBS=false`.
 - The frontend uses `Dockerfile.production`, matching the VPS's Node 22 standalone build. Its build receives `.env` as a BuildKit secret. Environment files, Git metadata, dumps, and local performance artifacts are excluded from its build context; the runtime image excludes `.env` files.
 - Frontend `NEXT_PUBLIC_*` variables are build arguments and need a rebuild when changed. Changing Dokploy environment values does not generate a GitHub push; use **Deploy** after saving them.
 
@@ -29,4 +29,4 @@ The production images are `benchpromos-api:main` and `benchpromos-web:main`. The
 
 If a push does not deploy, check that the GitHub App can access the repository, its webhook uses the current Dokploy domain and receives HTTP 200, and the service has GitHub source, branch `main`, push trigger, and auto-deploy enabled. See [Dokploy's auto-deploy documentation](https://docs.dokploy.com/docs/core/auto-deploy).
 
-If a build fails, inspect the deployment logs before manually redeploying. Preserve the database, domain routes, environment, and worker pause. The old performance scripts that change raw Compose definitions or swap databases are historical tools; do not use them for routine deployment now that Git is the source.
+If a build fails, inspect the deployment logs before manually redeploying. Preserve the database, domain routes, environment, and single worker replica. The old performance scripts that change raw Compose definitions or swap databases are historical tools; do not use them for routine deployment now that Git is the source.
