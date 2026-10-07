@@ -142,19 +142,26 @@ export function createWhatsmiauClient(config: WhatsmiauConfig) {
 }
 
 export interface WhatsmiauServerConfig extends WhatsmiauConfig {
-  defaultChat: string
+  chatIds: string[]
 }
 
 /**
- * Resolves whatsmiau config from env. Returns null when the channel is not
- * configured (missing key/instance/default chat) so callers can stay dark.
+ * Resolves whatsmiau config from env. WHATSMIAU_CHAT_IDS is a comma-separated
+ * list of chats (group JIDs, newsletters or numbers); every post goes to all
+ * of them. Returns null when the channel is not configured (missing
+ * key/instance/chats) so callers can stay dark.
  */
 export function getWhatsmiauServerConfig(): WhatsmiauServerConfig | null {
-  if (
-    !env.WHATSMIAU_API_KEY ||
-    !env.WHATSMIAU_INSTANCE ||
-    !env.WHATSMIAU_DEFAULT_CHAT
-  ) {
+  const chatIds = Array.from(
+    new Set(
+      (env.WHATSMIAU_CHAT_IDS ?? '')
+        .split(',')
+        .map((chatId) => chatId.trim())
+        .filter(Boolean),
+    ),
+  )
+
+  if (!env.WHATSMIAU_API_KEY || !env.WHATSMIAU_INSTANCE || !chatIds.length) {
     return null
   }
 
@@ -162,6 +169,6 @@ export function getWhatsmiauServerConfig(): WhatsmiauServerConfig | null {
     apiUrl: env.WHATSMIAU_API_URL,
     apiKey: env.WHATSMIAU_API_KEY,
     instance: env.WHATSMIAU_INSTANCE,
-    defaultChat: env.WHATSMIAU_DEFAULT_CHAT,
+    chatIds,
   }
 }

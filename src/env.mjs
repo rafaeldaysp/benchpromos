@@ -22,7 +22,7 @@ export const env = createEnv({
     WHATSMIAU_API_URL: z.string().url().default('https://api.whatsmiau.dev/v2'),
     WHATSMIAU_API_KEY: z.string().min(1).optional(),
     WHATSMIAU_INSTANCE: z.string().min(1).optional(),
-    WHATSMIAU_DEFAULT_CHAT: z.string().min(1).optional(),
+    WHATSMIAU_CHAT_IDS: z.string().min(1).optional(),
   },
   /*
    * Environment variables available on the client (and server).
@@ -64,7 +64,7 @@ export const env = createEnv({
     WHATSMIAU_API_URL: process.env.WHATSMIAU_API_URL,
     WHATSMIAU_API_KEY: process.env.WHATSMIAU_API_KEY,
     WHATSMIAU_INSTANCE: process.env.WHATSMIAU_INSTANCE,
-    WHATSMIAU_DEFAULT_CHAT: process.env.WHATSMIAU_DEFAULT_CHAT,
+    WHATSMIAU_CHAT_IDS: process.env.WHATSMIAU_CHAT_IDS,
     NEXT_PUBLIC_GOOGLE_ADSENSE_CLIENT:
       process.env.NEXT_PUBLIC_GOOGLE_ADSENSE_CLIENT,
   },
