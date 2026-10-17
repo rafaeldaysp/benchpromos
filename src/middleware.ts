@@ -23,14 +23,10 @@ export default withAuth(
       return null
     }
 
-    if (
-      req.nextUrl.pathname === '/sign-up' ||
-      req.nextUrl.pathname === '/sign-in'
-    ) {
-      if (token) return NextResponse.redirect(new URL('/', req.url))
-
-      return null
-    }
+    // /sign-in and /sign-up redirect signed-in users themselves, using the
+    // session refreshed from the API. Checking only for a cookie here would
+    // trap users whose session was revoked (e.g. by a password reset) in a
+    // redirect loop, since the revoked cookie still decodes.
   },
   {
     callbacks: {
@@ -45,5 +41,5 @@ export default withAuth(
 )
 
 export const config = {
-  matcher: ['/dashboard/:path*', '/sign-up', '/sign-in', '/user/:path*'],
+  matcher: ['/dashboard/:path*', '/user/:path*'],
 }
