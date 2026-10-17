@@ -32,10 +32,10 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet'
-import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
 import { cn } from '@/lib/utils'
 import type { Benchmark, BenchmarkResult, Product } from '@/types'
+import { useAuthHeaders } from '@/components/auth-token-provider'
 
 const DELETE_BENCHMARK = gql`
   mutation DeleteBenchmark($benchmarkId: ID!) {
@@ -57,6 +57,7 @@ interface BenchmarksMainProps {
 }
 
 export function BenchmarksMain({ benchmarks, results }: BenchmarksMainProps) {
+  const authHeaders = useAuthHeaders()
   const [benchmarkQuery, setBenchmarkQuery] = React.useState('')
   const { openDialogs, setOpenDialog } = useFormStore()
   const router = useRouter()
@@ -64,7 +65,7 @@ export function BenchmarksMain({ benchmarks, results }: BenchmarksMainProps) {
   const [deleteBenchmark] = useMutation(DELETE_BENCHMARK, {
     context: {
       headers: {
-        'api-key': env.NEXT_PUBLIC_API_KEY,
+        ...authHeaders,
       },
     },
     onError(error, _clientOptions) {

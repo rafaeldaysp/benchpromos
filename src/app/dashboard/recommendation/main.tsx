@@ -28,11 +28,11 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet'
-import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
 import { cn } from '@/lib/utils'
 import { type Product, type RecommendedProduct } from '@/types'
 import { priceFormatter } from '@/utils/formatter'
+import { useAuthHeaders } from '@/components/auth-token-provider'
 
 const DELETE_RECOMMENDATION_CATEGORY = gql`
   mutation RemoveRecommendationCategory($id: ID!) {
@@ -61,6 +61,7 @@ interface RecommendationMainProps {
 export function DashboardRecommendationMain({
   recommendationCategories,
 }: RecommendationMainProps) {
+  const authHeaders = useAuthHeaders()
   const [selectedCategory, setSelectedCategory] =
     React.useState<(typeof recommendationCategories)[number]>()
   const { openDialogs, setOpenDialog } = useFormStore()
@@ -71,7 +72,7 @@ export function DashboardRecommendationMain({
     {
       context: {
         headers: {
-          'api-key': env.NEXT_PUBLIC_API_KEY,
+          ...authHeaders,
         },
       },
       onError(error, _clientOptions) {
@@ -87,7 +88,7 @@ export function DashboardRecommendationMain({
   const [deleteRecommendedProduct] = useMutation(DELETE_RECOMMENDED_PRODUCT, {
     context: {
       headers: {
-        'api-key': env.NEXT_PUBLIC_API_KEY,
+        ...authHeaders,
       },
     },
     onError(error, _clientOptions) {

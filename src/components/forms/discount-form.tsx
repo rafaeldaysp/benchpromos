@@ -29,7 +29,6 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
-import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
 import type { Retailer } from '@/types'
 import {
@@ -41,6 +40,7 @@ import {
 } from '../ui/dialog'
 import { ScrollArea } from '../ui/scroll-area'
 import { discountSchema } from '@/lib/validations/discount'
+import { useAuthHeaders } from '@/components/auth-token-provider'
 
 const CREATE_DISCOUNT = gql`
   mutation CreateDiscount($input: CreateDiscountInput!) {
@@ -81,6 +81,7 @@ interface DiscountFormProps {
 }
 
 export function DiscountForm({ mode = 'create', discount }: DiscountFormProps) {
+  const authHeaders = useAuthHeaders()
   const form = useForm<Inputs>({
     resolver: zodResolver(discountSchema),
     defaultValues: {
@@ -109,7 +110,7 @@ export function DiscountForm({ mode = 'create', discount }: DiscountFormProps) {
     {
       context: {
         headers: {
-          'api-key': env.NEXT_PUBLIC_API_KEY,
+          ...authHeaders,
         },
       },
       onError(error, _clientOptions) {

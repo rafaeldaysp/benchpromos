@@ -22,8 +22,8 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useFormStore } from '@/hooks/use-form-store'
 import { useRouter } from 'next/navigation'
 import { gql, useMutation } from '@apollo/client'
-import { env } from '@/env.mjs'
 import { toast } from 'sonner'
+import { useAuthHeaders } from '@/components/auth-token-provider'
 
 const CHANGE_USER_ROLE = gql`
   mutation ChangeUserRole($userId: String!, $role: Role!) {
@@ -43,6 +43,7 @@ interface UserRoleFormProps {
 }
 
 export function UserRoleForm({ user }: UserRoleFormProps) {
+  const authHeaders = useAuthHeaders()
   const form = useForm<Input>({
     resolver: zodResolver(userRoleSchema),
     defaultValues: {
@@ -58,7 +59,7 @@ export function UserRoleForm({ user }: UserRoleFormProps) {
       refetchQueries: ['GetUsers'],
       context: {
         headers: {
-          'api-key': env.NEXT_PUBLIC_API_KEY,
+          ...authHeaders,
         },
       },
       onError(error, _clientOptions) {

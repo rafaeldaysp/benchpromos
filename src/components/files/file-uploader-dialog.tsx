@@ -13,7 +13,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
-import { env } from '@/env.mjs'
 import {
   convertBase64,
   dataURLtoFile,
@@ -21,6 +20,7 @@ import {
   toDataURL,
 } from '@/utils/files'
 import { Icons } from '../icons'
+import { useAuthHeaders } from '@/components/auth-token-provider'
 
 const UPLOAD_FILES = gql`
   mutation UploadFile($file: FileInput!, $path: String) {
@@ -51,6 +51,7 @@ export function FileUploaderDialog({
   maxFileCount = 8,
   maxSize = 50 * 1024 * 1024,
 }: FileUploadDialogProps) {
+  const authHeaders = useAuthHeaders()
   const [files, setFiles] = React.useState<File[]>([])
   const [isProcessingFiles, setIsProcessingFiles] = React.useState(false)
 
@@ -100,7 +101,7 @@ export function FileUploaderDialog({
         const result = await uploadFile({
           context: {
             headers: {
-              'api-key': env.NEXT_PUBLIC_API_KEY,
+              ...authHeaders,
             },
           },
           variables: {
@@ -125,7 +126,7 @@ export function FileUploaderDialog({
       const result = await deleteFile({
         context: {
           headers: {
-            'api-key': env.NEXT_PUBLIC_API_KEY,
+            ...authHeaders,
           },
         },
         variables: {

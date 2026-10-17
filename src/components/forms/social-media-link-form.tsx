@@ -33,9 +33,9 @@ import {
   socialMediaTypeMeta,
   socialMediaTypeOrder,
 } from '@/constants/social-media'
-import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
 import { socialMediaLinkSchema } from '@/lib/validations/social-media-link'
+import { useAuthHeaders } from '@/components/auth-token-provider'
 
 const CREATE_SOCIAL_MEDIA_LINK = gql`
   mutation CreateSocialMediaLink($input: CreateSocialMediaLinkInput!) {
@@ -71,6 +71,7 @@ export function SocialMediaLinkForm({
   mode = 'create',
   socialMediaLink,
 }: SocialMediaLinkFormProps) {
+  const authHeaders = useAuthHeaders()
   const form = useForm<Inputs>({
     resolver: zodResolver(socialMediaLinkSchema),
     defaultValues: {
@@ -86,7 +87,7 @@ export function SocialMediaLinkForm({
     {
       context: {
         headers: {
-          'api-key': env.NEXT_PUBLIC_API_KEY,
+          ...authHeaders,
         },
       },
       onError(error, _clientOptions) {

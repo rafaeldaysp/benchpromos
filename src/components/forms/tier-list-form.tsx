@@ -37,9 +37,9 @@ import {
 } from '@/components/ui/popover'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Textarea } from '@/components/ui/textarea'
-import { env } from '@/env.mjs'
 import { tierListSchema } from '@/lib/validations/tier-list'
 import type { Category } from '@/types'
+import { useAuthHeaders } from '@/components/auth-token-provider'
 
 const CREATE_TIER_LIST = gql`
   mutation CreateTierList($createTierListInput: CreateTierListInput!) {
@@ -65,6 +65,7 @@ interface TierListFormProps {
 }
 
 export function TierListForm({ categories, onSuccess }: TierListFormProps) {
+  const authHeaders = useAuthHeaders()
   const form = useForm<Inputs>({
     resolver: zodResolver(tierListSchema),
     defaultValues,
@@ -76,7 +77,7 @@ export function TierListForm({ categories, onSuccess }: TierListFormProps) {
     {
       context: {
         headers: {
-          'api-key': env.NEXT_PUBLIC_API_KEY,
+          ...authHeaders,
         },
       },
       onError(error) {

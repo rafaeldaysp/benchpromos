@@ -18,7 +18,6 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
 import { categorySchema } from '@/lib/validations/category'
 import {
@@ -28,6 +27,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '../ui/dialog'
+import { useAuthHeaders } from '@/components/auth-token-provider'
 
 const CREATE_CATEGORY = gql`
   mutation CreateCategory($input: CreateCategoryInput!) {
@@ -57,6 +57,7 @@ interface CategoryFormProps {
 }
 
 export function CategoryForm({ mode = 'create', category }: CategoryFormProps) {
+  const authHeaders = useAuthHeaders()
   const form = useForm<Inputs>({
     resolver: zodResolver(categorySchema),
     defaultValues: {
@@ -72,7 +73,7 @@ export function CategoryForm({ mode = 'create', category }: CategoryFormProps) {
     {
       context: {
         headers: {
-          'api-key': env.NEXT_PUBLIC_API_KEY,
+          ...authHeaders,
         },
       },
       onError(error, _clientOptions) {

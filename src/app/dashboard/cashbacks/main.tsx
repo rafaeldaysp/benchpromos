@@ -38,10 +38,10 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet'
-import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
 import { cn } from '@/lib/utils'
 import { type Cashback, type Retailer } from '@/types'
+import { useAuthHeaders } from '@/components/auth-token-provider'
 
 dayjs.extend(relativeTime)
 dayjs.locale('pt-br')
@@ -59,6 +59,7 @@ interface CashbacksMainProps {
 }
 
 export function CashbacksMain({ cashbacks }: CashbacksMainProps) {
+  const authHeaders = useAuthHeaders()
   const [selectedCashback, setSelectedCashback] =
     React.useState<(typeof cashbacks)[number]>()
 
@@ -75,7 +76,7 @@ export function CashbacksMain({ cashbacks }: CashbacksMainProps) {
   const [deleteCashback] = useMutation(DELETE_CASHBACK, {
     context: {
       headers: {
-        'api-key': env.NEXT_PUBLIC_API_KEY,
+        ...authHeaders,
       },
     },
     onError(error, _clientOptions) {

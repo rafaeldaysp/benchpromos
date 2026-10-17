@@ -28,10 +28,10 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet'
-import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
 import { type Retailer } from '@/types'
 import { cn } from '@/lib/utils'
+import { useAuthHeaders } from '@/components/auth-token-provider'
 
 const DELETE_RETAILER = gql`
   mutation DeleteRetailer($retailerId: ID!) {
@@ -46,6 +46,7 @@ interface RetailersMainProps {
 }
 
 export function RetailersMain({ retailers }: RetailersMainProps) {
+  const authHeaders = useAuthHeaders()
   const [selectedRetailer, setSelectedRetailer] = React.useState<Retailer>()
   const { openDialogs, setOpenDialog } = useFormStore()
   const router = useRouter()
@@ -53,7 +54,7 @@ export function RetailersMain({ retailers }: RetailersMainProps) {
   const [deleteRetailer] = useMutation(DELETE_RETAILER, {
     context: {
       headers: {
-        'api-key': env.NEXT_PUBLIC_API_KEY,
+        ...authHeaders,
       },
     },
     onError(error, _clientOptions) {

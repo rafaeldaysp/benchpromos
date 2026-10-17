@@ -1,6 +1,8 @@
+import { redirect } from 'next/navigation'
 import * as React from 'react'
 
 import { AppSidebar } from '@/components/app-sidebar'
+import { AuthTokenProvider } from '@/components/auth-token-provider'
 import { DashboardBreadcrumb } from '@/components/dashboard-breadcrumb'
 import { Separator } from '@/components/ui/separator'
 import {
@@ -8,7 +10,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from '@/components/ui/sidebar'
-import { getCurrentUser } from '../_actions/user'
+import { getCurrentUser, getCurrentUserToken } from '../_actions/user'
 
 interface DashboardLayoutProps {
   children: React.ReactNode
@@ -18,6 +20,13 @@ export default async function DashboardLayout({
   children,
 }: DashboardLayoutProps) {
   const user = await getCurrentUser()
+
+  // The middleware only sees the role cached in the session cookie; the
+  // session here is refreshed from the API, so a demoted admin is turned away.
+  if (user?.role !== 'ADMIN') redirect('/')
+
+  const token = await getCurrentUserToken()
+
   return (
     <SidebarProvider>
       <AppSidebar
@@ -36,7 +45,9 @@ export default async function DashboardLayout({
           </div>
         </header>
         <div className="h-full space-y-6 px-4 py-10">
-          <div className="flex-1">{children}</div>
+          <div className="flex-1">
+            <AuthTokenProvider token={token}>{children}</AuthTokenProvider>
+          </div>
         </div>
       </SidebarInset>
     </SidebarProvider>

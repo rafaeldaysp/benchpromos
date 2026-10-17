@@ -26,12 +26,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
 import { dealsLinkSchema } from '@/lib/validations/deal'
 import type { Cashback, Coupon } from '@/types'
 import { couponFormatter } from '@/utils/formatter'
 import { ScrollArea } from '../ui/scroll-area'
+import { useAuthHeaders } from '@/components/auth-token-provider'
 
 const UPDATE_DEALS = gql`
   mutation UpdateDeals($input: AssignCouponAndCashbackToManyInput!) {
@@ -65,6 +65,7 @@ export default function DealsLinkForm({
   retailerId,
   dealIds,
 }: DealsLinkFormProps) {
+  const authHeaders = useAuthHeaders()
   const form = useForm<Inputs>({
     resolver: zodResolver(dealsLinkSchema),
   })
@@ -102,7 +103,7 @@ export default function DealsLinkForm({
   const [mutateDeals, { loading: isLoading }] = useMutation(UPDATE_DEALS, {
     context: {
       headers: {
-        'api-key': env.NEXT_PUBLIC_API_KEY,
+        ...authHeaders,
       },
     },
     onError(error, _clientOptions) {

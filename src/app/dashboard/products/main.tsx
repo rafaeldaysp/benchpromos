@@ -47,11 +47,11 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet'
-import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
 import { useQueryString } from '@/hooks/use-query-string'
 import { cn } from '@/lib/utils'
 import type { Category, Filter, Product } from '@/types'
+import { useAuthHeaders } from '@/components/auth-token-provider'
 
 const DELETE_PRODUCT = gql`
   mutation DeleteProduct($productId: ID!) {
@@ -92,6 +92,7 @@ interface ProductsMainProps {
 }
 
 export function ProductsMain({ filters, categories }: ProductsMainProps) {
+  const authHeaders = useAuthHeaders()
   const [, startTransition] = React.useTransition()
   const router = useRouter()
   const pathname = usePathname()
@@ -122,7 +123,7 @@ export function ProductsMain({ filters, categories }: ProductsMainProps) {
   const [deleteProduct] = useMutation(DELETE_PRODUCT, {
     context: {
       headers: {
-        'api-key': env.NEXT_PUBLIC_API_KEY,
+        ...authHeaders,
       },
     },
     refetchQueries: ['GetProducts'],
@@ -139,7 +140,7 @@ export function ProductsMain({ filters, categories }: ProductsMainProps) {
     {
       context: {
         headers: {
-          'api-key': env.NEXT_PUBLIC_API_KEY,
+          ...authHeaders,
         },
       },
       refetchQueries: ['GetProductSuggestions'],

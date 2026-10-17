@@ -22,7 +22,7 @@ export function BenchAdapter(): Adapter {
         `,
         context: {
           headers: {
-            'api-key': env.NEXT_PUBLIC_API_KEY,
+            'api-key': env.API_KEY,
           },
         },
         variables: {
@@ -47,7 +47,7 @@ export function BenchAdapter(): Adapter {
         `,
         context: {
           headers: {
-            'api-key': env.NEXT_PUBLIC_API_KEY,
+            'api-key': env.API_KEY,
           },
         },
         variables: {
@@ -72,7 +72,7 @@ export function BenchAdapter(): Adapter {
         `,
         context: {
           headers: {
-            'api-key': env.NEXT_PUBLIC_API_KEY,
+            'api-key': env.API_KEY,
           },
         },
         variables: {
@@ -103,7 +103,7 @@ export function BenchAdapter(): Adapter {
         `,
         context: {
           headers: {
-            'api-key': env.NEXT_PUBLIC_API_KEY,
+            'api-key': env.API_KEY,
           },
         },
         variables: {
@@ -129,7 +129,7 @@ export function BenchAdapter(): Adapter {
         `,
         context: {
           headers: {
-            'api-key': env.NEXT_PUBLIC_API_KEY,
+            'api-key': env.API_KEY,
           },
         },
         variables: {
@@ -155,7 +155,7 @@ export function BenchAdapter(): Adapter {
         `,
         context: {
           headers: {
-            'api-key': env.NEXT_PUBLIC_API_KEY,
+            'api-key': env.API_KEY,
           },
         },
         variables: {
@@ -190,7 +190,7 @@ export function BenchAdapter(): Adapter {
         `,
         context: {
           headers: {
-            'api-key': env.NEXT_PUBLIC_API_KEY,
+            'api-key': env.API_KEY,
           },
         },
         variables: {
@@ -231,7 +231,7 @@ export function BenchAdapter(): Adapter {
         `,
         context: {
           headers: {
-            'api-key': env.NEXT_PUBLIC_API_KEY,
+            'api-key': env.API_KEY,
           },
         },
         variables: {
@@ -256,7 +256,7 @@ export function BenchAdapter(): Adapter {
         `,
         context: {
           headers: {
-            'api-key': env.NEXT_PUBLIC_API_KEY,
+            'api-key': env.API_KEY,
           },
         },
         variables: {
@@ -278,7 +278,7 @@ export function BenchAdapter(): Adapter {
         `,
         context: {
           headers: {
-            'api-key': env.NEXT_PUBLIC_API_KEY,
+            'api-key': env.API_KEY,
           },
         },
         variables: {
@@ -305,7 +305,7 @@ export function BenchAdapter(): Adapter {
         `,
         context: {
           headers: {
-            'api-key': env.NEXT_PUBLIC_API_KEY,
+            'api-key': env.API_KEY,
           },
         },
         variables: {
@@ -330,7 +330,7 @@ export function BenchAdapter(): Adapter {
         `,
         context: {
           headers: {
-            'api-key': env.NEXT_PUBLIC_API_KEY,
+            'api-key': env.API_KEY,
           },
         },
         variables: {
@@ -354,7 +354,7 @@ export function BenchAdapter(): Adapter {
         `,
         context: {
           headers: {
-            'api-key': env.NEXT_PUBLIC_API_KEY,
+            'api-key': env.API_KEY,
           },
         },
         variables: {
@@ -378,7 +378,7 @@ export function BenchAdapter(): Adapter {
         `,
         context: {
           headers: {
-            'api-key': env.NEXT_PUBLIC_API_KEY,
+            'api-key': env.API_KEY,
           },
         },
         variables: {

@@ -19,7 +19,6 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
 import { giveawaySchema } from '@/lib/validations/giveaway'
 import { invalidatePublicGiveaways } from '@/app/_actions/giveaways'
@@ -41,6 +40,7 @@ import { format } from 'date-fns'
 import { CalendarIcon, Plus, X } from 'lucide-react'
 import { ptBR } from 'date-fns/locale'
 import { labelVariants } from '../ui/label'
+import { useAuthHeaders } from '@/components/auth-token-provider'
 
 const CREATE_GIVEAWAY = gql`
   mutation CreateGiveaway($input: CreateGiveawayInput!) {
@@ -112,6 +112,7 @@ interface GiveawayFormProps {
 }
 
 export function GiveawayForm({ mode = 'create', giveaway }: GiveawayFormProps) {
+  const authHeaders = useAuthHeaders()
   const form = useForm<Inputs>({
     resolver: zodResolver(giveawaySchema),
     defaultValues: {
@@ -148,7 +149,7 @@ export function GiveawayForm({ mode = 'create', giveaway }: GiveawayFormProps) {
     {
       context: {
         headers: {
-          'api-key': env.NEXT_PUBLIC_API_KEY,
+          ...authHeaders,
         },
       },
       onError(error, _clientOptions) {

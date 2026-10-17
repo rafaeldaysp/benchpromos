@@ -29,7 +29,6 @@ import {
 } from '@/components/ui/alert-dialog'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { env } from '@/env.mjs'
 import type { Category, Product, Tier, TierList, TierProduct } from '@/types'
 import { TierForm } from '@/components/forms/tier-form'
 import {
@@ -41,6 +40,7 @@ import {
 } from '@/components/ui/dialog'
 import { TierSection } from './tier-section'
 import { ProductPickerSheet } from './product-picker-sheet'
+import { useAuthHeaders } from '@/components/auth-token-provider'
 
 const REMOVE_TIER_LIST = gql`
   mutation RemoveTierList($id: ID!) {
@@ -94,6 +94,7 @@ interface TierListMainProps {
 }
 
 export function TierListMain({ tierList, isAdmin }: TierListMainProps) {
+  const authHeaders = useAuthHeaders()
   const [editMode, setEditMode] = React.useState(false)
   const [tiers, setTiers] = React.useState<TierWithProducts[]>(() =>
     [...tierList.tiers]
@@ -119,7 +120,7 @@ export function TierListMain({ tierList, isAdmin }: TierListMainProps) {
     {
       context: {
         headers: {
-          'api-key': env.NEXT_PUBLIC_API_KEY,
+          ...authHeaders,
         },
       },
       onError(error) {
@@ -137,7 +138,7 @@ export function TierListMain({ tierList, isAdmin }: TierListMainProps) {
     {
       context: {
         headers: {
-          'api-key': env.NEXT_PUBLIC_API_KEY,
+          ...authHeaders,
         },
       },
       onError(error) {

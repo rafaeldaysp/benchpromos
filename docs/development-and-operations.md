@@ -258,7 +258,7 @@ NEXTAUTH_URL=http://localhost:3000
 NEXTAUTH_SECRET=replace-with-another-generated-local-secret
 NEXT_PUBLIC_APP_URL=http://localhost:3000
 NEXT_PUBLIC_API_URL=http://localhost:3333/api
-NEXT_PUBLIC_API_KEY=local-development-api-key
+API_KEY=local-development-api-key
 
 GOOGLE_CLIENT_ID=local-placeholder
 GOOGLE_CLIENT_SECRET=local-placeholder
@@ -269,7 +269,7 @@ NEXT_PUBLIC_GTM=local-placeholder
 NEXT_PUBLIC_GOOGLE_ADSENSE_CLIENT=local-placeholder
 ```
 
-`NEXT_PUBLIC_API_KEY` must match the API's `API_KEY`. `NEXT_PUBLIC_API_URL` includes **`/api`**, the GraphQL endpoint. `NEXT_PUBLIC_*` values are visible in browser code; the existing API-key mechanism is not a private browser secret.
+`API_KEY` must match the API's `API_KEY`. It is a server-only secret used by NextAuth to call the API; never rename it with a `NEXT_PUBLIC_` prefix, because those values are bundled into browser code. Dashboard and other user actions authenticate with the signed-in user's Bearer token, and the API checks the user's role. `NEXT_PUBLIC_API_URL` includes **`/api`**, the GraphQL endpoint.
 
 Placeholders allow environment validation, but do not make Google login, Notion content, analytics, or advertising work. To test Google sign-in, use a development OAuth client with `http://localhost:3000/api/auth/callback/google` registered. Email flows require development Mailtrap settings on the API. Uploads require a working development S3-compatible endpoint. Telegram/Discord/WhatsApp settings are optional; omit them when those integrations are not under test.
 

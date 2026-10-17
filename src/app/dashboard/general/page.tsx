@@ -1,5 +1,6 @@
 import { gql } from '@apollo/client'
 
+import { getCurrentUserToken } from '@/app/_actions/user'
 import { SalesByCategory } from '@/components/dashboard/sales-by-category'
 import { SalesByMonth } from '@/components/dashboard/sales-by-month'
 import { SalesByReactions } from '@/components/dashboard/sales-by-reactions'
@@ -48,6 +49,7 @@ export default async function DashboardPage({
   searchParams,
 }: DashboardPageProps) {
   const { category, periodStartDate, periodEndDate } = searchParams
+  const token = await getCurrentUserToken()
   const { data } = await getClient().query({
     query: GET_DASHBOARD_DATA,
     variables: {
@@ -57,6 +59,11 @@ export default async function DashboardPage({
           ? new Date(periodStartDate)
           : undefined,
         periodEndDate: periodEndDate ? new Date(periodEndDate) : undefined,
+      },
+    },
+    context: {
+      headers: {
+        Authorization: `Bearer ${token}`,
       },
     },
     errorPolicy: 'all',

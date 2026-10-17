@@ -28,8 +28,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
-import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
+import { useAuthHeaders } from '@/components/auth-token-provider'
 
 const REMOVE_USER = gql`
   mutation RemoveUser($userId: ID!) {
@@ -40,6 +40,7 @@ const REMOVE_USER = gql`
 `
 
 export default function UsersMain() {
+  const authHeaders = useAuthHeaders()
   const { openDialogs, setOpenDialog } = useFormStore()
 
   const router = useRouter()
@@ -48,7 +49,7 @@ export default function UsersMain() {
     refetchQueries: ['GetUsers'],
     context: {
       headers: {
-        'api-key': env.NEXT_PUBLIC_API_KEY,
+        ...authHeaders,
       },
     },
     onError(error, _clientOptions) {

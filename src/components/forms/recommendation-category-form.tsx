@@ -18,9 +18,9 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
 import { recommendationCategorySchema } from '@/lib/validations/recommendation'
+import { useAuthHeaders } from '@/components/auth-token-provider'
 
 const CREATE_RECOMMENDATION_CATEGORY = gql`
   mutation CreateRecommendationCategry($name: String!) {
@@ -59,6 +59,7 @@ export function RecommendationCategoryForm({
   mode = 'create',
   recommendationCategory,
 }: RecommendationCategoryFormProps) {
+  const authHeaders = useAuthHeaders()
   const form = useForm<Inputs>({
     resolver: zodResolver(recommendationCategorySchema),
     defaultValues: {
@@ -76,7 +77,7 @@ export function RecommendationCategoryForm({
     {
       context: {
         headers: {
-          'api-key': env.NEXT_PUBLIC_API_KEY,
+          ...authHeaders,
         },
       },
       onError(error, _clientOptions) {

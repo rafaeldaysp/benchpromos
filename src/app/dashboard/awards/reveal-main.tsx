@@ -10,7 +10,7 @@ import {
   type AwardsCategoryOption,
   type Product,
 } from '@/types'
-import { env } from '@/env.mjs'
+import { useAuthHeaders } from '@/components/auth-token-provider'
 
 const GET_ALL_AWARDS = gql`
   query GetAllAwards {
@@ -50,6 +50,7 @@ const GET_ALL_AWARDS = gql`
 `
 
 export function AwardsRevealMain() {
+  const authHeaders = useAuthHeaders()
   const { data, loading } = useQuery<{
     allAwards: (Awards & {
       categories: (AwardsCategory & {
@@ -62,7 +63,7 @@ export function AwardsRevealMain() {
     fetchPolicy: 'cache-and-network',
     context: {
       headers: {
-        'api-key': env.NEXT_PUBLIC_API_KEY,
+        ...authHeaders,
       },
     },
   })

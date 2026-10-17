@@ -10,6 +10,9 @@ export const env = createEnv({
     NODE_ENV: z.enum(['development', 'test', 'production']),
     NEXTAUTH_URL: z.string().url().optional(),
     NEXTAUTH_SECRET: z.string().min(1),
+    // Server-to-server secret for NextAuth calls to the API. Never expose it
+    // with a NEXT_PUBLIC_ prefix: it would be bundled into the browser code.
+    API_KEY: z.string().min(1),
     GOOGLE_CLIENT_ID: z.string().min(1),
     GOOGLE_CLIENT_SECRET: z.string().min(1),
     NOTION_DATABASE_ID: z.string().min(1),
@@ -32,7 +35,6 @@ export const env = createEnv({
   client: {
     NEXT_PUBLIC_APP_URL: z.string().min(1),
     NEXT_PUBLIC_API_URL: z.string().min(1),
-    NEXT_PUBLIC_API_KEY: z.string().min(1),
     NEXT_PUBLIC_GTAG: z.string().min(1),
     NEXT_PUBLIC_GTM: z.string().min(1),
     NEXT_PUBLIC_GOOGLE_ADSENSE_CLIENT: z.string().min(1),
@@ -50,7 +52,7 @@ export const env = createEnv({
     GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
     GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
-    NEXT_PUBLIC_API_KEY: process.env.NEXT_PUBLIC_API_KEY,
+    API_KEY: process.env.API_KEY,
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
     NEXT_PUBLIC_GTAG: process.env.NEXT_PUBLIC_GTAG,
     NEXT_PUBLIC_GTM: process.env.NEXT_PUBLIC_GTM,

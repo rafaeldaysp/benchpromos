@@ -26,12 +26,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
 import { recommendedProductSchema } from '@/lib/validations/recommended-product'
 import type { Product, RecommendedProduct } from '@/types'
 import { PriceInput } from '../price-input'
 import { ScrollArea } from '../ui/scroll-area'
+import { useAuthHeaders } from '@/components/auth-token-provider'
 
 const CREATE_RECOMMENDED_PRODUCT = gql`
   mutation CreateRecommendedProduct(
@@ -71,6 +71,7 @@ interface RecommendedProductFormProps {
 export function RecommendedProductForm({
   productId,
 }: RecommendedProductFormProps) {
+  const authHeaders = useAuthHeaders()
   const form = useForm<Inputs>({
     resolver: zodResolver(recommendedProductSchema),
   })
@@ -101,7 +102,7 @@ export function RecommendedProductForm({
     {
       context: {
         headers: {
-          'api-key': env.NEXT_PUBLIC_API_KEY,
+          ...authHeaders,
         },
       },
       onError(error, _clientOptions) {

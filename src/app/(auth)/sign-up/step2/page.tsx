@@ -42,7 +42,7 @@ export default async function SignUpStep2Page({
     mutation: VERIFY_EMAIL,
     context: {
       headers: {
-        'api-key': env.NEXT_PUBLIC_API_KEY,
+        'api-key': env.API_KEY,
       },
     },
     variables: {

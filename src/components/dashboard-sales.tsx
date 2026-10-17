@@ -5,7 +5,6 @@ import { InView } from 'react-intersection-observer'
 
 import { Icons } from '@/components/icons'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { env } from '@/env.mjs'
 import { cn } from '@/lib/utils'
 import type {
   Cashback,
@@ -29,6 +28,7 @@ import {
 } from './ui/command'
 import { Input } from './ui/input'
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover'
+import { useAuthHeaders } from '@/components/auth-token-provider'
 
 const SALES_PER_PAGE = 12
 
@@ -128,6 +128,7 @@ interface DashboardSalesProps {
 }
 
 export function DashboardSales({ children }: DashboardSalesProps) {
+  const authHeaders = useAuthHeaders()
   const [isPending, startTransition] = React.useTransition()
   const [searchInput, setSearchInput] = React.useState('')
   const [query, setQuery] = React.useState('')
@@ -139,7 +140,7 @@ export function DashboardSales({ children }: DashboardSalesProps) {
     fetchPolicy: 'cache-first',
     context: {
       headers: {
-        'api-key': env.NEXT_PUBLIC_API_KEY,
+        ...authHeaders,
       },
     },
   })
@@ -162,7 +163,7 @@ export function DashboardSales({ children }: DashboardSalesProps) {
     refetchWritePolicy: 'overwrite',
     context: {
       headers: {
-        'api-key': env.NEXT_PUBLIC_API_KEY,
+        ...authHeaders,
       },
     },
     variables: {

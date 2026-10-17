@@ -59,7 +59,6 @@ import {
 import { Skeleton } from '@/components/ui/skeleton'
 import { Switch } from '@/components/ui/switch'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
 import { useQueryString } from '@/hooks/use-query-string'
 import { cn } from '@/lib/utils'
@@ -75,6 +74,7 @@ import type {
 } from '@/types'
 import { couponFormatter, priceFormatter } from '@/utils/formatter'
 import { priceCalculator } from '@/utils/price-calculator'
+import { useAuthHeaders } from '@/components/auth-token-provider'
 
 dayjs.extend(relativeTime)
 dayjs.locale('pt-br')
@@ -161,6 +161,7 @@ interface DealsMainProps {
 }
 
 export function DealsMain({ retailers, categories }: DealsMainProps) {
+  const authHeaders = useAuthHeaders()
   const [retailersQuery, setRetailersQuery] = React.useState('')
   const [selectedProduct, setSelectedProduct] = React.useState<
     Pick<Product, 'id' | 'name' | 'imageUrl'> & {
@@ -255,7 +256,7 @@ export function DealsMain({ retailers, categories }: DealsMainProps) {
   const [deleteDeal] = useMutation(DELETE_DEAL, {
     context: {
       headers: {
-        'api-key': env.NEXT_PUBLIC_API_KEY,
+        ...authHeaders,
       },
     },
     onError(error, _clientOptions) {

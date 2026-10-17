@@ -33,9 +33,9 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet'
-import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
 import { benchmarkDataRowSchema } from '@/lib/validations/benchmark'
+import { useAuthHeaders } from '@/components/auth-token-provider'
 
 const REMOVE_BENCHMARK_RESULT = gql`
   mutation RemoveBenchmarkResult($resultId: ID!) {
@@ -52,6 +52,7 @@ interface DataTableRowActionsProps<TData> {
 export function DataTableRowActions<TData>({
   row,
 }: DataTableRowActionsProps<TData>) {
+  const authHeaders = useAuthHeaders()
   const [dropdownOpen, setDropdownOpen] = React.useState(false)
   const { openDialogs, setOpenDialog } = useFormStore()
   const router = useRouter()
@@ -60,7 +61,7 @@ export function DataTableRowActions<TData>({
   const [removeBenchmarkResult] = useMutation(REMOVE_BENCHMARK_RESULT, {
     context: {
       headers: {
-        'api-key': env.NEXT_PUBLIC_API_KEY,
+        ...authHeaders,
       },
     },
     onError(error, _clientOptions) {

@@ -34,11 +34,11 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet'
-import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
 import { cn } from '@/lib/utils'
 import { type Category } from '@/types'
 import { reorder } from '@/utils'
+import { useAuthHeaders } from '@/components/auth-token-provider'
 
 const UPDATE_SUBCATEGORIES_ORDER = gql`
   mutation UpdateSubcategoriesOrder($input: [UpdateSubcategoryInput!]!) {
@@ -61,6 +61,7 @@ interface SubcategoriesMainProps {
 }
 
 export function SubcategoriesMain({ category }: SubcategoriesMainProps) {
+  const authHeaders = useAuthHeaders()
   const [subcategories, setSubcategories] = React.useState(
     category.subcategories,
   )
@@ -70,7 +71,7 @@ export function SubcategoriesMain({ category }: SubcategoriesMainProps) {
   const [updateSubcategoriesOrder] = useMutation(UPDATE_SUBCATEGORIES_ORDER, {
     context: {
       headers: {
-        'api-key': env.NEXT_PUBLIC_API_KEY,
+        ...authHeaders,
       },
     },
     onError(error, _clientOptions) {
@@ -85,7 +86,7 @@ export function SubcategoriesMain({ category }: SubcategoriesMainProps) {
   const [deleteSubcategory] = useMutation(DELETE_SUBCATEGORY, {
     context: {
       headers: {
-        'api-key': env.NEXT_PUBLIC_API_KEY,
+        ...authHeaders,
       },
     },
     onError(error, _clientOptions) {

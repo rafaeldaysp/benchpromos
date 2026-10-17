@@ -39,9 +39,9 @@ import {
   type Product,
   type AwardsCategoryOptionVote,
 } from '@/types'
-import { env } from '@/env.mjs'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
+import { useAuthHeaders } from '@/components/auth-token-provider'
 
 const DELETE_AWARDS_CATEGORY = gql`
   mutation DeleteAwardsCategory($id: ID!) {
@@ -107,6 +107,7 @@ interface AwardsDashboardMainProps {
 }
 
 export function AwardsDashboardMain() {
+  const authHeaders = useAuthHeaders()
   const { openDialogs, setOpenDialog } = useFormStore()
   const router = useRouter()
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(
@@ -128,7 +129,7 @@ export function AwardsDashboardMain() {
     fetchPolicy: 'cache-and-network',
     context: {
       headers: {
-        'api-key': env.NEXT_PUBLIC_API_KEY,
+        ...authHeaders,
       },
     },
   })
@@ -172,7 +173,7 @@ export function AwardsDashboardMain() {
   const [deleteAwardsCategory] = useMutation(DELETE_AWARDS_CATEGORY, {
     context: {
       headers: {
-        'api-key': env.NEXT_PUBLIC_API_KEY,
+        ...authHeaders,
       },
     },
     onError(error, _clientOptions) {
@@ -188,7 +189,7 @@ export function AwardsDashboardMain() {
   const [deleteAwards] = useMutation(DELETE_AWARDS, {
     context: {
       headers: {
-        'api-key': env.NEXT_PUBLIC_API_KEY,
+        ...authHeaders,
       },
     },
     onError(error, _clientOptions) {

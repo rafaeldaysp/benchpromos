@@ -18,7 +18,6 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
 import { benchmarkSchema } from '@/lib/validations/benchmark'
 import { type Benchmark } from '@/types'
@@ -31,6 +30,7 @@ import {
   SelectValue,
 } from '../ui/select'
 import { Checkbox } from '../ui/checkbox'
+import { useAuthHeaders } from '@/components/auth-token-provider'
 
 const CREATE_BENCHMARK = gql`
   mutation CreateBenchmark($input: CreateBenchmarkInput!) {
@@ -66,6 +66,7 @@ export function BenchmarkForm({
   benchmark,
   benchmarks,
 }: BenchmarkFormProps) {
+  const authHeaders = useAuthHeaders()
   const form = useForm<Inputs>({
     resolver: zodResolver(benchmarkSchema),
     defaultValues: {
@@ -82,7 +83,7 @@ export function BenchmarkForm({
     {
       context: {
         headers: {
-          'api-key': env.NEXT_PUBLIC_API_KEY,
+          ...authHeaders,
         },
       },
       onError(error, _clientOptions) {

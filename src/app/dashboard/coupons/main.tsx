@@ -38,11 +38,11 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet'
-import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
 import { cn } from '@/lib/utils'
 import { type Coupon, type Retailer } from '@/types'
 import { couponFormatter } from '@/utils/formatter'
+import { useAuthHeaders } from '@/components/auth-token-provider'
 
 dayjs.extend(relativeTime)
 dayjs.locale('pt-br')
@@ -60,6 +60,7 @@ interface CouponsMainProps {
 }
 
 export function CouponsMain({ coupons }: CouponsMainProps) {
+  const authHeaders = useAuthHeaders()
   const [selectedCoupon, setSelectedCoupon] =
     React.useState<(typeof coupons)[number]>()
   const [selectedRetailer, setSelectedRetailer] = React.useState('Todos')
@@ -76,7 +77,7 @@ export function CouponsMain({ coupons }: CouponsMainProps) {
   const [deleteCoupon] = useMutation(DELETE_COUPON, {
     context: {
       headers: {
-        'api-key': env.NEXT_PUBLIC_API_KEY,
+        ...authHeaders,
       },
     },
     onError(error, _clientOptions) {

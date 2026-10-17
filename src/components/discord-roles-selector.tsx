@@ -20,10 +20,10 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
-import { env } from '@/env.mjs'
 import { cn } from '@/lib/utils'
 import type { DiscordRole } from '@/types'
 import { ScrollArea } from './ui/scroll-area'
+import { useAuthHeaders } from '@/components/auth-token-provider'
 
 const GET_DISCORD_ROLES = gql`
   query GetDiscordRolesForShare {
@@ -51,6 +51,7 @@ export function DiscordRolesSelector({
   placeholder = 'Selecione cargos...',
   disabled = false,
 }: DiscordRolesSelectorProps) {
+  const authHeaders = useAuthHeaders()
   const [open, setOpen] = React.useState(false)
 
   const { data, loading } = useQuery<{
@@ -59,7 +60,7 @@ export function DiscordRolesSelector({
     fetchPolicy: 'network-only',
     context: {
       headers: {
-        'api-key': env.NEXT_PUBLIC_API_KEY,
+        ...authHeaders,
       },
     },
   })

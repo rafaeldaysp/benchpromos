@@ -30,10 +30,10 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
-import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
 import { productSchema } from '@/lib/validations/product'
 import type { Category } from '@/types'
+import { useAuthHeaders } from '@/components/auth-token-provider'
 
 const CREATE_PRODUCT = gql`
   mutation CreateProduct($input: CreateProductInput!) {
@@ -79,6 +79,7 @@ interface ProductFormProps {
 }
 
 export function ProductForm({ mode = 'create', product }: ProductFormProps) {
+  const authHeaders = useAuthHeaders()
   const form = useForm<Inputs>({
     resolver: zodResolver(productSchema),
     defaultValues: {
@@ -146,7 +147,7 @@ export function ProductForm({ mode = 'create', product }: ProductFormProps) {
     {
       context: {
         headers: {
-          'api-key': env.NEXT_PUBLIC_API_KEY,
+          ...authHeaders,
         },
       },
       refetchQueries: ['GetProducts'],

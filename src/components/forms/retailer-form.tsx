@@ -18,7 +18,6 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
 import { retailerSchema } from '@/lib/validations/retailer'
 import {
@@ -28,6 +27,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '../ui/dialog'
+import { useAuthHeaders } from '@/components/auth-token-provider'
 
 const CREATE_RETAILER = gql`
   mutation CreateRetailer($input: CreateRetailerInput!) {
@@ -57,6 +57,7 @@ interface RetailerFormProps {
 }
 
 export function RetailerForm({ mode = 'create', retailer }: RetailerFormProps) {
+  const authHeaders = useAuthHeaders()
   const form = useForm<Inputs>({
     resolver: zodResolver(retailerSchema),
     defaultValues: {
@@ -72,7 +73,7 @@ export function RetailerForm({ mode = 'create', retailer }: RetailerFormProps) {
     {
       context: {
         headers: {
-          'api-key': env.NEXT_PUBLIC_API_KEY,
+          ...authHeaders,
         },
       },
       onError(error, _clientOptions) {

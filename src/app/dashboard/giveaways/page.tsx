@@ -5,7 +5,6 @@ import { type GiveawayRuleConfig, type Giveaway } from '@/types'
 import { type User } from 'next-auth'
 import { getCurrentUserToken } from '@/app/_actions/user'
 import { notFound } from 'next/navigation'
-import { env } from '@/env.mjs'
 
 const USERS_PER_PAGE = 12
 
@@ -137,7 +136,7 @@ export default async function GiveawaysPage({
     },
     context: {
       headers: {
-        'api-key': env.NEXT_PUBLIC_API_KEY,
+        Authorization: `Bearer ${token}`,
       },
     },
   })

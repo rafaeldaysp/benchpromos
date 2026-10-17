@@ -19,9 +19,9 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
 import { discordRoleSchema } from '@/lib/validations/discord-role'
+import { useAuthHeaders } from '@/components/auth-token-provider'
 
 const CREATE_DISCORD_ROLE = gql`
   mutation CreateDiscordRole($input: CreateDiscordRoleInput!) {
@@ -55,6 +55,7 @@ export function DiscordRoleForm({
   mode = 'create',
   discordRole,
 }: DiscordRoleFormProps) {
+  const authHeaders = useAuthHeaders()
   const form = useForm<Inputs>({
     resolver: zodResolver(discordRoleSchema),
     defaultValues: {
@@ -70,7 +71,7 @@ export function DiscordRoleForm({
     {
       context: {
         headers: {
-          'api-key': env.NEXT_PUBLIC_API_KEY,
+          ...authHeaders,
         },
       },
       onError(error, _clientOptions) {

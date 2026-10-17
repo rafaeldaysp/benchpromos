@@ -30,7 +30,6 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
-import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
 import { couponSchema } from '@/lib/validations/coupon'
 import type { Retailer } from '@/types'
@@ -43,6 +42,7 @@ import {
   DialogTrigger,
 } from '../ui/dialog'
 import { ScrollArea } from '../ui/scroll-area'
+import { useAuthHeaders } from '@/components/auth-token-provider'
 
 const CREATE_COUPON = gql`
   mutation CreateCoupon($input: CreateCouponInput!) {
@@ -84,6 +84,7 @@ interface CouponFormProps {
 }
 
 export function CouponForm({ mode = 'create', coupon }: CouponFormProps) {
+  const authHeaders = useAuthHeaders()
   const form = useForm<Inputs>({
     resolver: zodResolver(couponSchema),
     defaultValues: {
@@ -112,7 +113,7 @@ export function CouponForm({ mode = 'create', coupon }: CouponFormProps) {
     {
       context: {
         headers: {
-          'api-key': env.NEXT_PUBLIC_API_KEY,
+          ...authHeaders,
         },
       },
       onError(error, _clientOptions) {

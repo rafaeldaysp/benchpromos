@@ -22,7 +22,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
-import { env } from '@/env.mjs'
+import { useAuthHeaders } from '@/components/auth-token-provider'
 
 const GET_PRODUCTS = gql`
   query GetBenchmarks(
@@ -64,6 +64,7 @@ interface DataTableToolbarProps<TData> {
 export function DataTableToolbar<TData>({
   table,
 }: DataTableToolbarProps<TData>) {
+  const authHeaders = useAuthHeaders()
   const selectedRows = table.getSelectedRowModel().rows
   const router = useRouter()
 
@@ -93,7 +94,7 @@ export function DataTableToolbar<TData>({
     {
       context: {
         headers: {
-          'api-key': env.NEXT_PUBLIC_API_KEY,
+          ...authHeaders,
         },
       },
       onError(error, _clientOptions) {

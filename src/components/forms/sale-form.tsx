@@ -31,7 +31,6 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
-import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
 import { saleToTelegramMessage } from '@/lib/sale-to-telegram'
 import { DiscordRolesSelector } from '@/components/discord-roles-selector'
@@ -58,6 +57,7 @@ import { CouponFormDialog } from './coupon-form'
 import { RetailerFormDialog } from './retailer-form'
 import { DiscountSelector } from '../discount-selector'
 import { DiscountFormDialog } from './discount-form'
+import { useAuthHeaders } from '@/components/auth-token-provider'
 
 const saleLabels = [
   'LANÇAMENTO',
@@ -168,6 +168,7 @@ export function SaleForm({
   enableShare = false,
   sale,
 }: SaleFormProps) {
+  const authHeaders = useAuthHeaders()
   const form = useForm<Inputs>({
     resolver: zodResolver(saleSchema),
     defaultValues: {
@@ -195,7 +196,7 @@ export function SaleForm({
     fetchPolicy: 'network-only',
     context: {
       headers: {
-        'api-key': env.NEXT_PUBLIC_API_KEY,
+        ...authHeaders,
       },
     },
   })
@@ -412,7 +413,7 @@ export function SaleForm({
     {
       context: {
         headers: {
-          'api-key': env.NEXT_PUBLIC_API_KEY,
+          ...authHeaders,
         },
       },
       refetchQueries: ['GetDashboardSales', 'GetSales'],

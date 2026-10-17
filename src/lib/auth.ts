@@ -19,6 +19,7 @@ const GET_USER = gql`
       image
       role
       emailVerified
+      sessionVersion
     }
   }
 `
@@ -73,7 +74,7 @@ export const authOptions: NextAuthOptions = {
           query: AUTHORIZE,
           context: {
             headers: {
-              'api-key': env.NEXT_PUBLIC_API_KEY,
+              'api-key': env.API_KEY,
             },
           },
           variables: {
@@ -96,11 +97,13 @@ export const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     async jwt({ token, user }) {
-      const response = await getClient().query<{ user: Session['user'] }>({
+      const response = await getClient().query<{
+        user: Session['user'] & { sessionVersion: number }
+      }>({
         query: GET_USER,
         context: {
           headers: {
-            'api-key': env.NEXT_PUBLIC_API_KEY,
+            'api-key': env.API_KEY,
           },
         },
         variables: {
@@ -118,6 +121,15 @@ export const authOptions: NextAuthOptions = {
         return token
       }
 
+      // A password reset bumps sessionVersion on the API. Sessions are pinned
+      // to the version at sign-in, so older ones end here; throwing makes
+      // NextAuth clear the session cookie.
+      const sessionVersion = user ? dbUser.sessionVersion : token.sessionVersion
+
+      if (sessionVersion !== dbUser.sessionVersion) {
+        throw new Error('Session revoked by a password reset')
+      }
+
       return {
         id: dbUser.id,
         name: dbUser.name,
@@ -125,6 +137,7 @@ export const authOptions: NextAuthOptions = {
         picture: dbUser.image,
         role: dbUser.role,
         emailVerified: dbUser.emailVerified,
+        sessionVersion: dbUser.sessionVersion,
       }
     },
     async session({ token, session }) {
@@ -146,7 +159,7 @@ export const authOptions: NextAuthOptions = {
         query: GET_TOKEN,
         context: {
           headers: {
-            'api-key': env.NEXT_PUBLIC_API_KEY,
+            'api-key': env.API_KEY,
           },
         },
         variables: {

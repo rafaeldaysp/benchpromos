@@ -31,7 +31,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
 import { dealSchema } from '@/lib/validations/deal'
 import type { Cashback, Coupon, Discount } from '@/types'
@@ -41,6 +40,7 @@ import { DiscountSelector } from '../discount-selector'
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
 import { ScrollArea } from '../ui/scroll-area'
 import { DiscountFormDialog } from './discount-form'
+import { useAuthHeaders } from '@/components/auth-token-provider'
 
 const CREATE_DEAL = gql`
   mutation CreateDeal($input: CreateDealInput!) {
@@ -102,6 +102,7 @@ export function DealForm({
   retailerId,
   deal,
 }: DealFormProps) {
+  const authHeaders = useAuthHeaders()
   const form = useForm<Inputs>({
     resolver: zodResolver(dealSchema),
     defaultValues: {
@@ -163,7 +164,7 @@ export function DealForm({
     {
       context: {
         headers: {
-          'api-key': env.NEXT_PUBLIC_API_KEY,
+          ...authHeaders,
         },
       },
       onError(error, _clientOptions) {

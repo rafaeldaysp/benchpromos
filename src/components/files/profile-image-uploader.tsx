@@ -3,6 +3,7 @@
 import { gql, useMutation } from '@apollo/client'
 import * as React from 'react'
 
+import { getCurrentUserToken } from '@/app/_actions/user'
 import { FileUploader } from '@/components/files/file-uploader'
 import {
   Dialog,
@@ -12,7 +13,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
-import { env } from '@/env.mjs'
 import { convertBase64 } from '@/utils/files'
 import { Icons } from '../icons'
 import { UserAvatar } from '../user-avatar'
@@ -59,11 +59,12 @@ export function ProfileImageUploader({
 
     try {
       const fileBase64 = await convertBase64(file)
+      const token = await getCurrentUserToken()
 
       const result = await uploadFile({
         context: {
           headers: {
-            'api-key': env.NEXT_PUBLIC_API_KEY,
+            Authorization: `Bearer ${token}`,
           },
         },
         variables: {

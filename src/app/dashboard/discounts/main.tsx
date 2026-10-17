@@ -36,7 +36,6 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet'
-import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
 import { cn } from '@/lib/utils'
 import { type Discount, type Retailer } from '@/types'
@@ -44,6 +43,7 @@ import { gql, useMutation } from '@apollo/client'
 import { DiscountForm } from '@/components/forms/discount-form'
 import { couponFormatter } from '@/utils/formatter'
 import { Badge } from '@/components/ui/badge'
+import { useAuthHeaders } from '@/components/auth-token-provider'
 
 dayjs.extend(relativeTime)
 dayjs.locale('pt-br')
@@ -61,6 +61,7 @@ interface DiscountsMainProps {
 }
 
 export function DiscountsMain({ discounts }: DiscountsMainProps) {
+  const authHeaders = useAuthHeaders()
   const [selectedDiscount, setSelectedDiscount] =
     React.useState<(typeof discounts)[number]>()
   const [selectedRetailer, setSelectedRetailer] = React.useState('Todos')
@@ -77,7 +78,7 @@ export function DiscountsMain({ discounts }: DiscountsMainProps) {
   const [deleteDiscount] = useMutation(DELETE_DISCOUNT, {
     context: {
       headers: {
-        'api-key': env.NEXT_PUBLIC_API_KEY,
+        ...authHeaders,
       },
     },
     onError(error, _clientOptions) {

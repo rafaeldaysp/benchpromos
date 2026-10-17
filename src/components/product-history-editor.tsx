@@ -6,7 +6,6 @@ import 'dayjs/locale/pt-br'
 import * as React from 'react'
 import { toast } from 'sonner'
 
-import { env } from '@/env.mjs'
 import { priceFormatter } from '@/utils/formatter'
 import { Icons } from './icons'
 import { Button } from './ui/button'
@@ -35,6 +34,7 @@ import {
   TableRow,
 } from './ui/table'
 import { PriceInput } from './price-input'
+import { useAuthHeaders } from '@/components/auth-token-provider'
 
 dayjs.locale('pt-br')
 
@@ -219,6 +219,7 @@ interface HistoryRowProps {
 }
 
 function HistoryRow({ dayHistory, productId, onSuccess }: HistoryRowProps) {
+  const authHeaders = useAuthHeaders()
   const [isEditing, setIsEditing] = React.useState(false)
   const [price, setPrice] = React.useState<number>(
     dayHistory.lowestPrice ? dayHistory.lowestPrice / 100 : 0,
@@ -234,7 +235,7 @@ function HistoryRow({ dayHistory, productId, onSuccess }: HistoryRowProps) {
     {
       context: {
         headers: {
-          'api-key': env.NEXT_PUBLIC_API_KEY,
+          ...authHeaders,
         },
       },
       onError(error) {

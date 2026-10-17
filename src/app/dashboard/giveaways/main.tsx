@@ -53,7 +53,6 @@ import { Separator } from '@/components/ui/separator'
 import { Switch } from '@/components/ui/switch'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { UserDetailsDialog } from '@/components/user/user-details-dialog'
-import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
 import { useQueryString } from '@/hooks/use-query-string'
 import { cn } from '@/lib/utils'
@@ -75,6 +74,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
+import { useAuthHeaders } from '@/components/auth-token-provider'
 
 const UPDATE_GIVEAWAY = gql`
   mutation UpdateGiveaway($input: UpdateGiveawayInput!) {
@@ -138,6 +138,7 @@ export default function GiveawaysMain({
   subscribersPage,
   rulesConfigData,
 }: GiveawaysMainProps) {
+  const authHeaders = useAuthHeaders()
   const router = useRouter()
   const [isDrawing, setIsDrawing] = useState(false)
   const [currentPrizeId, setCurrentPrizeId] = useState<string | null>(null)
@@ -298,7 +299,7 @@ export default function GiveawaysMain({
       },
       context: {
         headers: {
-          'api-key': env.NEXT_PUBLIC_API_KEY,
+          ...authHeaders,
         },
       },
     },
@@ -330,7 +331,7 @@ export default function GiveawaysMain({
       },
       context: {
         headers: {
-          'api-key': env.NEXT_PUBLIC_API_KEY,
+          ...authHeaders,
         },
       },
       refetchQueries: ['GetGiveaways'],
@@ -350,7 +351,7 @@ export default function GiveawaysMain({
       },
       context: {
         headers: {
-          'api-key': env.NEXT_PUBLIC_API_KEY,
+          ...authHeaders,
         },
       },
     },
@@ -381,7 +382,7 @@ export default function GiveawaysMain({
           },
           context: {
             headers: {
-              'api-key': env.NEXT_PUBLIC_API_KEY,
+              ...authHeaders,
             },
           },
         })

@@ -29,7 +29,6 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
-import { env } from '@/env.mjs'
 import { useDebounce } from '@/hooks/use-debounce'
 import { useFormStore } from '@/hooks/use-form-store'
 import { cn } from '@/lib/utils'
@@ -49,6 +48,7 @@ import {
 import { Label } from '../ui/label'
 import { ScrollArea } from '../ui/scroll-area'
 import { Skeleton } from '../ui/skeleton'
+import { useAuthHeaders } from '@/components/auth-token-provider'
 
 const CREATE_BENCHMARK_RESULT = gql`
   mutation CreateBenchmarkResult($input: CreateBenchmarkResultInput!) {
@@ -94,6 +94,7 @@ export function BenchmarkResultForm({
   mode = 'create',
   benchmarkResult,
 }: BenchmarkResultFormProps) {
+  const authHeaders = useAuthHeaders()
   const form = useForm<Inputs>({
     resolver: zodResolver(benchmarkResultSchema),
     defaultValues: {
@@ -127,7 +128,7 @@ export function BenchmarkResultForm({
     {
       context: {
         headers: {
-          'api-key': env.NEXT_PUBLIC_API_KEY,
+          ...authHeaders,
         },
       },
       onError(error, _clientOptions) {

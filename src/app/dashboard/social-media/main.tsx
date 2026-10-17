@@ -37,10 +37,10 @@ import {
   socialMediaPlatformMeta,
   socialMediaTypeMeta,
 } from '@/constants/social-media'
-import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
 import { cn } from '@/lib/utils'
 import type { SocialMediaLink } from '@/types'
+import { useAuthHeaders } from '@/components/auth-token-provider'
 
 dayjs.extend(relativeTime)
 dayjs.locale('pt-br')
@@ -69,12 +69,13 @@ interface SocialMediaLinksMainProps {
 export function SocialMediaLinksMain({
   socialMediaLinks,
 }: SocialMediaLinksMainProps) {
+  const authHeaders = useAuthHeaders()
   const { openDialogs, setOpenDialog } = useFormStore()
   const router = useRouter()
 
   const mutationContext = {
     headers: {
-      'api-key': env.NEXT_PUBLIC_API_KEY,
+      ...authHeaders,
     },
   }
 

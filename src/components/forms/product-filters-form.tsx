@@ -18,11 +18,11 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
-import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
 import { filtersLinkSchema } from '@/lib/validations/product'
 import type { Filter } from '@/types'
 import { ScrollArea } from '../ui/scroll-area'
+import { useAuthHeaders } from '@/components/auth-token-provider'
 
 const LINK_FILTERS = gql`
   mutation LinkFiltersToProduct($input: LinkProductFiltersInput!) {
@@ -47,6 +47,7 @@ export function ProductFiltersForm({
   productId,
   productFilters,
 }: ProductFiltersFormProps) {
+  const authHeaders = useAuthHeaders()
   // verificar a necessidade do useMemo
   const productFilterOptionIds = React.useMemo(() => {
     const productFilterOptionIds = productFilters?.map(
@@ -81,7 +82,7 @@ export function ProductFiltersForm({
   const [linkFilters] = useMutation(LINK_FILTERS, {
     context: {
       headers: {
-        'api-key': env.NEXT_PUBLIC_API_KEY,
+        ...authHeaders,
       },
     },
     onError(error, _clientOptions) {

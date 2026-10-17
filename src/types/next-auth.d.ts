@@ -15,5 +15,6 @@ declare module 'next-auth/jwt' {
     id: string
     role: 'ADMIN' | 'MOD' | 'USER'
     emailVerified?: Date
+    sessionVersion?: number
   }
 }

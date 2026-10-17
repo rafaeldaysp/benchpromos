@@ -6,10 +6,10 @@ import { InView } from 'react-intersection-observer'
 import { Icons } from '@/components/icons'
 import { Input } from '@/components/ui/input'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { env } from '@/env.mjs'
 import { cn } from '@/lib/utils'
 import { removeNullValues } from '@/utils'
 import { Button } from './ui/button'
+import { useAuthHeaders } from '@/components/auth-token-provider'
 
 const USERS_PER_PAGE = 12
 
@@ -41,6 +41,7 @@ interface DashboardUsersProps {
 }
 
 export function DashboardUsers({ children }: DashboardUsersProps) {
+  const authHeaders = useAuthHeaders()
   const [isPending, startTransition] = React.useTransition()
   const [searchInput, setSearchInput] = React.useState('')
   const [query, setQuery] = React.useState('')
@@ -59,7 +60,7 @@ export function DashboardUsers({ children }: DashboardUsersProps) {
   }>(GET_USERS, {
     context: {
       headers: {
-        'api-key': env.NEXT_PUBLIC_API_KEY,
+        ...authHeaders,
       },
     },
     fetchPolicy: 'cache-and-network',
@@ -85,7 +86,7 @@ export function DashboardUsers({ children }: DashboardUsersProps) {
       fetchMore({
         context: {
           headers: {
-            'api-key': env.NEXT_PUBLIC_API_KEY,
+            ...authHeaders,
           },
         },
         variables: {

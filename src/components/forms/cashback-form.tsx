@@ -28,7 +28,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
 import { cashbackSchema } from '@/lib/validations/cashback'
 import type { Retailer } from '@/types'
@@ -40,6 +39,7 @@ import {
   DialogTrigger,
 } from '../ui/dialog'
 import { ScrollArea } from '../ui/scroll-area'
+import { useAuthHeaders } from '@/components/auth-token-provider'
 
 const CREATE_CASHBACK = gql`
   mutation CreateCashback($input: CreateCashbackInput!) {
@@ -81,6 +81,7 @@ interface CashbackFormProps {
 }
 
 export function CashbackForm({ mode = 'create', cashback }: CashbackFormProps) {
+  const authHeaders = useAuthHeaders()
   const form = useForm<Inputs>({
     resolver: zodResolver(cashbackSchema),
     defaultValues: {
@@ -109,7 +110,7 @@ export function CashbackForm({ mode = 'create', cashback }: CashbackFormProps) {
     {
       context: {
         headers: {
-          'api-key': env.NEXT_PUBLIC_API_KEY,
+          ...authHeaders,
         },
       },
       onError(error, _clientOptions) {

@@ -21,7 +21,6 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import { env } from '@/env.mjs'
 import { useDebounce } from '@/hooks/use-debounce'
 import { useFormStore } from '@/hooks/use-form-store'
 import { cn } from '@/lib/utils'
@@ -40,6 +39,7 @@ import {
 import { Label } from '../ui/label'
 import { Skeleton } from '../ui/skeleton'
 import { removeNullValues } from '@/utils'
+import { useAuthHeaders } from '@/components/auth-token-provider'
 
 const CREATE_AWARDS_CATEGORY = gql`
   mutation CreateAwardsCategory($input: CreateAwardsCategoryInput!) {
@@ -81,6 +81,7 @@ export function AwardsCategoryForm({
   awardsId,
   awardsCategory,
 }: AwardsCategoryFormProps) {
+  const authHeaders = useAuthHeaders()
   const form = useForm<Inputs>({
     resolver: zodResolver(awardsCategorySchema),
     defaultValues: {
@@ -115,7 +116,7 @@ export function AwardsCategoryForm({
     {
       context: {
         headers: {
-          'api-key': env.NEXT_PUBLIC_API_KEY,
+          ...authHeaders,
         },
       },
       onError(error, _clientOptions) {

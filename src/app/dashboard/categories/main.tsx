@@ -36,13 +36,13 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
 import { cn } from '@/lib/utils'
 import { type Category, type Filter } from '@/types'
 import { reorder } from '@/utils'
 import { FiltersMain } from './filters-main'
 import { SubcategoriesMain } from './subcategories-main'
+import { useAuthHeaders } from '@/components/auth-token-provider'
 
 const UPDATE_CATEGORIES_ORDER = gql`
   mutation UpdateCategoriesOrder($input: [UpdateCategoryInput!]!) {
@@ -67,6 +67,7 @@ interface CategoriesMainProps {
 export function CategoriesMain({
   categories: initialCategories,
 }: CategoriesMainProps) {
+  const authHeaders = useAuthHeaders()
   resetServerContext()
 
   const [categories, setCategories] = React.useState(initialCategories)
@@ -78,7 +79,7 @@ export function CategoriesMain({
   const [updateCategoriesOrder] = useMutation(UPDATE_CATEGORIES_ORDER, {
     context: {
       headers: {
-        'api-key': env.NEXT_PUBLIC_API_KEY,
+        ...authHeaders,
       },
     },
     onError(error, _clientOptions) {
@@ -93,7 +94,7 @@ export function CategoriesMain({
   const [deleteCategory] = useMutation(DELETE_CATEGORY, {
     context: {
       headers: {
-        'api-key': env.NEXT_PUBLIC_API_KEY,
+        ...authHeaders,
       },
     },
     onError(error, _clientOptions) {

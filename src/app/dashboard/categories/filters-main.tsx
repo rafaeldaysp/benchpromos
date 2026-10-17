@@ -37,10 +37,10 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet'
-import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
 import { cn } from '@/lib/utils'
 import type { Category, Filter } from '@/types'
+import { useAuthHeaders } from '@/components/auth-token-provider'
 
 const DELETE_FILTER = gql`
   mutation DeleteFilter($filterId: ID!) {
@@ -75,12 +75,13 @@ interface FiltersMainProps {
 // arquivo ficou grande, posteriormente da pra melhorar ¯\_(ツ)_/¯
 
 export function FiltersMain({ category }: FiltersMainProps) {
+  const authHeaders = useAuthHeaders()
   const router = useRouter()
 
   const [deleteFilter] = useMutation(DELETE_FILTER, {
     context: {
       headers: {
-        'api-key': env.NEXT_PUBLIC_API_KEY,
+        ...authHeaders,
       },
     },
     onError(error, _clientOptions) {
@@ -210,13 +211,14 @@ interface FilterOptionModalProps {
 }
 
 export function FilterOptionModal({ filter }: FilterOptionModalProps) {
+  const authHeaders = useAuthHeaders()
   const [filterOptionInput, setFilterOptionInput] = React.useState('')
   const router = useRouter()
 
   const [createFilterOption] = useMutation(CREATE_FILTER_OPTION, {
     context: {
       headers: {
-        'api-key': env.NEXT_PUBLIC_API_KEY,
+        ...authHeaders,
       },
     },
     onError(error, _clientOptions) {
@@ -234,7 +236,7 @@ export function FilterOptionModal({ filter }: FilterOptionModalProps) {
   const [deleteFilterOption] = useMutation(DELETE_FILTER_OPTION, {
     context: {
       headers: {
-        'api-key': env.NEXT_PUBLIC_API_KEY,
+        ...authHeaders,
       },
     },
     onError(error, _clientOptions) {

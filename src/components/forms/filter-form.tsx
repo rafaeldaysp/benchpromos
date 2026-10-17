@@ -18,10 +18,10 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
 import { filterSchema } from '@/lib/validations/filter'
 import { Checkbox } from '../ui/checkbox'
+import { useAuthHeaders } from '@/components/auth-token-provider'
 
 const CREATE_FILTER = gql`
   mutation CreateFilter($input: CreateFilterInput!) {
@@ -56,6 +56,7 @@ export function FilterForm({
   mode = 'create',
   filter,
 }: FilterFormProps) {
+  const authHeaders = useAuthHeaders()
   const form = useForm<Inputs>({
     resolver: zodResolver(filterSchema),
     defaultValues: {
@@ -71,7 +72,7 @@ export function FilterForm({
     {
       context: {
         headers: {
-          'api-key': env.NEXT_PUBLIC_API_KEY,
+          ...authHeaders,
         },
       },
       onError(error, _clientOptions) {

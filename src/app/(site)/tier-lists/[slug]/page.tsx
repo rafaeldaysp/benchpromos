@@ -3,7 +3,8 @@ import { notFound } from 'next/navigation'
 
 import { getClient } from '@/lib/apollo'
 import type { Category, Product, Tier, TierList, TierProduct } from '@/types'
-import { getCurrentUser } from '@/app/_actions/user'
+import { getCurrentUser, getCurrentUserToken } from '@/app/_actions/user'
+import { AuthTokenProvider } from '@/components/auth-token-provider'
 import { TierListMain } from './main'
 
 const GET_TIER_LIST = gql`
@@ -111,12 +112,15 @@ export default async function TierListPage({ params }: TierListPageProps) {
 
   const user = await getCurrentUser()
   const isAdmin = user?.role === 'ADMIN'
+  const token = isAdmin ? await getCurrentUserToken() : undefined
 
   console.log('is admin: ', isAdmin)
 
   return (
     <div>
-      <TierListMain tierList={data.tierList} isAdmin={isAdmin} />
+      <AuthTokenProvider token={token}>
+        <TierListMain tierList={data.tierList} isAdmin={isAdmin} />
+      </AuthTokenProvider>
     </div>
   )
 }

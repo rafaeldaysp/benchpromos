@@ -36,7 +36,6 @@ import {
   ContextMenuSubTrigger,
   ContextMenuTrigger,
 } from '@/components/ui/context-menu'
-import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
 import { useMediaQuery } from '@/hooks/use-media-query'
 import { useSaleExpired } from '@/hooks/use-toggle-sale-expired'
@@ -60,6 +59,7 @@ import {
 } from '../ui/alert-dialog'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '../ui/sheet'
 import { MobileMenu } from './mobile-menu'
+import { useAuthHeaders } from '@/components/auth-token-provider'
 
 dayjs.extend(relativeTime)
 dayjs.locale('pt-br')
@@ -660,10 +660,11 @@ export function SaleCard({
 }
 
 function DeleteSaleDialog({ saleId }: { saleId: string }) {
+  const authHeaders = useAuthHeaders()
   const [deleteSale] = useMutation(DELETE_SALE, {
     context: {
       headers: {
-        'api-key': env.NEXT_PUBLIC_API_KEY,
+        ...authHeaders,
       },
     },
     onError(error, _clientOptions) {

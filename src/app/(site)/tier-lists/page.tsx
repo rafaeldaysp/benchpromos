@@ -3,7 +3,8 @@ import { Crown } from 'lucide-react'
 
 import { getClient } from '@/lib/apollo'
 import type { Category, TierList } from '@/types'
-import { getCurrentUser } from '@/app/_actions/user'
+import { getCurrentUser, getCurrentUserToken } from '@/app/_actions/user'
+import { AuthTokenProvider } from '@/components/auth-token-provider'
 import { TierListsMain } from './main'
 
 const GET_TIER_LISTS = gql`
@@ -72,6 +73,7 @@ export default async function TierListsPage() {
   ])
 
   const isAdmin = user?.role === 'ADMIN'
+  const token = isAdmin ? await getCurrentUserToken() : undefined
 
   return (
     <div>
@@ -96,11 +98,13 @@ export default async function TierListsPage() {
 
       {/* Content */}
       <div className="px-4 py-10 sm:container">
-        <TierListsMain
-          tierLists={data.tierLists}
-          isAdmin={isAdmin}
-          categories={categoriesData.categories}
-        />
+        <AuthTokenProvider token={token}>
+          <TierListsMain
+            tierLists={data.tierLists}
+            isAdmin={isAdmin}
+            categories={categoriesData.categories}
+          />
+        </AuthTokenProvider>
       </div>
     </div>
   )

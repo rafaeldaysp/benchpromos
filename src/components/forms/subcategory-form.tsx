@@ -18,9 +18,9 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { env } from '@/env.mjs'
 import { useFormStore } from '@/hooks/use-form-store'
 import { subcategorySchema } from '@/lib/validations/category'
+import { useAuthHeaders } from '@/components/auth-token-provider'
 
 const CREATE_SUBCATEGORY = gql`
   mutation CreateSubcategory($input: CreateSubcategoryInput!) {
@@ -55,6 +55,7 @@ export function SubcategoryForm({
   categoryId,
   subcategory,
 }: SubcategoryFormProps) {
+  const authHeaders = useAuthHeaders()
   const form = useForm<Inputs>({
     resolver: zodResolver(subcategorySchema),
     defaultValues: {
@@ -70,7 +71,7 @@ export function SubcategoryForm({
     {
       context: {
         headers: {
-          'api-key': env.NEXT_PUBLIC_API_KEY,
+          ...authHeaders,
         },
       },
       onError(error, _clientOptions) {

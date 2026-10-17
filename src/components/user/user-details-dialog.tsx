@@ -1,5 +1,6 @@
 'use client'
 
+import { useAuthHeaders } from '@/components/auth-token-provider'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { type Giveaway } from '@/types'
@@ -59,6 +60,7 @@ interface UserDetailsDialogProps {
 }
 
 export function UserDetailsDialog({ userId }: UserDetailsDialogProps) {
+  const authHeaders = useAuthHeaders()
   const { data, loading } = useQuery<{
     user: User & {
       createdAt: string
@@ -68,6 +70,9 @@ export function UserDetailsDialog({ userId }: UserDetailsDialogProps) {
   }>(GET_USER_DETAILS, {
     variables: {
       getUserId: userId,
+    },
+    context: {
+      headers: authHeaders,
     },
   })
 
