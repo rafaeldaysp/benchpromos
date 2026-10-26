@@ -25,6 +25,12 @@ const nextConfig = {
         destination: 'https://benchpromos.com.br/:path*',
         permanent: true,
       },
+      {
+        source: '/:path*',
+        has: [{ type: 'host', value: '(www\\.)?benchpromos\\.com' }],
+        destination: 'https://benchpromos.com.br/:path*',
+        permanent: true,
+      },
     ]
   },
   async rewrites() {
