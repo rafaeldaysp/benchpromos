@@ -4,7 +4,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
-import Logo from '@/assets/logo-benchpromos.svg'
+import Logo from '@/assets/black_friday_bp2.svg'
 // import LogoXmas from '@/assets/logo-natalina.svg'
 import {
   NavigationMenu,
