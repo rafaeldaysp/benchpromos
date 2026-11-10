@@ -81,8 +81,8 @@ export const socialMediaPlatformOrder: SocialMediaPlatform[] = [
 ]
 
 export const socialMediaTypeOrder: SocialMediaType[] = [
-  'GENERAL_OFFERS',
   'TECH_OFFERS',
+  'GENERAL_OFFERS',
   'COMMUNICATION',
   'CONTENT',
 ]
