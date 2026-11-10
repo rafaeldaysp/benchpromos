@@ -4,12 +4,9 @@ import * as React from 'react'
 import { AppSidebar } from '@/components/app-sidebar'
 import { AuthTokenProvider } from '@/components/auth-token-provider'
 import { DashboardBreadcrumb } from '@/components/dashboard-breadcrumb'
+import { DashboardSidebarProvider } from '@/components/dashboard-sidebar-provider'
 import { Separator } from '@/components/ui/separator'
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from '@/components/ui/sidebar'
+import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar'
 import { getCurrentUser, getCurrentUserToken } from '../_actions/user'
 
 interface DashboardLayoutProps {
@@ -28,7 +25,7 @@ export default async function DashboardLayout({
   const token = await getCurrentUserToken()
 
   return (
-    <SidebarProvider>
+    <DashboardSidebarProvider>
       <AppSidebar
         user={{
           avatar: user?.image ?? '',
@@ -50,6 +47,6 @@ export default async function DashboardLayout({
           </div>
         </div>
       </SidebarInset>
-    </SidebarProvider>
+    </DashboardSidebarProvider>
   )
 }

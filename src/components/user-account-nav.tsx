@@ -120,7 +120,7 @@ export function UserAccountNav({ user }: UserAccountNavProps) {
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem className="cursor-pointer text-success" asChild>
-              <Link href="/dashboard/giveaways">
+              <Link href="/dashboard/giveaways?sidebar=closed">
                 <Icons.Gift className="mr-2 size-4" />
                 <span>Sorteios (Admin)</span>
               </Link>
