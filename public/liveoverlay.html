@@ -379,6 +379,7 @@ ol.steps b{color:var(--w)}
   <div class="form">
     <div class="f full" data-m="remoto"><label>Overlay no outro PC <em>— link https ou caminho do arquivo lá</em></label><input type="text" id="cOvBase" placeholder="C:\BenchLive\bench-live.html  ou  https://..."></div>
     <div class="f full" data-m="remoto"><label>Canal <em>— funciona como senha: quem tiver o link recebe as promos</em></label><div class="row" style="flex-wrap:nowrap"><input type="text" id="cCanal" readonly style="font-family:var(--mono)"><button class="btn sm" id="cNewCanal">Gerar novo</button></div></div>
+    <div class="f full" data-m="remoto"><label>Servidor do canal <em>— avançado: vazio = ntfy.sh grátis (~250 msgs/dia); ou o endereço do seu servidor ntfy, sem limite</em></label><input type="text" id="cRelay" placeholder="https://ntfy.sh"></div>
     <div class="f" data-m="local"><label>Senha do WebSocket</label><input type="password" id="cPw" placeholder="(vazio se a autenticação estiver desligada)"></div>
     <div class="f" data-m="local"><label>Porta</label><input type="text" id="cPort" value="4455"></div>
     <div class="f full"><label>Link do overlay (para o OBS)</label><input type="text" id="cUrl" readonly></div>
@@ -467,7 +468,7 @@ const $ = id => document.getElementById(id);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const APP = 'benchlive';
-const VERSION = '2.6';
+const VERSION = '2.7';
 
 /* ---------- SHA-256 (fallback caso crypto.subtle não exista) ---------- */
 function sha256js(bytes){
@@ -794,12 +795,21 @@ if(MODE==='overlay'){
   if(HP.has('demo')) OV.show(DEMO, cfgFromHash);
   SFX.preload();
   const seen=new Set(), canal=HP.get('canal'); let obs=null, relay=null;
+  const rotBuf={}; let rotT=null; const rotStop=()=>{ clearInterval(rotT); rotT=null; };
   function reply(p){ if(obs && obs.ok) obs.broadcast(p); if(relay) relay.publish(topicOf(canal)+'_v', p); }
   let handle=function(d){
     if(!d || d.app!==APP) return;
     if(d.mid){ if(seen.has(d.mid)) return; seen.add(d.mid); if(seen.size>400){ const k=[...seen].slice(-200); seen.clear(); k.forEach(x=>seen.add(x)); } }
-    if(d.action==='show') OV.show(d.promo||{}, d.cfg||{});
-    else if(d.action==='hide') OV.hide();
+    if(d.action==='show'){ rotStop(); OV.show(d.promo||{}, d.cfg||{}); }
+    else if(d.action==='hide'){ rotStop(); OV.hide(); }
+    else if(d.action==='rot-add'){ (rotBuf[d.rid]=rotBuf[d.rid]||[])[d.k]=d.items||[]; }
+    else if(d.action==='rot-go'){
+      const list=(rotBuf[d.rid]||[]).flat().filter(Boolean); delete rotBuf[d.rid]; if(!list.length) return;
+      rotStop(); let i=0; const sec=Math.max(5,+d.sec||20);
+      const step=()=>{ const p=list[i%list.length]; OV.show(p,{...(d.cfg||{}), dur:sec, keep:true, sound:(i===0||d.same)?p._snd:null}); i++; };
+      step(); rotT=setInterval(step, sec*1000);
+    }
+    else if(d.action==='rot-stop') rotStop();
     else if(d.action==='ping') reply({action:'pong', v:VERSION});
     else if(d.action==='sndlib') SFX.setLib(d.items);
     else if(d.action==='sound') SFX.play(d.kind, d.vol, d.max);
@@ -877,34 +887,64 @@ if(MODE==='panel'){
   if(!S.cfg.canal){ S.cfg.canal=newCanal(); save(); }
   if(!S.cfg.mode) S.cfg.mode='local';
   const relay=new Relay(S.cfg.relay||RELAY_DEF, d=>onOverlayMsg(d,'remoto'), st=>{
-    const map={ok:['ok','Canal remoto online'],connecting:['','Conectando ao canal…'],off:['bad','Canal remoto offline']}; const [c,t]=map[st]||map.off; setSt('stNet',c,t);
-    if(st==='ok'){ pingRemote(); clearInterval(pingT); pingT=setInterval(()=>{ if(S.cfg.mode!=='local' && Date.now()-ovSeen>20000) pingRemote(); },15000); }
+    netSt=st; drawNet();
+    // só 1 ping por conexão (e no máx. 1 a cada 2 min) — o overlay também avisa sozinho quando entra
+    if(st==='ok' && Date.now()-ovSeen>300000 && Date.now()-lastPing>120000) pingRemote();
   });
   const mid=()=>uid()+Date.now().toString(36);
-  let pingT=null;
+  let lastPing=0, netSt='off', limitHit=false;
+  const today=()=>new Date().toLocaleDateString('pt-BR');
+  function cnt(){ if(!S.cfg._cnt || S.cfg._cnt.day!==today()) S.cfg._cnt={day:today(), n:0}; return S.cfg._cnt; }
+  function drawNet(){
+    if(limitHit) return setSt('stNet','bad','Limite diário do canal atingido');
+    const map={ok:['ok','Canal online'],connecting:['','Conectando ao canal…'],off:['bad','Canal remoto offline']}; const [c,t]=map[netSt]||map.off;
+    const lim=!S.cfg.relay || S.cfg.relay===RELAY_DEF; setSt('stNet',c, t+(lim?` · ${cnt().n}/250 hoje`:''));
+    $('stNet').title = lim ? 'O ntfy.sh gratuito permite ~250 mensagens por dia por conexão. Cada mostrar/esconder/som conta 1.' : 'Servidor próprio — sem limite';
+  }
+  async function rpub(topic, payload){
+    const c=cnt(); c.n++; save(); drawNet();
+    const ok=await relay.publish(topic, payload);
+    if(!ok){
+      if(/429/.test(relay.lastErr||'')){ limitHit=true; drawNet(); warnOnce('429','O ntfy.sh bloqueou: limite gratuito de ~250 mensagens/dia atingido. Ele vai liberando ao longo das horas (até 24h). Pra não ter limite, use um servidor próprio (⚙ Configurar → Servidor do canal).'); }
+      else setSt('stOv','bad','Falha ao enviar pro canal');
+    } else if(limitHit){ limitHit=false; drawNet(); }
+    return ok;
+  }
   async function pingRemote(){
-    const ok=await relay.publish(topicOf(S.cfg.canal),{action:'ping', mid:mid()});
-    if(!ok){ setSt('stOv','bad','Falha ao enviar pro canal'); return; }
+    lastPing=Date.now();
+    const ok=await rpub(topicOf(S.cfg.canal),{action:'ping', mid:mid()});
+    if(!ok) return;
     setTimeout(()=>{ if(Date.now()-ovSeen>6000) setSt('stOv','bad','Overlay remoto não respondeu'); },6000);
   }
   function applyMode(){
     const m=S.cfg.mode; $('stObs').hidden = m==='remoto'; $('stNet').hidden = m==='local';
+    relay.base=String(S.cfg.relay||RELAY_DEF).trim().replace(/\/+$/,'')||RELAY_DEF; drawNet();
     if(m!=='local') relay.listen(topicOf(S.cfg.canal)+'_v'); else relay.stop();
     if(m!=='remoto' && S.cfg.connected) obs.connect(S.cfg.port, S.cfg.pw);
   }
   const linkOk=()=> (S.cfg.mode!=='remoto' && obs.ok) || (S.cfg.mode!=='local' && relay.ok);
   let warned={};
   function warnOnce(k,t){ if(!warned[k]){ warned[k]=1; toast(t); } }
+  const msgLimit=()=> (!S.cfg.relay || S.cfg.relay.replace(/\/+$/,'')===RELAY_DEF) ? 3800 : 900000; // servidor próprio aceita até ~1 MB
   function slim(p){
-    if(JSON.stringify(p).length<3800) return p; const c=JSON.parse(JSON.stringify(p));
+    if(JSON.stringify(p).length<msgLimit()) return p; const c=JSON.parse(JSON.stringify(p));
     if(c.promo && /^data:/.test(c.promo.img||'')){ c.promo.img=''; warnOnce('img','Imagem colada/arrastada não vai pro PC remoto — use o link da imagem'); }
     if(c.items){ const n=c.items.length; c.items=c.items.filter(x=>!/^data:/.test(x.src||'')); if(c.items.length<n) warnOnce('snd','Sons enviados como arquivo não tocam no PC remoto — adicione por link'); }
     return c;
   }
-  function send(payload){
+  function send(payload, opt={}){
     const p={...payload, mid:mid()};
-    if(S.cfg.mode!=='remoto' && obs.ok) obs.broadcast(p);
-    if(S.cfg.mode!=='local') relay.publish(topicOf(S.cfg.canal), slim(p));
+    if(opt.local!==false && S.cfg.mode!=='remoto' && obs.ok) obs.broadcast(p);
+    if(opt.remote!==false && S.cfg.mode!=='local') rpub(topicOf(S.cfg.canal), slim(p));
+  }
+  /* rodízio remoto: manda a lista uma vez e o overlay de lá faz as trocas sozinho */
+  const ROT_FIELDS=['titulo','specs','loja','selo','tag','nova','alerta','alertaCor','preco','sfx','parcelado','cupom','cupomDesc','img','imgDark','qr','url','_snd'];
+  function sendRotRemote(list, sec, cfg){
+    const rid=mid(), items=list.map(p=>{ const o={}; ROT_FIELDS.forEach(k=>{ if(p[k]!=null && p[k]!=='') o[k]=p[k]; }); if(msgLimit()<5000 && /^data:/.test(o.img||'')) o.img=''; return o; });
+    const chunks=[]; let cur=[];
+    for(const it of items){ if(cur.length && JSON.stringify([...cur,it]).length>msgLimit()-500){ chunks.push(cur); cur=[]; } cur.push(it); } if(cur.length) chunks.push(cur);
+    chunks.forEach((c,k)=>send({action:'rot-add', rid, k, items:c},{local:false}));
+    send({action:'rot-go', rid, sec, same:S.cfg.sndRot==='same', cfg},{local:false});
   }
   function setSt(id,c,t){ const e=$(id); e.className='st '+c; e.querySelector('span').textContent=t; }
   function sendLib(){ SFX.setLib(S.cfg.customSounds); if(linkOk() && S.cfg.customSounds.length) send({action:'sndlib', items:S.cfg.customSounds.map(({id,src})=>({id,src}))}); }
@@ -1153,7 +1193,7 @@ if(MODE==='panel'){
   function show(p, extra){
     const cfg=cfgNow(extra); if(!extra || !('sound' in extra)) cfg.sound=pickSound(p, extra?.rotStep); airId=p.id; renderList();
     $('airT').textContent=p.titulo||'—'; $('airT').classList.add('on');
-    OV.show(p,{...cfg, sound:null}); send({action:'show', promo:p, cfg});
+    OV.show(p,{...cfg, sound:null}); send({action:'show', promo:p, cfg},{remote:!extra?.viaRot});
     clearTimeout(autoT); if(cfg.dur>0 && !cfg.keep) autoT=setTimeout(()=>{ airOff(); }, cfg.dur*1000+400);
     if(!linkOk()) toast(S.cfg.mode==='remoto'?'Mostrando só na prévia — canal remoto offline':'Mostrando só na prévia — OBS não conectado');
   }
@@ -1163,18 +1203,19 @@ if(MODE==='panel'){
     const L=S.promos.filter(p=>p.rot!==false); if(!L.length){ toast('Marque “rodízio” em pelo menos uma promo'); return; }
     rotOn=true; $('bRot').innerHTML='■ Parar rodízio <span class="kbd">R</span>';
     let i=Math.max(0,L.findIndex(p=>p.id===airId)); const sec=Math.max(5,+S.cfg.rot||20); let first=true;
-    const step=()=>{ if(!rotOn) return; const L2=S.promos.filter(p=>p.rot!==false); if(!L2.length) return stopRot(); show(L2[i%L2.length],{dur:sec,keep:true,rotStep:!first}); first=false; i++; rotT=setTimeout(step, sec*1000); };
+    if(S.cfg.mode!=='local'){ const ord=[...L.slice(i),...L.slice(0,i)].map(p=>({...p,_snd:pickSound(p,false)})); sendRotRemote(ord, sec, cfgNow({dur:sec,keep:true})); }
+    const step=()=>{ if(!rotOn) return; const L2=S.promos.filter(p=>p.rot!==false); if(!L2.length) return stopRot(true); show(L2[i%L2.length],{dur:sec,keep:true,rotStep:!first,viaRot:true}); first=false; i++; rotT=setTimeout(step, sec*1000); };
     step();
   }
-  function stopRot(){ rotOn=false; clearTimeout(rotT); $('bRot').innerHTML='▶ Rodízio <span class="kbd">R</span>'; }
-  $('bRot').onclick=()=> rotOn?stopRot():startRot();
+  function stopRot(notify){ if(notify && rotOn) send({action:'rot-stop'},{local:false}); rotOn=false; clearTimeout(rotT); $('bRot').innerHTML='▶ Rodízio <span class="kbd">R</span>'; }
+  $('bRot').onclick=()=> rotOn?stopRot(true):startRot();
   $('bHide').onclick=hide;
   document.addEventListener('keydown', e => {
     if(e.target.closest('input,textarea,select') || e.ctrlKey || e.metaKey || e.altKey || $('dCfg').open || $('dSnd').open) return;
     if(e.shiftKey && /^Digit[1-8]$/.test(e.code)){ const id=S.cfg.board[+e.code.slice(5)-1]; if(id) boardPlay(id); e.preventDefault(); return; }
     if(e.key==='Escape'){ hide(); e.preventDefault(); }
     else if(/^[1-9]$/.test(e.key)){ const p=S.promos[+e.key-1]; if(p){ stopRot(); show(p); } }
-    else if(e.key.toLowerCase()==='r'){ rotOn?stopRot():startRot(); }
+    else if(e.key.toLowerCase()==='r'){ rotOn?stopRot(true):startRot(); }
   });
 
   /* ===== biblioteca de sons / soundboard ===== */
@@ -1214,12 +1255,12 @@ if(MODE==='panel'){
   SFX.setLib(S.cfg.customSounds); refreshSoundSelects(); renderBoard();
 
   /* config */
-  const C={mode:'cMode',ovBase:'cOvBase',pw:'cPw',port:'cPort',pos:'cPos',scale:'cSc',layout:'cLay',newHours:'cNew',dur:'cDur',rot:'cRot',cta:'cCta'};
+  const C={mode:'cMode',ovBase:'cOvBase',relay:'cRelay',pw:'cPw',port:'cPort',pos:'cPos',scale:'cSc',layout:'cLay',newHours:'cNew',dur:'cDur',rot:'cRot',cta:'cCta'};
   function toFileUrl(x){ x=String(x||'').trim(); if(!x) return ''; if(/^(https?|file):/i.test(x)) return x.split('#')[0]; return 'file:///'+x.replace(/\\/g,'/').replace(/^\/+/,'').split('/').map(encodeURIComponent).join('/').replace(/^([A-Za-z])%3A/,'$1:'); }
   function overlayUrl(kind){
     kind = kind || S.cfg.mode;
     const q=new URLSearchParams(); q.set('overlay','');
-    if(kind!=='local'){ q.set('canal',S.cfg.canal); if(S.cfg.relay && S.cfg.relay!==RELAY_DEF) q.set('relay',S.cfg.relay); }
+    if(kind!=='local'){ q.set('canal',S.cfg.canal); if(S.cfg.relay && S.cfg.relay.replace(/\/+$/,'')!==RELAY_DEF) q.set('relay',S.cfg.relay.replace(/\/+$/,'')); }
     if(kind!=='remoto'){ if(S.cfg.pw) q.set('senha',S.cfg.pw); if(String(S.cfg.port)!=='4455') q.set('port',S.cfg.port); if(kind==='ambos') q.set('local',''); }
     const here=location.href.split('#')[0], ob=String(S.cfg.ovBase||'').trim();
     // aberto pelo site (https): o próprio endereço já serve pro outro PC; arquivo local: usa o caminho informado
@@ -1236,13 +1277,14 @@ if(MODE==='panel'){
   $('bCfg').onclick=openCfg; $('cClose').onclick=()=>$('dCfg').close();
   $('cConn').onclick=()=>{ readCfg(); S.cfg.connected=true; save(); applyMode(); toast(S.cfg.mode==='remoto'?'Ligando o canal remoto…':'Conectando…'); };
   $('cMode').addEventListener('change',()=>{ readCfg(); applyMode(); });
+  $('cRelay').addEventListener('change',()=>{ readCfg(); if(S.cfg.relay===RELAY_DEF) S.cfg.relay=''; save(); applyMode(); $('cUrl').value=overlayUrl(); toast('Servidor do canal atualizado — copie o link do overlay de novo'); });
   $('cNewCanal').onclick=()=>{ if(!confirm('Gerar um canal novo? O link antigo do overlay para de funcionar.')) return; S.cfg.canal=newCanal(); save(); modeUi(); $('cUrl').value=overlayUrl(); applyMode(); toast('Canal novo gerado — copie o link de novo'); };
   $('cFix').onclick=()=>{ readCfg(); fixOverlay(false); };
   $('cTest').onclick=async()=>{
     readCfg(); if(S.cfg.mode==='local'){ toast('Escolha o modo “Em outro PC” primeiro'); return; }
     if(!relay.es) applyMode(); await new Promise(r=>setTimeout(r,1200));
     let got=false; const done=new Promise(r=>{ echoWait=()=>{ got=true; r(); }; setTimeout(r,7000); });
-    const ok=await relay.publish(topicOf(S.cfg.canal)+'_v',{action:'echo-self', mid:mid()}); await done; echoWait=null;
+    const ok=await rpub(topicOf(S.cfg.canal)+'_v',{action:'echo-self', mid:mid()}); await done; echoWait=null;
     if(!ok) alert('❌ Este PC NÃO conseguiu enviar para o canal ('+(relay.lastErr||'erro')+').\nPossível bloqueio de antivírus/firewall/rede para ntfy.sh.');
     else if(!got) alert('⚠️ Enviou, mas não recebeu de volta em 7s.\nAlgo está bloqueando a conexão contínua (EventSource) com ntfy.sh neste PC.');
     else alert('✅ O canal funciona neste PC (envia e recebe).\n\nSe o overlay remoto não responde, o problema está no PC de SP:\n• o arquivo não está no caminho do link, ou\n• lá está uma versão antiga (precisa ser '+VERSION+'+).\n\nNo PC de SP, abra o link do overlay no Chrome com “&debug” no final para ver o diagnóstico.');
