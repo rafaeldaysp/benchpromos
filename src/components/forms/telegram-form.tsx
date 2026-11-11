@@ -103,10 +103,10 @@ export function TelegramForm({
   const [destinations, setDestinations] = React.useState<
     Record<Destination, boolean>
   >({
-    // Only the Gerais channels are on by default; the rest are opt-in.
+    // The Gerais channels and WhatsApp are on by default; the rest are opt-in.
     'telegram-general': true,
     'telegram-tech': false,
-    whatsapp: false,
+    whatsapp: whatsappEnabled,
     'discord-gerais': discordEnabled,
     'discord-promocoes': false,
   })
