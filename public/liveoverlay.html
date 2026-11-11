@@ -1,0 +1,1267 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bench Live</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800;900&family=JetBrains+Mono:wght@700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --b0:#120B1C; --b1:#170F23; --b2:#21172F; --b3:#30243D; --b4:#3D2F4E;
+  --y:#FFE500; --w:#F5F2F9; --mut:#A99DBB; --mut2:#7C7090;
+  --p:#7B3FE4; --p2:#9B6BF2; --ok:#3DDC97; --bad:#FF5C7A;
+  --brand:"Lemon Milk","LEMON MILK","Montserrat",system-ui,sans-serif;
+  --ff:"Montserrat",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0}
+body{font-family:var(--ff)}
+html[data-mode=overlay],html[data-mode=overlay] body{background:transparent!important;overflow:hidden;width:100vw;height:100vh}
+html[data-mode=overlay] #pn,html[data-mode=overlay] .dock,html[data-mode=overlay] dialog,html[data-mode=overlay] .toast{display:none!important}
+
+/* ================= OVERLAY ================= */
+.ovhost{position:relative;overflow:hidden}
+html[data-mode=overlay] .ovhost{position:fixed;inset:0}
+#ov{position:absolute;left:0;top:0;width:1920px;height:1080px;transform-origin:0 0;pointer-events:none;color:var(--w)}
+#wrap{position:absolute;transform:scale(var(--sc,1))}
+#wrap.pos-bl{left:64px;bottom:64px;transform-origin:0 100%}
+#wrap.pos-br{right:64px;bottom:64px;transform-origin:100% 100%}
+#wrap.pos-bc{left:50%;bottom:64px;transform-origin:50% 100%;translate:-50% 0}
+#wrap.pos-tl{left:64px;top:64px;transform-origin:0 0}
+#wrap.pos-tr{right:64px;top:64px;transform-origin:100% 0}
+#wrap.pos-c{left:50%;top:50%;transform-origin:50% 50%;translate:-50% -50%}
+#wrap.pos-tc{left:50%;top:64px;transform-origin:50% 0;translate:-50% 0}
+
+#card{width:1180px;border-radius:30px;overflow:hidden;opacity:0;
+  background:linear-gradient(135deg,#251A35 0%,#1A1128 55%,#140D1F 100%);
+  border:1.5px solid rgba(245,242,249,.10);
+  box-shadow:0 36px 90px rgba(0,0,0,.55),0 0 0 1px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.07)}
+#card.in{animation:cIn .7s cubic-bezier(.16,1,.3,1) forwards}
+#card.out{animation:cOut .36s cubic-bezier(.5,0,.75,0) forwards}
+#wrap.pos-br #card.in,#wrap.pos-tr #card.in{animation-name:cInR}
+@keyframes cIn{from{opacity:0;transform:translateX(-80px) scale(.97);filter:blur(6px)}to{opacity:1;transform:none;filter:none}}
+@keyframes cInR{from{opacity:0;transform:translateX(80px) scale(.97);filter:blur(6px)}to{opacity:1;transform:none;filter:none}}
+@keyframes cOut{from{opacity:1;transform:none}to{opacity:0;transform:translateY(34px) scale(.98)}}
+
+.tab{display:flex;align-items:center;justify-content:space-between;height:54px;padding:0 30px;
+  background:linear-gradient(90deg,rgba(123,63,228,.30),rgba(48,36,61,.55) 45%,rgba(48,36,61,.25));
+  border-bottom:1px solid rgba(245,242,249,.08)}
+.live{display:flex;align-items:center;gap:12px;font:800 15px/1 var(--brand);letter-spacing:.22em;text-transform:uppercase}
+.dot{width:12px;height:12px;border-radius:50%;background:var(--y);box-shadow:0 0 0 0 rgba(255,229,0,.6);animation:pulse 1.6s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(255,229,0,.55)}70%{box-shadow:0 0 0 12px rgba(255,229,0,0)}100%{box-shadow:0 0 0 0 rgba(255,229,0,0)}}
+.logo{font:800 17px/1 var(--brand);letter-spacing:.16em;text-transform:uppercase;color:var(--w)}
+.logo b{color:var(--y);font-weight:800}
+
+.body{display:grid;grid-template-columns:286px 1fr 262px;gap:34px;padding:30px 30px 28px;align-items:stretch}
+.imgbox{width:286px;height:286px;border-radius:22px;display:grid;place-items:center;overflow:hidden;position:relative;
+  background:radial-gradient(circle at 50% 38%,#FFFFFF 0%,#F1EDF7 55%,#DDD5EA 100%)}
+.imgbox.dark{background:radial-gradient(circle at 50% 40%,#3D2F4E 0%,#251A35 60%,#170F23 100%)}
+.imgbox img{max-width:88%;max-height:88%;object-fit:contain;filter:drop-shadow(0 14px 18px rgba(0,0,0,.18))}
+
+.info{display:flex;flex-direction:column;min-width:0;padding-top:2px}
+.meta{display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+.pill{font:700 15px/1 var(--ff);letter-spacing:.06em;text-transform:uppercase;padding:9px 14px;border-radius:999px;white-space:nowrap}
+.store{border:1.5px solid rgba(245,242,249,.22);color:var(--w)}
+.selo{background:var(--y);color:#1A1128;font-weight:800}
+.pill:empty{display:none}
+.title{font:800 31px/1.17 var(--ff);letter-spacing:-.01em;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.specs{margin-top:9px;font:500 19px/1.3 var(--ff);color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.specs:empty{display:none}
+.pricewrap{margin-top:auto;padding-top:14px}
+.price{display:flex;align-items:baseline;gap:10px;position:relative;width:max-content;max-width:100%}
+.price .cur{font:800 32px/1 var(--ff);color:var(--w);align-self:flex-start;margin-top:12px}
+.price .val{font:900 82px/1 var(--ff);letter-spacing:-.035em;color:var(--w)}
+.price .sfx{font:600 23px/1 var(--ff);color:var(--mut)}
+.price.raw .cur{display:none}
+.parc{margin-top:10px;font:500 22px/1.25 var(--ff);color:var(--mut)}
+.parc b{color:var(--w);font-weight:800}
+.parc:empty{display:none}
+.shine{position:absolute;inset:-6px -10px;overflow:hidden;pointer-events:none}
+.shine::after{content:"";position:absolute;top:0;bottom:0;width:80px;left:-120px;transform:skewX(-20deg);
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.35),transparent)}
+#card.in .shine::after{animation:sh 1.1s .9s ease-out}
+@keyframes sh{to{left:120%}}
+
+.ticket{position:relative;border-radius:22px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:22px 18px;
+  background:linear-gradient(160deg,rgba(255,229,0,.10),rgba(255,229,0,.03));border:2.5px dashed rgba(255,229,0,.62)}
+.ticket::before,.ticket::after{content:"";position:absolute;top:50%;width:26px;height:26px;border-radius:50%;background:#1C1229;translate:0 -50%}
+.ticket::before{left:-15px;border-right:2.5px dashed rgba(255,229,0,.62)}
+.ticket::after{right:-15px;border-left:2.5px dashed rgba(255,229,0,.62)}
+.tl{display:flex;align-items:center;gap:9px;font:800 15px/1 var(--brand);letter-spacing:.3em;color:var(--y);text-transform:uppercase}
+.tl svg{width:20px;height:20px}
+.code{margin:16px 0 12px;font:800 40px/1.05 var(--mono);color:var(--y);letter-spacing:.02em;word-break:break-all;text-shadow:0 0 24px rgba(255,229,0,.25)}
+.code.sm{font-size:32px}.code.xs{font-size:25px}
+.tdesc{font:800 22px/1.15 var(--ff);color:var(--w)}
+.tdesc:empty{display:none}
+.thint{margin-top:10px;font:600 14px/1.2 var(--ff);color:var(--mut);letter-spacing:.04em;text-transform:uppercase}
+
+.foot{display:flex;align-items:center;justify-content:space-between;gap:24px;height:56px;padding:0 30px;
+  border-top:1px solid rgba(245,242,249,.08);background:rgba(10,6,16,.35)}
+.cta{font:700 19px/1 var(--ff);color:var(--w);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cta b{color:var(--y)}
+.bar{width:240px;height:6px;border-radius:9px;background:rgba(245,242,249,.10);overflow:hidden;flex:none;opacity:0;transition:opacity .3s}
+.bar.on{opacity:1}
+.bar i{display:block;height:100%;width:100%;background:var(--y);border-radius:9px}
+
+.alert{display:none;align-items:center;justify-content:center;gap:14px;height:54px;position:relative;overflow:hidden;
+  font:800 21px/1 var(--brand);letter-spacing:.2em;text-transform:uppercase;color:#fff;background:var(--ac,#E0243A)}
+.alert.on{display:flex}
+.alert.lt{color:#1A1128}
+.alert::after{content:"";position:absolute;inset:0;background:linear-gradient(100deg,transparent 30%,rgba(255,255,255,.3) 50%,transparent 70%);transform:translateX(-100%);animation:asw 2.8s ease-in-out infinite}
+@keyframes asw{55%,100%{transform:translateX(100%)}}
+.alert svg{width:24px;height:24px;flex:none}
+.pill.nova{background:#7B3FE4;color:#fff;font-weight:800;display:inline-flex;align-items:center;gap:8px}
+.pill.nova:empty{display:none}
+.pill.nova::before{content:"";width:8px;height:8px;border-radius:50%;background:#fff;animation:blink 1.3s infinite}
+@keyframes blink{50%{opacity:.25}}
+.pill.tagp{background:rgba(245,242,249,.09);color:var(--w)}
+.logo{display:flex;align-items:center;gap:12px}
+.logo .lg{width:38px;height:38px;display:block}
+.logo.nolg .lg{display:none}
+.qr{display:none;background:#fff;border-radius:22px;padding:16px 16px 12px;flex-direction:column;align-items:center;justify-content:center;gap:10px}
+.qr.on{display:flex}
+.qr canvas{width:178px;height:178px;image-rendering:pixelated;display:block}
+.qr span{font:800 13px/1.15 var(--ff);color:#1A1128;letter-spacing:.06em;text-transform:uppercase;text-align:center}
+.pricewrap.none{display:none}
+.info.noprice .title{-webkit-line-clamp:3}
+.info.noprice .specs{white-space:normal;font-size:22px;margin-top:14px}
+#card.compact .tab{height:44px;padding:0 22px}
+#card.compact .logo .lg{width:30px;height:30px}
+#card.compact .body{padding:20px 22px;gap:24px}
+#card.compact .imgbox{width:190px;height:190px;border-radius:16px}
+#card.compact .title{font-size:25px}
+#card.compact .specs{display:none}
+#card.compact .price .val{font-size:62px}
+#card.compact .price .cur{font-size:26px;margin-top:8px}
+#card.compact .price .sfx{font-size:19px}
+#card.compact .parc{font-size:19px;margin-top:6px}
+#card.compact .meta{margin-bottom:10px}
+#card.compact .pill{font-size:13px;padding:7px 11px}
+#card.compact .ticket{padding:14px 12px}
+#card.compact .code{font-size:30px;margin:10px 0 8px}
+#card.compact .code.sm{font-size:25px}#card.compact .code.xs{font-size:20px}
+#card.compact .tdesc{font-size:18px}
+#card.compact .thint{display:none}
+#card.compact .foot{display:none}
+#card.compact .qr{padding:12px 12px 8px}
+#card.compact .qr canvas{width:132px;height:132px}
+#card.compact .alert{height:44px;font-size:17px}
+
+.rv{opacity:0}
+#card.in .rv{animation:rv .55s cubic-bezier(.16,1,.3,1) forwards;animation-delay:var(--d,.15s)}
+@keyframes rv{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+#card.in .ticket.rv{animation:pop .6s cubic-bezier(.34,1.56,.64,1) forwards;animation-delay:.42s}
+@keyframes pop{from{opacity:0;transform:scale(.86) rotate(-2deg)}to{opacity:1;transform:none}}
+
+/* ================= PAINEL ================= */
+html[data-mode=panel] body{background:var(--b0);color:var(--w);min-height:100vh}
+#pn{max-width:1500px;margin:0 auto;padding:16px 20px 190px}
+#pn header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:14px}
+#pn h1{font:800 20px/1 var(--brand);letter-spacing:.14em;margin:0 auto 0 0;text-transform:uppercase}
+#pn h1 b{color:var(--y)}
+dialog [data-m]{}
+#pn h1 small{display:block;font:600 11px/1.4 var(--ff);letter-spacing:.08em;color:var(--mut);margin-top:6px;text-transform:none}
+.st{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;background:var(--b2);border:1px solid var(--b3);font:600 13px/1 var(--ff);color:var(--mut)}
+.st i{width:9px;height:9px;border-radius:50%;background:var(--mut2)}
+.st.ok i{background:var(--ok);box-shadow:0 0 10px var(--ok)}
+.st.ok{color:var(--w)}
+.st.bad i{background:var(--bad)}
+.btn{appearance:none;border:1px solid var(--b4);background:var(--b2);color:var(--w);font:700 13px/1 var(--ff);padding:10px 14px;border-radius:12px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;white-space:nowrap}
+.btn:hover{background:var(--b3)}
+.btn.pr{background:var(--p);border-color:var(--p)}
+.btn.pr:hover{background:var(--p2)}
+.btn.y{background:var(--y);border-color:var(--y);color:#1A1128}
+.btn.y:hover{filter:brightness(1.06)}
+.btn.ghost{background:transparent}
+.btn.danger:hover{background:#4a1f2c;border-color:#7a2e43}
+.btn.sm{padding:7px 10px;font-size:12px;border-radius:10px}
+.btn:disabled{opacity:.45;cursor:default}
+
+.grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:18px;align-items:start}
+@media (max-width:1050px){.grid{grid-template-columns:1fr}}
+.panel{background:var(--b1);border:1px solid var(--b3);border-radius:18px;padding:16px}
+.ph{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+.ph h2{font:800 13px/1 var(--ff);letter-spacing:.12em;text-transform:uppercase;color:var(--mut);margin:0 auto 0 0}
+
+#list{display:flex;flex-direction:column;gap:10px}
+.it{display:grid;grid-template-columns:22px 64px 1fr auto;gap:12px;align-items:center;padding:10px;border-radius:14px;background:var(--b2);border:1.5px solid transparent;cursor:pointer}
+.it:hover{border-color:var(--b4)}
+.it.sel{border-color:var(--p)}
+.it.air{border-color:var(--y);box-shadow:0 0 0 3px rgba(255,229,0,.12)}
+.it .n{font:800 13px/1 var(--mono);color:var(--mut2);text-align:center}
+.it .th{width:64px;height:64px;border-radius:10px;background:#EEE9F5;display:grid;place-items:center;overflow:hidden}
+.it .th img{max-width:90%;max-height:90%;object-fit:contain}
+.it .tx{min-width:0}
+.it .t1{font:700 14px/1.25 var(--ff);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.it .t2{margin-top:5px;font:600 13px/1 var(--ff);color:var(--mut);display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.it .t2 .pz{color:var(--w);font-weight:800}
+.it .t2 .cp{font:800 12px/1 var(--mono);color:var(--y);border:1px dashed rgba(255,229,0,.5);padding:4px 6px;border-radius:6px}
+.it .ac{display:flex;gap:6px;align-items:center}
+.go{width:46px;height:46px;border-radius:12px;border:0;background:var(--p);color:#fff;cursor:pointer;display:grid;place-items:center}
+.go:hover{background:var(--p2)}
+.it.air .go{background:var(--y);color:#1A1128}
+.f label.rz{text-transform:none;letter-spacing:0;font-weight:500;font-size:12px}
+.rz{display:flex;align-items:center;gap:4px;font:600 11px/1 var(--ff);color:var(--mut);cursor:pointer;user-select:none}
+.tabs{display:flex;gap:4px;background:var(--b0);padding:4px;border-radius:12px;border:1px solid var(--b3)}
+.tb{appearance:none;border:0;background:transparent;color:var(--mut);font:800 12px/1 var(--ff);letter-spacing:.08em;text-transform:uppercase;padding:9px 12px;border-radius:9px;cursor:pointer;display:flex;gap:6px;align-items:center}
+.tb.on{background:var(--b3);color:var(--w)}
+.cnt{background:var(--y);color:#1A1128;border-radius:99px;padding:2px 6px;font-size:10px}
+.cnt:empty{display:none}
+.bdg{font:800 10px/1 var(--ff);letter-spacing:.05em;text-transform:uppercase;padding:4px 6px;border-radius:6px;background:var(--b3);color:var(--w)}
+.bdg.red{background:#E0243A}.bdg.new{background:var(--p)}.bdg.hl{background:#5a4a12;color:var(--y)}.bdg.exp{background:#555;color:#ddd}
+.it.fresh{border-color:var(--p);box-shadow:0 0 0 3px rgba(123,63,228,.18)}
+.add{width:46px;height:46px;border-radius:12px;border:1px solid var(--b4);background:var(--b3);color:var(--w);cursor:pointer;font:800 20px/1 var(--ff)}
+.add:hover{background:var(--b4)}.add.in{color:var(--ok)}
+#sList{display:flex;flex-direction:column;gap:10px}
+.empty{padding:34px 16px;text-align:center;color:var(--mut);font:500 14px/1.6 var(--ff);border:1.5px dashed var(--b3);border-radius:14px}
+
+.prev{border-radius:14px;overflow:hidden;aspect-ratio:16/9;width:100%;
+  background:#0B0710 repeating-conic-gradient(#120C18 0 25%,#0B0710 0 50%) 0 0/28px 28px;border:1px solid var(--b3)}
+.form{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+.f{display:flex;flex-direction:column;gap:6px;min-width:0}
+.f.full{grid-column:1/-1}
+.f label{font:700 11px/1 var(--ff);letter-spacing:.1em;text-transform:uppercase;color:var(--mut)}
+.f label em{font-style:normal;text-transform:none;letter-spacing:0;color:var(--mut2);font-weight:500}
+input[type=text],input[type=number],input[type=password],select,textarea{width:100%;background:var(--b0);border:1px solid var(--b3);color:var(--w);border-radius:10px;padding:10px 12px;font:500 14px/1.3 var(--ff);outline:none}
+input:focus,select:focus,textarea:focus{border-color:var(--p)}
+textarea{resize:vertical;min-height:84px;font-size:13px}
+.drop{display:grid;grid-template-columns:72px 1fr;gap:10px;align-items:center}
+.drop .th{width:72px;height:72px;border-radius:12px;background:#EEE9F5;display:grid;place-items:center;overflow:hidden;border:1.5px dashed var(--b4);cursor:pointer}
+.drop .th img{max-width:90%;max-height:90%;object-fit:contain}
+.drop .th span{font:600 10px/1.2 var(--ff);color:#6b5e80;text-align:center;padding:4px}
+.hint{font:500 12px/1.45 var(--ff);color:var(--mut2)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+
+.dock{position:fixed;left:0;right:0;bottom:0;background:rgba(18,11,28,.92);backdrop-filter:blur(10px);border-top:1px solid var(--b3);z-index:5}
+.dock .in{max-width:1500px;margin:0 auto;padding:12px 20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.air-lbl{font:800 11px/1 var(--ff);letter-spacing:.14em;color:var(--mut);text-transform:uppercase}
+.air-t{font:700 15px/1.2 var(--ff);flex:1;min-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.air-t.on{color:var(--y)}
+.kbd{font:700 11px/1 var(--mono);padding:3px 6px;border-radius:5px;background:var(--b3);color:var(--mut)}
+dialog{background:var(--b1);color:var(--w);border:1px solid var(--b4);border-radius:18px;padding:22px;width:min(640px,94vw)}
+dialog::backdrop{background:rgba(0,0,0,.6)}
+dialog h3{margin:0 0 4px;font:800 16px/1.2 var(--ff)}
+dialog .form{grid-template-columns:1fr 1fr}
+ol.steps{margin:8px 0 0;padding-left:20px;font:500 13px/1.6 var(--ff);color:var(--mut)}
+ol.steps b{color:var(--w)}
+.sgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:8px;margin:10px 0 4px;max-height:46vh;overflow:auto;padding-right:4px}
+.scat{grid-column:1/-1;font:800 11px/1 var(--ff);letter-spacing:.12em;text-transform:uppercase;color:var(--mut);margin:10px 0 2px}
+.sc{background:var(--b2);border:1px solid var(--b3);border-radius:12px;padding:9px 10px;display:flex;align-items:center;gap:6px}
+.sc .sn{flex:1;font:700 13px/1.2 var(--ff);min-width:0;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.sc .sd{font:600 11px/1 var(--mono);color:var(--mut2)}
+.ib{width:30px;height:30px;border-radius:8px;border:1px solid var(--b4);background:var(--b1);color:var(--w);cursor:pointer;display:grid;place-items:center;font:700 13px/1 var(--ff);flex:none}
+.ib:hover{background:var(--b3)}.ib.on{background:var(--y);color:#1A1128;border-color:var(--y)}
+.board{display:flex;gap:6px;flex-wrap:wrap;align-items:center;order:5;flex-basis:100%;padding-top:8px;border-top:1px solid var(--b3)}
+.board:empty{display:none}
+.sb{padding:8px 10px;font-size:12px;border-radius:10px;max-width:150px;overflow:hidden;text-overflow:ellipsis}
+.sb .kbd{margin-left:2px}
+.toast{position:fixed;left:50%;top:18px;translate:-50% 0;background:var(--b3);border:1px solid var(--b4);padding:10px 16px;border-radius:12px;font:600 13px/1.2 var(--ff);opacity:0;transition:.25s;z-index:20;pointer-events:none}
+.toast.on{opacity:1}
+</style>
+</head>
+<body>
+
+<!-- =============== PAINEL =============== -->
+<div id="pn">
+  <header>
+    <h1><b>Bench</b> Live <small>Painel de promoções para o OBS</small></h1>
+    <span class="st" id="stObs"><i></i><span>OBS desconectado</span></span>
+    <span class="st" id="stNet" hidden><i></i><span>Canal remoto desligado</span></span>
+    <span class="st" id="stOv"><i></i><span>Overlay não detectado</span></span>
+    <button class="btn" id="bSnd">🔊 Sons</button>
+    <button class="btn" id="bCfg">⚙ Configurar</button>
+  </header>
+
+  <div class="grid">
+    <section class="panel">
+      <div class="ph">
+        <div class="tabs"><button class="tb on" data-t="fila">Minha fila</button><button class="tb" data-t="site">Do site <span class="cnt" id="siteNew"></span></button></div>
+        <span style="flex:1"></span>
+        <span class="row" id="filaTools">
+          <button class="btn pr sm" id="bNew">+ Nova</button>
+          <button class="btn sm ghost" id="bUpd" title="Puxa de novo preço, cupom e status de todas as promos da fila que vieram do site">↻ Preços</button>
+          <button class="btn sm ghost" id="bExp" title="Salvar backup em arquivo">Exportar</button>
+          <button class="btn sm ghost" id="bImp" title="Carregar backup">Importar</button>
+        </span>
+        <input type="file" id="fImp" accept=".json,application/json" hidden>
+      </div>
+      <div id="list"></div>
+      <div id="siteBox" hidden>
+        <div class="row" style="margin-bottom:12px">
+          <select id="sCat" style="width:auto;flex:1;min-width:150px"><option value="">Todas as categorias</option></select>
+          <select id="sLim" style="width:auto"><option value="20">20</option><option value="40" selected>40</option><option value="80">80</option></select>
+          <button class="btn sm" id="sRef">↻ Atualizar</button>
+          <label class="rz"><input type="checkbox" id="sAuto" checked> auto (2 min)</label>
+          <button class="btn sm pr" id="sAddAll" title="Adiciona à fila todas as listadas (sem repetir)">+ Todas na fila</button>
+        </div>
+        <div id="sList"><div class="empty">Carregando promos do site…</div></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="ph"><h2>Prévia</h2><span class="hint">É exatamente o que vai pro OBS (1920×1080)</span></div>
+      <div class="prev ovhost" id="prevHost"></div>
+
+      <div class="ph" style="margin-top:18px"><h2 id="fTitle">Nova promoção</h2>
+        <button class="btn sm" id="bPrev">Ver na prévia</button>
+        <button class="btn pr sm" id="bSave">Salvar</button>
+      </div>
+      <div class="form">
+        <div class="f full">
+          <label>Link da promo no site <em>— cole o link e ele puxa foto, preço, parcelado, loja e cupom</em></label>
+          <div class="row" style="flex-wrap:nowrap"><input type="text" id="iUrl" placeholder="https://benchpromos.com.br/promocao/..."><button class="btn y" id="bFetch">Puxar do site</button></div>
+        </div>
+        <details class="f full" id="dPaste"><summary class="hint" style="cursor:pointer">Sem link? Colar o texto do card manualmente</summary>
+          <textarea id="paste" style="margin-top:8px" placeholder="Notebook Lenovo IdeaPad Slim 3i ...&#10;R$ 2.734,55 à vista&#10;ou R$ 3.217,19 em 12x de R$ 268,10"></textarea>
+        </details>
+        <div class="f full">
+          <label>Imagem <em>— cole (Ctrl+V), arraste um arquivo ou cole o link da imagem</em></label>
+          <div class="drop">
+            <div class="th" id="imgTh"><span>clique ou arraste</span></div>
+            <div class="f"><input type="text" id="iImg" placeholder="https://... (link da imagem)"><input type="file" id="fImg" accept="image/*" hidden>
+              <label class="rz" style="margin-top:4px"><input type="checkbox" id="iImgDark"> Fundo escuro atrás da imagem (para PNG com fundo transparente escuro)</label></div>
+          </div>
+        </div>
+        <div class="f full"><label>Título</label><input type="text" id="iTit" placeholder="Notebook Lenovo IdeaPad Slim 3i Intel Core 3 304 8GB 256GB"></div>
+        <div class="f full"><label>Specs <em>(opcional, 1 linha)</em></label><input type="text" id="iSpec" placeholder="Intel Core 3 304 | 8GB RAM | 256GB SSD | 15.3&quot; IPS"></div>
+        <div class="f"><label>Loja</label><input type="text" id="iLoja" placeholder="Mercado Livre" list="lojas"></div>
+        <div class="f"><label>Selo <em>(opcional)</em></label><input type="text" id="iSelo" placeholder="BAIXOU" list="selos"></div>
+        <div class="f"><label>Preço</label><input type="text" id="iPreco" placeholder="2.734,55"></div>
+        <div class="f"><label>Texto ao lado do preço</label><input type="text" id="iSfx" placeholder="à vista" list="sfxs"></div>
+        <div class="f full"><label>Parcelado <em>(opcional)</em></label><input type="text" id="iParc" placeholder="ou R$ 3.217,19 em 12x de R$ 268,10"></div>
+        <div class="f"><label>Banner de alerta <em>(opcional)</em></label><input type="text" id="iAlert" list="alerts" placeholder="MENOR PREÇO HISTÓRICO"></div>
+        <div class="f"><label>Cor do banner</label><select id="iAlertC"><option value="vermelho">Vermelho</option><option value="amarelo">Amarelo</option><option value="laranja">Laranja</option><option value="roxo">Roxo</option><option value="verde">Verde</option></select></div>
+        <div class="f"><label>Etiqueta extra <em>(opcional)</em></label><input type="text" id="iTag" placeholder="Brasil, Pré-venda, 20% cashback…"></div>
+        <div class="f"><label>&nbsp;</label><label class="rz" style="height:40px"><input type="checkbox" id="iNova"> Mostrar “Promoção nova”</label></div>
+        <div class="f"><label>Som desta promo</label><select id="iSom"></select></div>
+        <div class="f"><label>&nbsp;</label><button class="btn" id="iSomTest" style="height:40px;justify-content:center">▶ Ouvir som</button></div>
+        <div class="f"><label>Cupom <em>(vazio = sem cupom)</em></label><input type="text" id="iCup" placeholder="BENCH10" style="font-family:var(--mono);text-transform:uppercase"></div>
+        <div class="f"><label>Desconto do cupom <em>(opcional)</em></label><input type="text" id="iCupD" placeholder="10% OFF"></div>
+      </div>
+      <datalist id="lojas"><option>Mercado Livre</option><option>Amazon</option><option>Lenovo</option><option>Dell</option><option>Samsung</option><option>KaBuM!</option><option>Pichau</option><option>Terabyte</option><option>AliExpress</option><option>Magalu</option><option>Casas Bahia</option><option>Acer</option><option>ASUS</option></datalist>
+      <datalist id="selos"><option>BAIXOU</option><option>PARCELADO</option><option>MENOR PREÇO</option><option>RELÂMPAGO</option><option>ÚLTIMAS UNIDADES</option></datalist>
+      <datalist id="alerts"><option>MENOR PREÇO HISTÓRICO</option><option>PREÇO HISTÓRICO</option><option>PREÇO HISTÓRICO PARCELADO</option><option>PREÇÃO</option><option>OFERTA RELÂMPAGO</option><option>ÚLTIMAS UNIDADES</option><option>VOLTOU!</option></datalist>
+      <datalist id="sfxs"><option>à vista</option><option>no Pix</option><option>no boleto</option></datalist>
+    </section>
+  </div>
+</div>
+
+<div class="dock" id="dock">
+  <div class="in">
+    <span class="air-lbl">No ar</span>
+    <span class="air-t" id="airT">—</span>
+    <div class="board" id="board"></div>
+    <button class="btn" id="bRot">▶ Rodízio <span class="kbd">R</span></button>
+    <button class="btn y" id="bHide">Esconder <span class="kbd">Esc</span></button>
+  </div>
+</div>
+
+<dialog id="dCfg">
+  <h3>Configurar</h3>
+  <div class="form" style="margin-top:8px">
+    <div class="f full"><label>Onde está o OBS que vai mostrar o overlay?</label>
+      <select id="cMode"><option value="local">Neste PC (WebSocket do OBS)</option><option value="remoto">Em outro PC — pela internet (link estilo StreamElements)</option><option value="ambos">Nos dois</option></select></div>
+  </div>
+  <ol class="steps" data-m="local">
+    <li>No OBS: <b>Ferramentas → Configurações do servidor WebSocket</b> → marque <b>Ativar servidor WebSocket</b>. Clique em <b>Mostrar informações de conexão</b> e copie a senha.</li>
+    <li>Cole a senha abaixo e clique em <b>Conectar</b>.</li>
+    <li>Clique em <b>Copiar link do overlay</b>. No OBS: <b>+ → Navegador</b>, desmarque “Arquivo local”, cole o link em <b>URL</b>, largura <b>1920</b>, altura <b>1080</b>.</li>
+  </ol>
+  <ol class="steps" data-m="remoto">
+    <li>O painel fala com o overlay por um <b>canal privado</b> na internet (ntfy.sh, gratuito). Não precisa abrir porta nem instalar nada.</li>
+    <li>Diga onde o overlay vai ficar no outro PC: um <b>link https</b> (se o arquivo estiver hospedado) ou o <b>caminho do arquivo lá</b> (ex.: <code>C:\BenchLive\bench-live.html</code>).</li>
+    <li>Clique em <b>Copiar link do overlay</b> e mande pra quem está no PC de SP. Lá, no OBS: <b>+ → Navegador</b>, desmarque “Arquivo local”, cole em <b>URL</b>, 1920 × 1080.</li>
+  </ol>
+  <div class="form">
+    <div class="f full" data-m="remoto"><label>Overlay no outro PC <em>— link https ou caminho do arquivo lá</em></label><input type="text" id="cOvBase" placeholder="C:\BenchLive\bench-live.html  ou  https://..."></div>
+    <div class="f full" data-m="remoto"><label>Canal <em>— funciona como senha: quem tiver o link recebe as promos</em></label><div class="row" style="flex-wrap:nowrap"><input type="text" id="cCanal" readonly style="font-family:var(--mono)"><button class="btn sm" id="cNewCanal">Gerar novo</button></div></div>
+    <div class="f" data-m="local"><label>Senha do WebSocket</label><input type="password" id="cPw" placeholder="(vazio se a autenticação estiver desligada)"></div>
+    <div class="f" data-m="local"><label>Porta</label><input type="text" id="cPort" value="4455"></div>
+    <div class="f full"><label>Link do overlay (para o OBS)</label><input type="text" id="cUrl" readonly></div>
+    <div class="f"><label>Posição na tela</label>
+      <select id="cPos"><option value="bl">Inferior esquerda</option><option value="bc">Inferior centro</option><option value="br">Inferior direita</option><option value="c">Centro</option><option value="tc">Centro alto</option><option value="tl">Superior esquerda</option><option value="tr">Superior direita</option></select></div>
+    <div class="f"><label>Tamanho <em>(<span id="cScV"></span>%)</em></label><input type="range" id="cSc" min="0.4" max="1.6" step="0.05" style="accent-color:var(--y);margin-top:10px"></div>
+    <div class="f"><label>Layout</label><select id="cLay"><option value="full">Completo</option><option value="compact">Compacto</option></select></div>
+    <div class="f"><label>“Promoção nova” se postada há menos de <em>(horas)</em></label><input type="number" id="cNew" min="1" step="1"></div>
+    <div class="f full row" style="gap:18px"><label class="rz"><input type="checkbox" id="cLogo"> Logo do Bench no card</label><label class="rz"><input type="checkbox" id="cQr"> QR Code da promo</label></div>
+    <div class="f"><label>Some sozinho depois de <em>(seg, 0 = fica)</em></label><input type="number" id="cDur" min="0" step="1"></div>
+    <div class="f"><label>Rodízio: tempo de cada promo <em>(seg)</em></label><input type="number" id="cRot" min="5" step="1"></div>
+    <div class="f full"><label>Rodapé do overlay <em>— use *asteriscos* para destacar em amarelo</em></label><input type="text" id="cCta"></div>
+    <div class="f full"><span class="hint">Sons e soundboard: botão <b>🔊 Sons</b> no topo do painel.</span></div>
+  </div>
+  <div class="row" style="margin-top:16px;justify-content:flex-end">
+    <button class="btn" id="cFix" title="Aponta a fonte do OBS para este arquivo e limpa o cache">Atualizar overlay no OBS</button>
+    <button class="btn" id="cTest" data-m="remoto" title="Confere se este PC consegue falar com o canal na internet">Testar canal</button>
+    <button class="btn" id="cOpenTest" data-m="remoto" title="Abre um overlay de teste aqui mesmo, com diagnóstico na tela">Overlay de teste aqui</button>
+    <button class="btn" id="cCopy">Copiar link do overlay</button>
+    <button class="btn pr" id="cConn">Conectar</button>
+    <button class="btn ghost" id="cClose">Fechar</button>
+  </div>
+</dialog>
+<dialog id="dSnd" style="width:min(920px,96vw)">
+  <div class="row" style="margin-bottom:6px"><h3 style="margin:0 auto 0 0">🔊 Biblioteca de sons</h3>
+    <label class="hint" style="display:flex;align-items:center;gap:8px">Volume <input type="range" id="sVol" min="0" max="100" step="5" style="accent-color:var(--y);width:140px"> <b id="sVolV"></b></label>
+    <button class="btn ghost" id="sClose">Fechar</button></div>
+  <div class="hint">▶ ouve aqui no painel &nbsp;•&nbsp; 📡 toca na live (OBS) &nbsp;•&nbsp; 📌 fixa no soundboard da barra de baixo (atalho <span class="kbd">Shift</span>+<span class="kbd">1…8</span>)</div>
+  <div class="sgrid" id="sGrid"></div>
+  <div class="row" style="margin-top:8px">
+    <button class="btn sm" id="sUp">+ Enviar meu som (mp3/wav)</button><input type="file" id="sFile" accept="audio/*" multiple hidden>
+    <input type="text" id="sLink" placeholder="ou cole o link de um .mp3 (ex.: MyInstants)" style="flex:1;min-width:220px"><button class="btn sm" id="sLinkAdd">Adicionar link</button>
+  </div>
+  <h3 style="margin:18px 0 6px;font-size:14px">Quando tocar</h3>
+  <div class="form" style="margin-top:4px">
+    <div class="f"><label>Ao mostrar uma promo</label><select id="sEvShow"></select></div>
+    <div class="f"><label>Promo com banner de alerta</label><select id="sEvAlert"></select></div>
+    <div class="f"><label>Promo nova</label><select id="sEvNova"></select></div>
+    <div class="f"><label>Trocas do rodízio</label><select id="sEvRot"></select></div>
+    <div class="f"><label>Ao esconder o card</label><select id="sEvHide"></select></div>
+    <div class="f"><label>Cortar sons longos depois de <em>(seg, 0 = inteiro)</em></label><input type="number" id="sMax" min="0" step="1"></div>
+  </div>
+  <div class="hint" style="margin-top:10px">Sons gravados do Pixabay e do Mixkit (licenças gratuitas, pode usar em lives). Eles carregam da internet; os “Sintetizados” funcionam offline. No OBS, marque “Controlar áudio pelo OBS” na fonte de Navegador para ajustar no mixer.</div>
+</dialog>
+<div class="toast" id="toast"></div>
+
+<!-- =============== OVERLAY (mesmo DOM para OBS e prévia) =============== -->
+<template id="ovTpl">
+  <div id="ov">
+    <div id="wrap" class="pos-bl">
+      <div id="card">
+        <div class="alert" id="ovAlert"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c1 4 5.5 5.6 5.5 10.5A5.5 5.5 0 0 1 6.5 12.5c0-2.3 1.2-3.9 2.3-4.9 0 2.1 1 3.3 2.2 3.4C11 8 10 5.4 12 2Z"/></svg><span id="ovAlertT"></span><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c1 4 5.5 5.6 5.5 10.5A5.5 5.5 0 0 1 6.5 12.5c0-2.3 1.2-3.9 2.3-4.9 0 2.1 1 3.3 2.2 3.4C11 8 10 5.4 12 2Z"/></svg></div>
+        <div class="tab"><div class="live"><span class="dot"></span>Oferta ao vivo</div><div class="logo" id="ovLogo"><img class="lg" id="ovLg" alt=""><span><b>Bench</b> Promos</span></div></div>
+        <div class="body" id="ovBody">
+          <div class="imgbox rv" id="ovImgBox" style="--d:.12s"><img id="ovImg" alt=""></div>
+          <div class="info" id="ovInfo">
+            <div class="meta rv" style="--d:.18s"><span class="pill nova" id="ovNova"></span><span class="pill store" id="ovStore"></span><span class="pill selo" id="ovSelo"></span><span class="pill tagp" id="ovTag"></span></div>
+            <div class="title rv" id="ovTitle" style="--d:.22s"></div>
+            <div class="specs rv" id="ovSpecs" style="--d:.26s"></div>
+            <div class="pricewrap rv" id="ovPW" style="--d:.32s">
+              <div class="price" id="ovPrice"><span class="cur">R$</span><span class="val" id="ovVal"></span><span class="sfx" id="ovSfx"></span><span class="shine"></span></div>
+              <div class="parc" id="ovParc"></div>
+            </div>
+          </div>
+          <div class="ticket rv" id="ovTicket">
+            <div class="tl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8Z"/><circle cx="7.5" cy="7.5" r="1.5"/></svg>Cupom</div>
+            <div class="code" id="ovCode"></div>
+            <div class="tdesc" id="ovCupD"></div>
+            <div class="thint">use no carrinho</div>
+          </div>
+          <div class="qr rv" id="ovQr" style="--d:.5s"><canvas id="ovQrC"></canvas><span>Aponte a câmera</span></div>
+        </div>
+        <div class="foot rv" style="--d:.4s"><div class="cta" id="ovCta"></div><div class="bar" id="ovBar"><i></i></div></div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+"use strict";
+/* ---------- modo ---------- */
+const HP = new URLSearchParams(location.hash.slice(1));
+const MODE = HP.has('overlay') ? 'overlay' : 'panel';
+document.documentElement.dataset.mode = MODE;
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const APP = 'benchlive';
+const VERSION = '2.6';
+
+/* ---------- SHA-256 (fallback caso crypto.subtle não exista) ---------- */
+function sha256js(bytes){
+  const K=[0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];
+  let H=[0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19];
+  const l=bytes.length, n=((l+9+63)>>6)<<6, m=new Uint8Array(n); m.set(bytes); m[l]=0x80;
+  const bits=l*8; for(let i=0;i<8;i++) m[n-1-i]=Math.floor(bits/Math.pow(2,8*i))&255;
+  const W=new Uint32Array(64), r=(x,k)=>(x>>>k)|(x<<(32-k));
+  for(let o=0;o<n;o+=64){
+    for(let i=0;i<16;i++) W[i]=(m[o+4*i]<<24)|(m[o+4*i+1]<<16)|(m[o+4*i+2]<<8)|m[o+4*i+3];
+    for(let i=16;i<64;i++){const a=W[i-15],b=W[i-2];W[i]=(W[i-16]+(r(a,7)^r(a,18)^(a>>>3))+W[i-7]+(r(b,17)^r(b,19)^(b>>>10)))|0}
+    let [a,b,c,d,e,f,g,h]=H;
+    for(let i=0;i<64;i++){const t1=(h+(r(e,6)^r(e,11)^r(e,25))+((e&f)^(~e&g))+K[i]+W[i])|0,t2=((r(a,2)^r(a,13)^r(a,22))+((a&b)^(a&c)^(b&c)))|0;h=g;g=f;f=e;e=(d+t1)|0;d=c;c=b;b=a;a=(t1+t2)|0}
+    H=[H[0]+a,H[1]+b,H[2]+c,H[3]+d,H[4]+e,H[5]+f,H[6]+g,H[7]+h].map(x=>x|0);
+  }
+  const out=new Uint8Array(32); H.forEach((x,i)=>{out[4*i]=x>>>24;out[4*i+1]=(x>>>16)&255;out[4*i+2]=(x>>>8)&255;out[4*i+3]=x&255}); return out;
+}
+async function sha256b64(str){
+  const bytes = new TextEncoder().encode(str); let h;
+  try { h = new Uint8Array(await crypto.subtle.digest('SHA-256', bytes)); } catch(e){ h = sha256js(bytes); }
+  let s=''; h.forEach(b=>s+=String.fromCharCode(b)); return btoa(s);
+}
+
+/* ---------- cliente obs-websocket v5 ---------- */
+class OBS {
+  constructor(onEvent, onStatus){ this.onEvent=onEvent; this.onStatus=onStatus; this.ws=null; this.ok=false; this.pend={}; this.seq=0; this.auto=false; }
+  connect(port, pw){
+    this.port=port||4455; this.pw=pw||''; this.auto=true; this._open();
+  }
+  _open(){
+    try{ this.ws && this.ws.close(); }catch(e){}
+    let ws; try{ ws = new WebSocket(`ws://127.0.0.1:${this.port}`); }catch(e){ return this._retry(); }
+    this.ws = ws; this.onStatus('connecting');
+    ws.onmessage = async ev => {
+      let m; try{ m = JSON.parse(ev.data); }catch(e){ return; }
+      if(m.op===0){
+        const d = { rpcVersion:1, eventSubscriptions:1 };
+        const a = m.d.authentication;
+        if(a) d.authentication = await sha256b64(await sha256b64(this.pw + a.salt) + a.challenge);
+        ws.send(JSON.stringify({op:1, d}));
+      } else if(m.op===2){ this.ok=true; this.onStatus('ok'); }
+      else if(m.op===5){ this.onEvent(m.d); }
+      else if(m.op===7){ const p=this.pend[m.d.requestId]; if(p){ delete this.pend[m.d.requestId]; p(m.d); } }
+    };
+    ws.onclose = ev => {
+      if(this.ws!==ws) return;
+      this.ok=false;
+      this.onStatus(ev.code===4009 ? 'auth' : 'off');
+      if(this.auto && ev.code!==4009) this._retry();
+    };
+    ws.onerror = () => {};
+  }
+  _retry(){ clearTimeout(this.rt); this.rt = setTimeout(()=>this.auto && this._open(), 3000); }
+  request(type, data){
+    if(!this.ok) return Promise.resolve(null);
+    const id = 'r'+(++this.seq);
+    return new Promise(res => { this.pend[id]=res; this.ws.send(JSON.stringify({op:6, d:{requestType:type, requestId:id, requestData:data}})); setTimeout(()=>{ if(this.pend[id]){ delete this.pend[id]; res(null);} }, 4000); });
+  }
+  broadcast(payload){ return this.request('BroadcastCustomEvent', { eventData: Object.assign({app:APP}, payload) }); }
+}
+
+/* ---------- relay pela internet (ntfy.sh) — painel e overlay em PCs diferentes ---------- */
+const RELAY_DEF='https://ntfy.sh';
+const topicOf=c=>'benchlive_'+String(c||'').replace(/[^A-Za-z0-9_-]/g,'').slice(0,40);
+class Relay {
+  constructor(base, onMsg, onStatus){ this.base=String(base||RELAY_DEF).replace(/\/+$/,''); this.onMsg=onMsg; this.onStatus=onStatus||(()=>{}); this.ok=false; this.es=null; }
+  listen(topic){
+    this.stop(); let es; try{ es=new EventSource(`${this.base}/${topic}/sse`); }catch(e){ this.onStatus('off'); return; }
+    this.es=es; this.onStatus('connecting');
+    es.onopen=()=>{ this.ok=true; this.onStatus('ok'); };
+    es.onerror=()=>{ this.ok=false; this.onStatus('off'); };
+    es.onmessage=async e=>{
+      let m; try{ m=JSON.parse(e.data); }catch(x){ return; } if(m.event && m.event!=='message') return;
+      let txt=m.message||''; if(m.attachment && m.attachment.url){ try{ txt=await (await fetch(m.attachment.url)).text(); }catch(x){ return; } }
+      let d; try{ d=JSON.parse(txt); }catch(x){ return; } if(d && d.app===APP) this.onMsg(d);
+    };
+  }
+  stop(){ try{ this.es && this.es.close(); }catch(e){} this.es=null; this.ok=false; }
+  async publish(topic, payload){ try{ const r=await fetch(`${this.base}/${topic}`,{method:'POST',body:JSON.stringify(Object.assign({app:APP},payload))}); this.lastErr=r.ok?'':'HTTP '+r.status; return r.ok; }catch(e){ this.lastErr=String(e.message||e); return false; } }
+}
+
+/* ---------- formatação ---------- */
+function parseBRL(s){
+  s = String(s||'').replace(/R\$\s*/i,'').trim();
+  if(!/^[\d.,\s]+$/.test(s) || !/\d/.test(s)) return null;
+  s = s.replace(/\s/g,'');
+  if(s.includes(',')) s = s.replace(/\./g,'').replace(',', '.');
+  else if(/\.\d{2}$/.test(s) && (s.match(/\./g)||[]).length===1) {/* decimal com ponto */}
+  else s = s.replace(/\./g,'');
+  const v = parseFloat(s); return isFinite(v) ? v : null;
+}
+const fmtBRL = v => v.toLocaleString('pt-BR',{minimumFractionDigits:2, maximumFractionDigits:2});
+function priceText(p){ const v=parseBRL(p); return v==null ? String(p||'') : fmtBRL(v); }
+function boldMoney(t){ return esc(t).replace(/(R\$\s?[\d.]+,\d{2}|\d+x)/g,'<b>$1</b>'); }
+function ctaHtml(t){ return esc(t).replace(/\*([^*]+)\*/g,'<b>$1</b>'); }
+
+/* QR Code (byte mode, ECC M) — baseado no algoritmo de referência de Nayuki */
+const QR = (() => {
+  const ECC = [-1,10,16,26,18,24,16,18,22,22,26,30,22,22,24,24,28,28,26,26,26,26,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28];
+  const BLK = [-1,1,1,1,2,2,4,4,4,5,5,5,8,9,9,10,10,11,13,14,16,17,17,18,20,21,23,25,26,28,29,31,33,35,37,38,40,43,45,47,49];
+  const raw = v => { let r=(16*v+128)*v+64; if(v>=2){ const n=Math.floor(v/7)+2; r-=(25*n-10)*n-55; if(v>=7) r-=36; } return r; };
+  const dataCw = v => Math.floor(raw(v)/8) - ECC[v]*BLK[v];
+  const mul = (x,y) => { let z=0; for(let i=7;i>=0;i--){ z=(z<<1)^((z>>>7)*0x11D); z^=((y>>>i)&1)*x; } return z; };
+  function rsDiv(d){ const r=[]; for(let i=0;i<d-1;i++) r.push(0); r.push(1); let root=1;
+    for(let i=0;i<d;i++){ for(let j=0;j<r.length;j++){ r[j]=mul(r[j],root); if(j+1<r.length) r[j]^=r[j+1]; } root=mul(root,2); } return r; }
+  function rsRem(data,div){ const r=div.map(()=>0); for(const b of data){ const f=b^r.shift(); r.push(0); div.forEach((c,i)=>r[i]^=mul(c,f)); } return r; }
+  return function make(text){
+    const bytes=[...new TextEncoder().encode(text)];
+    let v=1; for(;v<=40;v++){ const bits=4+(v<10?8:16)+bytes.length*8; if(bits<=dataCw(v)*8) break; } if(v>40) return null;
+    const bb=[]; const put=(val,len)=>{ for(let i=len-1;i>=0;i--) bb.push((val>>>i)&1); };
+    put(4,4); put(bytes.length, v<10?8:16); bytes.forEach(b=>put(b,8));
+    const cap=dataCw(v)*8; put(0, Math.min(4, cap-bb.length)); put(0, (8-bb.length%8)%8);
+    for(let p=0xEC; bb.length<cap; p^=0xEC^0x11) put(p,8);
+    const data=[]; for(let i=0;i<bb.length;i+=8){ let x=0; for(let j=0;j<8;j++) x=(x<<1)|bb[i+j]; data.push(x); }
+    // ECC + intercalação
+    const nb=BLK[v], el=ECC[v], rc=Math.floor(raw(v)/8), ns=nb-rc%nb, sl=Math.floor(rc/nb), div=rsDiv(el), blocks=[];
+    for(let i=0,k=0;i<nb;i++){ const d=data.slice(k,k+sl-el+(i<ns?0:1)); k+=d.length; const e=rsRem(d,div); if(i<ns) d.push(0); blocks.push(d.concat(e)); }
+    const cw=[]; for(let i=0;i<blocks[0].length;i++) blocks.forEach((b,j)=>{ if(i!==sl-el||j>=ns) cw.push(b[i]); });
+    // matriz
+    const N=v*4+17, M=[...Array(N)].map(()=>Array(N).fill(false)), F=[...Array(N)].map(()=>Array(N).fill(false));
+    const set=(x,y,d)=>{ M[y][x]=d; F[y][x]=true; };
+    for(let i=0;i<N;i++){ set(6,i,i%2===0); set(i,6,i%2===0); }
+    const finder=(x,y)=>{ for(let dy=-4;dy<=4;dy++) for(let dx=-4;dx<=4;dx++){ const d=Math.max(Math.abs(dx),Math.abs(dy)), xx=x+dx, yy=y+dy; if(xx>=0&&xx<N&&yy>=0&&yy<N) set(xx,yy,d!==2&&d!==4); } };
+    finder(3,3); finder(N-4,3); finder(3,N-4);
+    if(v>1){ const n=Math.floor(v/7)+2, step=v===32?26:Math.ceil((v*4+4)/(n*2-2))*2, pos=[6]; for(let p=N-7;pos.length<n;p-=step) pos.splice(1,0,p);
+      for(let i=0;i<n;i++) for(let j=0;j<n;j++){ if((i===0&&j===0)||(i===0&&j===n-1)||(i===n-1&&j===0)) continue;
+        for(let dy=-2;dy<=2;dy++) for(let dx=-2;dx<=2;dx++) set(pos[i]+dx,pos[j]+dy,Math.max(Math.abs(dx),Math.abs(dy))!==1); } }
+    const fmt=mask=>{ const d=(0<<3)|mask; let r=d; for(let i=0;i<10;i++) r=(r<<1)^((r>>>9)*0x537); const b=((d<<10)|r)^0x5412, g=i=>((b>>>i)&1)!==0;
+      for(let i=0;i<=5;i++) set(8,i,g(i)); set(8,7,g(6)); set(8,8,g(7)); set(7,8,g(8)); for(let i=9;i<15;i++) set(14-i,8,g(i));
+      for(let i=0;i<8;i++) set(N-1-i,8,g(i)); for(let i=8;i<15;i++) set(8,N-15+i,g(i)); set(8,N-8,true); };
+    fmt(0);
+    if(v>=7){ let r=v; for(let i=0;i<12;i++) r=(r<<1)^((r>>>11)*0x1F25); const b=(v<<12)|r;
+      for(let i=0;i<18;i++){ const bit=((b>>>i)&1)!==0, a=N-11+i%3, c=Math.floor(i/3); set(a,c,bit); set(c,a,bit); } }
+    let i=0; for(let right=N-1;right>=1;right-=2){ if(right===6) right=5;
+      for(let vt=0;vt<N;vt++) for(let j=0;j<2;j++){ const x=right-j, up=((right+1)&2)===0, y=up?N-1-vt:vt;
+        if(!F[y][x] && i<cw.length*8){ M[y][x]=((cw[i>>>3]>>>(7-(i&7)))&1)!==0; i++; } } }
+    const MK=[(x,y)=>(x+y)%2===0,(x,y)=>y%2===0,(x,y)=>x%3===0,(x,y)=>(x+y)%3===0,(x,y)=>(Math.floor(x/3)+Math.floor(y/2))%2===0,(x,y)=>x*y%2+x*y%3===0,(x,y)=>(x*y%2+x*y%3)%2===0,(x,y)=>((x+y)%2+x*y%3)%2===0];
+    const flip=m=>{ for(let y=0;y<N;y++) for(let x=0;x<N;x++) if(!F[y][x] && MK[m](x,y)) M[y][x]=!M[y][x]; };
+    const addH=(len,h)=>{ if(h[0]===0) len+=N; h.pop(); h.unshift(len); };
+    const cnt=h=>{ const n=h[1], core=n>0&&h[2]===n&&h[3]===n*3&&h[4]===n&&h[5]===n; return (core&&h[0]>=n*4&&h[6]>=n?1:0)+(core&&h[6]>=n*4&&h[0]>=n?1:0); };
+    const term=(c,len,h)=>{ if(c){ addH(len,h); len=0; } len+=N; addH(len,h); return cnt(h); };
+    const pen=()=>{ let r=0;
+      for(let pass=0;pass<2;pass++) for(let a=0;a<N;a++){ let rc=false, rl=0; const h=[0,0,0,0,0,0,0];
+        for(let b=0;b<N;b++){ const c=pass?M[b][a]:M[a][b]; if(c===rc){ rl++; if(rl===5) r+=3; else if(rl>5) r++; } else { addH(rl,h); if(!rc) r+=cnt(h)*40; rc=c; rl=1; } }
+        r+=term(rc,rl,h)*40; }
+      let dark=0; for(let y=0;y<N;y++) for(let x=0;x<N;x++){ if(M[y][x]) dark++; if(y<N-1&&x<N-1){ const c=M[y][x]; if(c===M[y][x+1]&&c===M[y+1][x]&&c===M[y+1][x+1]) r+=3; } }
+      const t=N*N; r+=(Math.ceil(Math.abs(dark*20-t*10)/t)-1)*10; return r; };
+    let best=0, bp=Infinity;
+    for(let m=0;m<8;m++){ flip(m); fmt(m); const p=pen(); if(p<bp){ bp=p; best=m; } flip(m); }
+    flip(best); fmt(best);
+    return { size:N, get:(x,y)=>M[y][x] };
+  };
+})();
+
+const LOGO='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MDE2IDM5NjMiIHdpZHRoPSIyMDAwIiBoZWlnaHQ9IjE5NzQiPgo8dGl0bGU+QmVuY2ggbG9nbyBzaXRlPC90aXRsZT4KPHBhdGggaWQ9InByZXRvIiBmaWxsPSIjMDMwMjA1IiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik01MTQgMzkyMi4zMUM1MDEuMjMgMzkyMS43MSA0NzUuMjUgMzkxOC44OCA0NjAgMzkxNi40M0MzNjIuMzQgMzkwMC43MyAyNzAuOTcgMzg1NS45NCAxOTkuNSAzNzg4LjczQzE2MS4yNSAzNzUyLjc2IDEzMS4zMiAzNzE1LjE5IDEwNi41NCAzNjcyLjA2QzY3Ljg2IDM2MDQuNzYgNDUuOTggMzUzMS40NCA0MS4wMSAzNDUyLjVDMzkuNjMgMzQzMC41IDM5LjYzIDczNy45NSA0MS4wMSA3MTVDNDcuOTQgNjAwLjE5IDkxLjkgNDk0Ljk4IDE2OC43MiA0MDkuMzZDMTc4LjQ0IDM5OC41MyAxNzguNzkgMzk3Ljk3IDE4My45NyAzODQuODlDMjA0LjggMzMyLjI2IDIzNS4yNyAyODEuOTggMjc2LjA1IDIzMi45NEMyODkuMzQgMjE2Ljk2IDMyMC45NiAxODUuMzQgMzM2Ljk0IDE3Mi4wNUMzNzEuODYgMTQzLjAyIDQwOS42MSAxMTcuODYgNDQ2LjUzIDk5LjA0QzUwMi4xNSA3MC42OCA1NzQuNzUgNTAuMDIgNjQ2IDQyLjI5QzY2MS43OCA0MC41OCA3MjMuNzMgNDAuNSAyMDYwIDQwLjVDMzM5Ni4yNyA0MC41IDM0NTguMjIgNDAuNTggMzQ3NCA0Mi4yOUMzNDkzLjYyIDQ0LjQyIDM1MTYuNDggNDguMDEgMzUzMi43IDUxLjUyQzM2MTIuOTcgNjguODggMzY2Ni4yNiA5MC40MiAzNzI1LjUgMTI5LjQ1QzM3NjAuOTUgMTUyLjgxIDM3ODYuODcgMTczLjc3IDM4MTQuNTUgMjAxLjQ1QzM4NjcuMjMgMjU0LjEyIDM5MDkuODggMzE4LjYyIDM5MzYuMjYgMzg1LjVDMzk1My42IDQyOS40NiAzOTY3LjQyIDQ4Ny4xOSAzOTczLjcyIDU0MkMzOTc1LjQyIDU1Ni43OSAzOTc1LjUgNjIwLjIxIDM5NzUuNSAxOTI5LjVDMzk3NS41IDMyMzguNzkgMzk3NS40MiAzMzAyLjIxIDM5NzMuNzIgMzMxN0MzOTY5LjkgMzM1MC4yMiAzOTY2LjM2IDMzNjkuNTEgMzk1Ny40NiAzNDA1LjUyQzM5MzkuMjcgMzQ3OS4xNCAzOTExLjg2IDM1MzYuNTQgMzg2NC44IDM1OTkuNTZDMzg0Ny44NSAzNjIyLjI0IDM4MzQuODMgMzYzNy4yNyAzODE0LjU1IDM2NTcuNTVDMzc2Mi4wNSAzNzEwLjA1IDM2OTkuNzkgMzc1MS4zMiAzNjMxLjMxIDM3NzlDMzYxNy44NSAzNzg0LjQ1IDM2MTYuNjggMzc4NS4xNSAzNjA4LjMxIDM3OTIuOEMzNTUyLjcyIDM4NDMuNjQgMzQ4My45MSAzODgyLjIgMzQxMS43NCAzOTAyLjk3QzMzODIuMzkgMzkxMS40MiAzMzU1Ljk5IDM5MTYuNiAzMzIxLjUgMzkyMC42OUMzMzA3LjIgMzkyMi4zOCAzMjQxLjY2IDM5MjIuNDcgMTkxMy41IDM5MjIuNTRDMTE0Ny4zNSAzOTIyLjU5IDUxNy41OCAzOTIyLjQ4IDUxNCAzOTIyLjMxWiIvPgo8cGF0aCBpZD0iYW1hcmVsbyIgZmlsbD0iI0Y5QkYxQSIgZmlsbC1ydWxlPSJldmVub2RkIiBkPSJNNjYwIDM3NjcuODdDNjIxLjIzIDM3NjUuMjcgNTc4LjI5IDM3NTcuMDQgNTQwLjUgMzc0NC45N0M0OTUuMzkgMzczMC41NiA0NDQuNTIgMzcwNS4wMiA0MDQuNzYgMzY3Ni44QzMwOC44OCAzNjA4Ljc5IDIzOS43IDM1MDguNSAyMTAuMDEgMzM5NC41QzIwMi4zOSAzMzY1LjI0IDE5Ny4xMyAzMzMyLjIzIDE5NS4wMiAzMzAwLjVDMTkzLjY1IDMyNzkuOCAxOTMuNjUgNTc5LjIgMTk1LjAyIDU1OC41QzIwMS43OSA0NTYuMzYgMjM4LjgyIDM1OS41OCAzMDEuMzggMjgwLjUxQzMyNS4xOCAyNTAuNDMgMzU3LjAyIDIxOC44MyAzODcuMTUgMTk1LjM3QzQyOC45MyAxNjIuODQgNDc3LjYyIDEzNi4yIDUyOCAxMTguM0M1NjQuNDIgMTA1LjM2IDYwNy4zIDk2LjA4IDY1MC41IDkxLjc5QzY2OS43MyA4OS44OCAzNDUwLjI3IDg5Ljg4IDM0NjkuNSA5MS43OUMzNTIxLjcgOTYuOTggMzU2OC45OSAxMDguNDEgMzYxNSAxMjYuOThDMzYzMS45NiAxMzMuODIgMzY2Ni4yNSAxNTEuMDkgMzY4My40IDE2MS40MkMzNzUyLjcyIDIwMy4xOCAzODEyLjkyIDI2My4yMiAzODUzLjg5IDMzMS40NEMzODkzLjU2IDM5Ny40OSAzOTE2LjMyIDQ2Ny4xIDM5MjQuMjEgNTQ2LjVDMzkyNi4xMiA1NjUuNzMgMzkyNi4xMiAzMjkzLjI3IDM5MjQuMjEgMzMxMi41QzM5MTcuMzcgMzM4MS4zMSAzODk5LjQxIDM0NDIuNTYgMzg2OS4wMSAzNTAwLjY5QzM3OTguNjUgMzYzNS4yMSAzNjY5Ljc1IDM3MzEuMjIgMzUyMSAzNzU5Ljg5QzM1MDIuMTUgMzc2My41MiAzNDc3LjYzIDM3NjYuNjQgMzQ1Ny41IDM3NjcuOThDMzQzOC44NiAzNzY5LjIxIDY3OC4zOCAzNzY5LjExIDY2MCAzNzY3Ljg3Wk0xODI0LjI3IDM1ODEuNUMxODI4LjYgMzU0NS43NSAxODMyLjQ0IDM1MTYuMjEgMTgzMi44MiAzNTE1Ljg2QzE4MzMuMTkgMzUxNS41MSAxODY2LjM1IDM1MTkuMiAxOTA2LjQ5IDM1MjQuMDZMMTk3OS40OCAzNTMyLjkxTDE5OTAuOTkgMzUzMC4xNUMyMDAwLjk5IDM1MjcuNzUgMjAwMy4zNyAzNTI2Ljc2IDIwMDkuMTQgMzUyMi41OUMyMDEzLjE1IDM1MTkuNyAyMDE3LjYzIDM1MTUuMjMgMjAyMC40MiAzNTExLjM1QzIwMjcuOTQgMzUwMC45IDIwMjguNDcgMzQ5Ny43MiAyMDQzLjU0IDMzNzMuNUMyMDUwLjk0IDMzMTIuNDUgMjA1Ny4xMSAzMjYxLjg2IDIwNTcuMjUgMzI2MS4wN0MyMDU3LjQ0IDMyNTkuOTkgMjA2Mi4wNCAzMjU5LjA3IDIwNzYgMzI1Ny4zMkMyMjU0LjQ0IDMyMzQuOTcgMjQxOC40NiAzMTY3LjMyIDI1NDYuMDcgMzA2My40NkMyNTU3LjM0IDMwNTQuMjkgMjU2MC45IDMwNTIuMDkgMjU4MC41NyAzMDQyLjE2QzI2MjUuOTkgMzAxOS4yMyAyNjY0LjIxIDI5OTUuNTkgMjcxMS41IDI5NjEuMTdDMjc3NS4yOSAyOTE0Ljc0IDI4MzUuNDMgMjg1NS40MSAyODgyLjQ5IDI3OTIuNUMyOTU4LjI1IDI2OTEuMjQgMzAwMy45OCAyNTk0LjY0IDMwMzMgMjQ3NC41NkMzMDYzLjk5IDIzNDYuMzYgMzA2OS4xIDIyMzguMTcgMzA0OC45MyAyMTM3LjVDMzAzMS41OCAyMDUwLjkzIDMwMDcuMTkgMTk4OS4wMyAyOTY2Ljk2IDE5MjkuNUMyOTI3Ljk2IDE4NzEuNzggMjg5Mi44MSAxODM2Ljc2IDI4MzYuNSAxNzk5LjU0QzI4MTYuMjUgMTc4Ni4xNSAyODA2LjExIDE3ODAuMzQgMjc4Ni42MyAxNzcwLjkzQzI3NzguNjEgMTc2Ny4wNSAyNzcxLjgyIDE3NjMuNTEgMjc3MS41MyAxNzYzLjA2QzI3NzEuMjUgMTc2Mi42IDI3NzYuMiAxNzU4LjM0IDI3ODIuNTIgMTc1My41OUMyODIzLjM2IDE3MjIuOTEgMjg1Ny42NSAxNjg1LjQ5IDI4OTIuNjggMTYzMy4zOEMyOTI1LjAxIDE1ODUuMjggMjk0OS45MyAxNTMyLjkyIDI5NjcuMzMgMTQ3Ni41QzI5NzguODcgMTQzOS4xMiAyOTkwLjQ1IDEzODguNTYgMjk5NS40NyAxMzUzLjY2QzMwMDQuMTQgMTI5My40NyAzMDAzLjY1IDEyMzQuNzMgMjk5NC4wMiAxMTc3LjVDMjk5MC44IDExNTguNDIgMjk4MS43NCAxMTE5LjI4IDI5NzUuOSAxMDk5LjI4QzI5NjIuNjggMTA1NC4wNSAyOTQyLjIxIDEwMTAuMzggMjkxNS41MSA5NzAuNUMyODkxLjkzIDkzNS4yOSAyODc0LjA3IDkxMy4wOCAyODQ5LjUxIDg4OC40NEMyODMwLjYzIDg2OS41MSAyODE2LjM4IDg1Ny4xNSAyNzk0LjUgODQwLjczQzI3MzMuMDUgNzk0LjYyIDI2NzAuNTMgNzYyLjg2IDI1OTggNzQwLjlDMjU1Ny44NyA3MjguNzUgMjQ5Mi41NyA3MTQuNTYgMjQ1Ny4xMSA3MTAuMjdDMjQ1Mi45NyA3MDkuNzcgMjQ1MC4zNiA3MDguOTMgMjQ0OS43IDcwNy44OUMyNDQ4Ljk4IDcwNi43NSAyNDUyLjE4IDY3Ny40NCAyNDYwLjc5IDYwNi4zMUwyNDcyLjkgNTA2LjMzTDI0NzAuMTggNDk0LjczQzI0NjcuODEgNDg0LjY1IDI0NjYuODQgNDgyLjI3IDI0NjIuNzcgNDc2LjYxQzI0NTkuOTggNDcyLjc0IDI0NTUuNCA0NjguMTQgMjQ1MS41IDQ2NS4yOUMyNDQ1LjU3IDQ2MC45NiAyNDQzLjcgNDYwLjIgMjQzMi43MSA0NTcuNzJDMjQyMy45OSA0NTUuNzYgMjM2MS4zNCA0NDcuODQgMjIxMy41IDQzMC4wM0wyMDA2LjUgNDA1LjA5TDE5OTUgNDA3Ljg1QzE5ODUuMDEgNDEwLjI1IDE5ODIuNjMgNDExLjI0IDE5NzYuODYgNDE1LjQxQzE5NzIuODQgNDE4LjMyIDE5NjguMzcgNDIyLjc3IDE5NjUuNTUgNDI2LjY5QzE5NTguMDkgNDM3LjA2IDE5NTYuNyA0NDQuOTMgMTk0NC45IDU0My41QzE5MzkuMyA1OTAuMjUgMTkzNC40MSA2MjguODUgMTkzNC4wMiA2MjkuMjlDMTkzMy42NCA2MjkuNzIgMTkxMi44OSA2MjcuNiAxODg3LjkyIDYyNC41OEMxODYyLjk1IDYyMS41NiAxODQyLjI1IDYxOS40IDE4NDEuOTMgNjE5Ljc5QzE4NDEuNjEgNjIwLjE4IDE4MzkuMiA2MzguNSAxODM2LjU3IDY2MC41QzE4MzMuOTUgNjgyLjUgMTgzMS41OSA3MDAuODQgMTgzMS4zNCA3MDEuMjVDMTgzMS4wOSA3MDEuNjYgMTc3MS4wOSA3MDIgMTY5OCA3MDJMMTU2NS4xMiA3MDJMMTU1Mi44MiA3MDVDMTUzNy4yNiA3MDguOCAxNTI5LjcxIDcxMy41NCAxNTIyLjQ3IDcyNC4wNUMxNTE2LjQgNzMyLjg0IDE1MTYuOCA3MzEuMTYgMTQ5Ny40OCA4MzAuNUMxNDg4LjkyIDg3NC41IDE0ODEuNTYgOTExLjYyIDE0ODEuMTMgOTEzTDE0ODAuMzMgOTE1LjVMMTQzOS40NiA5MTZMMTM5OC41OSA5MTYuNUwxMTcwLjMzIDIwOTBDMTA0NC43OSAyNzM1LjQzIDk0Mi4wNiAzMjY0LjI5IDk0Mi4wNCAzMjY1LjI1Qzk0MiAzMjY2LjkxIDk1NC40NiAzMjY3IDExODkuOTQgMzI2N0MxMzI2LjMxIDMyNjcgMTQzOC4wOCAzMjY3LjM0IDE0MzguMzIgMzI2Ny43NUMxNDM4LjU2IDMyNjguMTYgMTQyOS44MiAzMzQyLjI3IDE0MTguODkgMzQzMi40M0MxNDA3Ljk2IDM1MjIuNTkgMTM5OS4xMyAzNTk2LjQ0IDEzOTkuMjYgMzU5Ni41NUMxMzk5Ljc3IDM1OTYuOTggMTgxMi42MSAzNjQ2Ljc5IDE4MTQuNDUgMzY0Ni42NUMxODE2LjI4IDM2NDYuNTEgMTgxNi45MSAzNjQyLjM2IDE4MjQuMjcgMzU4MS41Wk0xOTAyLjQgMjQ4My42MUMxOTAyLjExIDI0ODIuODUgMTkxMS43MSAyNDMxLjQzIDE5MjMuNzQgMjM2OS4zNkwxOTQ1LjYxIDIyNTYuNUwxOTkwLjA2IDIyNTYuNTFDMjAzNi4wNyAyMjU2LjUyIDIwNDcuMzQgMjI1Ny4xOCAyMDY5LjUgMjI2MS4xNEMyMTA3LjI4IDIyNjcuODkgMjE0MCAyMjgwLjkgMjE2Ny4yMSAyMzAwQzIxNzkuNjEgMjMwOC43MSAyMTk3LjQ5IDIzMjYuMTYgMjIwNy4wNSAyMzM4Ljg4QzIyMjguNjcgMjM2Ny42NSAyMjQwLjU2IDI0MDQuNzQgMjIzOS43OSAyNDQxTDIyMzkuNSAyNDU0LjVMMjIyOC41IDI0NTkuMjZDMjIxMi4wMyAyNDY2LjM4IDIxODUuNTQgMjQ3NC43MSAyMTcwLjY5IDI0NzcuNDNDMjEzMy4zNyAyNDg0LjI3IDIxMTcuNjcgMjQ4NC45OCAyMDAyLjcyIDI0ODQuOTlDMTkxOC40NyAyNDg1IDE5MDIuODUgMjQ4NC43OCAxOTAyLjQgMjQ4My42MVpNMjA2OS44NCAxNjE0LjVDMjA2OS41NyAxNjE0LjIzIDIwNzMuNDggMTU5Mi43NCAyMDc4LjUzIDE1NjYuNzVDMjA4My41OCAxNTQwLjc2IDIwODkuODcgMTUwOC4zMiAyMDkyLjUxIDE0OTQuNjZDMjA5NS44IDE0NzcuNjIgMjA5Ny43NiAxNDY5LjY1IDIwOTguNzMgMTQ2OS4yN0MyMTAxLjQ5IDE0NjguMjEgMjEyNi41OCAxNDc3LjE3IDIxNDEuNSAxNDg0LjU1QzIxNzIuOSAxNTAwLjA4IDIxOTQuMDMgMTUxOS45IDIyMDcuODUgMTU0Ni44QzIyMTUuNTcgMTU2MS44MyAyMjIxLjEyIDE1ODAuNjUgMjIyMi4yMSAxNTk1LjVMMjIyMi41IDE1OTkuNUwyMjExLjIzIDE2MDMuMjNDMjE5NC42NyAxNjA4LjcxIDIxNzEuOTUgMTYxMi4yNSAyMTQyIDE2MTQuMDFDMjEyNC45OCAxNjE1LjAxIDIwNzAuNzIgMTYxNS4zOCAyMDY5Ljg0IDE2MTQuNVoiLz4KPHBhdGggaWQ9ImFtYXJlbG8tc29tYnJhIiBmaWxsPSIjRERBNjI3IiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0zNzIxLjUyIDM2NzEuMDNDMzcyMS4xOCAzNjcwLjQ5IDM3MjMuMTIgMzY2Ni43NyAzNzI1LjgxIDM2NjIuNzdDMzc3My44NyAzNTkxLjQ5IDM4MDIuOCAzNTA1Ljk3IDM4MDguOTcgMzQxN0MzODEwLjM2IDMzOTcuMDcgMzgxMC4zNiA2OTUuMzcgMzgwOC45OCA2NzQuNUMzNzk3LjE4IDQ5Ni40MiAzNjkzLjcyIDMzOS43MSAzNTM1LjAxIDI1OS41M0MzNDc4LjQ4IDIzMC45OCAzNDIyLjQ5IDIxNC45OCAzMzU0IDIwNy44MUMzMzM1LjQ1IDIwNS44NyA1NTIuNTUgMjA1Ljg3IDUzNCAyMDcuODFDNDg5Ljc0IDIxMi40NCA0NTUuOTggMjE5LjUzIDQxOSAyMzEuOTVDMzc3Ljk2IDI0NS43NCAzMzQuNjQgMjY2Ljk5IDMwMC4xNSAyOTAuMjRDMjk2LjExIDI5Mi45NyAyOTIuNDIgMjk0LjgyIDI5MS45NiAyOTQuMzVDMjkxLjA0IDI5My40MSAzMDQuNjkgMjc1Ljc4IDMxOC42OCAyNTkuODRDMzI5LjgzIDI0Ny4xNSAzNTUuMzEgMjIxLjg4IDM2Ny42NSAyMTEuMjhDNDE0LjcxIDE3MC44NyA0NjkuNTcgMTM5LjA2IDUyOCAxMTguM0M1NjQuNDIgMTA1LjM2IDYwNy4zIDk2LjA4IDY1MC41IDkxLjc5QzY2OS43MyA4OS44OCAzNDUwLjI3IDg5Ljg4IDM0NjkuNSA5MS43OUMzNTIxLjcgOTYuOTggMzU2OC45OSAxMDguNDEgMzYxNSAxMjYuOThDMzYzMS45NiAxMzMuODIgMzY2Ni4yNSAxNTEuMDkgMzY4My40IDE2MS40MkMzNzUyLjcyIDIwMy4xOCAzODEyLjkyIDI2My4yMiAzODUzLjg5IDMzMS40NEMzODkzLjU2IDM5Ny40OSAzOTE2LjMyIDQ2Ny4xIDM5MjQuMjEgNTQ2LjVDMzkyNS4yNiA1NTcuMDUgMzkyNS41IDgxNy41OSAzOTI1LjUgMTkyOS41QzM5MjUuNSAzMDQxLjQxIDM5MjUuMjYgMzMwMS45NSAzOTI0LjIxIDMzMTIuNUMzOTEyLjc3IDM0MjcuNzIgMzg2OC4wMyAzNTI3Ljc5IDM3OTEuMDEgMzYxMC41QzM3NjguODcgMzYzNC4yNyAzNzIzLjMyIDM2NzMuOTUgMzcyMS41MiAzNjcxLjAzWiIvPgo8cGF0aCBpZD0iYnJhbmNvIiBmaWxsPSIjRkZGRkZGIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xNzcwLjUgMzQ1Ny44MkMxNjU3LjIgMzQ0NC4wOSAxNTY0LjE5IDM0MzIuNTUgMTU2My44MSAzNDMyLjE3QzE1NjMuMjggMzQzMS42NyAxNTk5LjUgMzEyNi44NCAxNjAyLjQ3IDMxMDYuNzVMMTYwMy4wMiAzMTAzTDEzNTQuOTggMzEwM0MxMTU1LjA5IDMxMDMgMTEwNi44NCAzMTAyLjc1IDExMDYuNDUgMzEwMS43M0MxMTA2LjAzIDMxMDAuNjQgMTU2MS4xNiA3NTcuNzEgMTU2Mi40NyA3NTQuMjVDMTU2Mi44NCA3NTMuMjYgMTYwNC40NSA3NTMgMTc2NS45MSA3NTNDMTg3Ny41NCA3NTMgMTk2OS4wOCA3NTIuNjYgMTk2OS4zMyA3NTIuMjVDMTk2OS41OCA3NTEuODQgMTk3Ny43OSA2ODUuMTIgMTk4Ny41NyA2MDRDMTk5Ny4zNSA1MjIuODggMjAwNS42MSA0NTYuMTkgMjAwNS45MyA0NTUuOEMyMDA2LjU5IDQ1NC45OSAyNDIxLjE1IDUwNC44MSAyNDIyLjE5IDUwNS44M0MyNDIyLjU4IDUwNi4yIDI0MTYuMTYgNTYyLjAzIDI0MDcuOTMgNjI5LjlDMjM5OS43IDY5Ny43NyAyMzkzLjEyIDc1My40NiAyMzkzLjMxIDc1My42NEMyMzkzLjQ5IDc1My44MyAyNDAxLjk0IDc1NC42NiAyNDEyLjA3IDc1NS41QzI1MzcuNjkgNzY1Ljg3IDI2NDcuNzcgODAxLjIzIDI3MzUgODU5LjI0QzI4MDkuNiA5MDguODYgMjg2Ni40IDk3My4wMiAyOTAzLjQgMTA0OS41QzI5NTUuMTkgMTE1Ni41MyAyOTY1LjYyIDEyODYuNzkgMjkzMi44OCAxNDE3LjVDMjkwNi4zOSAxNTIzLjIyIDI4NTcuNTQgMTYxMy41NCAyNzkwLjg1IDE2ODAuMUMyNzQzLjI1IDE3MjcuNiAyNjg4Ljc3IDE3NjAuMTQgMjYyOS41NyAxNzc2LjQ0TDI2MTcuNjUgMTc3OS43MkwyNjI4LjA3IDE3ODAuNDFDMjcwMi45OCAxNzg1LjQxIDI3NzAuNTIgMTgxMC41OSAyODMxIDE4NTYuMDlDMjk2Mi4zMSAxOTU0Ljg2IDMwMjcuMDcgMjEzMC40NyAzMDA3LjQyIDIzMzQuNUMyOTkwLjA5IDI1MTQuNDQgMjkyMi4yIDI2NzQuMjkgMjgwNi45NiAyODA2LjVDMjc4Mi40OCAyODM0LjU5IDI3MzguNzcgMjg3Ni4zNiAyNzA3LjUgMjkwMS41N0MyNTc1LjQzIDMwMDggMjQwNy41OCAzMDc1LjAyIDIyMjIgMzA5NS40MkMyMTcyLjU1IDMxMDAuODYgMjE1MS4zNCAzMTAxLjk3IDIwODMuMzkgMzEwMi42OUwyMDI2LjI4IDMxMDMuMjlMMjAyMy4wMSAzMTMwLjM5QzE5ODEuOTQgMzQ3MC45NCAxOTgwLjQ4IDM0ODIuNDkgMTk3OC40NSAzNDgyLjY1QzE5NzcuMzggMzQ4Mi43MyAxODgzLjggMzQ3MS41NiAxNzcwLjUgMzQ1Ny44MlpNMjExNy4xNyAyNTMzLjk0QzIxNzQuOTEgMjUyOS45NiAyMjIyLjY0IDI1MTguMDMgMjI2NS44NCAyNDk2Ljc5QzIzMDcuMzkgMjQ3Ni4zNiAyMzQwLjQ5IDI0NDguMDIgMjM2NC4yMiAyNDEyLjU0QzIzOTguNzkgMjM2MC44NiAyNDEyLjkxIDIyODguNDggMjM5OS4wMiAyMjM0LjFDMjM4Ny40MiAyMTg4LjY2IDIzNTcuODYgMjE1MC40MSAyMzE1LjM3IDIxMjUuODRDMjI4Ny44NyAyMTA5Ljk1IDIyNTQuNDMgMjA5OS40MSAyMjE1LjUxIDIwOTQuMzZDMjIwMi42NCAyMDkyLjY5IDIwNTguNzggMjA5MC44MSAxOTc3LjA0IDIwOTEuMjRMMTkyNy41OCAyMDkxLjVMMTg4NC44MiAyMzEyQzE4NjEuMyAyNDMzLjI4IDE4NDIuMDQgMjUzMy4wNiAxODQyLjAzIDI1MzMuNzVDMTg0MS45OSAyNTM1LjM5IDIwOTMuNjQgMjUzNS41NyAyMTE3LjE3IDI1MzMuOTRaTTIxNTguNSAxNjYzLjA4QzIyODEuOTcgMTY1MC4wOCAyMzU2LjY4IDE1OTMuMjQgMjM4MS4wMSAxNDkzLjc4QzIzOTAuOTggMTQ1My4wMSAyMzg4LjIgMTQxNS4zNCAyMzcyLjk1IDEzODQuODVDMjM0OS4zNiAxMzM3LjY5IDIzMDEuOTcgMTMwOS4wNSAyMjI5Ljg4IDEyOTguMzhDMjIyMC4zMyAxMjk2Ljk2IDIyMDcuNDcgMTI5Ni42MyAyMTQ5Ljg4IDEyOTYuMjdMMjA4MS4yNSAxMjk1Ljg2TDIwODAuNjkgMTI5OC4xOEMyMDc5LjQ1IDEzMDMuMjUgMjAxMCAxNjYyLjQxIDIwMTAgMTY2My43NUMyMDEwIDE2NjQuOTkgMjAxOS40NSAxNjY1LjEyIDIwNzguNzUgMTY2NC43MUMyMTIwLjMgMTY2NC40MyAyMTUxLjg1IDE2NjMuNzggMjE1OC41IDE2NjMuMDhaIi8+Cjwvc3ZnPg==';
+const ALERT_COLORS={vermelho:'#E0243A',amarelo:'#FFE500',roxo:'#7B3FE4',laranja:'#FF6A00',verde:'#12A866'};
+
+/* ---------- OVERLAY ---------- */
+const OV = (() => {
+  let host, card, wrap, hideT=null, showing=false, queue=Promise.resolve();
+  function mount(h){
+    host=h; host.appendChild($('ovTpl').content.cloneNode(true));
+    card=$('card'); wrap=$('wrap'); $('ovLg').src=LOGO; fit(); addEventListener('resize', fit);
+    if(window.ResizeObserver) new ResizeObserver(fit).observe(host);
+  }
+  function fit(){
+    const w = host.clientWidth || innerWidth, h = host.clientHeight || innerHeight;
+    $('ov').style.transform = `scale(${Math.min(w/1920, h/1080)})`;
+  }
+  function drawQR(text){
+    const c=$('ovQrC'), q=QR(text); if(!q) return false;
+    const n=q.size+4, k=Math.max(4,Math.ceil(400/n)); c.width=c.height=n*k; const g=c.getContext('2d');
+    g.fillStyle='#fff'; g.fillRect(0,0,c.width,c.height); g.fillStyle='#120B1C';
+    for(let y=0;y<q.size;y++) for(let x=0;x<q.size;x++) if(q.get(x,y)) g.fillRect((x+2)*k,(y+2)*k,k,k);
+    return true;
+  }
+  function render(p, cfg){
+    const compact=cfg.layout==='compact'; card.classList.toggle('compact',compact);
+    const W=compact?{img:190,info:500,tk:220,qr:160,gap:24,pad:44}:{img:286,info:560,tk:262,qr:210,gap:34,pad:60};
+    const qrUrl=cfg.qr?(p.qr||p.url||''):''; const hasImg=!!p.img, hasCp=!!p.cupom, hasQr=!!qrUrl && drawQR(qrUrl);
+    const cols=[]; if(hasImg) cols.push(W.img+'px'); cols.push('minmax(0,1fr)'); if(hasCp) cols.push(W.tk+'px'); if(hasQr) cols.push(W.qr+'px');
+    $('ovBody').style.gridTemplateColumns=cols.join(' ');
+    let w=W.pad+W.info+(hasImg?W.img+W.gap:0)+(hasCp?W.tk+W.gap:0)+(hasQr?W.qr+W.gap:0);
+    card.style.width=w+'px';
+    $('ovImgBox').style.display=hasImg?'':'none'; $('ovTicket').style.display=hasCp?'':'none'; $('ovQr').classList.toggle('on',hasQr);
+    $('ovImgBox').classList.toggle('dark', !!p.imgDark);
+    const al=$('ovAlert'), at=String(p.alerta||'').trim(), ac=ALERT_COLORS[p.alertaCor]||ALERT_COLORS.vermelho;
+    al.classList.toggle('on',!!at); al.classList.toggle('lt',p.alertaCor==='amarelo'); al.style.setProperty('--ac',ac); $('ovAlertT').textContent=at;
+    $('ovLogo').classList.toggle('nolg', cfg.logo===false);
+    $('ovNova').textContent = p.nova ? 'Promoção nova' : '';
+    $('ovStore').textContent = p.loja||'';
+    $('ovSelo').textContent = p.selo||'';
+    $('ovTag').textContent = p.tag||'';
+    $('ovTitle').textContent = p.titulo||'';
+    $('ovSpecs').textContent = p.specs||'';
+    const hasPrice=!!String(p.preco||'').trim();
+    $('ovPW').classList.toggle('none', !hasPrice && !p.parcelado); $('ovInfo').classList.toggle('noprice', !hasPrice);
+    const v = parseBRL(p.preco);
+    $('ovPrice').classList.toggle('raw', v==null);
+    $('ovPrice').style.display = hasPrice?'':'none';
+    $('ovVal').textContent = v==null ? (p.preco||'') : fmtBRL(v);
+    $('ovSfx').textContent = p.sfx||'';
+    $('ovParc').innerHTML = boldMoney(p.parcelado||'');
+    const code = String(p.cupom||'').toUpperCase(); const c=$('ovCode');
+    c.textContent = code; c.className = 'code' + (code.length>12?' xs':code.length>9?' sm':'');
+    $('ovCupD').textContent = p.cupomDesc||'';
+    $('ovCta').innerHTML = ctaHtml(cfg.cta||'');
+    wrap.className = 'pos-'+(cfg.pos||'bl');
+    wrap.style.setProperty('--sc', cfg.scale||1);
+  }
+  function loadImg(src){
+    return new Promise(res => {
+      const img=$('ovImg'); if(!src){ img.removeAttribute('src'); return res(); }
+      let done=false; const fin=()=>{ if(!done){done=true;res();} };
+      img.onload=fin; img.onerror=fin; img.src=src; setTimeout(fin, 1800);
+    });
+  }
+  function bar(sec){
+    const b=$('ovBar'), i=b.querySelector('i');
+    i.style.transition='none'; i.style.width='100%';
+    if(!sec){ b.classList.remove('on'); return; }
+    b.classList.add('on'); void i.offsetWidth;
+    i.style.transition=`width ${sec}s linear`; i.style.width='0%';
+  }
+  async function _hide(){
+    clearTimeout(hideT); if(!showing) return; showing=false;
+    card.classList.remove('in'); card.classList.add('out'); await sleep(380); card.classList.remove('out');
+  }
+  async function _show(p, cfg){
+    clearTimeout(hideT);
+    if(showing) await _hide();
+    render(p, cfg); await loadImg(p.img);
+    void card.offsetWidth; card.classList.add('in'); showing=true;
+    if(cfg.sound && cfg.sound!=='off') setTimeout(()=>SFX.play(cfg.sound, cfg.vol, cfg.sndMax), 120);
+    const sec = +cfg.dur||0; bar(sec);
+    if(sec>0 && !cfg.keep) hideT=setTimeout(()=>{ queue=queue.then(_hide); }, sec*1000);
+  }
+  return {
+    mount,
+    show:(p,cfg)=> queue = queue.then(()=>_show(p,cfg)).catch(()=>{}),
+    hide:()=> queue = queue.then(_hide).catch(()=>{}),
+    get showing(){ return showing; }
+  };
+})();
+
+const DEMO_IMG = 'data:image/svg+xml;utf8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300"><defs><linearGradient id="s" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2b5bd7"/><stop offset=".55" stop-color="#7B3FE4"/><stop offset="1" stop-color="#170F23"/></linearGradient></defs><rect x="70" y="40" width="260" height="170" rx="10" fill="#2a2f3a"/><rect x="80" y="50" width="240" height="150" rx="4" fill="url(#s)"/><path d="M40 215h320l-18 28H58z" fill="#3a404d"/><rect x="170" y="218" width="60" height="8" rx="4" fill="#565d6b"/></svg>`);
+const DEMO = { alerta:'Menor preço histórico', alertaCor:'vermelho', nova:true, qr:'https://benchpromos.com.br', loja:'Lenovo', selo:'BAIXOU', titulo:'Notebook Lenovo IdeaPad Slim 3i 15IWC11 Intel Core 3 304 8GB RAM 256GB SSD Linux', specs:'Intel Core 3 304 | 8GB RAM | 256GB SSD | 15.3" | IPS | FHD', preco:'2.734,55', sfx:'à vista', parcelado:'ou R$ 3.217,19 em 12x de R$ 268,10', cupom:'SEUCUPOM', cupomDesc:'exemplo', img:DEMO_IMG };
+const DEF_CFG = { port:'4455', pw:'', pos:'bl', scale:1, dur:0, rot:20, cta:'Link no chat  •  *benchpromos.com.br*', snd:'px_kaching', sndAlert:'px_jack1', sndNova:'same', sndRot:'off', sndHide:'off', sndMax:5, vol:70, board:['px_chaching','px_notas','px_moedas2','px_jack1','mx722','mx566','mx462','mx472'], customSounds:[], layout:'full', logo:true, qr:false, newHours:24 };
+
+/* ---------- BIBLIOTECA DE SONS ---------- */
+const MX=id=>typeof id==='number' ? `https://assets.mixkit.co/active_storage/sfx/${id}/${id}-preview.mp3` : `https://cdn.pixabay.com/audio/${id}.mp3`;
+const SOUNDS=[ // id, nome, categoria, fonte (número = Mixkit, texto = Pixabay, null = sintetizado offline)
+ ['px_kaching','Ka-ching clássico','Caixa registradora','2022/11/04/audio_7650b73fdb'],['px_chaching','Cha-ching!','Caixa registradora','2025/07/18/audio_14944c1a05'],
+ ['px_kaching2','Ka-ching curto','Caixa registradora','2025/07/18/audio_f1c1d0ad73'],['px_retro','Ka-ching retrô com gaveta','Caixa registradora','2026/06/04/audio_9cc7af5434'],
+ ['px_chaching2','Cha-ching longo','Caixa registradora','2021/08/09/audio_9659856a03'],['px_compra','Compra no caixa','Caixa registradora','2022/03/15/audio_79fff979bc'],
+ ['px_ding','Caixa abrindo + ding','Caixa registradora','2026/06/29/audio_6c7ac4f1c5'],['px_gaveta','Gaveta e cupom fiscal','Caixa registradora','2022/03/24/audio_cc6520297e'],
+ ['px_notas','Contador de notas','Notas','2022/03/19/audio_b7235f26aa'],['px_notas2','Contador de notas rápido','Notas','2022/03/24/audio_8c8bc7610c'],
+ ['px_notas3','Máquina contando notas','Notas','2025/01/23/audio_1b5508059c'],['px_notas4','Contadora de dinheiro','Notas','2025/09/18/audio_24d25e72ca'],
+ ['px_moedas1','Moedas do jackpot caindo','Moedas','2025/08/22/audio_8c8f365fd4'],['px_moedas2','Chuva de moedas','Moedas','2025/08/22/audio_2def003c3f'],
+ ['px_moedas3','Moedas caindo','Moedas','2022/03/10/audio_03db3b55c3'],['px_moedas4','Punhado de moedas','Moedas','2025/08/22/audio_04448cbe30'],['px_moedas5','Moedas da caça-níquel','Moedas','2025/08/22/audio_349f89d736'],
+ ['px_jack1','Jackpot cassino','Jackpot','2024/01/02/audio_307afceb5a'],['px_jack2','Jackpot cassino 2','Jackpot','2024/01/02/audio_0c574f2e01'],
+ ['px_jack3','Pagamento caça-níquel','Jackpot','2022/03/15/audio_bd91fe76ba'],['px_lvl','Bônus level up','Jackpot','2024/01/18/audio_ddbab94f85'],['px_win','You win!','Jackpot','2024/01/02/audio_8a2576e7af'],
+ ['mx951','Notificação positiva','Notificação',951],['mx937','Sininhos felizes','Notificação',937],['mx600','Sino de conquista','Notificação',600],['mx2870','Resposta certa','Notificação',2870],
+ ['mx2344','Anel mágico','Notificação',2344],['mx2015','Sinos de vitória','Notificação',2015],['mx1938','Bônus melódico','Notificação',1938],
+ ['mx722','Fanfarra de cornetas','Hype',722],['mx226','Fanfarra real','Hype',226],['mx555','Tambores de conquista','Hype',555],['mx566','Rufar de tambor','Hype',566],
+ ['mx1995','Jackpot','Hype',1995],['mx1928','Caça-níquel ganhou','Hype',1928],['mx462','Torcida vibrando','Hype',462],['mx518','Aplausos e gritos','Hype',518],['mx437','Ovação','Hype',437],
+ ['mx1929','Sirene de prêmio','Alerta',1929],['mx1649','Sirene','Alerta',1649],['mx1643','Sirene de polícia','Alerta',1643],['mx1007','Alarme de emergência','Alerta',1007],['mx993','Alarme curto','Alerta',993],
+ ['mx1492','Whoosh cinema','Transição',1492],['mx2350','Whoosh brilhante','Transição',2350],['mx2903','Whoosh + impacto','Transição',2903],['mx2908','Impacto épico','Transição',2908],
+ ['mx2059','Level completo','Zoeira',2059],['mx2012','“Yes!”','Zoeira',2012],['mx579','Ba dum tss','Zoeira',579],['mx2894','Boing','Zoeira',2894],['mx2886','Buzina de palhaço','Zoeira',2886],
+ ['mx744','Trombone decepção','Zoeira',744],['mx472','Trombone triste','Zoeira',472],['mx2027','Perdeu (retrô)','Zoeira',2027],
+ ['mx1936','Moeda mágica','Bling (Mixkit)',1936],['mx1992','Moeda ganha','Bling (Mixkit)',1992],['mx1993','Moedas tilintando','Bling (Mixkit)',1993],['mx1999','Prêmio de ouro','Bling (Mixkit)',1999],
+ ['mx2000','Ouro melódico','Bling (Mixkit)',2000],['mx1989','Saco de dinheiro','Bling (Mixkit)',1989],['mx2067','Cassino bling','Bling (Mixkit)',2067],['mx1934','Pagamento de prêmio','Bling (Mixkit)',1934],
+ ['caixa','Caixa registradora','Sintetizados (offline)',null],['sino','Sino','Sintetizados (offline)',null],['moeda','Moeda 8-bit','Sintetizados (offline)',null],['whoosh','Whoosh','Sintetizados (offline)',null]
+];
+const SOUND_BY_ID=Object.fromEntries(SOUNDS.map(x=>[x[0],x]));
+const SFX = (() => {
+  let ac=null, lib={};
+  function ctx(){ if(!ac){ const A=window.AudioContext||window.webkitAudioContext; if(!A) return null; ac=new A(); } if(ac.state==='suspended') ac.resume(); return ac; }
+  function tone(a, out, {f, f2, type='sine', t=0, dur=.4, g=.5, atk=.005}){
+    const o=a.createOscillator(), e=a.createGain(), t0=a.currentTime+t;
+    o.type=type; o.frequency.setValueAtTime(f,t0); if(f2) o.frequency.exponentialRampToValueAtTime(f2,t0+dur*.6);
+    e.gain.setValueAtTime(0,t0); e.gain.linearRampToValueAtTime(g,t0+atk); e.gain.exponentialRampToValueAtTime(.0001,t0+dur);
+    o.connect(e).connect(out); o.start(t0); o.stop(t0+dur+.05);
+  }
+  function noise(a, out, {t=0, dur=.08, g=.4, f=3000, q=1, f2}){
+    const n=Math.ceil(a.sampleRate*dur), b=a.createBuffer(1,n,a.sampleRate), d=b.getChannelData(0);
+    for(let i=0;i<n;i++) d[i]=Math.random()*2-1;
+    const s=a.createBufferSource(), bp=a.createBiquadFilter(), e=a.createGain(), t0=a.currentTime+t;
+    s.buffer=b; bp.type='bandpass'; bp.Q.value=q; bp.frequency.setValueAtTime(f,t0); if(f2) bp.frequency.exponentialRampToValueAtTime(f2,t0+dur);
+    e.gain.setValueAtTime(0,t0); e.gain.linearRampToValueAtTime(g,t0+Math.min(.02,dur/3)); e.gain.exponentialRampToValueAtTime(.0001,t0+dur);
+    s.connect(bp).connect(e).connect(out); s.start(t0); s.stop(t0+dur+.05);
+  }
+  const KITS = {
+    caixa(a,o){ // "cha-ching"
+      noise(a,o,{dur:.07,g:.5,f:4200,q:.8}); noise(a,o,{t:.09,dur:.06,g:.35,f:2600,q:.9});
+      [2093,2637,3136,4186,5274].forEach((f,i)=>tone(a,o,{f,t:.16,dur:1.3-i*.12,g:.22/(i*.6+1),type:i%2?'triangle':'sine'}));
+      [2349,3520].forEach((f,i)=>tone(a,o,{f,t:.28,dur:.9,g:.12/(i+1)}));
+    },
+    sino(a,o){ tone(a,o,{f:1046.5,dur:.55,g:.45,type:'triangle'}); tone(a,o,{f:2093,dur:.4,g:.12}); tone(a,o,{f:1568,t:.13,dur:.9,g:.45,type:'triangle'}); tone(a,o,{f:3136,t:.13,dur:.5,g:.1}); },
+    moeda(a,o){ tone(a,o,{f:988,dur:.09,g:.22,type:'square',atk:.002}); tone(a,o,{f:1319,t:.08,dur:.45,g:.22,type:'square',atk:.002}); },
+    whoosh(a,o){ noise(a,o,{dur:.38,g:.55,f:300,f2:3500,q:1.4}); tone(a,o,{f:520,f2:1250,t:.3,dur:.22,g:.35}); }
+  };
+  function src(kind){
+    if(kind.startsWith('custom:')) return lib[kind.slice(7)]||null;
+    const s=SOUND_BY_ID[kind]; return s&&s[3] ? MX(s[3]) : null;
+  }
+  function playSrc(u, vol, max){
+    const au=new Audio(u); au.volume=Math.max(0,Math.min(1,vol/100)); au.play().catch(()=>{});
+    if(max>0) setTimeout(()=>{ if(au.paused) return; const v0=au.volume; let k=0; const iv=setInterval(()=>{ k++; au.volume=Math.max(0,v0*(1-k/12)); if(k>=12){ clearInterval(iv); au.pause(); } },40); }, max*1000);
+  }
+  function play(kind, vol, max){
+    if(!kind||kind==='off') return; vol=vol??70;
+    const u=src(kind); if(u) return playSrc(u, vol, +max||0);
+    if(!KITS[kind]) return;
+    const a=ctx(); if(!a) return; const out=a.createGain(); out.gain.value=Math.max(0,Math.min(1,vol/100)); out.connect(a.destination); KITS[kind](a,out);
+  }
+  function preload(){ SOUNDS.forEach(s=>{ if(s[3]){ const au=new Audio(); au.preload='auto'; au.src=MX(s[3]); } }); }
+  return { play, preload, setLib(items){ lib={}; (items||[]).forEach(x=>lib[x.id]=x.src); } };
+})();
+
+if(MODE==='overlay'){
+  const host=document.createElement('div'); host.className='ovhost'; document.body.appendChild(host); OV.mount(host);
+  const cfgFromHash = { pos:HP.get('pos')||'bl', scale:+(HP.get('scale')||1), cta:HP.get('cta')||DEF_CFG.cta, dur:0 };
+  if(HP.has('demo')) OV.show(DEMO, cfgFromHash);
+  SFX.preload();
+  const seen=new Set(), canal=HP.get('canal'); let obs=null, relay=null;
+  function reply(p){ if(obs && obs.ok) obs.broadcast(p); if(relay) relay.publish(topicOf(canal)+'_v', p); }
+  let handle=function(d){
+    if(!d || d.app!==APP) return;
+    if(d.mid){ if(seen.has(d.mid)) return; seen.add(d.mid); if(seen.size>400){ const k=[...seen].slice(-200); seen.clear(); k.forEach(x=>seen.add(x)); } }
+    if(d.action==='show') OV.show(d.promo||{}, d.cfg||{});
+    else if(d.action==='hide') OV.hide();
+    else if(d.action==='ping') reply({action:'pong', v:VERSION});
+    else if(d.action==='sndlib') SFX.setLib(d.items);
+    else if(d.action==='sound') SFX.play(d.kind, d.vol, d.max);
+    else if(d.action==='echo') reply({action:'echo-ok', v:VERSION});
+  };
+  const dbg = HP.has('debug') ? document.body.appendChild(Object.assign(document.createElement('div'),{style:'position:fixed;left:24px;top:24px;z-index:9;background:#120B1C;color:#F5F2F9;border:2px solid #FFE500;border-radius:14px;padding:16px 20px;font:600 20px/1.5 Montserrat,system-ui,sans-serif;white-space:pre'})) : null;
+  const D={canal:canal?'conectando…':'— (sem canal no link)', obs:'—', msgs:0, ultimo:'—'};
+  const drawDbg=()=>{ if(dbg) dbg.textContent=`BENCH LIVE ${VERSION} — teste\nCanal remoto: ${D.canal}\nOBS WebSocket: ${D.obs}\nMensagens recebidas: ${D.msgs}\nÚltima: ${D.ultimo}`; }; drawDbg();
+  const _handle=handle; handle=d=>{ if(d && d.app===APP){ D.msgs++; D.ultimo=d.action; drawDbg(); } _handle(d); };
+  if(canal){ relay=new Relay(HP.get('relay')||RELAY_DEF, d=>handle(d), st=>{ D.canal={ok:'✅ online',connecting:'conectando…',off:'❌ sem conexão com '+(HP.get('relay')||RELAY_DEF)}[st]||st; drawDbg(); if(st==='ok') reply({action:'hello', v:VERSION}); }); relay.listen(topicOf(canal)); }
+  if(!canal || HP.has('senha') || HP.has('local')){
+    obs=new OBS(ev=>{ if(ev.eventType==='CustomEvent') handle(ev.eventData||{}); }, st=>{ D.obs={ok:'✅ conectado',connecting:'conectando…',off:'❌ desconectado',auth:'❌ senha errada'}[st]||st; drawDbg(); if(st==='ok') obs.broadcast({action:'hello', v:VERSION}); });
+    obs.connect(HP.get('port')||4455, HP.get('senha')||'');
+  }
+}
+
+/* ---------- PAINEL ---------- */
+if(MODE==='panel'){
+  const KEY='benchlive.v1';
+  let S = { promos:[], cfg:{...DEF_CFG} };
+  try{ const raw=localStorage.getItem(KEY); if(raw){ const o=JSON.parse(raw); S.promos=o.promos||[]; S.cfg={...DEF_CFG, ...(o.cfg||{})}; } }catch(e){}
+  // migração de versões antigas
+  if(typeof S.cfg.sndRot==='boolean') S.cfg.sndRot = S.cfg.sndRot?'same':'off';
+  if(S.cfg.sndData){ S.cfg.customSounds=[...(S.cfg.customSounds||[]), {id:'c1', name:S.cfg.sndName||'Meu som', src:S.cfg.sndData}]; if(S.cfg.snd==='custom') S.cfg.snd='custom:c1'; delete S.cfg.sndData; delete S.cfg.sndName; }
+  if(!S.cfg._v3){ if(['caixa','sino','moeda','whoosh','custom'].includes(S.cfg.snd)) S.cfg.snd=DEF_CFG.snd; S.cfg._v3=true; }
+  if(!S.cfg._v4){ if(!S.cfg.snd||S.cfg.snd==='mx1936') S.cfg.snd=DEF_CFG.snd; if(!S.cfg.sndAlert||S.cfg.sndAlert==='mx1929') S.cfg.sndAlert=DEF_CFG.sndAlert;
+    if(!S.cfg.board || S.cfg.board.join()==='mx722,mx566,mx462,mx518,mx1649,mx472,mx579,mx2012') S.cfg.board=[...DEF_CFG.board]; S.cfg._v4=true; }
+  const save=()=>{ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){ toast('Não consegui salvar (imagens muito grandes?)'); } };
+  function uid(){ return Math.random().toString(36).slice(2,10); }
+  let editId=null, airId=null, rotOn=false, rotT=null, autoT=null, ovSeen=0;
+
+  OV.mount($('prevHost'));
+
+  let echoWait=null;
+  function onOverlayMsg(d, via){
+    if(d.action==='echo-self' && echoWait){ echoWait(); return; }
+    if(d.action!=='hello' && d.action!=='pong' && d.action!=='echo-ok') return;
+    ovSeen=Date.now();
+    if(d.v!==VERSION){
+      setSt('stOv','bad', via==='remoto'?'Overlay remoto desatualizado':'Overlay desatualizado');
+      if(via==='local' && !fixTried){ fixTried=true; fixOverlay(true); }
+      else if(via==='remoto' && !remWarned){ remWarned=true; toast('O overlay do outro PC está numa versão antiga — atualize o arquivo/link lá'); }
+    } else { setSt('stOv','ok', via==='remoto'?'Overlay remoto conectado':'Overlay conectado'); sendLib(); }
+  }
+  let remWarned=false;
+  const obs = new OBS(ev => {
+    if(ev.eventType!=='CustomEvent') return;
+    const d=ev.eventData||{}; if(d.app!==APP) return; onOverlayMsg(d,'local');
+  }, s => {
+    const map={ok:['ok','OBS conectado'],connecting:['','Conectando ao OBS…'],off:['bad','OBS desconectado'],auth:['bad','Senha do OBS errada']};
+    const [c,t]=map[s]||map.off; setSt('stObs',c,t);
+    if(s==='ok'){ obs.broadcast({action:'ping'}); setTimeout(()=>{ if(Date.now()-ovSeen>5000) setSt('stOv','bad','Overlay não detectado'); },2500); }
+    else if(S.cfg.mode==='local') setSt('stOv','','Overlay não detectado');
+    if(s==='auth') toast('Senha do WebSocket do OBS incorreta');
+  });
+  /* corrige a fonte do overlay no OBS: aponta pro arquivo deste painel e limpa o cache */
+  let fixTried=false;
+  async function fixOverlay(auto){
+    if(!obs.ok){ toast('Conecte ao OBS primeiro'); return; }
+    const r=await obs.request('GetInputList',{inputKind:'browser_source'}); const inputs=r?.responseData?.inputs||[];
+    let n=0;
+    for(const i of inputs){
+      const g=await obs.request('GetInputSettings',{inputName:i.inputName}); const st=g?.responseData?.inputSettings||{};
+      const url=String(st.url||''), lf=String(st.local_file||'');
+      if(/[#&]overlay\b/.test(url) || /bench.?live/i.test(url) || /bench.?live/i.test(lf)){
+        await obs.request('SetInputSettings',{inputName:i.inputName, inputSettings:{url:overlayUrl(), is_local_file:false}, overlay:true});
+        await obs.request('PressInputPropertiesButton',{inputName:i.inputName, propertyName:'refreshnocache'}); n++;
+      }
+    }
+    if(n) toast(`${auto?'Overlay estava desatualizado — ':''}corrigi ${n>1?n+' fontes':'a fonte'} no OBS ✓`);
+    else toast('Não achei a fonte do overlay no OBS — cole o link do overlay nela (⚙ Configurar)');
+  }
+  /* canal remoto */
+  const newCanal=()=>{ const a=new Uint8Array(16); crypto.getRandomValues(a); return [...a].map(x=>'abcdefghijklmnopqrstuvwxyz0123456789'[x%36]).join(''); };
+  if(!S.cfg.canal){ S.cfg.canal=newCanal(); save(); }
+  if(!S.cfg.mode) S.cfg.mode='local';
+  const relay=new Relay(S.cfg.relay||RELAY_DEF, d=>onOverlayMsg(d,'remoto'), st=>{
+    const map={ok:['ok','Canal remoto online'],connecting:['','Conectando ao canal…'],off:['bad','Canal remoto offline']}; const [c,t]=map[st]||map.off; setSt('stNet',c,t);
+    if(st==='ok'){ pingRemote(); clearInterval(pingT); pingT=setInterval(()=>{ if(S.cfg.mode!=='local' && Date.now()-ovSeen>20000) pingRemote(); },15000); }
+  });
+  const mid=()=>uid()+Date.now().toString(36);
+  let pingT=null;
+  async function pingRemote(){
+    const ok=await relay.publish(topicOf(S.cfg.canal),{action:'ping', mid:mid()});
+    if(!ok){ setSt('stOv','bad','Falha ao enviar pro canal'); return; }
+    setTimeout(()=>{ if(Date.now()-ovSeen>6000) setSt('stOv','bad','Overlay remoto não respondeu'); },6000);
+  }
+  function applyMode(){
+    const m=S.cfg.mode; $('stObs').hidden = m==='remoto'; $('stNet').hidden = m==='local';
+    if(m!=='local') relay.listen(topicOf(S.cfg.canal)+'_v'); else relay.stop();
+    if(m!=='remoto' && S.cfg.connected) obs.connect(S.cfg.port, S.cfg.pw);
+  }
+  const linkOk=()=> (S.cfg.mode!=='remoto' && obs.ok) || (S.cfg.mode!=='local' && relay.ok);
+  let warned={};
+  function warnOnce(k,t){ if(!warned[k]){ warned[k]=1; toast(t); } }
+  function slim(p){
+    if(JSON.stringify(p).length<3800) return p; const c=JSON.parse(JSON.stringify(p));
+    if(c.promo && /^data:/.test(c.promo.img||'')){ c.promo.img=''; warnOnce('img','Imagem colada/arrastada não vai pro PC remoto — use o link da imagem'); }
+    if(c.items){ const n=c.items.length; c.items=c.items.filter(x=>!/^data:/.test(x.src||'')); if(c.items.length<n) warnOnce('snd','Sons enviados como arquivo não tocam no PC remoto — adicione por link'); }
+    return c;
+  }
+  function send(payload){
+    const p={...payload, mid:mid()};
+    if(S.cfg.mode!=='remoto' && obs.ok) obs.broadcast(p);
+    if(S.cfg.mode!=='local') relay.publish(topicOf(S.cfg.canal), slim(p));
+  }
+  function setSt(id,c,t){ const e=$(id); e.className='st '+c; e.querySelector('span').textContent=t; }
+  function sendLib(){ SFX.setLib(S.cfg.customSounds); if(linkOk() && S.cfg.customSounds.length) send({action:'sndlib', items:S.cfg.customSounds.map(({id,src})=>({id,src}))}); }
+  applyMode();
+
+  /* ===== API do site (GraphQL do Bench) ===== */
+  const API='https://api.benchpromos.com.br/api', SITE='https://benchpromos.com.br';
+  const SF=`id title imageUrl price installments totalInstallmentPrice coupon caption expired label tag highlight createdAt retailer{ name } couponSchema{ code discount availability } cashback{ value provider } discounts{ label discount }`;
+  async function gql(query, variables){
+    const r=await fetch(API,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({query,variables})});
+    const j=await r.json(); if(j.errors && !j.data) throw new Error(j.errors[0].message); return j.data;
+  }
+  const reais = c => fmtBRL(Math.round(c)/100);
+  // mesma conta que o site faz (cupom → descontos → cashback)
+  function siteCalc(price, coupon, cashback, discounts){
+    if(!price) return 0; let a=price, o=0;
+    if(coupon) o = String(coupon).includes('%') ? parseFloat(coupon)/100*price : 100*parseFloat(coupon);
+    a = price - (isFinite(o)?o:0);
+    (discounts||[]).forEach(d=>{ d=String(d); a -= d.includes('%') ? parseFloat(d)/100*a : 100*parseFloat(d); });
+    if(cashback) a -= a*cashback/100;
+    return Math.round(a);
+  }
+  const ageH = s => s.createdAt ? (Date.now()-Date.parse(s.createdAt))/36e5 : 1e9;
+  function saleToPromo(s){
+    const cp = s.couponSchema && s.couponSchema.availability!==false && s.couponSchema.code ? s.couponSchema : null;
+    const code = cp ? cp.code : (s.coupon||'');
+    const dsc=(s.discounts||[]).map(d=>d.discount), cb=s.cashback?.value||0;
+    const vista=siteCalc(s.price, cp?.discount, cb, dsc), total=siteCalc(s.totalInstallmentPrice, cp?.discount, cb, dsc), n=+s.installments||0;
+    const lbl=s.label?String(s.label).toUpperCase():'', hist=/HIST[ÓO]RICO/.test(lbl);
+    const d=cp?.discount?String(cp.discount):'';
+    const tag=[s.tag, cb?`${cb}% cashback`:''].filter(Boolean).join(' • ');
+    return { saleId:s.id, createdAt:s.createdAt||'', expired:!!s.expired, destaque:!!s.highlight,
+      url:`${SITE}/promocao/${s.id}`, qr:`${SITE}/promocao/${s.id}`,
+      titulo:s.title||'', specs:String(s.caption||'').replace(/\s*\|\s*(Windows\s*\d+|Linux)\s*$/i,''),
+      loja:s.retailer?.name||'', selo:hist?'':lbl, alerta:hist?lbl:'', alertaCor:'vermelho', tag,
+      nova: ageH(s) <= (+S.cfg.newHours||24),
+      preco: s.price>0 ? reais(vista) : '', sfx: s.price>0 ? 'à vista' : '',
+      parcelado: total && n>1 ? `ou R$ ${reais(total)} em ${n}x de R$ ${reais(total/n)}` : '',
+      cupom:String(code).toUpperCase(), cupomDesc: d ? (d.includes('%')?d:'R$ '+d)+' OFF' : '',
+      img:s.imageUrl||'', imgDark:false };
+  }
+  async function fetchSale(){
+    const raw=$('iUrl').value.trim(); if(!raw){ toast('Cole o link da promo'); return; }
+    const m=raw.match(/\/promocao\/(?:[^/?#]+\/)?([a-z0-9]{20,})/i) || raw.match(/^([a-z0-9]{20,})$/i);
+    if(!m){ toast(/\/produto\//.test(raw)?'Esse é link de produto — use o link da promoção (/promocao/...)':'Não achei o código da promo nesse link'); return; }
+    const b=$('bFetch'); b.disabled=true; b.textContent='Puxando…';
+    try{
+      const s=(await gql(`query($id:ID!){ sale(id:$id){ ${SF} } }`,{id:m[1]})).sale;
+      if(!s){ toast('Promo não encontrada'); return; }
+      const keep = editId ? S.promos.find(x=>x.id===editId) : null;
+      const np=saleToPromo(s); if(keep && keep.alerta && !np.alerta){ np.alerta=keep.alerta; np.alertaCor=keep.alertaCor; }
+      fillForm(np); preview();
+      toast(s.expired ? '⚠ Puxei, mas essa promo está EXPIRADA no site' : (np.cupom?'Puxei tudo, inclusive o cupom ✓':'Puxei tudo ✓ (sem cupom)'));
+      if(!editId) $('bSave').click();
+    }catch(e){ toast('Não consegui falar com o site — confere a internet'); }
+    finally{ b.disabled=false; b.textContent='Puxar do site'; }
+  }
+  $('bFetch').onclick=fetchSale;
+  $('iUrl').addEventListener('keydown',e=>{ if(e.key==='Enter') fetchSale(); });
+  $('iUrl').addEventListener('paste',()=>setTimeout(fetchSale,0));
+
+  /* ===== aba "Do site": fila automática ===== */
+  let site=[], seenIds=null, siteT=null, tab='fila';
+  function badges(p){
+    const b=[];
+    if(p.expired) b.push('<span class="bdg exp">expirada</span>');
+    if(p.alerta) b.push(`<span class="bdg red">${esc(p.alerta)}</span>`);
+    if(p.nova) b.push('<span class="bdg new">nova</span>');
+    if(p.destaque) b.push('<span class="bdg hl">destaque</span>');
+    if(p.selo) b.push(`<span class="bdg">${esc(p.selo)}</span>`);
+    return b.join('');
+  }
+  function ago(iso){ const h=ageH({createdAt:iso}); if(h>1e8) return ''; if(h<1) return `há ${Math.max(1,Math.round(h*60))} min`; if(h<48) return `há ${Math.round(h)} h`; return `há ${Math.round(h/24)} dias`; }
+  const inFila = sid => S.promos.some(p=>p.saleId===sid);
+  function renderSite(){
+    const L=$('sList');
+    if(!site.length){ L.innerHTML='<div class="empty">Nenhuma promo nessa categoria.</div>'; return; }
+    L.innerHTML = site.map(p=>`
+      <div class="it ${p._fresh?'fresh':''} ${airId==='site-'+p.saleId?'air':''}" data-sid="${p.saleId}" style="grid-template-columns:64px 1fr auto">
+        <div class="th">${p.img?`<img src="${esc(p.img)}" alt="" loading="lazy">`:''}</div>
+        <div class="tx"><div class="t1">${esc(p.titulo)}</div>
+          <div class="t2">${p.preco?`<span class="pz">R$ ${esc(p.preco)}</span>`:''}${p.cupom?`<span class="cp">${esc(p.cupom)}</span>`:''}<span>${esc(p.loja)}</span><span>${ago(p.createdAt)}</span>${badges(p)}</div></div>
+        <div class="ac">
+          <button class="add ${inFila(p.saleId)?'in':''}" data-a="add" title="${inFila(p.saleId)?'Já está na fila':'Adicionar à fila'}">${inFila(p.saleId)?'✓':'+'}</button>
+          <button class="go" data-a="go" title="Mostrar na live agora"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4v16l13-8z"/></svg></button>
+        </div>
+      </div>`).join('');
+  }
+  function addToFila(p){ if(inFila(p.saleId)) return false; const {_fresh,...c}=p; S.promos.push({...c,id:uid(),rot:true}); return true; }
+  $('sList').addEventListener('click', e=>{
+    const it=e.target.closest('.it'); if(!it) return; const p=site.find(x=>x.saleId===it.dataset.sid); if(!p) return;
+    const a=e.target.closest('[data-a]')?.dataset.a;
+    if(a==='add'){ if(addToFila(p)){ save(); renderList(); renderSite(); toast('Adicionada à fila ✓'); } return; }
+    if(a==='go'){ stopRot(); show({...p,id:'site-'+p.saleId}); renderSite(); return; }
+    OV.show(p, cfgNow({dur:0, sound:null}));
+  });
+  async function loadSite(quiet){
+    const cat=$('sCat').value, lim=+$('sLim').value||40;
+    try{
+      const d=await gql(`query($p:PaginationInput,$c:[String]){ sales(paginationInput:$p, showExpired:false, categories:$c){ list{ ${SF} } } salesCategoryRank(recentDays:30){ name slug } }`,{p:{page:1,limit:lim},c:cat?[cat]:null});
+      const list=(d.sales?.list||[]).map(saleToPromo);
+      let fresh=0;
+      if(seenIds){ list.forEach(p=>{ if(!seenIds.has(p.saleId)){ p._fresh=true; fresh++; } }); }
+      seenIds=new Set([...(seenIds||[]), ...list.map(p=>p.saleId)]);
+      site=list; renderSite();
+      if(d.salesCategoryRank && $('sCat').options.length<=1){ d.salesCategoryRank.forEach(c=>$('sCat').add(new Option(c.name,c.slug))); }
+      if(fresh){ $('siteNew').textContent=fresh; if(quiet) toast(`${fresh} promo${fresh>1?'s':''} nova${fresh>1?'s':''} no site`); }
+    }catch(e){ if(!quiet) $('sList').innerHTML='<div class="empty">Não consegui carregar as promos do site.<br>Confere a internet e clique em ↻ Atualizar.</div>'; }
+  }
+  function autoSite(){ clearInterval(siteT); if($('sAuto').checked) siteT=setInterval(()=>loadSite(true), 120000); }
+  $('sRef').onclick=()=>loadSite(false);
+  $('sCat').onchange=()=>{ seenIds=null; loadSite(false); };
+  $('sLim').onchange=()=>loadSite(false);
+  $('sAuto').onchange=autoSite;
+  $('sAddAll').onclick=()=>{ let n=0; site.forEach(p=>{ if(!p.expired && addToFila(p)) n++; }); save(); renderList(); renderSite(); toast(n?`${n} adicionada${n>1?'s':''} à fila ✓`:'Todas já estão na fila'); };
+  document.querySelectorAll('.tb').forEach(b=>b.onclick=()=>{
+    tab=b.dataset.t; document.querySelectorAll('.tb').forEach(x=>x.classList.toggle('on',x===b));
+    $('list').hidden=tab!=='fila'; $('filaTools').style.display=tab==='fila'?'':'none'; $('siteBox').hidden=tab!=='site';
+    if(tab==='site'){ $('siteNew').textContent=''; site.forEach(p=>p._fresh=false); if(!site.length) loadSite(false); else renderSite(); }
+  });
+  /* atualizar preços/cupons da fila */
+  $('bUpd').onclick=async()=>{
+    const ids=S.promos.filter(p=>p.saleId).map(p=>p.saleId); if(!ids.length){ toast('Nenhuma promo da fila veio do site'); return; }
+    const b=$('bUpd'); b.disabled=true; b.textContent='↻ …'; let ch=0, ex=0;
+    for(const sid of ids){ try{ const s=(await gql(`query($id:ID!){ sale(id:$id){ ${SF} } }`,{id:sid})).sale; if(!s) continue;
+      const n=saleToPromo(s); S.promos.filter(p=>p.saleId===sid).forEach(p=>{ for(const k of ['preco','parcelado','cupom','cupomDesc','expired','img','selo','tag']){ if(p[k]!==n[k]){ p[k]=n[k]; ch++; } } if(n.alerta) p.alerta=n.alerta; if(n.expired) ex++; }); }catch(e){} }
+    save(); renderList(); if(editId) edit(editId); b.disabled=false; b.textContent='↻ Preços';
+    toast(ex?`Atualizado — ⚠ ${ex} expirada${ex>1?'s':''} no site`: ch?'Preços e cupons atualizados ✓':'Tudo igual ao site ✓');
+  };
+  loadSite(true).then(autoSite);
+
+  /* lista (minha fila) */
+  function renderList(){
+    const L=$('list');
+    if(!S.promos.length){ L.innerHTML='<div class="empty">Fila vazia.<br>Vá em <b>Do site</b> e clique em <b>+</b> nas promos, ou use <b>+ Nova</b>.</div>'; return; }
+    L.innerHTML = S.promos.map((p,i)=>`
+      <div class="it ${p.id===editId?'sel':''} ${p.id===airId?'air':''}" data-id="${p.id}">
+        <div class="n">${i<9?i+1:'·'}</div>
+        <div class="th">${p.img?`<img src="${esc(p.img)}" alt="">`:''}</div>
+        <div class="tx"><div class="t1">${esc(p.titulo||'(sem título)')}</div>
+          <div class="t2">${p.preco?`<span class="pz">R$ ${esc(priceText(p.preco))}</span>`:''}${p.cupom?`<span class="cp">${esc(String(p.cupom).toUpperCase())}</span>`:''}<span>${esc(p.loja||'')}</span>${badges(p)}</div></div>
+        <div class="ac">
+          <label class="rz" title="Entra no rodízio"><input type="checkbox" data-a="rot" ${p.rot!==false?'checked':''}>rodízio</label>
+          <button class="btn sm ghost" data-a="up" title="Subir">↑</button>
+          <button class="btn sm ghost" data-a="dup" title="Duplicar">⧉</button>
+          <button class="btn sm ghost danger" data-a="del" title="Apagar">✕</button>
+          <button class="go" data-a="go" title="Mostrar na live"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4v16l13-8z"/></svg></button>
+        </div>
+      </div>`).join('');
+  }
+  $('list').addEventListener('click', e => {
+    const it=e.target.closest('.it'); if(!it) return; const id=it.dataset.id; const i=S.promos.findIndex(p=>p.id===id); const p=S.promos[i];
+    const a=e.target.closest('[data-a]')?.dataset.a;
+    if(a==='rot'){ p.rot=e.target.checked; save(); return; }
+    if(a==='go'){ stopRot(); show(p); return; }
+    if(a==='up'){ if(i>0){ [S.promos[i-1],S.promos[i]]=[S.promos[i],S.promos[i-1]]; save(); renderList(); } return; }
+    if(a==='dup'){ const c={...p,id:uid()}; S.promos.splice(i+1,0,c); save(); edit(c.id); return; }
+    if(a==='del'){ if(confirm('Apagar esta promo?')){ S.promos.splice(i,1); if(editId===id) edit(null); save(); renderList(); if(tab==='site') renderSite(); } return; }
+    edit(id);
+  });
+
+  /* formulário */
+  const F={url:'iUrl',titulo:'iTit',specs:'iSpec',loja:'iLoja',selo:'iSelo',preco:'iPreco',sfx:'iSfx',parcelado:'iParc',cupom:'iCup',cupomDesc:'iCupD',img:'iImg',alerta:'iAlert',alertaCor:'iAlertC',tag:'iTag',som:'iSom'};
+  let curImg='', curMeta={};
+  function fillForm(p){
+    for(const k in F) $(F[k]).value = k==='img' ? (String(p.img||'').startsWith('data:')?'':(p.img||'')) : k==='alertaCor' ? (p.alertaCor||'vermelho') : (p[k]||'');
+    curImg=p.img||''; $('iImgDark').checked=!!p.imgDark; $('iNova').checked=!!p.nova; $('paste').value='';
+    curMeta={saleId:p.saleId||'', createdAt:p.createdAt||'', expired:!!p.expired, destaque:!!p.destaque, qr:p.qr||''};
+    thumb();
+  }
+  function edit(id){
+    editId=id; fillForm(S.promos.find(x=>x.id===id) || {sfx:'à vista'});
+    $('fTitle').textContent = id ? 'Editar promoção' : 'Nova promoção';
+    renderList(); if(id) preview();
+  }
+  function readForm(){
+    const p={...curMeta}; for(const k in F) p[k]=$(F[k]).value.trim();
+    p.cupom=p.cupom.toUpperCase(); p.img = p.img || curImg; p.imgDark=$('iImgDark').checked; p.nova=$('iNova').checked;
+    if(!p.saleId) p.qr = /^https?:\/\//.test(p.url) ? p.url : ''; return p;
+  }
+  function thumb(){ const src=$('iImg').value.trim()||curImg; $('imgTh').innerHTML = src?`<img src="${esc(src)}" alt="">`:'<span>clique, cole ou arraste</span>'; }
+  $('iImg').addEventListener('input', ()=>{ curImg=''; thumb(); });
+  ['iAlert','iAlertC','iTag','iNova'].forEach(id=>$(id).addEventListener('change',preview));
+  function cfgNow(extra){ return { pos:S.cfg.pos, scale:+S.cfg.scale||1, dur:+S.cfg.dur||0, cta:S.cfg.cta, sound:S.cfg.snd, vol:+S.cfg.vol, sndMax:+S.cfg.sndMax||0, layout:S.cfg.layout, logo:S.cfg.logo!==false, qr:!!S.cfg.qr, ...(extra||{}) }; }
+  function preview(){ OV.show(readForm(), cfgNow({dur:0, sound:null})); }
+  $('bPrev').onclick=preview;
+  $('bSave').onclick=()=>{
+    const p=readForm(); if(!p.titulo && !p.preco){ toast('Preencha pelo menos título e preço'); return; }
+    if(editId){ const o=S.promos.find(x=>x.id===editId); Object.assign(o,p); }
+    else { const n={...p,id:uid(),rot:true}; S.promos.push(n); editId=n.id; }
+    save(); renderList(); $('fTitle').textContent='Editar promoção'; toast('Salvo ✓');
+  };
+  $('bNew').onclick=()=>{ edit(null); $('iUrl').focus(); };
+
+  /* imagem: colar / arrastar / escolher */
+  function fileToData(file){
+    return new Promise((res,rej)=>{ const img=new Image(); img.onload=()=>{ const k=Math.min(1,720/Math.max(img.width,img.height)); const c=document.createElement('canvas'); c.width=Math.round(img.width*k); c.height=Math.round(img.height*k); c.getContext('2d').drawImage(img,0,0,c.width,c.height); let d=c.toDataURL('image/webp',.9); if(!d.startsWith('data:image/webp')) d=c.toDataURL('image/png'); res(d); }; img.onerror=rej; img.src=URL.createObjectURL(file); });
+  }
+  async function setImgFile(f){ try{ curImg=await fileToData(f); $('iImg').value=''; thumb(); preview(); }catch(e){ toast('Não consegui ler essa imagem'); } }
+  $('imgTh').onclick=()=>$('fImg').click();
+  $('fImg').onchange=e=>{ const f=e.target.files[0]; if(f) setImgFile(f); e.target.value=''; };
+  ['dragover','drop'].forEach(t=>$('imgTh').addEventListener(t,e=>{ e.preventDefault(); if(t==='drop'){ const f=e.dataTransfer.files[0]; if(f) setImgFile(f); else { const u=e.dataTransfer.getData('text/uri-list')||e.dataTransfer.getData('text'); if(u){ $('iImg').value=u.trim(); curImg=''; thumb(); preview(); } } } }));
+  document.addEventListener('paste', e => {
+    const items=[...(e.clipboardData?.items||[])]; const im=items.find(i=>i.type.startsWith('image/'));
+    if(im){ e.preventDefault(); setImgFile(im.getAsFile()); toast('Imagem colada ✓'); return; }
+    if(e.target.id==='paste'){
+      const html=e.clipboardData.getData('text/html');
+      if(html){ const m=html.match(/<img[^>]+src=["']([^"']+)["']/i); if(m && /^https?:/.test(m[1]) && !$('iImg').value){ $('iImg').value=m[1]; curImg=''; thumb(); } }
+      setTimeout(fillFromPaste, 0);
+    }
+  });
+
+  /* colar card do site */
+  function fillFromPaste(){
+    const txt=$('paste').value; if(!txt.trim()) return;
+    const lines=txt.split(/\r?\n/).map(s=>s.replace(/\s+/g,' ').trim()).filter(Boolean);
+    const stores=['Mercado Livre','Amazon','Lenovo','Dell','Samsung','KaBuM!','KaBuM','Kabum','Pichau','Terabyte','AliExpress','Magalu','Magazine Luiza','Casas Bahia','Acer','ASUS','Asus','Shopee','Americanas','Fast Shop','Girafa','Ponto','Carrefour','HP','Apple','Positivo','Avell'];
+    const stop=/^(ACESSAR|VER OFERTA|PARCELADO|BAIXOU|CUPOM( DISPON[IÍ]VEL)?|PIX|NOTEBOOKS?|PRECINHO!?|COMPARTILHAR)$/i;
+    const out={};
+    for(const l of lines){
+      if(!out.loja){ const s=stores.find(s=>l.toLowerCase()===s.toLowerCase() || l.toLowerCase()==='em '+s.toLowerCase()); if(s){ out.loja=s; continue; } }
+      if(!out.parcelado && /\d+\s?x\s?de\s?R\$/i.test(l)){ out.parcelado=l.replace(/^(.*?)(ou\s)?R\$/i,(m,a,b)=>(b||'ou ')+'R$').replace(/\s+/g,' '); continue; }
+      const pm=l.match(/R\$\s?([\d.]+,\d{2})\s*(à vista|a vista|no pix|pix)?/i);
+      if(pm && !/x\s?de/i.test(l)){ const pref=/vista|pix/i.test(l); if(!out.preco || (pref && !out._pref)){ out.preco=pm[1]; out._pref=pref; out.sfx=/pix/i.test(l)?'no Pix':'à vista'; } continue; }
+      if(/\|/.test(l) && !out.specs){ out.specs=l.replace(/\s*\|\s*Linux$|\s*\|\s*Windows.*$/i,''); continue; }
+      if(/^há |^\d+ de \w+\.?$|^-?\d+%$|^[0-9]+$/i.test(l)) continue;
+      if(stop.test(l)) { if(/^(BAIXOU|PARCELADO)$/i.test(l)) out.selo=l.toUpperCase(); continue; }
+      const cl=l.replace(/`/g,'');
+      if(!out.cupom && /^[A-Z0-9]{4,18}$/.test(cl) && /[A-Z]/.test(cl)){ out.cupom=cl; continue; }
+      if(l.length>out.titulo?.length||!out.titulo){ if(l.length>=18 && !/R\$/.test(l)) out.titulo=l.replace(/^Precinho!\s*(Teste\s*)?/i,''); }
+    }
+    let n=0; for(const k of ['loja','titulo','specs','preco','sfx','parcelado','cupom','selo']){ if(out[k]){ $(F[k]||'iSfx').value=out[k]; n++; } }
+    if(out.sfx) $('iSfx').value=out.sfx;
+    thumb(); preview(); toast(n?`Preenchi ${n} campos — confere antes de salvar`:'Não reconheci o texto colado');
+  }
+  $('paste').addEventListener('change', fillFromPaste);
+
+  /* mostrar / esconder / rodízio */
+  function pickSound(p, rotStep){
+    if(rotStep && S.cfg.sndRot!=='same') return S.cfg.sndRot||'off';
+    if(p.som) return p.som;
+    if(p.alerta && S.cfg.sndAlert && S.cfg.sndAlert!=='same') return S.cfg.sndAlert;
+    if(p.nova && S.cfg.sndNova && S.cfg.sndNova!=='same') return S.cfg.sndNova;
+    return S.cfg.snd||'off';
+  }
+  function show(p, extra){
+    const cfg=cfgNow(extra); if(!extra || !('sound' in extra)) cfg.sound=pickSound(p, extra?.rotStep); airId=p.id; renderList();
+    $('airT').textContent=p.titulo||'—'; $('airT').classList.add('on');
+    OV.show(p,{...cfg, sound:null}); send({action:'show', promo:p, cfg});
+    clearTimeout(autoT); if(cfg.dur>0 && !cfg.keep) autoT=setTimeout(()=>{ airOff(); }, cfg.dur*1000+400);
+    if(!linkOk()) toast(S.cfg.mode==='remoto'?'Mostrando só na prévia — canal remoto offline':'Mostrando só na prévia — OBS não conectado');
+  }
+  function airOff(){ airId=null; $('airT').textContent='—'; $('airT').classList.remove('on'); renderList(); }
+  function hide(){ stopRot(); clearTimeout(autoT); OV.hide(); send({action:'hide'}); if(airId && S.cfg.sndHide && S.cfg.sndHide!=='off') send({action:'sound', kind:S.cfg.sndHide, vol:+S.cfg.vol, max:+S.cfg.sndMax||0}); airOff(); }
+  function startRot(){
+    const L=S.promos.filter(p=>p.rot!==false); if(!L.length){ toast('Marque “rodízio” em pelo menos uma promo'); return; }
+    rotOn=true; $('bRot').innerHTML='■ Parar rodízio <span class="kbd">R</span>';
+    let i=Math.max(0,L.findIndex(p=>p.id===airId)); const sec=Math.max(5,+S.cfg.rot||20); let first=true;
+    const step=()=>{ if(!rotOn) return; const L2=S.promos.filter(p=>p.rot!==false); if(!L2.length) return stopRot(); show(L2[i%L2.length],{dur:sec,keep:true,rotStep:!first}); first=false; i++; rotT=setTimeout(step, sec*1000); };
+    step();
+  }
+  function stopRot(){ rotOn=false; clearTimeout(rotT); $('bRot').innerHTML='▶ Rodízio <span class="kbd">R</span>'; }
+  $('bRot').onclick=()=> rotOn?stopRot():startRot();
+  $('bHide').onclick=hide;
+  document.addEventListener('keydown', e => {
+    if(e.target.closest('input,textarea,select') || e.ctrlKey || e.metaKey || e.altKey || $('dCfg').open || $('dSnd').open) return;
+    if(e.shiftKey && /^Digit[1-8]$/.test(e.code)){ const id=S.cfg.board[+e.code.slice(5)-1]; if(id) boardPlay(id); e.preventDefault(); return; }
+    if(e.key==='Escape'){ hide(); e.preventDefault(); }
+    else if(/^[1-9]$/.test(e.key)){ const p=S.promos[+e.key-1]; if(p){ stopRot(); show(p); } }
+    else if(e.key.toLowerCase()==='r'){ rotOn?stopRot():startRot(); }
+  });
+
+  /* ===== biblioteca de sons / soundboard ===== */
+  const allSounds=()=>[...SOUNDS.map(([id,name,cat])=>({id,name,cat})), ...S.cfg.customSounds.map(c=>({id:'custom:'+c.id,name:c.name,cat:'Meus sons'}))];
+  const soundName=id=>allSounds().find(x=>x.id===id)?.name||id;
+  function soundSelect(sel, extra){
+    const v=sel.value, cats={}; allSounds().forEach(x=>(cats[x.cat]=cats[x.cat]||[]).push(x));
+    sel.innerHTML=extra.map(([k,t])=>`<option value="${k}">${esc(t)}</option>`).join('')+Object.entries(cats).map(([c,l])=>`<optgroup label="${esc(c)}">${l.map(x=>`<option value="${esc(x.id)}">${esc(x.name)}</option>`).join('')}</optgroup>`).join('');
+    if(v) sel.value=v;
+  }
+  const EV={sEvShow:['snd',[['off','Sem som']]],sEvAlert:['sndAlert',[['same','Igual ao padrão'],['off','Sem som']]],sEvNova:['sndNova',[['same','Igual ao padrão'],['off','Sem som']]],sEvRot:['sndRot',[['off','Sem som (só na 1ª)'],['same','Tocar em todas']]],sEvHide:['sndHide',[['off','Sem som']]]};
+  function refreshSoundSelects(){ for(const id in EV){ soundSelect($(id),EV[id][1]); $(id).value=S.cfg[EV[id][0]]||EV[id][1][0][0]; } const v=$('iSom').value; soundSelect($('iSom'),[['','Automático (regras do 🔊 Sons)'],['off','Sem som']]); $('iSom').value=v; }
+  function renderBoard(){ $('board').innerHTML=S.cfg.board.slice(0,8).map((id,i)=>`<button class="btn sb" data-s="${esc(id)}" title="Toca na live — Shift+${i+1}">${esc(soundName(id))}<span class="kbd">⇧${i+1}</span></button>`).join(''); }
+  function boardPlay(id){ if(linkOk()){ send({action:'sound', kind:id, vol:+S.cfg.vol, max:+S.cfg.sndMax||0}); toast('🔊 '+soundName(id)); } else { SFX.play(id,+S.cfg.vol,+S.cfg.sndMax||0); toast('Tocando aqui — overlay não conectado'); } }
+  $('board').addEventListener('click',e=>{ const b=e.target.closest('[data-s]'); if(b) boardPlay(b.dataset.s); });
+  function renderSnd(){
+    let cur=''; $('sGrid').innerHTML=allSounds().map(x=>{ const head=x.cat!==cur?`<div class="scat">${esc(x.cat)}</div>`:''; cur=x.cat; const pin=S.cfg.board.includes(x.id);
+      return head+`<div class="sc" data-id="${esc(x.id)}"><button class="ib" data-a="here" title="Ouvir aqui">▶</button><span class="sn" title="${esc(x.name)}">${esc(x.name)}</span><button class="ib" data-a="live" title="Tocar na live (OBS)">📡</button><button class="ib ${pin?'on':''}" data-a="pin" title="${pin?'Tirar do':'Fixar no'} soundboard">📌</button>${x.cat==='Meus sons'?'<button class="ib" data-a="del" title="Remover">✕</button>':''}</div>`; }).join('');
+  }
+  $('sGrid').addEventListener('click',e=>{
+    const c=e.target.closest('.sc'), a=e.target.closest('[data-a]')?.dataset.a; if(!c||!a) return; const id=c.dataset.id;
+    if(a==='here') SFX.play(id,+S.cfg.vol,+S.cfg.sndMax||0);
+    if(a==='live'){ if(!linkOk()){ toast('Conecte ao OBS (ou ao canal remoto) para tocar na live'); return; } send({action:'sound',kind:id,vol:+S.cfg.vol,max:+S.cfg.sndMax||0}); toast('📡 '+soundName(id)); }
+    if(a==='pin'){ const i=S.cfg.board.indexOf(id); if(i>=0) S.cfg.board.splice(i,1); else { if(S.cfg.board.length>=8){ toast('O soundboard tem 8 botões — tire um antes'); return; } S.cfg.board.push(id); } save(); renderSnd(); renderBoard(); }
+    if(a==='del'){ if(!confirm('Remover este som?')) return; const cid=id.slice(7); S.cfg.customSounds=S.cfg.customSounds.filter(x=>x.id!==cid); S.cfg.board=S.cfg.board.filter(x=>x!==id); for(const k of ['snd','sndAlert','sndNova','sndRot','sndHide']) if(S.cfg[k]===id) S.cfg[k]=DEF_CFG[k]; save(); sendLib(); renderSnd(); renderBoard(); refreshSoundSelects(); }
+  });
+  function addCustom(name, src){ S.cfg.customSounds.push({id:uid(), name, src}); save(); sendLib(); renderSnd(); refreshSoundSelects(); }
+  $('sUp').onclick=()=>$('sFile').click();
+  $('sFile').onchange=e=>{ [...e.target.files].forEach(f=>{ if(f.size>600*1024){ toast(`“${f.name}” é grande demais (máx. ~600 KB)`); return; } const rd=new FileReader(); rd.onload=()=>{ addCustom(f.name.replace(/\.[^.]+$/,''), rd.result); toast('Som adicionado ✓'); }; rd.readAsDataURL(f); }); e.target.value=''; };
+  $('sLinkAdd').onclick=()=>{ const u=$('sLink').value.trim(); if(!/^https?:\/\/\S+/.test(u)){ toast('Cole um link http(s) de um arquivo de áudio'); return; } const nm=decodeURIComponent(u.split('/').pop().split('?')[0]).replace(/\.[^.]+$/,'').replace(/[-_]+/g,' ').slice(0,40)||'Som da web'; addCustom(nm,u); $('sLink').value=''; toast('Link adicionado ✓ — teste com ▶'); };
+  for(const id in EV) $(id).addEventListener('change',()=>{ S.cfg[EV[id][0]]=$(id).value; save(); });
+  $('sVol').addEventListener('input',()=>{ S.cfg.vol=+$('sVol').value; $('sVolV').textContent=S.cfg.vol+'%'; save(); });
+  $('sMax').addEventListener('change',()=>{ S.cfg.sndMax=Math.max(0,+$('sMax').value||0); save(); });
+  $('bSnd').onclick=()=>{ renderSnd(); refreshSoundSelects(); $('sVol').value=S.cfg.vol; $('sVolV').textContent=S.cfg.vol+'%'; $('sMax').value=S.cfg.sndMax; $('dSnd').showModal(); };
+  $('sClose').onclick=()=>$('dSnd').close();
+  $('iSomTest').onclick=()=>{ const p=readForm(); const k=pickSound(p); if(k==='off'){ toast('Essa promo está sem som'); return; } SFX.play(k,+S.cfg.vol,+S.cfg.sndMax||0); toast('▶ '+soundName(k)+' (aqui no painel)'); };
+  SFX.setLib(S.cfg.customSounds); refreshSoundSelects(); renderBoard();
+
+  /* config */
+  const C={mode:'cMode',ovBase:'cOvBase',pw:'cPw',port:'cPort',pos:'cPos',scale:'cSc',layout:'cLay',newHours:'cNew',dur:'cDur',rot:'cRot',cta:'cCta'};
+  function toFileUrl(x){ x=String(x||'').trim(); if(!x) return ''; if(/^(https?|file):/i.test(x)) return x.split('#')[0]; return 'file:///'+x.replace(/\\/g,'/').replace(/^\/+/,'').split('/').map(encodeURIComponent).join('/').replace(/^([A-Za-z])%3A/,'$1:'); }
+  function overlayUrl(kind){
+    kind = kind || S.cfg.mode;
+    const q=new URLSearchParams(); q.set('overlay','');
+    if(kind!=='local'){ q.set('canal',S.cfg.canal); if(S.cfg.relay && S.cfg.relay!==RELAY_DEF) q.set('relay',S.cfg.relay); }
+    if(kind!=='remoto'){ if(S.cfg.pw) q.set('senha',S.cfg.pw); if(String(S.cfg.port)!=='4455') q.set('port',S.cfg.port); if(kind==='ambos') q.set('local',''); }
+    const here=location.href.split('#')[0], ob=String(S.cfg.ovBase||'').trim();
+    // aberto pelo site (https): o próprio endereço já serve pro outro PC; arquivo local: usa o caminho informado
+    const base = kind!=='remoto' ? here : /^https?:/i.test(ob) ? ob.split('#')[0] : /^https?:/i.test(here) ? here : (toFileUrl(ob) || here);
+    return base+'#'+q.toString().replace(/=(&|$)/g,'$1');
+  }
+  function modeUi(){ const m=$('cMode').value; document.querySelectorAll('#dCfg [data-m]').forEach(e=>{ e.style.display = (m==='ambos' || e.dataset.m===m) ? '' : 'none'; }); $('cCanal').value=S.cfg.canal; $('cConn').textContent = m==='remoto' ? 'Ligar canal' : 'Conectar'; }
+  function sndUi(){ $('cScV').textContent=Math.round(($('cSc').value||1)*100); }
+  function openCfg(){ for(const k in C) $(C[k]).value=S.cfg[k]??''; modeUi(); $('cLogo').checked=S.cfg.logo!==false; $('cQr').checked=!!S.cfg.qr; sndUi(); $('cUrl').value=overlayUrl(); $('dCfg').showModal(); }
+  function readCfg(){ for(const k in C) S.cfg[k]=$(C[k]).value.trim(); S.cfg.logo=$('cLogo').checked; S.cfg.qr=$('cQr').checked; S.cfg.scale=+S.cfg.scale; save(); sndUi(); modeUi(); $('cUrl').value=overlayUrl(); }
+  Object.values(C).forEach(id=>$(id).addEventListener('change',()=>{ readCfg(); if(OV.showing||!airId) preview(); }));
+  ['cLogo','cQr'].forEach(id=>$(id).addEventListener('change',()=>{ readCfg(); preview(); }));
+  $('cSc').addEventListener('input',()=>{ readCfg(); preview(); });
+  $('bCfg').onclick=openCfg; $('cClose').onclick=()=>$('dCfg').close();
+  $('cConn').onclick=()=>{ readCfg(); S.cfg.connected=true; save(); applyMode(); toast(S.cfg.mode==='remoto'?'Ligando o canal remoto…':'Conectando…'); };
+  $('cMode').addEventListener('change',()=>{ readCfg(); applyMode(); });
+  $('cNewCanal').onclick=()=>{ if(!confirm('Gerar um canal novo? O link antigo do overlay para de funcionar.')) return; S.cfg.canal=newCanal(); save(); modeUi(); $('cUrl').value=overlayUrl(); applyMode(); toast('Canal novo gerado — copie o link de novo'); };
+  $('cFix').onclick=()=>{ readCfg(); fixOverlay(false); };
+  $('cTest').onclick=async()=>{
+    readCfg(); if(S.cfg.mode==='local'){ toast('Escolha o modo “Em outro PC” primeiro'); return; }
+    if(!relay.es) applyMode(); await new Promise(r=>setTimeout(r,1200));
+    let got=false; const done=new Promise(r=>{ echoWait=()=>{ got=true; r(); }; setTimeout(r,7000); });
+    const ok=await relay.publish(topicOf(S.cfg.canal)+'_v',{action:'echo-self', mid:mid()}); await done; echoWait=null;
+    if(!ok) alert('❌ Este PC NÃO conseguiu enviar para o canal ('+(relay.lastErr||'erro')+').\nPossível bloqueio de antivírus/firewall/rede para ntfy.sh.');
+    else if(!got) alert('⚠️ Enviou, mas não recebeu de volta em 7s.\nAlgo está bloqueando a conexão contínua (EventSource) com ntfy.sh neste PC.');
+    else alert('✅ O canal funciona neste PC (envia e recebe).\n\nSe o overlay remoto não responde, o problema está no PC de SP:\n• o arquivo não está no caminho do link, ou\n• lá está uma versão antiga (precisa ser '+VERSION+'+).\n\nNo PC de SP, abra o link do overlay no Chrome com “&debug” no final para ver o diagnóstico.');
+  };
+  $('cOpenTest').onclick=()=>{ readCfg(); const u=overlayUrl('remoto').replace(/^[^#]*/, location.href.split('#')[0])+'&debug'; window.open(u,'_blank'); toast('Abri um overlay de teste — clique ▶ numa promo e veja se ele recebe'); };
+  $('cCopy').onclick=async()=>{ readCfg(); const u=overlayUrl(); try{ await navigator.clipboard.writeText(u); }catch(e){ $('cUrl').select(); document.execCommand('copy'); } toast('Link do overlay copiado ✓'); };
+
+  /* backup */
+  $('bExp').onclick=()=>{ const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify({promos:S.promos},null,1)],{type:'application/json'})); a.download='bench-live-promos.json'; a.click(); };
+  $('bImp').onclick=()=>$('fImp').click();
+  $('fImp').onchange=async e=>{ const f=e.target.files[0]; if(!f) return; try{ const o=JSON.parse(await f.text()); (o.promos||[]).forEach(p=>S.promos.push({...p,id:uid()})); save(); renderList(); toast('Importado ✓'); }catch(err){ toast('Arquivo inválido'); } e.target.value=''; };
+
+  let tt; function toast(t){ const e=$('toast'); e.textContent=t; e.classList.add('on'); clearTimeout(tt); tt=setTimeout(()=>e.classList.remove('on'),2400); }
+  window.toast=toast;
+
+  if(!S.cfg.connected && S.cfg.mode==='local') setTimeout(openCfg, 300);
+  edit(S.promos[0]?.id||null);
+  if(!S.promos.length){ OV.show(DEMO, cfgNow({dur:0, sound:null})); document.querySelector('.tb[data-t=site]').click(); }
+}
+</script>
+</body>
+</html>

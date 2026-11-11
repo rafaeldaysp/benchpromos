@@ -71,6 +71,18 @@ const nextConfig = {
         source: '/sorteios',
         destination: '/giveaways',
       },
+      {
+        source: '/liveoverlay',
+        destination: '/liveoverlay.html',
+      },
+    ]
+  },
+  async headers() {
+    // OBS browser sources must always pull the latest overlay version
+    const noCache = [{ key: 'Cache-Control', value: 'no-cache, must-revalidate' }]
+    return [
+      { source: '/liveoverlay', headers: noCache },
+      { source: '/liveoverlay.html', headers: noCache },
     ]
   },
   output: 'standalone',
