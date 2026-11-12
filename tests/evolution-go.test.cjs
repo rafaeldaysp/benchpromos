@@ -28,7 +28,7 @@ function load(env, fetchFn) {
   })
   const module = { exports: {} }
   runInNewContext(outputText, {
-    module, exports: module.exports, fetch: fetchFn, AbortSignal, Response, JSON,
+    module, exports: module.exports, fetch: fetchFn, AbortSignal, Response, JSON, FormData, Blob,
     require: (name) => { if (name === '@/env.mjs') return { env }; throw new Error(name) },
   })
   return module.exports
@@ -119,4 +119,28 @@ test('the tech target reads WHATSAPP_TECH_CHAT_IDS, not the general list', () =>
 test('the tech target stays dark when only the general list is set', () => {
   const { getEvolutionGoServerConfig } = load({ ...base, WHATSAPP_CHAT_IDS: '1@newsletter' })
   assert.equal(getEvolutionGoServerConfig('tech'), null)
+})
+
+test('sendMediaFile uploads the bytes as multipart to /send/media', async () => {
+  const server = new FakeEvolutionGoServer(sent)
+  const { createEvolutionGoClient } = load(base, server.fetch)
+  const client = createEvolutionGoClient({ apiUrl: 'https://wa.test', instanceToken: 'token' })
+
+  await client.sendMediaFile({
+    number: '120363426558017946@newsletter',
+    file: Buffer.from([0xff, 0xd8, 0xff]),
+    caption: 'oferta',
+  })
+
+  const { url, init } = server.requests[0]
+  assert.equal(url, 'https://wa.test/send/media')
+  assert.equal(init.headers.apikey, 'token')
+  assert.equal(init.headers['Content-Type'], undefined)
+  assert.equal(init.body.get('number'), '120363426558017946@newsletter')
+  assert.equal(init.body.get('type'), 'image')
+  assert.equal(init.body.get('caption'), 'oferta')
+  const file = init.body.get('file')
+  assert.equal(file.size, 3)
+  assert.equal(file.type, 'image/jpeg')
+  assert.equal(file.name, 'image.jpg')
 })

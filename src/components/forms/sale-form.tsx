@@ -213,11 +213,12 @@ export function SaleForm({
   const [shareDestinations, setShareDestinations] = React.useState<
     Record<Destination, boolean>
   >({
-    // On create, Tecnologia is on by default; on edit (a manual retry) every
-    // channel starts off so nothing re-shares unless explicitly enabled.
+    // On create, Tecnologia and WhatsApp (like the post page) are on by
+    // default; on edit (a manual retry) every channel starts off so nothing
+    // re-shares unless explicitly enabled.
     'telegram-general': false,
     'telegram-tech': mode === 'create',
-    whatsapp: false,
+    whatsapp: mode === 'create' && whatsappEnabled,
     'discord-gerais': false,
     'discord-promocoes': false,
   })

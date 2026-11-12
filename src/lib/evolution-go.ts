@@ -27,6 +27,15 @@ interface SendMediaParams {
   fileName?: string
 }
 
+interface SendMediaFileParams {
+  number: string
+  file: Buffer
+  mediatype?: WhatsappMediaType
+  caption?: string
+  fileName?: string
+  mimeType?: string
+}
+
 interface EvolutionGoSendResult {
   message?: string
   data?: { Info?: { ID?: string } }
@@ -87,13 +96,15 @@ export function createEvolutionGoClient(config: EvolutionGoConfig) {
     let response: Response
 
     try {
+      // FormData goes as-is so fetch sets the multipart boundary itself.
+      const isForm = body instanceof FormData
       response = await fetch(`${apiUrl}${path}`, {
         method,
         headers: {
           apikey: config.instanceToken,
-          ...(body ? { 'Content-Type': 'application/json' } : {}),
+          ...(body && !isForm ? { 'Content-Type': 'application/json' } : {}),
         },
-        body: body ? JSON.stringify(body) : undefined,
+        body: isForm ? body : body ? JSON.stringify(body) : undefined,
         cache: 'no-store',
         signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
       })
@@ -151,6 +162,29 @@ export function createEvolutionGoClient(config: EvolutionGoConfig) {
         ...(caption ? { caption } : {}),
         ...(fileName ? { filename: fileName } : {}),
       })
+    },
+
+    /** Uploads the image bytes directly (multipart) instead of a URL. */
+    sendMediaFile({
+      number,
+      file,
+      mediatype = 'image',
+      caption,
+      fileName = 'image.jpg',
+      mimeType = 'image/jpeg',
+    }: SendMediaFileParams) {
+      const form = new FormData()
+      form.append('number', toWhatsappNumber(number))
+      form.append('type', mediatype)
+      if (caption) form.append('caption', caption)
+      form.append('filename', fileName)
+      form.append(
+        'file',
+        new Blob([new Uint8Array(file)], { type: mimeType }),
+        fileName,
+      )
+
+      return request<EvolutionGoSendResult>('POST', '/send/media', form)
     },
   }
 }

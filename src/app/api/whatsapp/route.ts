@@ -15,6 +15,7 @@ import {
   getEvolutionGoServerConfig,
   type WhatsappTarget,
 } from '@/lib/evolution-go'
+import { prepareSquareWhatsappImage } from '@/lib/whatsapp-image'
 
 export const dynamic = 'force-dynamic'
 
@@ -80,14 +81,21 @@ export async function POST(request: Request) {
     buildTelegramPostText(parsedMessage.data),
     WHATSAPP_CAPTION_LIMIT,
   )
+  // Square the image once (in memory) so cards stay compact; every chat gets
+  // the same bytes. If framing fails, fall back to the original image URL.
+  const squareImage = await prepareSquareWhatsappImage(
+    parsedMessage.data.imageUrl,
+  )
   const results = await Promise.allSettled(
     config.chatIds.map((chatId) =>
-      client.sendMedia({
-        number: chatId,
-        media: parsedMessage.data.imageUrl,
-        mediatype: 'image',
-        caption,
-      }),
+      squareImage
+        ? client.sendMediaFile({ number: chatId, file: squareImage, caption })
+        : client.sendMedia({
+            number: chatId,
+            media: parsedMessage.data.imageUrl,
+            mediatype: 'image',
+            caption,
+          }),
     ),
   )
   const errors = results.flatMap((result) =>
