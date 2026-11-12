@@ -105,3 +105,18 @@ test('surfaces the provider error text with a retryable flag', async () => {
   })
   assert.equal(server.lastJson.number, '5511999998888')
 })
+
+test('the tech target reads WHATSAPP_TECH_CHAT_IDS, not the general list', () => {
+  const { getEvolutionGoServerConfig } = load({
+    ...base,
+    WHATSAPP_CHAT_IDS: '1@newsletter',
+    WHATSAPP_TECH_CHAT_IDS: ' 2@newsletter, 3@g.us ',
+  })
+  assert.deepEqual([...getEvolutionGoServerConfig('tech').chatIds], ['2@newsletter', '3@g.us'])
+  assert.deepEqual([...getEvolutionGoServerConfig().chatIds], ['1@newsletter'])
+})
+
+test('the tech target stays dark when only the general list is set', () => {
+  const { getEvolutionGoServerConfig } = load({ ...base, WHATSAPP_CHAT_IDS: '1@newsletter' })
+  assert.equal(getEvolutionGoServerConfig('tech'), null)
+})

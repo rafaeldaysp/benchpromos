@@ -4,7 +4,8 @@ import { getEvolutionGoServerConfig } from '@/lib/evolution-go'
 import { SalesMain } from './main'
 
 export default async function SalesDashboardPage() {
-  const whatsappEnabled = getEvolutionGoServerConfig() !== null
+  // Sale posts go to the tech WhatsApp chats (WHATSAPP_TECH_CHAT_IDS).
+  const whatsappEnabled = getEvolutionGoServerConfig('tech') !== null
   const discordEnabled =
     Boolean(env.DISCORD_GERAIS_WEBHOOK_URL) ||
     Boolean(env.DISCORD_PROMOCOES_WEBHOOK_URL)

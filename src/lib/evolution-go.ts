@@ -160,19 +160,41 @@ export interface EvolutionGoServerConfig extends EvolutionGoConfig {
 }
 
 /**
- * Resolves Evolution Go config from env. WHATSAPP_CHAT_IDS is a comma-separated
- * list of chats (group JIDs, channel JIDs or numbers); every post goes to all
- * of them. Returns null when the channel is not configured (missing
- * url/token/chats) so callers can stay dark.
+ * Which chat list a post goes to. Mirrors the Telegram general/tech split:
+ * the post page (telegram form) sends `general`, the sale page sends `tech`.
  */
-export function getEvolutionGoServerConfig(): EvolutionGoServerConfig | null {
-  const chatIds = Array.from(
+export type WhatsappTarget = 'general' | 'tech'
+
+export const WHATSAPP_CHAT_IDS_ENV_NAME: Record<WhatsappTarget, string> = {
+  general: 'WHATSAPP_CHAT_IDS',
+  tech: 'WHATSAPP_TECH_CHAT_IDS',
+}
+
+function parseChatIds(value: string | undefined) {
+  return Array.from(
     new Set(
-      (env.WHATSAPP_CHAT_IDS ?? '')
+      (value ?? '')
         .split(',')
         .map((chatId) => chatId.trim())
         .filter(Boolean),
     ),
+  )
+}
+
+/**
+ * Resolves Evolution Go config from env for a target. WHATSAPP_CHAT_IDS
+ * (general) and WHATSAPP_TECH_CHAT_IDS (tech) are comma-separated lists of
+ * chats (group JIDs, channel JIDs or numbers); every post goes to all chats of
+ * its target. Returns null when that target is not configured (missing
+ * url/token/chats) so callers can stay dark.
+ *
+ * @example getEvolutionGoServerConfig('tech')?.chatIds
+ */
+export function getEvolutionGoServerConfig(
+  target: WhatsappTarget = 'general',
+): EvolutionGoServerConfig | null {
+  const chatIds = parseChatIds(
+    target === 'tech' ? env.WHATSAPP_TECH_CHAT_IDS : env.WHATSAPP_CHAT_IDS,
   )
 
   if (

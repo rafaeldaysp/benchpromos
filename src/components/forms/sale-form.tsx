@@ -380,6 +380,10 @@ export function SaleForm({
             ok: true as const,
             message: await sendToDestination(destination, message, {
               discordRoles: shareDiscordRoles,
+              // Sale posts use the tech WhatsApp chats. Only for WhatsApp:
+              // extraBody overrides the destination payload, and the Telegram
+              // destinations carry their own `target`.
+              ...(destination === 'whatsapp' ? { target: 'tech' } : {}),
             }),
           }
         } catch (error) {

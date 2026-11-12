@@ -26,6 +26,8 @@ export const env = createEnv({
     EVOLUTION_GO_URL: z.string().url().optional(),
     EVOLUTION_GO_INSTANCE_TOKEN: z.string().min(1).optional(),
     WHATSAPP_CHAT_IDS: z.string().min(1).optional(),
+    // Chats for posts made from the sale page (mirrors TELEGRAM_TECH_CHAT_ID).
+    WHATSAPP_TECH_CHAT_IDS: z.string().min(1).optional(),
   },
   /*
    * Environment variables available on the client (and server).
@@ -66,6 +68,7 @@ export const env = createEnv({
     EVOLUTION_GO_URL: process.env.EVOLUTION_GO_URL,
     EVOLUTION_GO_INSTANCE_TOKEN: process.env.EVOLUTION_GO_INSTANCE_TOKEN,
     WHATSAPP_CHAT_IDS: process.env.WHATSAPP_CHAT_IDS,
+    WHATSAPP_TECH_CHAT_IDS: process.env.WHATSAPP_TECH_CHAT_IDS,
     NEXT_PUBLIC_GOOGLE_ADSENSE_CLIENT:
       process.env.NEXT_PUBLIC_GOOGLE_ADSENSE_CLIENT,
   },

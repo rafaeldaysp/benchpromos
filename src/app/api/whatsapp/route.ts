@@ -10,8 +10,10 @@ import {
 import { telegramMessageSchema } from '@/lib/validations/telegram'
 import {
   EvolutionGoError,
+  WHATSAPP_CHAT_IDS_ENV_NAME,
   createEvolutionGoClient,
   getEvolutionGoServerConfig,
+  type WhatsappTarget,
 } from '@/lib/evolution-go'
 
 export const dynamic = 'force-dynamic'
@@ -33,13 +35,16 @@ export async function POST(request: Request) {
     )
   }
 
-  const config = getEvolutionGoServerConfig()
+  // The sale page sends `target: 'tech'` (WHATSAPP_TECH_CHAT_IDS); everything
+  // else, like the post page, goes to the general list (WHATSAPP_CHAT_IDS).
+  // Read from the raw body because the message schema strips unknown keys.
+  const target: WhatsappTarget = body?.target === 'tech' ? 'tech' : 'general'
+  const config = getEvolutionGoServerConfig(target)
 
   if (!config) {
     return NextResponse.json(
       {
-        message:
-          'Configure EVOLUTION_GO_URL, EVOLUTION_GO_INSTANCE_TOKEN e WHATSAPP_CHAT_IDS.',
+        message: `Configure EVOLUTION_GO_URL, EVOLUTION_GO_INSTANCE_TOKEN e ${WHATSAPP_CHAT_IDS_ENV_NAME[target]}.`,
       },
       { status: 500 },
     )
