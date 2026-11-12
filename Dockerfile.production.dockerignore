@@ -10,3 +10,4 @@ tests
 coverage
 *.log
 *.tsbuildinfo
+livechat

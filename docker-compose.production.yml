@@ -45,6 +45,45 @@ services:
       start_period: 60s
     deploy:
       replicas: 16
+  # Bench Chat (YouTube chat overlay for OBS). Stateful: keeps the chat
+  # connection and settings in memory/on its volume, so it must stay at 1 replica.
+  # Dokploy domain: benchpromos.com.br, path /livechat, port 3500 (no strip).
+  livechat:
+    image: benchpromos-livechat:main
+    build:
+      context: ./livechat
+    pull_policy: never
+    environment:
+      PORTA: "3500"
+      SENHA: ${LIVECHAT_PASSWORD:?Set LIVECHAT_PASSWORD in Dokploy}
+    volumes:
+      - livechat-data:/data
+    restart: unless-stopped
+    init: true
+    networks:
+      - dokploy-network
+    expose:
+      - "3500"
+    stop_grace_period: 10s
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - fetch('http://127.0.0.1:3500/overlay').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    deploy:
+      replicas: 1
+volumes:
+  livechat-data:
 networks:
   dokploy-network:
     external: true
