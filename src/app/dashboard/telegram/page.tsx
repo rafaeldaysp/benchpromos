@@ -1,10 +1,10 @@
 import { Separator } from '@/components/ui/separator'
 import { env } from '@/env.mjs'
-import { getWhatsmiauServerConfig } from '@/lib/whatsmiau'
+import { getEvolutionGoServerConfig } from '@/lib/evolution-go'
 import { TelegramMain } from './main'
 
 export default function TelegramDashboardPage() {
-  const whatsappEnabled = getWhatsmiauServerConfig() !== null
+  const whatsappEnabled = getEvolutionGoServerConfig() !== null
   const discordEnabled =
     Boolean(env.DISCORD_GERAIS_WEBHOOK_URL) ||
     Boolean(env.DISCORD_PROMOCOES_WEBHOOK_URL)

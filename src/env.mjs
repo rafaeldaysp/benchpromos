@@ -22,10 +22,10 @@ export const env = createEnv({
     TELEGRAM_TECH_CHAT_ID: z.string().min(1).optional(),
     DISCORD_GERAIS_WEBHOOK_URL: z.string().url().optional(),
     DISCORD_PROMOCOES_WEBHOOK_URL: z.string().url().optional(),
-    WHATSMIAU_API_URL: z.string().url().default('https://api.whatsmiau.dev/v2'),
-    WHATSMIAU_API_KEY: z.string().min(1).optional(),
-    WHATSMIAU_INSTANCE: z.string().min(1).optional(),
-    WHATSMIAU_CHAT_IDS: z.string().min(1).optional(),
+    // WhatsApp via self-hosted Evolution Go (shared with bench-promos-v3).
+    EVOLUTION_GO_URL: z.string().url().optional(),
+    EVOLUTION_GO_INSTANCE_TOKEN: z.string().min(1).optional(),
+    WHATSAPP_CHAT_IDS: z.string().min(1).optional(),
   },
   /*
    * Environment variables available on the client (and server).
@@ -63,10 +63,9 @@ export const env = createEnv({
     TELEGRAM_TECH_CHAT_ID: process.env.TELEGRAM_TECH_CHAT_ID,
     DISCORD_GERAIS_WEBHOOK_URL: process.env.DISCORD_GERAIS_WEBHOOK_URL,
     DISCORD_PROMOCOES_WEBHOOK_URL: process.env.DISCORD_PROMOCOES_WEBHOOK_URL,
-    WHATSMIAU_API_URL: process.env.WHATSMIAU_API_URL,
-    WHATSMIAU_API_KEY: process.env.WHATSMIAU_API_KEY,
-    WHATSMIAU_INSTANCE: process.env.WHATSMIAU_INSTANCE,
-    WHATSMIAU_CHAT_IDS: process.env.WHATSMIAU_CHAT_IDS,
+    EVOLUTION_GO_URL: process.env.EVOLUTION_GO_URL,
+    EVOLUTION_GO_INSTANCE_TOKEN: process.env.EVOLUTION_GO_INSTANCE_TOKEN,
+    WHATSAPP_CHAT_IDS: process.env.WHATSAPP_CHAT_IDS,
     NEXT_PUBLIC_GOOGLE_ADSENSE_CLIENT:
       process.env.NEXT_PUBLIC_GOOGLE_ADSENSE_CLIENT,
   },

@@ -9,10 +9,10 @@ import {
 } from '@/lib/telegram'
 import { telegramMessageSchema } from '@/lib/validations/telegram'
 import {
-  WhatsmiauError,
-  createWhatsmiauClient,
-  getWhatsmiauServerConfig,
-} from '@/lib/whatsmiau'
+  EvolutionGoError,
+  createEvolutionGoClient,
+  getEvolutionGoServerConfig,
+} from '@/lib/evolution-go'
 
 export const dynamic = 'force-dynamic'
 
@@ -33,19 +33,19 @@ export async function POST(request: Request) {
     )
   }
 
-  const config = getWhatsmiauServerConfig()
+  const config = getEvolutionGoServerConfig()
 
   if (!config) {
     return NextResponse.json(
       {
         message:
-          'Configure WHATSMIAU_API_KEY, WHATSMIAU_INSTANCE e WHATSMIAU_CHAT_IDS.',
+          'Configure EVOLUTION_GO_URL, EVOLUTION_GO_INSTANCE_TOKEN e WHATSAPP_CHAT_IDS.',
       },
       { status: 500 },
     )
   }
 
-  const client = createWhatsmiauClient(config)
+  const client = createEvolutionGoClient(config)
 
   // Guard: never send to a disconnected instance — it hangs with an i/o
   // timeout. Check the connection first and fail fast and clearly.
@@ -64,7 +64,7 @@ export async function POST(request: Request) {
   } catch (error) {
     return NextResponse.json(
       { message: 'Não foi possível verificar a conexão do WhatsApp.' },
-      { status: error instanceof WhatsmiauError ? error.status : 502 },
+      { status: error instanceof EvolutionGoError ? error.status : 502 },
     )
   }
 
@@ -101,10 +101,10 @@ export async function POST(request: Request) {
   const failedChats = config.chatIds.filter(
     (_, index) => results[index].status === 'rejected',
   )
-  console.error('whatsmiau send failed', { failedChats, errors })
+  console.error('evolution-go send failed', { failedChats, errors })
 
   const [error] = errors
-  const status = error instanceof WhatsmiauError ? error.status : 502
+  const status = error instanceof EvolutionGoError ? error.status : 502
 
   // Partial failure: say so explicitly — retrying the whole post would
   // duplicate it in the chats that already received it.
@@ -119,7 +119,7 @@ export async function POST(request: Request) {
     )
   }
 
-  if (error instanceof WhatsmiauError) {
+  if (error instanceof EvolutionGoError) {
     return NextResponse.json(
       {
         message: error.retryable
