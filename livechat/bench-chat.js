@@ -211,12 +211,52 @@ function ocultar() {
   todos('ocultar', {});
 }
 
+/* ── apoios: Super Chat, sticker, membros e presentes, com histórico e totais próprios ── */
+let apoios = [];
+let totais = novoTotais();
+let videoDosApoios = null;
+function novoTotais() { return { superchats: 0, valores: {}, membros: 0, presentes: 0, assinaturas: 0 }; }
+function valorNumerico(txt) {
+  const t = String(txt || '').trim();
+  const moeda = t.replace(/[\d.,\s\u00a0]/g, '') || '?';
+  let n = (t.match(/[\d.,]+/) || [''])[0];
+  if (!n) return null;
+  const v = n.lastIndexOf(','), p = n.lastIndexOf('.');
+  if (v > -1 && p > -1) n = v > p ? n.replace(/\./g, '').replace(',', '.') : n.replace(/,/g, '');
+  else if (v > -1) n = /,\d{1,2}$/.test(n) ? n.replace(/\./g, '').replace(',', '.') : n.replace(/,/g, '');
+  else if (p > -1 && !/\.\d{1,2}$/.test(n)) n = n.replace(/\./g, '');
+  const x = parseFloat(n);
+  return Number.isFinite(x) ? { moeda, valor: x } : null;
+}
+function contarApoio(m) {
+  if (m.teste) return;
+  if (m.tipo === 'superchat' || m.tipo === 'sticker') {
+    totais.superchats++;
+    const v = valorNumerico(m.valor);
+    if (v) totais.valores[v.moeda] = Math.round(((totais.valores[v.moeda] || 0) + v.valor) * 100) / 100;
+  } else if (m.tipo === 'membro') totais.membros++;
+  else if (m.tipo === 'presente') {
+    totais.presentes++;
+    totais.assinaturas += parseInt((String(m.titulo || '').match(/\d+/) || ['1'])[0], 10) || 1;
+  }
+}
+function zerarApoios() {
+  apoios = []; totais = novoTotais();
+  transmitir('painel', 'apoios', { apoios, totais });
+}
+
 function adicionar(msg, { historico = false, auto = true } = {}) {
   if (!msg || !msg.id || idsVistos.has(msg.id)) return;
   idsVistos.add(msg.id);
-  if (idsVistos.size > 5000) { idsVistos.clear(); for (const m of mensagens) idsVistos.add(m.id); }
+  if (idsVistos.size > 5000) { idsVistos.clear(); for (const m of mensagens.concat(apoios)) idsVistos.add(m.id); }
   mensagens.push(msg);
   if (mensagens.length > 300) mensagens.splice(0, mensagens.length - 300);
+  if (msg.tipo !== 'texto') {
+    apoios.push(msg);
+    if (apoios.length > 500) apoios.splice(0, apoios.length - 500);
+    contarApoio(msg);
+    transmitir('painel', 'totais', totais);
+  }
   transmitir('painel', 'msg', msg);
   if (historico) return;
   transmitir('overlay', 'msg', msg);
@@ -224,9 +264,10 @@ function adicionar(msg, { historico = false, auto = true } = {}) {
 }
 
 function remover(filtro) {
-  const ids = mensagens.filter(filtro).map(m => m.id);
+  const ids = [...new Set(mensagens.concat(apoios).filter(filtro).map(m => m.id))];
   if (!ids.length) return;
   mensagens = mensagens.filter(m => !ids.includes(m.id));
+  apoios = apoios.filter(m => !ids.includes(m.id));
   todos('remover', { ids });
   if (destaque && ids.includes(destaque.id)) ocultar();
 }
@@ -470,6 +511,7 @@ const leitor = {
         const ctx = await abrirChat(videoId);
         if (g !== this.geracao) return;
         const info = await tituloDoVideo(videoId);
+        if (videoId !== videoDosApoios) { videoDosApoios = videoId; zerarApoios(); }   // live nova, apoios do zero
         setStatus('conectado', 'Conectado ao chat', { videoId, ...info });
         processar(ctx.iniciais, { historico: true });
         let token = ctx.continuacao, falhas = 0;
@@ -539,6 +581,8 @@ function estadoPublico(lado) {
   if (lado === 'painel') {
     e.status = status;
     e.mensagens = mensagens.slice(-200);
+    e.apoios = apoios;
+    e.totais = totais;
     e.estiloPadrao = ESTILO_PADRAO;
     e.estilosProntos = ESTILOS_PRONTOS;
     e.sonsArquivos = listarSons();
@@ -634,6 +678,16 @@ const servidor = http.createServer(async (req, res) => {
         }
         case 'tocar':
           transmitir('overlay', 'tocar', { som: String(b.som || '').slice(0, 80) });
+          return json(res, 200, { ok: true });
+        case 'agradecer': {
+          const m = apoios.find(x => x.id === b.id);
+          if (!m) return json(res, 404, { erro: 'apoio não encontrado' });
+          m.agradecido = !!b.valor;
+          transmitir('painel', 'agradecido', { id: m.id, valor: m.agradecido });
+          return json(res, 200, { ok: true });
+        }
+        case 'zerar':
+          zerarApoios();
           return json(res, 200, { ok: true });
         case 'limpar':
           mensagens = []; transmitir('painel', 'limpo', {});
@@ -1225,6 +1279,28 @@ header{display:flex;align-items:center;gap:18px;padding:12px 20px;border-bottom:
 .item .tx img{height:1.25em;vertical-align:-.25em}
 .item .tx mark{background:none;color:var(--amarelo);font-weight:700}
 .item.especial{background:linear-gradient(90deg,rgba(255,229,0,.08),transparent 70%);border-left:3px solid var(--amarelo)}
+#lista.v-chat .item.especial{display:none!important}
+.chat-topo .seg{flex:none}
+.contador{display:inline-grid;place-items:center;min-width:18px;height:18px;padding:0 5px;margin-left:4px;border-radius:99px;background:var(--amarelo);color:var(--roxo-0);font-size:11px;font-weight:800}
+#painel-apoios{flex:1;display:flex;flex-direction:column;min-height:0}
+.totais{display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) auto;gap:10px;padding:12px 16px;border-bottom:1px solid var(--roxo-2);align-items:stretch}
+.total{background:var(--roxo-1);border:1px solid var(--roxo-2);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.total small{font:700 10px/1 var(--titulo);letter-spacing:.14em;color:rgba(245,242,249,.5);text-transform:uppercase}
+.total b{font-size:22px;font-weight:800;line-height:1.15;color:var(--amarelo);font-variant-numeric:tabular-nums}
+.total span{font-size:12.5px;color:rgba(245,242,249,.65);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.acoes-apoios{display:flex;flex-direction:column;justify-content:space-between;align-items:flex-end;gap:8px}
+.acoes-apoios .tog{margin:0;font-size:12.5px;white-space:nowrap}
+#lista-apoios{flex:1;overflow-y:auto;padding:8px 8px 16px}
+#lista-apoios .item{border-left:3px solid var(--amarelo);background:linear-gradient(90deg,rgba(255,229,0,.06),transparent 70%);margin-bottom:4px;padding-right:130px}
+#lista-apoios .item.t-membro,#lista-apoios .item.t-presente{border-left-color:#B18CFF;background:linear-gradient(90deg,rgba(177,140,255,.09),transparent 70%)}
+#lista-apoios .item .tipo-apoio{font:700 9px/1 var(--titulo);letter-spacing:.12em;padding:4px 6px 3px;border-radius:4px;background:var(--roxo-2);color:var(--off)}
+#lista-apoios .item.ok{opacity:.5}
+#lista-apoios.pendentes .item.ok{display:none!important}
+.agradecer{position:absolute;right:10px;top:50%;transform:translateY(-50%);border:1px solid var(--roxo-2);background:var(--roxo-0);color:var(--off);border-radius:8px;padding:7px 10px;font-weight:700;font-size:12.5px;cursor:pointer;white-space:nowrap}
+.agradecer:hover{border-color:var(--amarelo)}
+.item.ok .agradecer{background:#1f3a2c;border-color:#3ddc84;color:#9ff0c3}
+#lista-apoios .item .noar{right:130px}
+@media (max-width:1100px){.totais{grid-template-columns:repeat(3,minmax(0,1fr))}.acoes-apoios{grid-column:1/-1;flex-direction:row;align-items:center}}
 .item.teste .nm::after{content:" · teste";color:rgba(245,242,249,.35);font-weight:500}
 .item .noar{display:none;position:absolute;right:10px;top:50%;transform:translateY(-50%);font:700 10px/1 var(--titulo);letter-spacing:.14em;background:var(--amarelo);color:var(--roxo-0);padding:6px 9px 5px;border-radius:6px}
 .item.ativo{background:rgba(255,229,0,.07);border-color:var(--amarelo)}
@@ -1340,10 +1416,23 @@ button.leve{background:transparent}
 <main class="tela" id="tela-vivo">
   <section class="chat">
     <div class="chat-topo">
+      <div class="seg" id="seg-vista"><button data-v="tudo">Tudo</button><button data-v="chat">Chat</button><button data-v="apoios">Apoios <span class="contador" id="contador-apoios" hidden>0</span></button></div>
       <input id="busca" placeholder="Filtrar por nome ou texto">
       <span class="dica">Clique numa mensagem para pôr na live · clique de novo ou Esc para tirar</span>
     </div>
     <div id="lista"><div class="vazio">As mensagens do chat aparecem aqui.<br>Conecte a live no painel ao lado.</div></div>
+    <div id="painel-apoios" hidden>
+      <div class="totais">
+        <div class="total"><small>Super Chats</small><b id="t-sc">0</b><span id="t-valor">—</span></div>
+        <div class="total"><small>Novos membros</small><b id="t-membros">0</b><span>na live</span></div>
+        <div class="total"><small>Presentes</small><b id="t-presentes">0</b><span id="t-assinaturas">0 assinaturas</span></div>
+        <div class="acoes-apoios">
+          <label class="tog"><input type="checkbox" id="so-pendentes"><span></span>Só quem falta agradecer</label>
+          <button class="b leve" id="btn-zerar" type="button">Zerar</button>
+        </div>
+      </div>
+      <div id="lista-apoios"><div class="vazio">Super Chats, Super Stickers, membros e presentes aparecem aqui,<br>separados do chat e com o mais recente no topo.</div></div>
+    </div>
     <button id="novas" hidden>Novas mensagens ↓</button>
   </section>
   <aside>
@@ -1484,7 +1573,7 @@ function regexPalavras(){
 function textoPlano(m){ return ((m.autor||'')+' '+(m.partes||[]).map(function(p){return p.t||p.alt||'';}).join('')).toLowerCase(); }
 
 function criarItem(m){
-  var it=el('div','item'+(m.tipo!=='texto'?' especial':'')+(m.teste?' teste':''));
+  var it=el('div','item t-'+m.tipo+(m.tipo!=='texto'?' especial':'')+(m.teste?' teste':''));
   it.setAttribute('data-id',m.id);
   var av=el('div','av');
   var inicial=function(){ av.textContent=(m.autor||'?').replace(/^@/,'').charAt(0).toUpperCase(); };
@@ -1524,12 +1613,61 @@ function addMsg(m,rolar){
 }
 lista.addEventListener('scroll',function(){ if(noFim()) $('#novas').hidden=true; });
 $('#novas').addEventListener('click',function(){ lista.scrollTop=lista.scrollHeight; $('#novas').hidden=true; });
-$('#busca').addEventListener('input',function(){ $$('.item',lista).forEach(function(it){ aplicarFiltro(it,mapa[it.getAttribute('data-id')]); }); });
+$('#busca').addEventListener('input',function(){
+  $$('.item',lista).forEach(function(it){ aplicarFiltro(it,mapa[it.getAttribute('data-id')]); });
+  $$('.item',listaApoios).forEach(function(it){ aplicarFiltro(it,mapaApoios[it.getAttribute('data-id')]); });
+});
+
+/* ── Tudo / Chat / Apoios ── */
+var listaApoios=$('#lista-apoios'), mapaApoios={}, vista='tudo', naoVistos=0;
+var NOME_APOIO={superchat:'SUPER CHAT',sticker:'STICKER',membro:'MEMBRO',presente:'PRESENTE'};
+function setVista(v){
+  vista=v;
+  $$('#seg-vista button').forEach(function(b){ b.classList.toggle('on',b.getAttribute('data-v')===v); });
+  lista.classList.toggle('v-chat',v==='chat');
+  lista.hidden=v==='apoios'; $('#painel-apoios').hidden=v!=='apoios';
+  if(v==='apoios'){ naoVistos=0; atualizarContador(); $('#novas').hidden=true; }
+  else lista.scrollTop=lista.scrollHeight;
+  try{ localStorage.setItem('benchchat-vista',v); }catch(e){}
+}
+$$('#seg-vista button').forEach(function(b){ b.addEventListener('click',function(){ setVista(b.getAttribute('data-v')); }); });
+function atualizarContador(){ var c=$('#contador-apoios'); c.textContent=naoVistos>99?'99+':naoVistos; c.hidden=!naoVistos; }
+function addApoio(m,novo){
+  if(mapaApoios[m.id]) return;
+  var vazio=listaApoios.querySelector('.vazio'); if(vazio) vazio.remove();
+  mapaApoios[m.id]=m;
+  var it=criarItem(m);
+  var tp=el('span','tipo-apoio',NOME_APOIO[m.tipo]||''); it.querySelector('.ln').insertBefore(tp,it.querySelector('.nm'));
+  var bt=el('button','agradecer'); bt.type='button';
+  function pinta(){ it.classList.toggle('ok',!!m.agradecido); bt.textContent=m.agradecido?'✓ Agradecido':'Agradecer'; }
+  bt.addEventListener('click',function(e){ e.stopPropagation(); m.agradecido=!m.agradecido; pinta(); api('agradecer',{id:m.id,valor:m.agradecido}).catch(function(){}); });
+  it._pinta=pinta; it.appendChild(bt); pinta();
+  listaApoios.insertBefore(it,listaApoios.firstChild);
+  while(listaApoios.children.length>500){ var u=listaApoios.lastChild; delete mapaApoios[u.getAttribute('data-id')]; u.remove(); }
+  if(novo && vista!=='apoios'){ naoVistos++; atualizarContador(); }
+}
+function carregarApoios(lst){
+  listaApoios.innerHTML=''; mapaApoios={};
+  if(!lst.length){ listaApoios.appendChild(el('div','vazio','Super Chats, Super Stickers, membros e presentes aparecem aqui, separados do chat e com o mais recente no topo.')); return; }
+  lst.forEach(function(m){ addApoio(m,false); });
+}
+function fmtValor(n){ return n.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function setTotais(t){
+  $('#t-sc').textContent=t.superchats;
+  var v=Object.keys(t.valores||{}).map(function(m){ return m+' '+fmtValor(t.valores[m]); });
+  $('#t-valor').textContent=v.length?v.join(' + '):'—';
+  $('#t-valor').title=v.join(' + ');
+  $('#t-membros').textContent=t.membros;
+  $('#t-presentes').textContent=t.presentes;
+  $('#t-assinaturas').textContent=t.assinaturas+(t.assinaturas===1?' assinatura':' assinaturas');
+}
+$('#so-pendentes').addEventListener('change',function(){ listaApoios.classList.toggle('pendentes',this.checked); });
+$('#btn-zerar').addEventListener('click',function(){ if(confirm('Zerar a lista de apoios e os totais desta live?')) api('zerar',{}).catch(function(){}); });
 
 function marcar(id){
   destaqueId=id;
-  $$('.item.ativo',lista).forEach(function(n){ n.classList.remove('ativo'); });
-  if(id){ var n=lista.querySelector('[data-id="'+CSS.escape(id)+'"]'); if(n) n.classList.add('ativo'); }
+  $$('.item.ativo').forEach(function(n){ n.classList.remove('ativo'); });
+  if(id) $$('[data-id="'+CSS.escape(id)+'"]').forEach(function(n){ if(n.classList.contains('item')) n.classList.add('ativo'); });
 }
 function setStatus(s){
   var b=$('#status'); b.className='status '+s.estado; b.querySelector('span').textContent=s.texto;
@@ -1872,18 +2010,24 @@ function iniciar(){
       $('#aviso-fonte').hidden=!!d.temFonte;
       destaqueId=d.destaque?d.destaque.id:null;
       if(d.mensagens.length){ lista.innerHTML=''; mapa={}; d.mensagens.forEach(function(m){ addMsg(m,false); }); lista.scrollTop=lista.scrollHeight; }
+      carregarApoios(d.apoios||[]); setTotais(d.totais||{superchats:0,valores:{},membros:0,presentes:0,assinaturas:0});
     });
     ouvir('status',setStatus);
     ouvir('config',receberConfig);
-    ouvir('msg',function(m){ addMsg(m); });
+    ouvir('msg',function(m){ addMsg(m); if(m.tipo!=='texto') addApoio(m,true); });
+    ouvir('totais',setTotais);
+    ouvir('apoios',function(d){ carregarApoios(d.apoios); setTotais(d.totais); naoVistos=0; atualizarContador(); });
+    ouvir('agradecido',function(d){ var m=mapaApoios[d.id]; if(!m) return; m.agradecido=d.valor; var n=listaApoios.querySelector('[data-id="'+CSS.escape(d.id)+'"]'); if(n&&n._pinta) n._pinta(); });
     ouvir('mostrar',function(d){ marcar(d.msg.id); });
     ouvir('ocultar',function(){ marcar(null); });
-    ouvir('remover',function(d){ d.ids.forEach(function(id){ var n=lista.querySelector('[data-id="'+CSS.escape(id)+'"]'); if(n) n.remove(); delete mapa[id]; }); });
+    ouvir('remover',function(d){ d.ids.forEach(function(id){ $$('[data-id="'+CSS.escape(id)+'"]').forEach(function(n){ if(n.classList.contains('item')) n.remove(); }); delete mapa[id]; delete mapaApoios[id]; }); });
     ouvir('limpo',function(){ lista.innerHTML=''; mapa={}; });
   }).catch(function(){});
 }
 var telaSalva='vivo'; try{ telaSalva=localStorage.getItem('benchchat-tela')||'vivo'; }catch(e){}
 irPara(['aparencia','sons'].indexOf(telaSalva)>=0?telaSalva:'vivo');
+var vistaSalva='tudo'; try{ vistaSalva=localStorage.getItem('benchchat-vista')||'tudo'; }catch(e){}
+setVista(['tudo','chat','apoios'].indexOf(vistaSalva)>=0?vistaSalva:'tudo');
 iniciar();
 })();
 </script>
