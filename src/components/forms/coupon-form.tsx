@@ -30,6 +30,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
+import { useExpireCouponSales } from '@/hooks/use-expire-coupon-sales'
 import { useFormStore } from '@/hooks/use-form-store'
 import { couponSchema } from '@/lib/validations/coupon'
 import type { Retailer } from '@/types'
@@ -94,6 +95,13 @@ export function CouponForm({ mode = 'create', coupon }: CouponFormProps) {
   })
   const { setOpenDialog } = useFormStore()
   const router = useRouter()
+  const [expireActiveSales, setExpireActiveSales] = React.useState(false)
+  const expireActiveSalesId = React.useId()
+  const {
+    activeSalesCount,
+    expireSales,
+    isExpiring: isExpiringSales,
+  } = useExpireCouponSales(coupon?.id ?? '', mode === 'update' && !!coupon?.id)
 
   const { data } = useQuery<{ retailers: Retailer[] }>(GET_RETAILERS, {
     fetchPolicy: 'network-only',
@@ -119,30 +127,13 @@ export function CouponForm({ mode = 'create', coupon }: CouponFormProps) {
       onError(error, _clientOptions) {
         toast.error(error.message)
       },
-      onCompleted(_data, _clientOptions) {
-        form.reset()
-
-        setOpenDialog(
-          mode === 'create'
-            ? 'couponCreateForm'
-            : `couponUpdateForm.${coupon?.id}`,
-          false,
-        )
-
-        const message =
-          mode === 'create'
-            ? 'Cupom cadastrado com sucesso.'
-            : 'Cupom atualizado com sucesso.'
-
-        toast.success(message)
-        router.refresh()
-      },
       refetchQueries: ['GetSaleFormData'],
     },
   )
 
   async function onSubmit(data: Inputs) {
-    await mutateCoupon({
+    // onError toasts failures; the promise then resolves without data.
+    const { data: result } = await mutateCoupon({
       variables: {
         input: {
           id: coupon?.id,
@@ -150,6 +141,24 @@ export function CouponForm({ mode = 'create', coupon }: CouponFormProps) {
         },
       },
     })
+    if (!result) return
+
+    toast.success(
+      mode === 'create'
+        ? 'Cupom cadastrado com sucesso.'
+        : 'Cupom atualizado com sucesso.',
+    )
+
+    // Before closing: closing the sheet unmounts this form.
+    if (mode === 'update' && expireActiveSales) await expireSales()
+
+    form.reset()
+    setExpireActiveSales(false)
+    setOpenDialog(
+      mode === 'create' ? 'couponCreateForm' : `couponUpdateForm.${coupon?.id}`,
+      false,
+    )
+    router.refresh()
   }
 
   return (
@@ -304,14 +313,48 @@ export function CouponForm({ mode = 'create', coupon }: CouponFormProps) {
           )}
         />
 
+        {mode === 'update' && (
+          <div className="flex items-start justify-between gap-3 rounded-md border p-3">
+            <div className="grid gap-1">
+              <label
+                htmlFor={expireActiveSalesId}
+                className="cursor-pointer text-sm font-medium leading-none"
+              >
+                Expirar promoções com este cupom
+              </label>
+              <p className="text-xs text-muted-foreground">
+                {activeSalesCount === undefined
+                  ? 'Contando promoções ativas...'
+                  : activeSalesCount === 0
+                    ? 'Nenhuma promoção ativa usa este cupom.'
+                    : `${activeSalesCount} ${
+                        activeSalesCount === 1
+                          ? 'promoção ativa será marcada'
+                          : 'promoções ativas serão marcadas'
+                      } como expirada${
+                        activeSalesCount === 1 ? '' : 's'
+                      } ao atualizar.`}
+              </p>
+            </div>
+            <Checkbox
+              id={expireActiveSalesId}
+              checked={expireActiveSales}
+              onCheckedChange={(checked) =>
+                setExpireActiveSales(checked === true)
+              }
+              disabled={!activeSalesCount}
+            />
+          </div>
+        )}
+
         <Button
           type="button"
           onClick={form.handleSubmit(onSubmit)}
-          disabled={isLoading}
+          disabled={isLoading || isExpiringSales}
         >
-          {isLoading && (
+          {(isLoading || isExpiringSales) && (
             <Icons.Spinner
-              className="size-4 mr-2 animate-spin"
+              className="mr-2 size-4 animate-spin"
               aria-hidden="true"
             />
           )}

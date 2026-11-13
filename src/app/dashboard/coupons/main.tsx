@@ -9,6 +9,7 @@ import * as React from 'react'
 import { toast } from 'sonner'
 
 import { DashboardItemCard } from '@/components/dashboard-item-card'
+import { ExpireCouponSalesDialog } from '@/components/expire-coupon-sales-dialog'
 import { CouponForm } from '@/components/forms/coupon-form'
 import { Icons } from '@/components/icons'
 import {
@@ -172,6 +173,8 @@ export function CouponsMain({ coupons }: CouponsMainProps) {
                 </DashboardItemCard.Content>
 
                 <DashboardItemCard.Actions>
+                  <ExpireCouponSalesDialog coupon={coupon} />
+
                   <Sheet
                     open={openDialogs[`couponUpdateForm.${coupon.id}`]}
                     onOpenChange={(open) =>
