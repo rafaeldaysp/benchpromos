@@ -159,6 +159,8 @@ interface SaleFormProps {
   sale?: { id?: string } & Partial<Inputs> & {
       discounts?: Discount[]
     }
+  /** Called after a successful save (e.g. to remount the form on a page). */
+  onSuccess?: () => void
 }
 
 export function SaleForm({
@@ -168,6 +170,7 @@ export function SaleForm({
   discordEnabled = false,
   enableShare = false,
   sale,
+  onSuccess,
 }: SaleFormProps) {
   const authHeaders = useAuthHeaders()
   const form = useForm<Inputs>({
@@ -450,6 +453,7 @@ export function SaleForm({
         )
 
         router.refresh()
+        onSuccess?.()
       },
     },
   )

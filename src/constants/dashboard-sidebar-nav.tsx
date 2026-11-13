@@ -30,6 +30,13 @@ export const dashboardSidebarItems = [
     items: [],
   },
   {
+    title: 'Nova promoção',
+    url: '/dashboard/sales/new',
+    icon: Icons.PlusCircle,
+    isActive: true,
+    items: [],
+  },
+  {
     title: 'Enviar',
     url: '/dashboard/telegram',
     icon: Icons.Send,
