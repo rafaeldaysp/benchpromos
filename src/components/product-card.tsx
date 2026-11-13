@@ -59,7 +59,7 @@ export function ProductCard({
 
   let price = priceCalculator(
     bestDeal?.price,
-    bestDeal?.coupon?.availability ? bestDeal.coupon.discount : undefined,
+    bestDeal?.coupon?.availability ? bestDeal.coupon : undefined,
     bestDeal?.cashback?.value,
     bestDeal?.discounts.map((discount) => discount.discount),
   )
@@ -67,7 +67,7 @@ export function ProductCard({
   if (onlyInstallments && bestDeal?.installments) {
     price = priceCalculator(
       bestDeal?.totalInstallmentPrice,
-      bestDeal?.coupon?.availability ? bestDeal.coupon.discount : undefined,
+      bestDeal?.coupon?.availability ? bestDeal.coupon : undefined,
       bestDeal?.cashback?.value,
       bestDeal?.discounts.map((discount) => discount.discount),
     )
@@ -159,7 +159,7 @@ export function ProductCard({
                                 priceCalculator(
                                   bestDeal.totalInstallmentPrice,
                                   bestDeal.coupon?.availability
-                                    ? bestDeal.coupon.discount
+                                    ? bestDeal.coupon
                                     : undefined,
                                   bestDeal.cashback?.value,
                                   bestDeal.discounts.map(

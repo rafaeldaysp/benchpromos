@@ -94,6 +94,7 @@ const GET_SALE = gql`
       couponSchema {
         availability
         discount
+        maximumDiscount
         code
         description
       }
@@ -141,14 +142,14 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
 
   const salePriceCents = priceCalculator(
     sale.price,
-    sale.couponSchema?.discount,
+    sale.couponSchema,
     sale.cashback?.value,
     sale.discounts.map((discount) => discount.discount),
   )
 
   const salePriceWithouCashbackAndCoinsDiscountCents = priceCalculator(
     sale.price,
-    sale.couponSchema?.discount,
+    sale.couponSchema,
     undefined,
     sale.discounts
       .filter((discount) => !discount.label?.toLowerCase().includes('moedas'))
@@ -157,7 +158,7 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
 
   const saleInstallmentPriceCents = priceCalculator(
     sale.totalInstallmentPrice,
-    sale.couponSchema?.discount,
+    sale.couponSchema,
     sale.cashback?.value,
     sale.discounts.map((discount) => discount.discount),
   )
@@ -165,7 +166,7 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
   const saleInstallmentPriceWithoutCashbackAndCoinsDiscountCents =
     priceCalculator(
       sale.totalInstallmentPrice,
-      sale.couponSchema?.discount,
+      sale.couponSchema,
       undefined,
       sale.discounts
         .filter((discount) => !discount.label?.toLowerCase().includes('moedas'))
@@ -174,14 +175,14 @@ export function SaleMain({ saleId, user }: SaleMainProps) {
 
   const salePriceWithCoinsDiscountCents = priceCalculator(
     sale.price,
-    sale.couponSchema?.discount,
+    sale.couponSchema,
     undefined,
     sale.discounts.map((discount) => discount.discount),
   )
 
   const saleInstallmentPriceWithCoinsDiscountCents = priceCalculator(
     sale.totalInstallmentPrice,
-    sale.couponSchema?.discount,
+    sale.couponSchema,
     undefined,
     sale.discounts.map((discount) => discount.discount),
   )

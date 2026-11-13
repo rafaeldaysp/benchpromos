@@ -104,6 +104,7 @@ const GET_SALES = gql`
           id
           code
           discount
+          maximumDiscount
           retailerId
         }
         couponId

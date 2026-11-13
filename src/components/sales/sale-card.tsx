@@ -58,6 +58,7 @@ import {
   AlertDialogTrigger,
 } from '../ui/alert-dialog'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '../ui/sheet'
+import { ExpireSaleDialog } from './expire-sale-dialog'
 import { MobileMenu } from './mobile-menu'
 import { useAuthHeaders } from '@/components/auth-token-provider'
 
@@ -133,15 +134,19 @@ export function SaleCard({
   const [openLoginPopup, setOpenLoginPopup] = React.useState(false)
   const [openMobileMenu, setOpenMobileMenu] = React.useState(false)
   const { openDialogs, setOpenDialog } = useFormStore()
-  const { toggleSaleExpired } = useSaleExpired({
+  const [openExpireDialog, setOpenExpireDialog] = React.useState(false)
+  const { toggleSaleExpired, expireSale, isExpiring } = useSaleExpired({
     id: sale.id,
     expired: sale.expired,
   })
+  // Expiring asks first (optionally deleting too); re-enabling stays one click.
+  const handleToggleExpired = () =>
+    sale.expired ? toggleSaleExpired() : setOpenExpireDialog(true)
   const isSm = useMediaQuery('(max-width: 640px)')
 
   const salePriceCents = priceCalculator(
     sale.price,
-    sale.couponSchema?.discount,
+    sale.couponSchema,
     sale.cashback?.value,
     sale.discounts.map((discount) => discount.discount),
   )
@@ -162,19 +167,19 @@ export function SaleCard({
 
   const salePriceWithouCashbackCents = priceCalculator(
     sale.price,
-    sale.couponSchema?.discount,
+    sale.couponSchema,
   )
 
   const saleInstallmentPriceCents = priceCalculator(
     sale.totalInstallmentPrice,
-    sale.couponSchema?.discount,
+    sale.couponSchema,
     sale.cashback?.value,
     sale.discounts.map((discount) => discount.discount),
   )
 
   const saleInstallmentPriceWithoutCashbackCents = priceCalculator(
     sale.totalInstallmentPrice,
-    sale.couponSchema?.discount,
+    sale.couponSchema,
   )
 
   function handleShare() {
@@ -611,7 +616,7 @@ export function SaleCard({
                 </ContextMenuItem>
                 <ContextMenuSeparator />
 
-                <ContextMenuItem onClick={() => toggleSaleExpired()}>
+                <ContextMenuItem onClick={handleToggleExpired}>
                   {sale.expired ? (
                     <>
                       <Icons.Check className="mr-2 size-4" />
@@ -636,6 +641,7 @@ export function SaleCard({
           user={user}
           setOpenSaleDialog={setOpenDialog}
           setOpenLoginPopup={setOpenLoginPopup}
+          onToggleExpired={handleToggleExpired}
         />
         <SheetContent
           className="w-full space-y-4 overflow-auto sm:max-w-xl"
@@ -655,6 +661,13 @@ export function SaleCard({
 
         <LoginPopup open={openLoginPopup} setOpen={setOpenLoginPopup} />
       </AlertDialog>
+      <ExpireSaleDialog
+        saleId={sale.id}
+        open={openExpireDialog}
+        onOpenChange={setOpenExpireDialog}
+        onConfirm={expireSale}
+        isLoading={isExpiring}
+      />
     </Sheet>
   )
 }

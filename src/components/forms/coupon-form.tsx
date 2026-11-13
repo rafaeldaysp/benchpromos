@@ -247,6 +247,32 @@ export function CouponForm({ mode = 'create', coupon }: CouponFormProps) {
 
         <FormField
           control={form.control}
+          name="maximumDiscount"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Desconto Máximo (opcional)</FormLabel>
+              <FormControl>
+                <PriceInput
+                  placeholder="300,00"
+                  value={field.value ? field.value / 100 : ''}
+                  onValueChange={({ floatValue }) =>
+                    field.onChange(
+                      floatValue ? Math.round(floatValue * 100) : null,
+                    )
+                  }
+                />
+              </FormControl>
+              <FormDescription>
+                Limite do desconto do cupom. Ex.: 10% com máximo de R$ 300,00.
+                Deixe vazio para não limitar.
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
           name="description"
           render={({ field }) => (
             <FormItem>

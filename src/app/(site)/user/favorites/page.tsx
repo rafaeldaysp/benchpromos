@@ -39,6 +39,7 @@ const GET_USER_FAVORITED_PRODUCTS = gql`
           coupon {
             code
             discount
+            maximumDiscount
             availability
           }
           cashback {

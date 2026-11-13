@@ -51,6 +51,7 @@ const SALE_CARD_FIELDS = gql`
     couponSchema {
       availability
       discount
+      maximumDiscount
       code
       description
     }

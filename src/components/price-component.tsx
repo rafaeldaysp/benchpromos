@@ -75,9 +75,7 @@ export function PriceComponent({
                 {priceFormatter.format(
                   priceCalculator(
                     bestDeal.price,
-                    bestDeal.coupon?.availability
-                      ? bestDeal.coupon.discount
-                      : undefined,
+                    bestDeal.coupon?.availability ? bestDeal.coupon : undefined,
                     undefined,
                     bestDeal.discounts.map((discount) => discount.discount),
                   ) / 100,
@@ -120,7 +118,7 @@ export function PriceComponent({
                         priceCalculator(
                           bestDeal.price,
                           bestDeal.coupon?.availability
-                            ? bestDeal.coupon.discount
+                            ? bestDeal.coupon
                             : undefined,
                           bestDeal.cashback?.value,
                           bestDeal.discounts.map(
@@ -193,7 +191,7 @@ export function PriceComponent({
                       priceCalculator(
                         bestInstallmentDeal.totalInstallmentPrice,
                         bestInstallmentDeal.coupon?.availability
-                          ? bestInstallmentDeal.coupon.discount
+                          ? bestInstallmentDeal.coupon
                           : undefined,
                         undefined,
                         bestInstallmentDeal.discounts.map(
@@ -209,7 +207,7 @@ export function PriceComponent({
                         priceCalculator(
                           bestInstallmentDeal.totalInstallmentPrice,
                           bestInstallmentDeal.coupon?.availability
-                            ? bestInstallmentDeal.coupon.discount
+                            ? bestInstallmentDeal.coupon
                             : undefined,
                           undefined,
                           bestInstallmentDeal.discounts.map(
@@ -257,7 +255,7 @@ export function PriceComponent({
                             priceCalculator(
                               bestInstallmentDeal.totalInstallmentPrice,
                               bestInstallmentDeal.coupon?.availability
-                                ? bestInstallmentDeal.coupon.discount
+                                ? bestInstallmentDeal.coupon
                                 : undefined,
                               bestInstallmentDeal.cashback?.value,
                               bestInstallmentDeal.discounts.map(
@@ -275,7 +273,7 @@ export function PriceComponent({
                               priceCalculator(
                                 bestInstallmentDeal.totalInstallmentPrice,
                                 bestInstallmentDeal.coupon?.availability
-                                  ? bestInstallmentDeal.coupon.discount
+                                  ? bestInstallmentDeal.coupon
                                   : undefined,
                                 bestInstallmentDeal.cashback?.value,
                                 bestInstallmentDeal.discounts.map(

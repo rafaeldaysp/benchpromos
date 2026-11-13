@@ -64,7 +64,7 @@ export function ProductAlertCard({
                           priceCalculator(
                             bestDeal.price,
                             bestDeal.coupon?.availability
-                              ? bestDeal.coupon.discount
+                              ? bestDeal.coupon
                               : undefined,
                             bestDeal.cashback?.value,
                             bestDeal.discounts.map(

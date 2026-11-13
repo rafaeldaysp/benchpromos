@@ -108,7 +108,7 @@ export function TierProductCard({
                   priceCalculator(
                     product.deals[0].price,
                     product.deals[0].coupon?.availability
-                      ? product.deals[0].coupon.discount
+                      ? product.deals[0].coupon
                       : undefined,
                     product.deals[0].cashback?.value,
                     product.deals[0].discounts.map((d) => d.discount),

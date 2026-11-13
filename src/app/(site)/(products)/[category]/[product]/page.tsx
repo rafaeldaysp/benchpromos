@@ -80,6 +80,7 @@ const GET_PRODUCT = gql`
         coupon {
           availability
           discount
+          maximumDiscount
           code
           description
         }
@@ -116,6 +117,7 @@ const GET_PRODUCT = gql`
         coupon {
           availability
           discount
+          maximumDiscount
           code
           description
         }
@@ -352,7 +354,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                   ? priceCalculator(
                       bestDeal.price,
                       bestDeal.coupon?.availability
-                        ? bestDeal.coupon.discount
+                        ? bestDeal.coupon
                         : undefined,
                       bestDeal.cashback?.value,
                       bestDeal.discounts.map((discount) => discount.discount),
@@ -364,7 +366,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                   ? priceCalculator(
                       bestDeal.totalInstallmentPrice,
                       bestDeal.coupon?.availability
-                        ? bestDeal.coupon.discount
+                        ? bestDeal.coupon
                         : undefined,
                       bestDeal.cashback?.value,
                       bestDeal.discounts.map((discount) => discount.discount),
@@ -441,7 +443,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                                           priceCalculator(
                                             deal.price,
                                             deal.coupon?.availability
-                                              ? deal.coupon.discount
+                                              ? deal.coupon
                                               : undefined,
                                             deal.cashback?.value,
                                             deal.discounts.map(
@@ -463,7 +465,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                                               priceCalculator(
                                                 deal.totalInstallmentPrice,
                                                 deal.coupon?.availability
-                                                  ? deal.coupon.discount
+                                                  ? deal.coupon
                                                   : undefined,
                                                 deal.cashback?.value,
                                                 deal.discounts.map(
@@ -483,7 +485,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                                               priceCalculator(
                                                 deal.totalInstallmentPrice,
                                                 deal.coupon?.availability
-                                                  ? deal.coupon.discount
+                                                  ? deal.coupon
                                                   : undefined,
                                                 deal.cashback?.value,
                                                 deal.discounts.map(
@@ -775,7 +777,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                                 priceCalculator(
                                   deal.price,
                                   deal.coupon?.availability
-                                    ? deal.coupon.discount
+                                    ? deal.coupon
                                     : undefined,
                                   deal.cashback?.value,
                                 ) / 100,
@@ -794,7 +796,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                                     priceCalculator(
                                       deal.totalInstallmentPrice,
                                       deal.coupon?.availability
-                                        ? deal.coupon.discount
+                                        ? deal.coupon
                                         : undefined,
                                       deal.cashback?.value,
                                     ) / 100,
@@ -810,7 +812,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                                     priceCalculator(
                                       deal.totalInstallmentPrice,
                                       deal.coupon?.availability
-                                        ? deal.coupon.discount
+                                        ? deal.coupon
                                         : undefined,
                                       deal.cashback?.value,
                                     ) /

@@ -9,13 +9,14 @@ import { Button, buttonVariants } from '../ui/button'
 import { Drawer, DrawerContent } from '../ui/drawer'
 import { ReactionDrawer } from './reaction-drawer'
 import { HighlightSaleToggle } from './sale-highlight'
-import { useSaleExpired } from '@/hooks/use-toggle-sale-expired'
 
 interface MobileMenuProps {
   open: boolean
   setOpen: React.Dispatch<React.SetStateAction<boolean>>
   setOpenSaleDialog: (dialogName: string, open: boolean) => void
   setOpenLoginPopup: React.Dispatch<React.SetStateAction<boolean>>
+  /** Opens the expire confirmation, or re-enables an expired sale. */
+  onToggleExpired: () => void
   sale: {
     slug: string
     id: string
@@ -38,12 +39,9 @@ export function MobileMenu({
   apolloClient,
   setOpenSaleDialog,
   setOpenLoginPopup,
+  onToggleExpired,
 }: MobileMenuProps) {
   const [snap, setSnap] = React.useState<number | string | null>(0.7)
-  const { toggleSaleExpired } = useSaleExpired({
-    id: sale.id,
-    expired: sale.expired,
-  })
   return (
     <Drawer
       snapPoints={[0.7, 1]}
@@ -169,7 +167,11 @@ export function MobileMenu({
 
               <Button
                 variant={'ghost'}
-                onClick={() => toggleSaleExpired()}
+                onClick={() => {
+                  // Close the drawer first so the dialog gets focus.
+                  setOpen(false)
+                  onToggleExpired()
+                }}
                 className="justify-start px-2"
               >
                 {sale.expired ? (

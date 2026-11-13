@@ -164,6 +164,7 @@ const GET_PRODUCT_DEAL = gql`
         coupon {
           availability
           discount
+          maximumDiscount
           code
         }
         cashback {

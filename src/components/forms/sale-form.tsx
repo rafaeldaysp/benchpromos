@@ -114,6 +114,7 @@ const GET_DATA = gql`
       id
       code
       discount
+      maximumDiscount
       retailer {
         id
         name
@@ -187,7 +188,7 @@ export function SaleForm({
     > & {
       retailer: Retailer
     })[]
-    coupons: (Pick<Coupon, 'id' | 'code' | 'discount'> & {
+    coupons: (Pick<Coupon, 'id' | 'code' | 'discount' | 'maximumDiscount'> & {
       retailer: Retailer
     })[]
     discounts: Discount[]
@@ -331,6 +332,7 @@ export function SaleForm({
       review: values.review,
       couponCode: selectedCoupon?.code || values.coupon || undefined,
       couponDiscount: selectedCoupon?.discount,
+      couponMaximumDiscount: selectedCoupon?.maximumDiscount,
       monospaceCoupon: isShareTelegramSelected && shareMonospaceCoupon,
       cashback: selectedCashback
         ? {

@@ -113,6 +113,7 @@ const GET_DEALS = gql`
       }
       coupon {
         discount
+        maximumDiscount
         code
       }
       discounts {
@@ -508,7 +509,7 @@ export function DealsMain({ retailers, categories }: DealsMainProps) {
                         {priceFormatter.format(
                           priceCalculator(
                             deal.price,
-                            deal.coupon?.discount,
+                            deal.coupon,
                             deal.cashback?.value,
                             deal.discounts.map((discount) => discount.discount),
                           ) / 100,

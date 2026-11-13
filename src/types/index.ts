@@ -43,6 +43,7 @@ export type Coupon = {
   discount: string
   retailerId: string
   minimumSpend: number
+  maximumDiscount?: number | null
   description?: string
   updatedAt: string
 }

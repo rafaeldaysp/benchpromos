@@ -25,6 +25,7 @@ const GET_PRODUCTS_ALERTS = gql`
             availability
             coupon {
               discount
+              maximumDiscount
               availability
             }
             cashback {

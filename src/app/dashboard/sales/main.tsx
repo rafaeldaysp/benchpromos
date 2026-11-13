@@ -164,7 +164,7 @@ export function SalesMain({
                 {priceFormatter.format(
                   priceCalculator(
                     selectedSale.price,
-                    selectedSale.couponSchema?.discount,
+                    selectedSale.couponSchema,
                     selectedSale.cashback?.value,
                   ) / 100,
                 )}
@@ -268,7 +268,7 @@ export function SalesMain({
                       {priceFormatter.format(
                         priceCalculator(
                           sale.price,
-                          sale.couponSchema?.discount,
+                          sale.couponSchema,
                           sale.cashback?.value,
                         ) / 100,
                       )}

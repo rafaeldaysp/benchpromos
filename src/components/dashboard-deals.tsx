@@ -40,6 +40,7 @@ const GET_PRODUCTS = gql`
       }
       coupon {
         discount
+        maximumDiscount
         code
       }
       discounts {

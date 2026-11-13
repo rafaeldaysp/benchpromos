@@ -55,6 +55,7 @@ const GET_TIER_LIST = gql`
               coupon {
                 code
                 discount
+                maximumDiscount
                 availability
               }
               cashback {
