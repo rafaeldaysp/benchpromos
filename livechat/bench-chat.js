@@ -616,8 +616,9 @@ const servidor = http.createServer(async (req, res) => {
           setStatus('desconectado', 'Desconectado', { videoId: null, titulo: null, canal: null });
           return json(res, 200, { ok: true });
         case 'mostrar': {
-          const m = mensagens.find(x => x.id === b.id);
-          if (!m) return json(res, 404, { erro: 'mensagem não encontrada' });
+          // procura no chat e também nos apoios (que guardam um histórico mais longo que o chat)
+          const m = mensagens.find(x => x.id === b.id) || apoios.find(x => x.id === b.id);
+          if (!m) return json(res, 404, { erro: 'Essa mensagem é antiga demais e já saiu da memória do servidor' });
           mostrar(m); return json(res, 200, { ok: true });
         }
         case 'ocultar':
