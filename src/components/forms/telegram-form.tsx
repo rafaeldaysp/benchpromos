@@ -647,7 +647,8 @@ export function TelegramForm({
                   <FormItem>
                     <FormLabel>Observação final</FormLabel>
                     <FormControl>
-                      <Input
+                      <Textarea
+                        rows={3}
                         placeholder="Apenas pelo APP Magalu"
                         aria-invalid={!!form.formState.errors.note}
                         {...field}

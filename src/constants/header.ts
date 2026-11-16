@@ -86,6 +86,11 @@ export function headerOptions({ categories }: HeaderOptionsProps) {
       slug: 'sorteios',
       icon: Icons.Gift,
     },
+    {
+      title: 'Labs',
+      slug: 'bench-labs',
+      icon: Icons.FlaskConical,
+    },
   ]
 
   options.push(...moreHeaders)

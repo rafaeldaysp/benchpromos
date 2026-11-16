@@ -51,6 +51,7 @@ export async function SiteHeader() {
                   href="/sign-in"
                   className={cn(
                     buttonVariants({ variant: 'secondary', size: 'icon' }),
+                    'shrink-0',
                   )}
                 >
                   <Icons.LogIn className="size-4" />

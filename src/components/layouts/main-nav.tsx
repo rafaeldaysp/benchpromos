@@ -31,12 +31,13 @@ export function MainNav({ categories }: MainNavProps) {
   const pathname = usePathname()
 
   const navItemClassName =
-    'relative h-10 px-2.5 transition-[background-color,color,transform] after:absolute after:inset-x-2 after:-bottom-[8px] after:h-0.5 after:origin-center after:scale-x-0 after:rounded-full after:bg-primary after:opacity-0 after:transition-[opacity,transform] hover:after:scale-x-50 hover:after:opacity-40 active:scale-[0.96] data-[active]:after:scale-x-100 data-[active]:after:opacity-100'
+    'relative h-10 px-1.5 transition-[background-color,color,transform] after:absolute after:inset-x-2 after:-bottom-[8px] after:h-0.5 after:origin-center after:scale-x-0 after:rounded-full after:bg-primary after:opacity-0 after:transition-[opacity,transform] hover:after:scale-x-50 hover:after:opacity-40 active:scale-[0.96] data-[active]:after:scale-x-100 data-[active]:after:opacity-100 2xl:px-2.5'
 
   const iconlessDesktopLinks = new Set([
     'Benchmarks',
     'Recomendações',
     'Sorteios',
+    'Labs',
   ])
 
   const aliasesBySlug: Record<string, string[]> = {
@@ -82,7 +83,7 @@ export function MainNav({ categories }: MainNavProps) {
           />
         </div>
 
-        <strong className="hidden whitespace-nowrap text-sm font-semibold leading-none xl:inline-flex 2xl:text-base">
+        <strong className="hidden whitespace-nowrap text-base font-semibold leading-none 2xl:inline-flex">
           {siteConfig.name}
         </strong>
       </Link>

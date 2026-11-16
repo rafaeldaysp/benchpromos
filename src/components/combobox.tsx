@@ -124,7 +124,7 @@ export function Combobox() {
     <>
       <Button
         variant="outline"
-        className="relative h-10 min-w-0 flex-1 justify-start gap-0 px-3 py-2 transition-[background-color,color,transform] active:scale-[0.96] lg:w-[260px] lg:flex-none xl:w-[220px]"
+        className="relative h-10 min-w-0 flex-1 justify-start gap-0 px-3 py-2 transition-[background-color,color,transform] active:scale-[0.96] lg:w-[260px] lg:flex-none xl:w-[180px] 2xl:w-[220px]"
         onClick={() => setIsOpen(true)}
       >
         <Icons.Search className="mr-2 size-4 shrink-0" aria-hidden="true" />

@@ -75,5 +75,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ]
 
-  return [...productsUrls, ...categoriesUrls, ...benchmarksUrls]
+  const staticUrls = [
+    {
+      url: `${siteConfig.url}/bench-labs`,
+      lastModified: new Date().toISOString(),
+    },
+  ]
+
+  return [...productsUrls, ...categoriesUrls, ...benchmarksUrls, ...staticUrls]
 }

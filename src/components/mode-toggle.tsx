@@ -20,7 +20,7 @@ export function ModeToggle() {
         <Button
           variant="outline"
           size="icon"
-          className="size-10 transition-[background-color,color,transform] active:scale-[0.96]"
+          className="size-10 shrink-0 transition-[background-color,color,transform] active:scale-[0.96]"
         >
           <Icons.Sun className="size-[1.2rem] rotate-0 scale-100 blur-0 transition-[filter,opacity,transform] duration-200 dark:-rotate-90 dark:scale-[0.25] dark:opacity-0 dark:blur-sm" />
           <Icons.Moon className="absolute size-[1.2rem] rotate-90 scale-[0.25] opacity-0 blur-sm transition-[filter,opacity,transform] duration-200 dark:rotate-0 dark:scale-100 dark:opacity-100 dark:blur-0" />
