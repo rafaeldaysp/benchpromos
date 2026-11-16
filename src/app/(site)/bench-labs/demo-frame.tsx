@@ -19,6 +19,7 @@ export type DemoView =
   | 'monitor'
   | 'preparo'
   | 'bateria'
+  | 'bench-monitor'
 
 type DemoFrameProps = {
   view: DemoView
@@ -57,7 +58,10 @@ export function DemoFrame({
   })
   if (color) params.set('cor', color)
   if (detail) params.set('bloco', detail)
-  const src = `/bench-labs/app/inicio.html?${params}`
+  const src =
+    view === 'bench-monitor'
+      ? '/bench-labs/app/bench-monitor.html'
+      : `/bench-labs/app/inicio.html?${params}`
   const canvasWidth = Math.max(containerWidth, width)
   const scale = containerWidth ? Math.min(1, containerWidth / canvasWidth) : 1
 

@@ -3,7 +3,6 @@ import {
   BatteryCharging,
   Box,
   Building2,
-  Check,
   Clapperboard,
   ClipboardCheck,
   Cpu,
@@ -13,6 +12,8 @@ import {
   Gamepad2,
   HardDrive,
   History,
+  MessageCircle,
+  ChevronDown,
   MemoryStick,
   MonitorPlay,
   Palette,
@@ -34,6 +35,7 @@ import { cn } from '@/lib/utils'
 import { MonitorShowcase } from './monitor-showcase'
 import { DemoFrame } from './demo-frame'
 import { ColorShowcase } from './color-showcase'
+import { SectionNav } from './section-nav'
 
 export const metadata: Metadata = {
   title: 'Bench Labs',
@@ -202,15 +204,31 @@ const batteryModes = [
   },
 ]
 
-const specGroups = [
-  'Processador, núcleos e threads',
-  'Placa de vídeo, VRAM, potência máxima e driver',
-  'Memória: módulos, canais, slots livres e se dá para fazer upgrade',
-  'SSDs, modelo exato e espaço livre em cada unidade',
-  'Tela: painel, tipo, brilho declarado, taxa de atualização e gama de cores',
-  'Bateria: capacidade de fábrica, capacidade hoje e ciclos',
-  'Wi-Fi, Bluetooth, portas USB, HDMI e leitor de cartão',
-  'Câmera com reconhecimento facial e leitor de digital',
+const faqs = [
+  {
+    question: 'O Bench Labs é gratuito?',
+    answer: 'Sim. O Bench Labs é gratuito e não exibe anúncios.',
+  },
+  {
+    question: 'É seguro instalar?',
+    answer:
+      'Baixe o instalador oficial pelo botão desta página, que aponta para o GitLab do Bench Promos. Confira a origem do arquivo e evite baixar o Bench Labs de outros sites.',
+  },
+  {
+    question: 'Por que o Windows pode mostrar um aviso ao abrir o instalador?',
+    answer:
+      'O Windows pode exibir um aviso de reputação para programas novos ou ainda pouco baixados. Antes de continuar, confira se você baixou o instalador oficial por esta página. Depois de confirmar a origem, as opções “Mais informações” e “Executar assim mesmo” podem estar disponíveis no aviso.',
+  },
+  {
+    question: 'O que o Bench Labs lê do meu notebook?',
+    answer:
+      'Modelo e especificações do hardware, sensores de temperatura e consumo, estado da bateria e do armazenamento. Os resultados dos testes ficam salvos no seu notebook. A demonstração desta página usa dados fictícios e não lê o hardware do visitante.',
+  },
+  {
+    question: 'Os testes podem estragar o notebook?',
+    answer:
+      'Os testes exigem do notebook de forma semelhante a um jogo pesado ou uma renderização. Mantenha as entradas de ar livres e use uma superfície firme. Se o notebook apresentar falhas ou aquecimento anormal, interrompa o teste. Você pode parar qualquer teste a qualquer momento.',
+  },
 ]
 
 const steps = [
@@ -271,7 +289,7 @@ function DownloadButton({
 
 function Eyebrow({ children }: { children: React.ReactNode }) {
   return (
-    <p className="font-mono text-xs font-semibold uppercase tracking-[0.22em] text-[#ffe01b]">
+    <p className="font-mono text-sm font-semibold uppercase tracking-[0.16em] text-[#ffe01b] sm:text-base">
       {children}
     </p>
   )
@@ -311,7 +329,7 @@ function Screenshot({
 
 export default function BenchLabsPage() {
   return (
-    <main className="relative overflow-hidden bg-[#0f0b16] text-white">
+    <main className="relative text-clip bg-[#0f0b16] text-white">
       {/* Hero */}
       <section className="relative py-16 sm:pt-24">
         <div
@@ -389,8 +407,10 @@ export default function BenchLabsPage() {
         </dl>
       </section>
 
+      <SectionNav />
+
       {/* Monitor */}
-      <section id="monitor" className="scroll-mt-20 py-20 sm:py-28">
+      <section id="monitor" className="scroll-mt-36 py-20 sm:py-28">
         <div className="container max-sm:px-4">
           <div className="mx-auto max-w-2xl text-center">
             <Eyebrow>Ao vivo · visto por dentro</Eyebrow>
@@ -413,7 +433,7 @@ export default function BenchLabsPage() {
       {/* Testes */}
       <section
         id="testes"
-        className="scroll-mt-20 border-t border-white/[0.08] py-20 sm:py-28"
+        className="scroll-mt-36 border-t border-white/[0.08] py-20 sm:py-28"
       >
         <div className="container max-sm:px-4">
           <div className="grid items-end gap-6 lg:grid-cols-2">
@@ -483,7 +503,7 @@ export default function BenchLabsPage() {
       {/* FPS da comunidade — oculto até o lançamento.
       <section
         id="comunidade"
-        className="scroll-mt-20 border-t border-white/[0.08] py-20 sm:py-28"
+        className="scroll-mt-36 border-t border-white/[0.08] py-20 sm:py-28"
       >
         <div className="container max-sm:px-4">
           <div className="grid items-end gap-6 lg:grid-cols-2">
@@ -535,7 +555,7 @@ export default function BenchLabsPage() {
 
       <section
         id="bench-monitor"
-        className="scroll-mt-20 border-t border-white/[0.08] py-20 sm:py-28"
+        className="scroll-mt-36 border-t border-white/[0.08] py-20 sm:py-28"
       >
         <div className="container max-sm:px-4">
           <div className="mx-auto max-w-2xl text-center">
@@ -544,16 +564,17 @@ export default function BenchLabsPage() {
               Seus jogos, com os números à vista
             </h2>
             <p className="mt-4 text-pretty text-white/70">
-              Veja o painel de FPS, os atalhos e a lista de benchmarks gravados.
-              Os registros abaixo são exemplos locais do notebook da
-              demonstração.
+              Personalize o painel de FPS, experimente os temas e presets,
+              ajuste os atalhos e veja os benchmarks gravados. Os registros
+              abaixo são exemplos locais do notebook da demonstração.
             </p>
           </div>
           <DemoFrame
-            view="monitor"
-            title="Bench Monitor com exemplos de benchmarks gravados"
+            view="bench-monitor"
+            title="Explore o painel e as opções do Bench Monitor"
             className="mt-10"
-            height={900}
+            width={1240}
+            height={800}
           />
         </div>
       </section>
@@ -561,7 +582,7 @@ export default function BenchLabsPage() {
       {/* Bateria */}
       <section
         id="bateria"
-        className="scroll-mt-20 border-t border-white/[0.08] py-20 sm:py-28"
+        className="scroll-mt-36 border-t border-white/[0.08] py-20 sm:py-28"
       >
         <div className="container grid items-center gap-12 max-sm:px-4 lg:grid-cols-[1fr_1.1fr]">
           <div>
@@ -609,85 +630,11 @@ export default function BenchLabsPage() {
         </div>
       </section>
 
-      {/* Laudo */}
-      <section
-        id="laudo"
-        className="scroll-mt-20 border-t border-white/[0.08] py-20 sm:py-28"
-      >
-        <div className="container max-sm:px-4">
-          <div className="mx-auto max-w-2xl text-center">
-            <Eyebrow>Laudo de saúde</Eyebrow>
-            <h2 className="mt-3 text-balance text-3xl font-bold tracking-tight sm:text-4xl">
-              Saiba se está tudo bem antes que vire problema
-            </h2>
-            <p className="mt-4 text-pretty text-white/70">
-              O Bench Labs analisa bateria, armazenamento, refrigeração, driver
-              de vídeo e memória e avisa o que merece atenção. Ótimo para
-              conferir um notebook novo ou um usado antes de comprar.
-            </p>
-          </div>
-
-          <DemoFrame
-            view="inicio"
-            detail="laudo"
-            title="Laudo de saúde do notebook de exemplo"
-            className="mt-10"
-            height={260}
-          />
-        </div>
-      </section>
-
-      {/* Ficha técnica */}
-      <section
-        id="ficha"
-        className="scroll-mt-20 border-t border-white/[0.08] py-20 sm:py-28"
-      >
-        <div className="container grid items-center gap-12 max-sm:px-4 lg:grid-cols-[1.4fr_1fr]">
-          <div>
-            <Eyebrow>Ficha técnica · lida do hardware</Eyebrow>
-            <h2 className="mt-3 text-balance text-3xl font-bold tracking-tight sm:text-4xl">
-              Tudo sobre o seu notebook, em uma página
-            </h2>
-            <p className="mt-4 text-pretty text-white/70">
-              Sem caçar informação em vários programas. O Bench Labs lê direto
-              do hardware e organiza a ficha completa, pronta para copiar ou
-              salvar e compartilhar.
-            </p>
-
-            <ul className="mt-8 space-y-3">
-              {specGroups.map((spec) => (
-                <li key={spec} className="flex gap-3 text-sm text-white/80">
-                  <Check
-                    className="mt-0.5 size-4 shrink-0 text-[#ffe01b]"
-                    aria-hidden="true"
-                  />
-                  {spec}
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <DemoFrame
-            view="ficha"
-            detail="tela"
-            title="Detalhes da tela e cobertura de cores"
-            width={420}
-            height={740}
-            className="mx-auto w-full max-w-sm lg:mx-0 lg:justify-self-end"
-          />
-        </div>
-
-        <div className="container mt-12 max-sm:px-4">
-          <DemoFrame
-            view="ficha"
-            title="Ficha técnica completa do notebook de exemplo"
-            height={1050}
-          />
-        </div>
-      </section>
-
       {/* Do seu jeito */}
-      <section className="border-t border-white/[0.08] py-20 sm:py-28">
+      <section
+        id="personalizacao"
+        className="scroll-mt-36 border-t border-white/[0.08] py-20 sm:py-28"
+      >
         <div className="container grid items-center gap-12 max-sm:px-4 lg:grid-cols-[1.2fr_1fr]">
           <div className="min-w-0 max-lg:order-2">
             <ColorShowcase />
@@ -740,7 +687,7 @@ export default function BenchLabsPage() {
       {/* Atualizações */}
       <section
         id="atualizacoes"
-        className="scroll-mt-20 border-t border-white/[0.08] py-20 sm:py-28"
+        className="scroll-mt-36 border-t border-white/[0.08] py-20 sm:py-28"
       >
         <div className="container max-sm:px-4">
           <div className="grid items-end gap-6 lg:grid-cols-2">
@@ -767,7 +714,10 @@ export default function BenchLabsPage() {
       </section>
 
       {/* Como funciona */}
-      <section className="border-t border-white/[0.08] py-20 sm:py-28">
+      <section
+        id="como-usar"
+        className="scroll-mt-36 border-t border-white/[0.08] py-20 sm:py-28"
+      >
         <div className="container max-sm:px-4">
           <div className="text-center">
             <Eyebrow>Como funciona</Eyebrow>
@@ -796,7 +746,7 @@ export default function BenchLabsPage() {
       </section>
 
       {/* CTA final */}
-      <section className="container pb-24 max-sm:px-4">
+      <section className="container pb-16 max-sm:px-4">
         <div className="relative overflow-hidden rounded-3xl bg-[#ffe01b] px-6 py-14 text-center text-[#120d1a] sm:px-12">
           <ScanLine
             aria-hidden="true"
@@ -821,6 +771,63 @@ export default function BenchLabsPage() {
           <div className="relative mt-8 flex justify-center">
             <DownloadButton variant="dark" />
           </div>
+        </div>
+      </section>
+      <section
+        id="duvidas"
+        className="scroll-mt-36 border-t border-white/[0.08] py-16 sm:py-24"
+      >
+        <div className="container max-sm:px-4">
+          <div className="mx-auto max-w-3xl">
+            <Eyebrow>Antes de começar</Eyebrow>
+            <h2 className="mt-3 text-balance text-3xl font-bold tracking-tight sm:text-4xl">
+              Perguntas frequentes
+            </h2>
+            <div className="mt-10 divide-y divide-white/10">
+              {faqs.map((faq) => (
+                <details key={faq.question} className="group py-1">
+                  <summary className="flex min-h-16 cursor-pointer list-none items-center justify-between gap-5 rounded-lg py-5 text-base font-semibold transition-colors hover:text-[#ffe01b] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#ffe01b] sm:text-lg [&::-webkit-details-marker]:hidden">
+                    {faq.question}
+                    <ChevronDown
+                      aria-hidden="true"
+                      className="size-5 shrink-0 text-white/50 transition-transform group-open:rotate-180 motion-reduce:transition-none"
+                    />
+                  </summary>
+                  <p className="text-pretty pb-6 pr-8 leading-relaxed text-white/70">
+                    {faq.answer}
+                  </p>
+                </details>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section
+        id="discord"
+        className="container scroll-mt-36 pb-24 max-sm:px-4"
+      >
+        <div className="flex flex-col items-start gap-8 rounded-3xl bg-white/[0.04] p-6 ring-1 ring-white/10 sm:p-10 lg:flex-row lg:items-center lg:justify-between">
+          <div className="max-w-2xl">
+            <Eyebrow>Bench Promos no Discord</Eyebrow>
+            <h2 className="mt-3 text-balance text-2xl font-bold tracking-tight sm:text-3xl">
+              Ficou com dúvida ou quer mostrar o seu resultado?
+            </h2>
+            <p className="mt-4 text-pretty leading-relaxed text-white/70">
+              Entre no canal de benchmarks do Bench Promos, compartilhe os seus
+              resultados, tire dúvidas sobre o app e acompanhe as novidades.
+            </p>
+          </div>
+          <a
+            href="https://discord.com/channels/407676242255675394/1422627896337502321"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-xl bg-[#ffe01b] px-6 py-3 text-sm font-bold text-[#120d1a] transition-[background-color,transform] hover:bg-[#fff05c] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#ffe01b] active:scale-[0.96]"
+          >
+            <MessageCircle aria-hidden="true" className="size-5" />
+            Entrar no canal de benchmarks
+            <ArrowRight aria-hidden="true" className="size-4" />
+          </a>
         </div>
       </section>
     </main>

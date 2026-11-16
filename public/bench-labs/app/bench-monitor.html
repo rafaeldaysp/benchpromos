@@ -1,0 +1,425 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<script src="site-guard.js"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bench Monitor</title>
+<style>
+/* Demonstração da janela do Bench Monitor 0.4.75: mesmas medidas, cores e textos do aplicativo, com dados fictícios. */
+@font-face{font-family:"BenchPainel";src:url("monitor-app/Montserrat-ExtraBold.ttf") format("truetype");font-weight:800;font-display:swap}
+@font-face{font-family:"BenchLogo";src:url("monitor-app/Montserrat-BlackItalic.ttf") format("truetype");font-weight:900;font-style:italic;font-display:swap}
+:root{
+  --bg:#120C1A;--bar:#170F23;--card:#1B1327;--card-b:#2A1F37;--field:#120C1A;--field-b:#3A2D4A;--hover:#241A33;--key:#2A1F37;
+  --text:#F5F2F9;--muted:#A99BBA;--muted2:#CFC5DC;--ph:#7E7290;--acc:#FFE500;--on-acc:#170F23;--ok:#8DE462;
+  --b2:#30243D;--hover-b:#4A3B5C;--row:#211830;--pill:#21172F;--pill-t:#D9D0E5;
+  --p1:#3C5560;--p2:#263139;--p3:#1A2127;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--text);font:13.5px/1.35 "Segoe UI","Segoe UI Variable Text",system-ui,-apple-system,Roboto,sans-serif;overflow:hidden}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.h{font-family:"BenchPainel","Segoe UI",sans-serif;font-weight:800;text-transform:uppercase}
+.janela{height:100%;display:flex;flex-direction:column;border:1px solid var(--b2)}
+/* barra de título */
+.barra{flex:0 0 56px;background:var(--bar);border-bottom:1px solid var(--card-b);display:flex;align-items:center;padding:0 12px 0 22px}
+.barra img{height:34px;margin-top:2px}
+.barra .t{font-size:16px;margin-left:10px}
+.barra .v{font-size:12px;color:var(--muted);margin-left:10px}
+.link{color:var(--acc);font-weight:600;font-size:13px;padding:10px 4px}
+.link:hover{opacity:.75}
+.barra .link{font-size:12px;margin-left:14px}
+.barra .msg{font-size:12px;color:var(--muted);margin-left:12px}
+.barra .dir{margin-left:auto;display:flex;align-items:center}
+.status{display:flex;align-items:center;gap:8px;background:var(--pill);border:1px solid var(--b2);border-radius:18px;padding:6px 14px;margin-right:10px;font-size:13px;color:var(--pill-t)}
+.status i{width:8px;height:8px;border-radius:50%;background:var(--acc)}
+.status.jogo i{background:var(--ok)}
+.chrome{width:44px;height:40px;border-radius:8px;color:var(--muted);display:grid;place-items:center}
+.chrome:hover{background:var(--key);color:var(--text)}
+/* corpo */
+.rolagem{flex:1;min-height:0;overflow-y:auto;scrollbar-color:var(--field-b) transparent}
+.grade{display:grid;grid-template-columns:290px minmax(0,1fr) 340px;gap:0 20px;padding:20px 24px 24px;min-width:1080px;min-height:680px}
+.col{display:flex;flex-direction:column;min-width:0}
+.card{background:var(--card);border:1px solid var(--card-b);border-radius:12px;padding:20px}
+.col1 .card + .card{margin-top:16px}
+.rot{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase}
+.mut{font-size:12.5px;color:var(--muted)}
+.h2{font-size:15px}
+.cab{display:flex;align-items:center;margin-bottom:10px}
+.cab .mut{margin-left:10px}
+.cab .link{margin-left:auto}
+/* coluna 1 */
+.dev{font-size:20px;margin:6px 0 14px;line-height:1.2}
+.kv .k{font-size:12px;color:var(--muted)}
+.kv .v{margin:2px 0 12px}
+.duas{display:grid;grid-template-columns:1fr 1fr}
+.duas .v{margin-bottom:0}
+.st{display:flex;align-items:center;margin-bottom:10px}
+.st svg{margin-right:10px;flex:none}
+.jogo-t{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:700;margin-top:10px}
+.jogo-t i{width:10px;height:10px;border-radius:50%;background:var(--ok)}
+.tecla{display:flex;align-items:center;margin-bottom:2px}
+.cap{min-width:56px;background:var(--key);border:1px solid var(--field-b);border-bottom-width:3px;border-radius:6px;padding:5px 8px;text-align:center;font-size:13px}
+.tecla span{flex:1;margin:0 6px 0 12px}
+.tecla .link{padding:10px 2px}
+.tecla.ouvindo .cap{background:var(--acc);border-color:var(--acc);color:var(--on-acc)}
+.tecla.ouvindo span{color:var(--acc)}
+.temas{display:flex;flex-wrap:wrap}
+.chip{height:32px;display:inline-flex;align-items:center;padding:0 12px 0 10px;margin:0 8px 8px 0;border-radius:18px;background:var(--field);border:1px solid var(--field-b);color:var(--muted2);font-size:13px;font-weight:600}
+.chip i{width:12px;height:12px;border-radius:50%;margin-right:7px;border:2px solid}
+.chip[aria-pressed=true]{background:var(--acc);border-color:var(--acc);color:var(--on-acc)}
+/* coluna 2 */
+.presets{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:10px}
+.preset{min-height:84px;display:flex;align-items:center;text-align:left;background:var(--card);border:2px solid var(--card-b);border-radius:12px;padding:10px}
+.preset:hover{border-color:var(--hover-b)}
+.preset[aria-pressed=true]{background:var(--hover);border-color:var(--acc)}
+.mini{flex:none;width:52px;background:var(--bg);border-radius:6px;padding:6px 6px 3px}
+.mini b{display:block;border-radius:1px;margin-bottom:3px}
+.preset .n{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.preset .d{font-size:12px;color:var(--muted);margin-top:4px}
+.preset > div:last-child{margin-left:10px;min-width:0}
+.vazio{min-height:84px;border:1.5px solid var(--field-b);border-radius:12px;display:grid;place-items:center;text-align:center;color:var(--muted);font-size:12.5px}
+.c2{padding:16px 20px}
+.tres{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.campo label{display:block;font-size:12.5px;color:var(--muted2);margin-bottom:6px}
+.campo input{width:100%;height:44px;background:var(--field);border:1px solid var(--field-b);border-radius:8px;color:var(--text);font:inherit;font-size:14px;padding:0 12px;text-transform:uppercase}
+.campo input::placeholder{color:var(--ph)}
+.campo input:focus{outline:0;border-color:var(--acc)}
+.aparencia{display:flex;flex-wrap:wrap;gap:0 28px}
+.aparencia .fl{font-size:12.5px;color:var(--muted2);margin-bottom:8px}
+.pos{display:grid;grid-template-columns:49px 49px;gap:6px;margin-bottom:6px}
+.pos button{height:34px;background:var(--field);border:1.5px solid var(--field-b);border-radius:6px;display:flex;padding:5px 6px}
+.pos button::after{content:"";width:10px;height:7px;border-radius:1px;background:var(--ph)}
+.pos button[aria-pressed=true]{border-color:var(--acc);background:var(--key)}
+.pos button[aria-pressed=true]::after{background:var(--acc)}
+.seg{display:inline-flex;gap:4px;background:var(--field);border:1px solid var(--b2);border-radius:10px;padding:4px}
+.seg button{height:36px;min-width:48px;padding:0 12px;border-radius:7px;color:var(--muted2);font-size:13px;font-weight:600}
+.seg button:hover{background:var(--hover)}
+.seg button[aria-pressed=true]{background:var(--acc);color:var(--on-acc)}
+.bench{flex:1;padding:14px 20px}
+.lin{display:grid;grid-template-columns:minmax(0,1fr) 80px 64px 64px 96px;align-items:center;width:100%;text-align:right}
+.lin > :first-child{text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lin.tit{color:var(--muted);font-size:12px;margin-bottom:4px}
+button.lin{border-top:1px solid var(--card-b);padding:9px 0}
+button.lin:hover{background:var(--row)}
+.lin b{font-weight:600}
+.lin .fps{font-family:"BenchPainel","Segoe UI",sans-serif;font-weight:800}
+.lin em{font-style:normal;color:var(--muted)}
+/* coluna 3 */
+.previa{flex:1;min-height:460px;border:1px solid var(--card-b);border-radius:12px;background:linear-gradient(150deg,var(--p1),var(--p2) 55%,var(--p3));padding:14px;overflow:hidden}
+.amarelo{height:50px;border-radius:10px;background:var(--acc);color:var(--on-acc);font-weight:700;font-size:15px;margin-top:14px}
+.amarelo:hover{opacity:.9}
+.amarelo.p{height:40px;font-size:13px;width:100%;margin-top:12px}
+/* o painel do jogo (400 px de largura, reduzido para caber na prévia) */
+.painel-fit{width:400px;transform-origin:0 0}
+.painel{font-family:"BenchPainel","Segoe UI",sans-serif;font-weight:800;color:#fff;text-transform:uppercase;line-height:1.2}
+.pn{position:relative;border-radius:4px;padding:6px 12px 26px;background:rgba(18,17,16,var(--fundo,.85))}
+.pn .titulo{font-size:23px;text-align:center;margin-top:2px;white-space:nowrap}
+.fpsl{display:flex;align-items:center}
+.fpsl .f{font-size:42px}
+.fpsl #fps{margin-left:12px;min-width:78px;color:#46B8D3}
+.fpsl .med{margin:6px 0 0 14px;flex:1;align-self:flex-start}
+.fpsl .med div{display:flex}
+.fpsl .med span{width:80px}
+.fpsl .ms{font-size:14px;align-self:flex-end;margin-bottom:2px}
+#graf{display:block;width:100%;height:52px;margin-top:4px}
+.sec{margin-top:14px}.sec.gpu{margin-top:24px}
+.bar{position:relative;height:50px;display:flex;align-items:center;font-size:27px;text-shadow:0 1px 3px rgba(0,0,0,.55)}
+.bar.sub{height:25px;margin-top:5px;font-size:13px}
+.bar > i{position:absolute;inset:0;transform-origin:0 50%;transition:transform .5s}
+.bar > span{position:relative;margin:0 10px;flex:1;white-space:nowrap}
+.bar > b{position:relative;margin-right:4px;font-weight:800}
+.nums{display:flex;margin:10px 4px 0 10px;font-size:21px}
+.nums span:nth-child(1){width:82px}.nums span:nth-child(2){width:138px}.nums span:nth-child(3){width:86px}
+.bar.baixo{height:52px;margin-top:30px;font-size:16.5px}
+.bar.baixo b{font-size:25px}
+.rod{display:grid;grid-template-columns:1fr auto;gap:4px 10px;margin-top:10px;font-size:12.5px;color:#8C8A86}
+.rod > :nth-child(even){text-align:right}
+.rec{position:absolute;left:12px;top:12px;display:flex;align-items:center;gap:5px;font-size:12px;color:#FF6B6B}
+.rec i{width:10px;height:10px;border-radius:50%;background:#FF3B3B}
+.logo{display:block;height:64px;margin:-18px auto 4px;position:relative}
+.aviso{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--key);border:1px solid var(--acc);border-radius:10px;padding:11px 16px;font-weight:600;font-size:13px;box-shadow:0 10px 30px rgba(0,0,0,.45);z-index:9}
+[hidden]{display:none!important}
+@media (prefers-reduced-motion:reduce){.bar > i{transition:none}}
+</style>
+</head>
+<body>
+<div class="janela">
+  <header class="barra">
+    <img src="monitor-app/bench_wordmark.png" alt="Bench">
+    <span class="t h">Monitor</span><span class="v">v0.4.75</span>
+    <button class="link" id="b-atual">Procurar atualização</button><span class="msg" id="atual-msg" role="status"></span>
+    <div class="dir">
+      <div class="status" id="status"><i></i><span id="status-t">Aguardando jogo</span></div>
+      <button class="chrome" data-demo aria-label="Minimizar"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M2 7h10"/></svg></button>
+      <button class="chrome" data-demo aria-label="Fechar"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 3l8 8M11 3l-8 8"/></svg></button>
+    </div>
+  </header>
+
+  <div class="rolagem">
+  <div class="grade">
+    <!-- coluna 1 -->
+    <div class="col col1">
+      <section class="card kv">
+        <div class="rot">Este notebook</div>
+        <div class="dev h" id="dev">Legion 5 16IRX9</div>
+        <div class="k">Processador</div><div class="v">Intel Core i7-14650HX</div>
+        <div class="k">Placa de vídeo</div><div class="v">NVIDIA GeForce RTX 4060 Laptop GPU · 8 GB</div>
+        <div class="duas">
+          <div><div class="k">Memória</div><div class="v">16 GB</div></div>
+          <div><div class="k">Driver de vídeo</div><div class="v">572.16</div></div>
+        </div>
+      </section>
+      <section class="card">
+        <div class="rot" style="margin-bottom:12px">Status</div>
+        <div id="st"></div>
+      </section>
+      <section class="card">
+        <div class="rot">Painel no jogo</div>
+        <div class="jogo-t"><i id="pj-dot"></i><span id="pj-t">Ativo</span></div>
+        <div class="mut" id="pj-d" style="margin:6px 0 4px">O painel é desenhado dentro do jogo e aparece nas gravações (NVIDIA, OBS).</div>
+        <button class="link" id="pj-b">Desativar</button>
+      </section>
+      <section class="card">
+        <div class="rot" style="margin-bottom:8px">Atalhos no jogo</div>
+        <div id="teclas"></div>
+      </section>
+      <section class="card" style="padding:16px 10px 10px 20px">
+        <div class="rot" style="margin-bottom:8px">Tema do programa</div>
+        <div class="temas" id="temas"></div>
+      </section>
+    </div>
+
+    <!-- coluna 2 -->
+    <div class="col">
+      <div class="cab"><span class="h h2">Preset do painel</span><span class="mut">Novos presets aparecem aqui sozinhos</span><button class="link" data-demo>Personalizar</button></div>
+      <div class="presets" id="presets"></div>
+      <section class="card c2">
+        <div class="cab"><span class="h h2">Nomes no painel</span><span class="mut">Em branco = detectado automaticamente</span><button class="link" id="b-rest">Restaurar</button></div>
+        <div class="tres">
+          <div class="campo"><label for="n-nb">Notebook</label><input id="n-nb" placeholder="LEGION 5 16IRX9" autocomplete="off"></div>
+          <div class="campo"><label for="n-cpu">Processador</label><input id="n-cpu" placeholder="CORE I7 14650HX" autocomplete="off"></div>
+          <div class="campo"><label for="n-gpu">Placa de vídeo</label><input id="n-gpu" placeholder="RTX 4060" autocomplete="off"></div>
+        </div>
+      </section>
+      <section class="card c2" style="margin-top:16px">
+        <div class="aparencia">
+          <div><div class="fl">Posição na tela do jogo</div>
+            <div class="pos" id="pos">
+              <button aria-label="Canto superior esquerdo" style="align-items:flex-start;justify-content:flex-start"></button>
+              <button aria-label="Canto superior direito" aria-pressed="true" style="align-items:flex-start;justify-content:flex-end"></button>
+              <button aria-label="Canto inferior esquerdo" style="align-items:flex-end;justify-content:flex-start"></button>
+              <button aria-label="Canto inferior direito" style="align-items:flex-end;justify-content:flex-end"></button>
+            </div></div>
+          <div><div class="fl">Tamanho</div>
+            <div class="seg" id="tam"><button>75%</button><button aria-pressed="true">100%</button><button>125%</button><button>150%</button></div></div>
+          <div><div class="fl">Fundo do painel</div>
+            <div class="seg" id="fundo"><button data-v="0">Sem</button><button data-v=".5">50%</button><button data-v=".85" aria-pressed="true">85%</button><button data-v="1">100%</button></div></div>
+        </div>
+      </section>
+      <section class="card bench" style="margin-top:16px">
+        <div class="cab" style="margin-bottom:4px"><span class="h h2">Últimos benchmarks</span><button class="link" data-demo>Abrir pasta</button></div>
+        <div class="lin tit"><span>Jogo</span><span>FPS médio</span><span>1% low</span><span>Duração</span><span>Quando</span></div>
+        <div id="benchs"></div>
+      </section>
+    </div>
+
+    <!-- coluna 3 -->
+    <div class="col">
+      <div class="cab"><span class="h h2">Prévia</span><span class="mut" id="preset-nome" style="margin-left:auto"></span></div>
+      <div class="previa" id="previa">
+        <div class="painel-fit" id="fit">
+          <div class="painel">
+            <div class="pn" id="pn">
+              <div class="rec" id="rec" hidden><i></i><span id="rec-t">REC 00:00</span></div>
+              <div class="titulo" id="p-tit"></div>
+              <div class="fpsl"><span class="f">FPS</span><span class="f" id="fps">--</span>
+                <div class="med" id="med" hidden><div style="font-size:18px"><span>MEDIA</span><b id="avg">--</b></div><div style="font-size:15px;margin-top:6px"><span>1% LOW</span><b id="low">--</b></div></div>
+                <span class="ms" id="ms" style="margin-left:auto">-- MS</span></div>
+              <svg id="graf" viewBox="0 0 376 52" preserveAspectRatio="none" aria-hidden="true"><polyline id="graf-l" fill="none" stroke="#E8E8E8" stroke-width="1.6" stroke-linejoin="round"/></svg>
+              <div class="sec">
+                <div class="bar"><i id="cpu-i" style="background:#E5B21C"></i><span id="p-cpu"></span><b id="cpu-p"></b></div>
+                <div class="bar sub"><i id="cs-i" style="background:#E5B21C"></i><span id="cs-t"></span><b id="cs-p"></b></div>
+                <div class="nums"><span id="cpu-t"></span><span id="cpu-c"></span><span id="cpu-w"></span></div>
+              </div>
+              <div class="sec gpu">
+                <div class="bar"><i id="gpu-i" style="background:#BB60E0"></i><span id="p-gpu"></span><b id="gpu-p"></b></div>
+                <div class="bar sub"><i id="vr-i" style="background:#BB60E0"></i><span id="vr-t"></span><b id="vr-p"></b></div>
+                <div class="nums"><span id="gpu-t"></span><span id="gpu-c"></span><span id="gpu-w"></span></div>
+              </div>
+              <div class="bar baixo"><i id="bx-i"></i><span id="bx-t"></span><b id="bx-p"></b></div>
+              <div class="rod"><span id="r-jogo"></span><span id="r-lim"></span><span id="r-res"></span><span>DRIVER 572.16</span></div>
+            </div>
+            <img class="logo" src="monitor-app/bench_wordmark.png" alt="">
+          </div>
+        </div>
+      </div>
+      <button class="amarelo" data-demo>FECHAR E JOGAR</button>
+      <div class="mut" style="margin-top:10px;line-height:19px">O Bench Monitor continua no ícone perto do relógio. Esta tela também fecha sozinha quando um jogo abrir.</div>
+    </div>
+  </div>
+  </div>
+</div>
+<div class="aviso" id="aviso" role="status" hidden></div>
+
+<script>
+(function () {
+  'use strict';
+  var $ = function (s) { return document.querySelector(s); };
+  var prm = new URLSearchParams(location.search);
+  var JOGO = prm.get('jogo') !== '0';          // ?jogo=0 mostra a tela parada em "Aguardando jogo"
+
+  /* ---------- aviso da demonstração ---------- */
+  var tAviso;
+  function avisar(t) { var a = $('#aviso'); a.textContent = t; a.hidden = false; clearTimeout(tAviso); tAviso = setTimeout(function () { a.hidden = true; }, 3500); }
+  document.addEventListener('click', function (e) {
+    if (e.target.closest('[data-demo]')) avisar('Esta é uma demonstração. Esta ação funciona no Bench Monitor instalado.');
+  });
+  $('#b-atual').onclick = function () { $('#atual-msg').textContent = 'Você já está na versão mais recente.'; };
+
+  /* ---------- status ---------- */
+  $('#st').innerHTML = ['Sensores de CPU, GPU e bateria', 'Captura de FPS', 'Driver dos sensores (PawnIO)'].map(function (t) {
+    return '<div class="st"><svg width="18" height="18" viewBox="0 0 18 18"><circle cx="9" cy="9" r="9" fill="var(--ok)"/><path d="M5.5 9.2l2.3 2.3 4.7-4.9" fill="none" stroke="var(--bg)" stroke-width="1.8" stroke-linecap="round"/></svg>' + t + '</div>';
+  }).join('');
+
+  /* ---------- painel no jogo ---------- */
+  var painelAtivo = true;
+  $('#pj-b').onclick = function () {
+    painelAtivo = !painelAtivo;
+    $('#pj-dot').style.background = painelAtivo ? 'var(--ok)' : 'var(--acc)';
+    $('#pj-t').textContent = painelAtivo ? 'Ativo' : 'Como janela';
+    $('#pj-d').textContent = painelAtivo ? 'O painel é desenhado dentro do jogo e aparece nas gravações (NVIDIA, OBS).' : 'Aparece por cima do jogo, mas não entra nas gravações.';
+    this.textContent = painelAtivo ? 'Desativar' : 'Ativar painel no jogo';
+  };
+
+  /* ---------- atalhos ---------- */
+  var TECLAS = [['NUM -', 'Inicia o benchmark'], ['NUM +', 'Encerra e salva'], ['\\', 'Mostra / esconde o painel']], ouvindo = -1;
+  function desenharTeclas() {
+    $('#teclas').innerHTML = TECLAS.map(function (t, i) {
+      var o = i === ouvindo;
+      return '<div class="tecla' + (o ? ' ouvindo' : '') + '"><div class="cap h">' + (o ? '…' : t[0]) + '</div><span>' + (o ? 'Aperte a nova tecla' : t[1]) + '</span><button class="link" data-i="' + i + '">' + (o ? 'Cancelar' : 'Alterar') + '</button></div>';
+    }).join('');
+  }
+  $('#teclas').onclick = function (e) { var b = e.target.closest('button'); if (!b) return; var i = +b.dataset.i; ouvindo = ouvindo === i ? -1 : i; desenharTeclas(); };
+  document.addEventListener('keydown', function (e) {
+    if (ouvindo < 0) return;
+    e.preventDefault();
+    if (e.key !== 'Escape' && ['Shift', 'Control', 'Alt', 'Meta'].indexOf(e.key) < 0) {
+      var n = e.code.indexOf('Numpad') === 0 ? 'NUM ' + ({ Add: '+', Subtract: '-', Multiply: '*', Divide: '/', Decimal: ',' }[e.code.slice(6)] || e.code.slice(6)) : (e.key.length === 1 ? e.key.toUpperCase() : e.key.toUpperCase());
+      TECLAS[ouvindo][0] = n;
+    }
+    ouvindo = -1; desenharTeclas();
+  });
+  desenharTeclas();
+
+  /* ---------- temas (as mesmas cores do aplicativo) ---------- */
+  var TEMAS = [
+    ['Bench', '#120C1A', '#170F23', '#1B1327', '#2A1F37', '#120C1A', '#3A2D4A', '#F5F2F9', '#A99BBA', '#FFE500', '#170F23', '#8DE462', '#21172F', '#3C5560', '#263139', '#1A2127'],
+    ['Grafite', '#121315', '#18191C', '#1E2024', '#2C2F35', '#141518', '#383C44', '#ECEEF1', '#9BA1AB', '#4C9AFF', '#FFFFFF', '#5FD38D', '#202227', '#2C3138', '#1E2125', '#16181B'],
+    ['Claro', '#F3F4F7', '#FFFFFF', '#FFFFFF', '#E1E4EA', '#F6F7F9', '#D3D8E0', '#16181D', '#5F6673', '#2563EB', '#FFFFFF', '#16A34A', '#EEF1F6', '#C9D3DD', '#9FAEBB', '#7E8D9A'],
+    ['Carbono', '#0B0B0C', '#111112', '#18181A', '#26262A', '#0E0E0F', '#34343A', '#F4F4F5', '#9A9AA2', '#E10600', '#FFFFFF', '#4ADE80', '#1A1A1C', '#3A3A3E', '#222225', '#151517'],
+    ['Oceano', '#07121F', '#0A1828', '#0F1F33', '#1B3150', '#081524', '#24406A', '#EAF4FF', '#8FA9C7', '#00D1FF', '#04121F', '#5EEAD4', '#0E2238', '#245A73', '#163A52', '#0D2436'],
+    ['Menta', '#0C1512', '#101C18', '#14231E', '#22382F', '#0D1814', '#2D4A3E', '#ECF7F2', '#93B2A5', '#3EE6A8', '#062017', '#3EE6A8', '#152A23', '#2E5246', '#1D362E', '#13241F'],
+    ['Mono', '#0E0E0E', '#141414', '#1A1A1A', '#2A2A2A', '#111111', '#3A3A3A', '#F5F5F5', '#9E9E9E', '#F5F5F5', '#111111', '#BDBDBD', '#1C1C1C', '#3A3A3A', '#242424', '#171717'],
+    ['Roxo suave', '#13101B', '#181424', '#1E1929', '#2E2640', '#14111C', '#3D3354', '#F3F0FA', '#A79CBD', '#B79CFF', '#1A1230', '#8DE462', '#221C30', '#3C3A5A', '#26243A', '#1A1828']
+  ], temaAtual = 0;
+  function mix(a, b, k) { var p = function (h, i) { return parseInt(h.substr(1 + i * 2, 2), 16); }, o = '#'; for (var i = 0; i < 3; i++) o += ('0' + Math.round(p(a, i) + (p(b, i) - p(a, i)) * k).toString(16)).slice(-2); return o; }
+  function aplicarTema(i) {
+    temaAtual = i; var t = TEMAS[i], r = document.documentElement.style;
+    var v = { bg: t[1], bar: t[2], card: t[3], 'card-b': t[4], field: t[5], 'field-b': t[6], text: t[7], muted: t[8], acc: t[9], 'on-acc': t[10], ok: t[11], pill: t[12], p1: t[13], p2: t[14], p3: t[15],
+      hover: mix(t[3], t[6], .3), key: t[4], muted2: mix(t[8], t[7], .5), ph: mix(t[8], t[1], .35), b2: mix(t[4], t[6], .4), 'hover-b': mix(t[6], t[7], .15), row: mix(t[3], t[4], .4), 'pill-t': mix(t[8], t[7], .65) };
+    if (i === 0) { for (var k0 in v) r.removeProperty('--' + k0); } else { for (var k in v) r.setProperty('--' + k, v[k]); }
+    $('#temas').innerHTML = TEMAS.map(function (x, j) { return '<button class="chip" aria-pressed="' + (j === i) + '" data-i="' + j + '"><i style="background:' + x[9] + ';border-color:' + x[1] + '"></i>' + x[0] + '</button>'; }).join('');
+  }
+  $('#temas').onclick = function (e) { var b = e.target.closest('button'); if (b) aplicarTema(+b.dataset.i); };
+  aplicarTema(0);
+
+  /* ---------- presets ---------- */
+  var PRESETS = [
+    { id: 'bateria', nome: 'Bateria & Média', desc: 'CPU + RAM, GPU + VRAM e bateria', cpu: 'ram', baixo: 'bateria' },
+    { id: 'simples', nome: 'Simples & Média', desc: 'CPU + GPU integrada, GPU + VRAM e RAM', cpu: 'igpu', baixo: 'ram' }
+  ], preset = PRESETS[0];
+  function desenharPresets() {
+    $('#presets').innerHTML = PRESETS.map(function (p, i) {
+      var b = function (h, f, c, top) { return '<b style="height:' + h + 'px;width:' + 28 * f + 'px;background:' + c + (top ? ';margin-top:6px' : '') + '"></b>'; };
+      return '<button class="preset" aria-pressed="' + (p === preset) + '" data-i="' + i + '"><div class="mini">' + b(6, .7, '#E5B21C') + b(4, p.cpu === 'igpu' ? .3 : .85, '#E5B21C') + b(6, .9, '#BB60E0', 1) + b(4, .6, '#BB60E0') + b(6, 1, p.baixo === 'bateria' ? '#8DE462' : '#46B8D3', 1) + '</div><div><div class="n h">' + p.nome + '</div><div class="d">' + p.desc + '</div></div></button>';
+    }).join('') + '<div class="vazio">Próximos presets<br>entram nesta grade</div>';
+    $('#preset-nome').textContent = preset.nome;
+  }
+  $('#presets').onclick = function (e) { var b = e.target.closest('button'); if (!b) return; preset = PRESETS[+b.dataset.i]; desenharPresets(); pintar(); };
+  desenharPresets();
+
+  /* ---------- nomes, posição, tamanho, fundo ---------- */
+  ['#n-nb', '#n-cpu', '#n-gpu'].forEach(function (s) { $(s).oninput = pintar; });
+  $('#b-rest').onclick = function () { $('#n-nb').value = $('#n-cpu').value = $('#n-gpu').value = ''; pintar(); };
+  function grupo(sel, ao) {
+    $(sel).onclick = function (e) { var b = e.target.closest('button'); if (!b) return; [].forEach.call(this.children, function (x) { x.setAttribute('aria-pressed', x === b); }); if (ao) ao(b); };
+  }
+  grupo('#pos'); grupo('#tam');
+  grupo('#fundo', function (b) { $('#pn').style.setProperty('--fundo', b.dataset.v); });
+
+  /* ---------- últimos benchmarks ---------- */
+  var BENCHS = [['Cyberpunk2077', 'D3D12 · 2560x1600', '78,4', '61,2', '5:00', 'Ontem, 21:42'], ['cs2', 'D3D11 · 2560x1600', '242,6', '148,0', '5:02', 'Ontem, 20:55'],
+                ['ForzaHorizon5', 'D3D12 · 2560x1600', '112,3', '91,7', '3:31', '14/11, 22:10'], ['RDR2', 'Vulkan · 2560x1600', '54,8', '43,5', '6:14', '13/11, 19:27']];
+  $('#benchs').innerHTML = BENCHS.map(function (r) {
+    var v = parseFloat(r[2].replace(',', '.')), c = v < 30 ? '#DB4242' : v < 60 ? '#8DE462' : v < 120 ? '#46B8D3' : '#BB60E0';
+    return '<button class="lin" data-demo><span><b>' + r[0] + '</b><em> · ' + r[1] + '</em></span><span class="fps" style="color:' + c + '">' + r[2] + '</span><span>' + r[3] + '</span><span>' + r[4] + '</span><em>' + r[5] + '</em></button>';
+  }).join('');
+
+  /* ---------- sensores simulados e painel ---------- */
+  var S = { fps: 0, cpu: 7, ram: 9.6, cpuT: 52, cpuC: 2800, cpuW: 14, gpu: 2, vram: 1.4, gpuT: 46, gpuC: 210, gpuW: 9, igpu: 4, bat: 96, ms: [] }, t0 = Date.now();
+  function rumo(a, alvo, k) { return a + (alvo - a) * k + (Math.random() - .5) * Math.abs(alvo) * .04; }
+  function simular() {
+    if (JOGO) {
+      S.fps = Math.max(48, rumo(S.fps || 80, 78 + 9 * Math.sin(Date.now() / 4000), .4));
+      S.cpu = rumo(S.cpu, 38, .3); S.cpuT = rumo(S.cpuT, 84, .15); S.cpuC = rumo(S.cpuC, 4700, .3); S.cpuW = rumo(S.cpuW, 62, .3);
+      S.gpu = Math.min(99, rumo(S.gpu, 97, .4)); S.gpuT = rumo(S.gpuT, 76, .15); S.gpuC = rumo(S.gpuC, 2310, .4); S.gpuW = rumo(S.gpuW, 118, .3);
+      S.ram = rumo(S.ram, 12.4, .2); S.vram = rumo(S.vram, 6.7, .2); S.igpu = rumo(S.igpu, 6, .3);
+    } else {
+      S.cpu = rumo(S.cpu, 7, .3); S.cpuT = rumo(S.cpuT, 52, .2); S.cpuC = rumo(S.cpuC, 2900, .3); S.cpuW = rumo(S.cpuW, 14, .3);
+      S.gpu = Math.max(0, rumo(S.gpu, 1, .3)); S.gpuT = rumo(S.gpuT, 46, .2); S.igpu = rumo(S.igpu, 4, .3);
+    }
+    pintar();
+  }
+  function num(v, d) { return v.toFixed(d || 0); }
+  function barra(id, frac) { $(id).style.transform = 'scaleX(' + Math.max(0, Math.min(1, frac)) + ')'; }
+  function pintar() {
+    $('#p-tit').textContent = $('#n-nb').value.trim() || 'LEGION 5 16IRX9';
+    $('#p-cpu').textContent = $('#n-cpu').value.trim() || 'CORE I7 14650HX';
+    $('#p-gpu').textContent = $('#n-gpu').value.trim() || 'RTX 4060';
+    var jogo = JOGO && S.fps > 0;
+    $('#fps').textContent = jogo ? num(S.fps) : '--';
+    $('#ms').textContent = jogo ? num(1000 / S.fps, 1) + ' MS' : '-- MS';
+    var ramTxt = num(S.ram, 2) + '/16GB RAM', ramP = S.ram / 16;
+    $('#cpu-p').textContent = num(S.cpu) + '%'; barra('#cpu-i', S.cpu / 100);
+    if (preset.cpu === 'igpu') { $('#cs-t').textContent = 'GPU INTEGRADA'; $('#cs-p').textContent = num(S.igpu) + '%'; barra('#cs-i', S.igpu / 100); }
+    else { $('#cs-t').textContent = ramTxt; $('#cs-p').textContent = num(ramP * 100) + '%'; barra('#cs-i', ramP); }
+    $('#cpu-t').textContent = num(S.cpuT) + ' °C'; $('#cpu-c').textContent = num(S.cpuC) + ' MHZ'; $('#cpu-w').textContent = num(S.cpuW) + ' W';
+    $('#gpu-p').textContent = num(S.gpu) + '%'; barra('#gpu-i', S.gpu / 100);
+    $('#vr-t').textContent = num(S.vram, 2) + 'GB/8GB VRAM'; $('#vr-p').textContent = num(S.vram / 8 * 100) + '%'; barra('#vr-i', S.vram / 8);
+    $('#gpu-t').textContent = num(S.gpuT) + ' °C'; $('#gpu-c').textContent = num(S.gpuC) + ' MHZ'; $('#gpu-w').textContent = num(S.gpuW) + ' W';
+    if (preset.baixo === 'bateria') { $('#bx-i').style.background = '#8DE462'; $('#bx-t').textContent = 'BATERIA RESTANTE: 77WH'; $('#bx-p').textContent = S.bat + '%'; barra('#bx-i', S.bat / 100); }
+    else { $('#bx-i').style.background = '#46B8D3'; $('#bx-t').textContent = ramTxt; $('#bx-p').textContent = num(ramP * 100) + '%'; barra('#bx-i', ramP); }
+    $('#r-jogo').textContent = jogo ? 'CYBERPUNK2077 · D3D12' : 'AGUARDANDO JOGO';
+    $('#r-res').textContent = 'RESOLUCAO: ' + (jogo ? '2560X1600' : '--');
+    $('#r-lim').innerHTML = jogo ? 'LIMITADO POR <span style="color:#BB60E0">GPU</span>' : '';
+    $('#status').classList.toggle('jogo', jogo);
+    $('#status-t').textContent = jogo ? 'Jogo: Cyberpunk2077' : 'Aguardando jogo';
+  }
+  /* gráfico de frametime */
+  function grafico() {
+    if (!(JOGO && S.fps > 0)) { $('#graf-l').setAttribute('points', ''); return; }
+    S.ms.push(1000 / S.fps * (1 + (Math.random() - .5) * .18 + (Math.random() < .03 ? .5 : 0)));
+    if (S.ms.length > 95) S.ms.shift();
+    $('#graf-l').setAttribute('points', S.ms.map(function (v, i) { return (i * 4) + ',' + Math.max(3, Math.min(49, 46 - (v - 8) * 3.2)).toFixed(1); }).join(' '));
+  }
+  function caber() { var w = $('#previa').clientWidth - 28, k = Math.min(1, w / 400), f = $('#fit'); f.style.transform = 'scale(' + k + ')'; f.style.height = f.firstElementChild.offsetHeight * k + 'px'; }
+  window.addEventListener('resize', caber);
+  simular(); caber(); if (document.fonts && document.fonts.ready) document.fonts.ready.then(caber);
+  var parado = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  setInterval(simular, 1000); if (!parado) setInterval(grafico, 120); else for (var i = 0; i < 95; i++) grafico();
+})();
+</script>
+</body>
+</html>

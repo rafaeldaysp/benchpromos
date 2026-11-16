@@ -12,10 +12,10 @@ bridge and sample data for a Lenovo Legion 5i 16. The website serves a copy from
 | Live monitor | Raio-X, Painel and Blocos, including left-side miniature previews | Visitors can explore all three layouts, without screenshot compression. |
 | Bench Marks | Real selection screen, profiles and descriptions | Try test selection and see the actual interface. Execution stays in the Windows app. |
 | Battery | Real battery screen with the missing configuration mocks supplied by the website adapter | Choose activities, modes and custom duration. No fabricated completed benchmark results. |
-| Health | Real Laudo block | Same sample notebook and real app layout. |
-| Hardware | Real Ficha screen plus an isolated display/color-gamut card | Selectable text, SVG diagrams and the external-monitor refresh-rate example. |
+| Health | Removed from the landing page | Still present inside the supplied app demo. |
+| Hardware | Removed from the landing page | Source screens remain available for future use. |
 | Colors | Five actual app palettes | Switch Bench, Claro, Grafite, Meia-noite, and Pista. The app’s seasonal Abóbora palette is not offered outside October. |
-| Bench Monitor (new) | Real Monitor screen | Preview shortcuts, presets and four sample local game records. These are not community measurements. |
+| Bench Monitor | Standalone `bench-monitor.html`, at its supplied 1240 × 800 size | Live overlay preview, presets, themes, shortcuts and local sample game records; fonts/logo are served from `monitor-app/`. |
 | Updates (new) | Real Atualizações screen | Explore Windows/driver/program update simulations and the new-notebook checklist. |
 
 ## What remains an image
@@ -25,6 +25,15 @@ out until the feature is released; local game records are not presented as commu
 statistics. The existing image is also retained for social previews (Open Graph).
 The other old screenshot assets remain on disk for compatibility, but are no
 longer rendered in their former page sections.
+
+## Landing page navigation and help
+
+`section-nav.tsx` provides sticky anchor links to the remaining sections with
+scroll highlighting, mobile horizontal scrolling, and reduced-motion support.
+Section headings use larger eyebrow labels. Health and hardware sections are
+removed. Five FAQ disclosures follow the final download CTA, followed by a link
+to the specific Discord benchmark channel supplied by the owner. Community FPS
+remains commented out until release.
 
 ## Website adapter
 

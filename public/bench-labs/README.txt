@@ -13,8 +13,13 @@ Blocos (parâmetro aba)
    inicio   Início ao vivo (sensores simulados, atualizam sozinhos)
    testes   Testes de desempenho
    ficha    Ficha técnica
-   monitor  Bench Monitor
+   monitor  aba Monitor do Bench Labs (opcional)
    preparo  Atualizações
+
+Bench Monitor (a janela do próprio programa)
+   <iframe src="/bench-labs/app/bench-monitor.html" style="width:100%;height:800px;border:0" loading="lazy"></iframe>
+   Tamanho original da janela: 1240 x 800. Painel com jogo simulado; ?jogo=0 mostra "Aguardando jogo".
+   Usa a pasta app/monitor-app (fontes e logo).
 
 Parâmetros opcionais
    fixo=1     trava o menu lateral (o visitante não troca de área dentro do bloco)
