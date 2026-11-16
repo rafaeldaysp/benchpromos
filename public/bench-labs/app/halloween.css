@@ -1,0 +1,98 @@
+/* Tema Abóbora (Halloween): animações dos enfeites do Início. Os desenhos estão em halloween.js.
+   Só valem com <html class="hw"> (cor Abóbora + enfeites ligados). Com "reduzir animações" tudo fica parado. */
+@keyframes hw-bate{to{transform:scaleY(.35)}}
+@keyframes hw-voa1{0%{transform:translate(0,10px) scale(.2);opacity:0}8%{opacity:1}55%,100%{transform:translate(-190px,-70px) scale(1.1);opacity:0}}
+@keyframes hw-voa2{0%{transform:translate(0,10px) scale(.2);opacity:0}8%{opacity:1}55%,100%{transform:translate(-70px,-90px) scale(1.1);opacity:0}}
+@keyframes hw-voa3{0%{transform:translate(0,10px) scale(.2);opacity:0}8%{opacity:1}55%,100%{transform:translate(70px,-90px) scale(1.1);opacity:0}}
+@keyframes hw-voa4{0%{transform:translate(0,10px) scale(.2);opacity:0}8%{opacity:1}55%,100%{transform:translate(190px,-70px) scale(1.1);opacity:0}}
+@keyframes hw-tece{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+@keyframes hw-desce{from{transform:translateY(-70px)}to{transform:translateY(0)}}
+@keyframes hw-fio{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+@keyframes hw-balanca{from{transform:translateY(0)}to{transform:translateY(10px)}}
+@keyframes hw-balancafio{from{transform:scaleY(1)}to{transform:scaleY(var(--k,1.14))}}
+@keyframes hw-sobe1{0%{transform:translate(0,0) scale(.5);opacity:0}20%{opacity:.9}100%{transform:translate(-20px,-92px) scale(1);opacity:0}}
+@keyframes hw-sobe2{0%{transform:translate(0,0) scale(.5);opacity:0}20%{opacity:.9}100%{transform:translate(20px,-92px) scale(1);opacity:0}}
+@keyframes hw-brota{0%{transform:scale(0)}60%{transform:scale(1.15)}85%{transform:scale(.95)}100%{transform:scale(1)}}
+@keyframes hw-vela{0%,100%{opacity:1}20%{opacity:.7}25%{opacity:1}45%{opacity:.82}60%{opacity:1}80%{opacity:.68}}
+@keyframes hw-espia{0%,40%{transform:translateY(72px)}46%,62%{transform:translateY(0)}68%,100%{transform:translateY(72px)}}
+@keyframes hw-pisca{0%,90%,100%{transform:scaleY(1)}94%{transform:scaleY(.1)}}
+@keyframes hw-brilha{0%,100%{box-shadow:0 0 22px rgba(255,122,26,.35)}30%{box-shadow:0 0 34px rgba(255,122,26,.55)}55%{box-shadow:0 0 18px rgba(255,122,26,.28)}75%{box-shadow:0 0 30px rgba(255,122,26,.5)}}
+@keyframes hw-brilhap{0%,100%{box-shadow:0 0 10px rgba(255,200,97,.25)}40%{box-shadow:0 0 18px rgba(255,200,97,.45)}70%{box-shadow:0 0 8px rgba(255,200,97,.2)}}
+@keyframes hw-cruza{from{transform:translate(0,0)}to{transform:translate(calc(-100vw - 160px),-24px)}}
+@keyframes hw-cruza2{from{transform:translate(0,0) scale(.7)}to{transform:translate(calc(100vw + 160px),30px) scale(.7)}}
+@keyframes hw-pendula{0%,100%{transform:rotate(-7deg)}50%{transform:rotate(7deg)}}
+@keyframes hw-tremor{0%,60%,100%{transform:rotate(0)}64%{transform:rotate(-4deg)}68%{transform:rotate(3deg)}72%{transform:rotate(-2deg)}76%{transform:rotate(1deg)}80%{transform:rotate(0)}}
+@keyframes hw-flutua{0%,100%{transform:translateY(0)}50%{transform:translateY(-2.5px)}}
+@keyframes hw-gira{to{transform:rotate(360deg)}}
+@keyframes hw-pula{0%,100%{transform:translateY(0) rotate(-6deg)}50%{transform:translateY(-10px) rotate(6deg)}}
+
+.hw-bate{transform-box:fill-box;transform-origin:center;animation:hw-bate .16s ease-in-out infinite alternate}
+[class^=hw-voa]{transform-box:fill-box;transform-origin:center;opacity:0}
+.hw-voa1{animation:hw-voa1 7s ease-out 1s infinite}
+.hw-voa2{animation:hw-voa2 7s ease-out 2.8s infinite}
+.hw-voa3{animation:hw-voa3 7s ease-out 4.5s infinite}
+.hw-voa4{animation:hw-voa4 7s ease-out 6.2s infinite}
+.hw-tece{stroke-dasharray:1;stroke-dashoffset:1;animation:hw-tece 3s ease-out .3s forwards}
+.hw-fio{transform-box:view-box;animation:hw-fio 2.4s ease-out 1.4s both,hw-balancafio 2.6s ease-in-out 3.8s infinite alternate}
+.hw-desce{animation:hw-desce 2.4s ease-out 1.4s both,hw-balanca 2.6s ease-in-out 3.8s infinite alternate}
+.hw-sobe1{opacity:0;animation:hw-sobe1 4.5s ease-out .5s infinite}
+.hw-sobe2{opacity:0;animation:hw-sobe2 4.5s ease-out 2.7s infinite}
+.hw-brota{transform-box:fill-box;transform-origin:50% 100%;transform:scale(0);animation:hw-brota .7s ease-out both}
+.hw-d1{animation-delay:.6s}.hw-d2{animation-delay:.85s}.hw-d3{animation-delay:1.1s}.hw-d4{animation-delay:1.35s}.hw-d5{animation-delay:1.6s}.hw-d6{animation-delay:1.85s}.hw-d7{animation-delay:2.1s}
+.hw-vela{animation:hw-vela 2.2s linear infinite}
+.hw-espia{transform:translateY(72px);animation:hw-espia 12s ease-in-out 3s infinite}
+.hw-pisca{transform-box:fill-box;transform-origin:center;animation:hw-pisca 4.5s infinite}
+.hw-pendula1,.hw-pendula2{transform-box:fill-box;transform-origin:50% 0}
+.hw-pendula1{animation:hw-pendula 3.2s ease-in-out infinite}
+.hw-pendula2{animation:hw-pendula 3.8s ease-in-out .7s infinite}
+.hw-tremor{transform-box:view-box;animation:hw-tremor 5.5s ease-in-out 1s infinite}
+.hw-tremor + .hw-tremor{animation-delay:2.4s}
+.hw-flutua{animation:hw-flutua 1.8s ease-in-out infinite}
+
+/* fora dos desenhos */
+html.hw #b-testar{animation:hw-brilha 2.4s ease-in-out infinite}
+html.hw .t-marcha.on{animation:hw-brilhap 2.2s ease-in-out infinite}
+.t-marcha .hw-x{margin-left:auto}
+html.hw #v-inicio header .rotulo > span.pulsa{display:none}
+.hw-vivo{animation:pulsa 1.6s ease-in-out infinite}
+html.hw #v-inicio main.pag{position:relative}
+.hw-ceu{position:absolute;left:0;right:0;top:0;height:220px;overflow:hidden;pointer-events:none;z-index:0}
+.hw-ceu span{position:absolute;display:block;line-height:0}
+.hw-cruza{top:34px;right:-60px;animation:hw-cruza 14s linear 3s infinite}
+.hw-cruza2{top:120px;left:-60px;animation:hw-cruza2 18s linear 9s infinite}
+html.hw .rail .b-cores{margin-top:0}
+.hw-olhos-rail{margin:auto auto 0;flex:none}
+html.hw .trocando .roda{display:none}
+.hw-roda{position:relative;width:150px;height:150px;margin:0 auto 14px;display:flex;align-items:center;justify-content:center}
+.hw-anel{position:absolute;inset:22px;border-radius:50%;border:4px solid var(--linha2);border-top-color:var(--amarelo);animation:hw-gira .9s linear infinite}
+.hw-roda > span{position:absolute;line-height:0}
+.hw-orbita{inset:0;animation:hw-gira 3.2s linear infinite}
+.hw-orbita svg{position:absolute;top:-4px;left:60px}
+.hw-orbita2{inset:8px;animation:hw-gira 4.6s linear infinite reverse}
+.hw-orbita2 svg{position:absolute;bottom:-2px;left:56px}
+.hw-pula{animation:hw-pula 1.4s ease-in-out infinite}
+/* Painel: enfeite na ponta das barras */
+.hw-pos{position:relative}
+.hw-cav{position:absolute;top:11px;left:0;transform:translate(-50%,-50%);line-height:0;transition:left .6s;pointer-events:none}
+/* Blocos */
+.hw-fant-bloco{position:absolute;right:30px;top:118px}
+.hw-ab-bloco{position:absolute;right:12px;bottom:10px}
+.hw-chao{display:flex;justify-content:space-between;align-items:flex-end;height:50px;padding:0 6px;margin-top:12px;border-top:1px dashed var(--linha2)}
+.hw-chao > div{display:flex;align-items:flex-end;gap:4px}
+html.hw #card-sens.hw-card{position:relative;overflow:hidden}
+.hw-canto{position:absolute;top:0;right:0;width:170px;height:170px;pointer-events:none}
+.hw-canto svg{position:absolute;top:0;right:0}
+.hw-canto .hw-aranha-card{right:96px}
+.hw-laudo{position:relative}
+.hw-laudo > .grade-laudo{position:relative;z-index:1}
+.hw-vamp-laudo{position:absolute;left:40%;top:-14px;z-index:0;pointer-events:none}
+
+/* "reduzir animações" do Windows: tudo parado, teia já desenhada e abóboras já no lugar */
+.reduzir [class*="hw-"],.reduzir #b-testar,.reduzir .t-marcha.on{animation:none!important}
+.reduzir .hw-tece{stroke-dashoffset:0}
+.reduzir .hw-brota{transform:none}
+@media (prefers-reduced-motion:reduce){[class*="hw-"],html.hw #b-testar,html.hw .t-marcha.on{animation:none!important}.hw-tece{stroke-dashoffset:0}.hw-brota{transform:none}}
+/* o Painel estica todo <svg> dele (".t-painel svg"); os enfeites pequenos ficam do tamanho certo */
+.t-painel .hw-cav svg,.t-painel .t-marcha svg{min-height:0;max-height:none;height:auto;display:block}
+#p-ram-hw svg{width:18px}#p-ssd-hw svg{width:26px}#p-bat-hw svg{width:22px}
+.t-painel .t-marcha svg{width:22px}

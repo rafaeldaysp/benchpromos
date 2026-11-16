@@ -1,0 +1,845 @@
+<!doctype html>
+<html lang="pt-BR"><head>
+<script src="site-guard.js"></script><meta charset="utf-8"><title>Atualizações · Bench Labs</title>
+<style>
+:root{--bg:#170F23;--card:#21172F;--card2:#2A1F38;--linha:#30243D;--linha2:#43355A;--txt:#F5F2F9;--txt2:#C9BFD6;--txt3:#8E809F;--amarelo:#FFE500;--amarelo-txt:#170F23;--ok:#5FD38D;--erro:#FF7A7A;--alerta:#FFC861;--azul:#62D2FF;--raio:14px}
+*{box-sizing:border-box}html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--txt);font:15px/1.5 "Segoe UI Variable Text","Segoe UI",system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow:hidden}
+button{font:inherit;color:inherit;cursor:pointer}
+.app{display:grid;grid-template-rows:auto 1fr;height:100vh}
+header{display:flex;align-items:center;gap:28px;padding:18px 32px;border-bottom:1px solid var(--linha)}
+.logo{display:flex;align-items:center;gap:12px}.logo img{width:36px;height:36px}
+.logo-txt{font-weight:700;letter-spacing:.14em;font-size:14px;text-transform:uppercase}.logo-txt span{color:var(--txt3);font-weight:500;letter-spacing:.08em;text-transform:none;font-size:13px;margin-left:6px}
+.pilula{margin-left:auto;display:flex;align-items:center;gap:8px;padding:6px 12px;border:1px solid var(--linha);border-radius:999px;font-size:13px;color:var(--txt2)}
+body.embutido .app{grid-template-rows:1fr}body.embutido header{display:none}
+main{overflow-y:auto;padding:28px 34px 40px}
+.topo{display:flex;align-items:flex-end;gap:16px;margin-bottom:20px;flex-wrap:wrap}
+.rotulo{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--txt3);font-weight:600}
+h1{font-size:28px;line-height:1.15;margin:6px 0 6px;font-weight:700}
+.sub{color:var(--txt2);margin:0;max-width:720px}
+.dir{margin-left:auto}
+.verif{display:flex;align-items:center;gap:12px;color:var(--txt3);font-size:13px}
+.btn{border:0;border-radius:11px;padding:10px 18px;font-weight:700;font-size:14px;white-space:nowrap}
+.btn-pri{background:var(--amarelo);color:var(--amarelo-txt)}
+.btn-sec{background:var(--card2);border:1px solid var(--linha2);color:var(--txt);font-weight:600}
+.btn-peq{padding:6px 12px;font-size:13px;border-radius:9px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn:focus-visible,.cx:focus-visible,.link:focus-visible{outline:2px solid var(--amarelo);outline-offset:2px}
+.link{background:none;border:0;padding:0;color:var(--txt2);font-size:12.5px;text-decoration:underline;text-decoration-color:var(--linha2);text-underline-offset:3px;white-space:nowrap}
+.link:hover{color:var(--txt)}
+/* faixa de resumo */
+.faixa{display:flex;align-items:center;gap:14px;border-radius:14px;padding:14px 18px;margin-bottom:16px;border:1px solid var(--linha);background:var(--card)}
+.faixa.at{background:color-mix(in srgb,var(--alerta) 10%,var(--card));border-color:color-mix(in srgb,var(--alerta) 34%,var(--card))}
+.faixa.ok{background:color-mix(in srgb,var(--ok) 9%,var(--card));border-color:color-mix(in srgb,var(--ok) 30%,var(--card))}
+.faixa.pr{background:color-mix(in srgb,var(--erro) 10%,var(--card));border-color:color-mix(in srgb,var(--erro) 34%,var(--card))}
+.faixa b{font-size:16px}.faixa .c{color:var(--txt2);font-size:13.5px}
+.faixa .ico{flex:none;display:grid;place-items:center}
+.faixa .barra{margin-top:8px;max-width:520px}
+/* cartões */
+.grade{display:grid;grid-template-columns:repeat(auto-fill,minmax(232px,1fr));gap:12px;margin-bottom:26px}
+.sc{background:var(--card);border:1px solid var(--linha);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:4px;min-height:132px}
+.sc.at{border-color:color-mix(in srgb,var(--alerta) 32%,var(--linha))}
+.sc.pr{border-color:color-mix(in srgb,var(--erro) 36%,var(--linha))}
+.sc .t{display:flex;align-items:center;gap:8px;color:var(--txt3);font-size:12.5px;font-weight:600}
+.sc .t svg,.sc .t img{flex:none}
+.sc .v{font-size:17px;font-weight:700;line-height:1.25;margin-top:2px;overflow-wrap:anywhere}
+.sc .v .seta{color:var(--txt3);font-weight:500}
+.sc .d{font-size:12.5px;color:var(--txt3);line-height:1.4}
+.sc .rod{margin-top:auto;padding-top:8px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.selo{font-size:11.5px;font-weight:700;border-radius:999px;padding:2px 9px;white-space:nowrap}
+.selo.ok{background:color-mix(in srgb,var(--ok) 15%,transparent);color:var(--ok)}
+.selo.at{background:color-mix(in srgb,var(--alerta) 17%,transparent);color:var(--alerta)}
+.selo.pr{background:color-mix(in srgb,var(--erro) 16%,transparent);color:var(--erro)}
+.selo.neu,.selo.car{background:var(--card2);color:var(--txt2);border:1px solid var(--linha2)}
+.selo.car{color:var(--txt3)}
+/* seções */
+.dois{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:14px;margin-bottom:14px;align-items:start}
+.card{background:var(--card);border:1px solid var(--linha);border-radius:14px;padding:18px;min-width:0}
+.cab{display:flex;align-items:center;gap:12px;margin-bottom:6px;flex-wrap:wrap}
+.cab h2{font-size:18px;margin:0;font-weight:700}
+.cab .c{color:var(--txt3);font-size:13px}
+.lin{display:flex;align-items:center;gap:12px;padding:11px 0;border-top:1px solid var(--linha)}
+.lin.prim{border-top:0}
+.lin .n2{font-weight:600;font-size:14.5px}
+.lin .c,.c{font-size:12.5px;color:var(--txt3)}
+.lin>div:not(.ic){min-width:0;flex:1}
+.cx{width:18px;height:18px;border-radius:5px;border:1.5px solid var(--linha2);display:grid;place-items:center;flex-shrink:0;cursor:pointer}
+.cx.sel{background:var(--amarelo);border-color:var(--amarelo)}
+.cx.sel::after{content:"";width:8px;height:4px;border:solid var(--amarelo-txt);border-width:0 0 2px 2px;transform:rotate(-45deg) translate(1px,-1px)}
+.tag{font-size:11px;border-radius:999px;padding:2px 8px;border:1px solid var(--linha2);color:var(--txt2);white-space:nowrap}
+.tag.fw{border-color:color-mix(in srgb,var(--alerta) 50%,transparent);color:var(--alerta)}
+.tag.dr{border-color:color-mix(in srgb,var(--azul) 50%,transparent);color:var(--azul)}
+.tag.pr{border-color:color-mix(in srgb,var(--erro) 50%,transparent);color:var(--erro)}
+.tag.ok{border-color:color-mix(in srgb,var(--ok) 45%,transparent);color:var(--ok)}
+.acoes{display:flex;gap:10px;align-items:center;margin-top:12px;flex-wrap:wrap}
+.ic{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;flex:none;background:var(--card2);color:var(--txt2)}
+.ic.at{background:color-mix(in srgb,var(--alerta) 15%,transparent);color:var(--alerta)}
+.ic.ok{background:color-mix(in srgb,var(--ok) 13%,transparent);color:var(--ok)}
+.ic.pr{background:color-mix(in srgb,var(--erro) 14%,transparent);color:var(--erro)}
+.ver{font-variant-numeric:tabular-nums;color:var(--txt2);font-size:13px;white-space:nowrap}
+.ver b{color:var(--txt);font-weight:650}
+.nota{font-size:12.5px;color:var(--txt3);margin-top:10px;line-height:1.45}
+.vazio{color:var(--txt3);font-size:14px;padding:6px 0}
+.aviso{display:flex;gap:12px;align-items:center;border-radius:12px;padding:12px 16px;font-size:14px;margin-bottom:14px}
+.aviso.alerta{background:color-mix(in srgb,var(--alerta) 13%,var(--card));border:1px solid color-mix(in srgb,var(--alerta) 38%,var(--card))}
+.barra{height:6px;border-radius:99px;background:var(--card2);overflow:hidden;margin-top:8px}.barra div{height:100%;background:var(--amarelo);border-radius:99px;transition:width .5s}
+.hist{position:relative;padding-left:18px;margin-top:4px}
+.hist::before{content:"";position:absolute;left:7px;top:14px;bottom:14px;width:1px;background:var(--linha)}
+.hist .h{position:relative;padding:7px 0 7px 4px}
+.hist .h::before{content:"";position:absolute;left:-14px;top:14px;width:8px;height:8px;border-radius:50%;background:var(--linha2)}
+.hist .h.novo::before{background:var(--amarelo)}
+.hist .dt{font-size:12px;color:var(--txt3)}
+.hist .tx{font-size:14px;overflow-wrap:anywhere}
+.mini{display:inline-block;width:12px;height:12px;border:2px solid var(--linha2);border-top-color:var(--amarelo);border-radius:50%;animation:gira .9s linear infinite;vertical-align:-1px;margin-right:6px}
+@keyframes gira{to{transform:rotate(360deg)}}
+/* modal e aviso flutuante */
+.fundo{position:fixed;inset:0;background:rgba(10,6,16,.74);display:grid;place-items:center;z-index:50;opacity:0;pointer-events:none;transition:opacity .18s}.fundo.vis{opacity:1;pointer-events:auto}
+.modal{width:min(640px,92vw);max-height:86vh;overflow-y:auto;background:var(--card);border:1px solid var(--linha2);border-radius:18px;padding:24px 26px 20px;box-shadow:0 24px 70px rgba(0,0,0,.5)}
+.modal h2{font-size:21px;line-height:1.2;margin:4px 0 8px}
+.modal ol{margin:10px 0 0;padding-left:20px}.modal li{margin:6px 0}
+.tabela{width:100%;border-collapse:collapse;font-size:13px}
+.tabela th{text-align:left;color:var(--txt3);font-weight:600;padding:12px 8px 6px;font-size:12px;letter-spacing:.06em;text-transform:uppercase}
+.tabela td{padding:7px 8px;border-top:1px solid var(--linha);vertical-align:top}
+.tabela td.v{font-variant-numeric:tabular-nums;color:var(--txt2);white-space:nowrap}
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);opacity:0;background:var(--card2);border:1px solid var(--linha2);padding:10px 18px;border-radius:10px;transition:.25s;pointer-events:none;max-width:80vw;z-index:60}#toast.vis{opacity:1;transform:translateX(-50%)}
+[hidden]{display:none!important}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+/* abas: Visão geral / Notebook novo */
+.abas{display:inline-flex;gap:4px;background:var(--card);border:1px solid var(--linha);border-radius:12px;padding:4px;margin:0 0 18px}
+.abas button{border:0;background:none;padding:7px 16px;border-radius:9px;font-size:14px;font-weight:600;color:var(--txt2)}
+.abas button:hover{color:var(--txt)}
+.abas button[aria-selected=true]{background:var(--card2);color:var(--txt);box-shadow:inset 0 0 0 1px var(--linha2)}
+.abas button[aria-selected=true]::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--am,var(--amarelo));margin-right:8px;vertical-align:1px}
+.abas button:focus-visible{outline:2px solid var(--amarelo);outline-offset:2px}
+/* guia "Notebook novo" */
+.g-prog{display:flex;align-items:center;gap:22px;background:var(--card);border:1px solid var(--linha);border-radius:14px;padding:18px 20px;margin-bottom:14px}
+.g-anel{width:64px;height:64px;flex:none;position:relative}.g-anel svg{display:block}
+.g-anel b{position:absolute;inset:0;display:grid;place-items:center;font-size:17px;font-variant-numeric:tabular-nums}
+.g-prog .t{font-size:18px;font-weight:700}
+.g-prog .c{font-size:13.5px;color:var(--txt2)}
+.g-lei{display:flex;gap:12px;align-items:flex-start;background:color-mix(in srgb,var(--azul) 9%,var(--card));border:1px solid color-mix(in srgb,var(--azul) 30%,var(--card));border-radius:14px;padding:13px 18px;margin-bottom:22px;font-size:14px;color:var(--txt2)}
+.g-lei b{color:var(--txt)}.g-lei svg{flex:none;margin-top:1px;color:var(--azul)}
+.g-fase{background:var(--card);border:1px solid var(--linha);border-radius:14px;padding:16px 20px 6px;margin-bottom:14px}
+.g-cab{display:flex;align-items:baseline;gap:12px;margin-bottom:4px;flex-wrap:wrap}
+.g-cab h2{font-size:18px;margin:0}
+.g-cont{margin-left:auto;font-size:12.5px;color:var(--txt3);font-weight:600}
+.g-p{display:flex;align-items:center;gap:14px;padding:13px 0;border-top:1px solid var(--linha)}
+.g-cab+.g-p{border-top:0}
+.g-n{width:28px;height:28px;border-radius:50%;flex:none;display:grid;place-items:center;font-size:13px;font-weight:700;background:var(--card2);color:var(--txt2);border:1px solid var(--linha2)}
+.g-n.ok{background:color-mix(in srgb,var(--ok) 16%,transparent);color:var(--ok);border-color:transparent}
+.g-n.at{background:color-mix(in srgb,var(--alerta) 17%,transparent);color:var(--alerta);border-color:transparent}
+.g-n.pr{background:color-mix(in srgb,var(--erro) 16%,transparent);color:var(--erro);border-color:transparent}
+.g-x{flex:1;min-width:0}
+.g-tt{font-weight:650;font-size:15px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.g-d{font-size:13px;color:var(--txt3);line-height:1.45;margin-top:1px}
+.g-d b{color:var(--txt2);font-weight:600}
+.g-auto{font-size:11px;font-weight:600;color:var(--txt3);border:1px solid var(--linha2);border-radius:999px;padding:1px 8px;white-space:nowrap}
+.g-p.feito .g-tt{color:var(--txt2)}
+.g-acs{display:flex;gap:10px;flex:none;align-items:center}
+@media (max-width:720px){.g-p{flex-wrap:wrap;align-items:flex-start}.g-acs{flex-basis:100%;padding-left:42px;flex-wrap:wrap}.g-prog{gap:16px}}
+/* teste da tela: cores em tela cheia */
+#tt{position:fixed;inset:0;z-index:100;display:none;cursor:none;outline:0}
+#tt.vis{display:block}
+.tt-dica{position:absolute;left:50%;bottom:28px;transform:translateX(-50%);background:rgba(18,12,26,.86);color:#fff;padding:10px 18px;border-radius:10px;font-size:14px;max-width:min(680px,90vw);text-align:center;transition:opacity .45s;pointer-events:none}
+.tt-dica.some{opacity:0}
+.tt-perg{position:absolute;inset:0;display:grid;place-items:center;cursor:auto;background:var(--bg)}
+@media (prefers-reduced-motion:reduce){.mini{animation:none}.barra div{transition:none}.tt-dica{transition:none}}
+</style><link rel="stylesheet" href="cores.css">
+</head><body>
+<div class="app">
+<header><div class="logo"><img src="logo.png" alt=""><div class="logo-txt">Bench Labs<span>Atualizações</span></div></div><div class="pilula" id="pil">—</div></header>
+<main id="conteudo">
+  <div class="topo">
+    <div><div class="rotulo">Atualizações</div><h1 id="titulo">Este notebook está em dia?</h1>
+      <p class="sub" id="subtitulo">Windows, drivers, BIOS e programas, verificados num só lugar. Nada é instalado sem a sua confirmação.</p></div>
+    <div class="dir verif"><span id="verif">Verificando…</span><button class="btn btn-sec btn-peq" id="b-verif">Verificar de novo</button></div>
+  </div>
+  <div class="abas" role="tablist" aria-label="Visões da aba Atualizações"><button role="tab" id="aba-geral" data-aba="geral" aria-controls="v-geral" aria-selected="true">Visão geral</button><button role="tab" id="aba-novo" data-aba="novo" aria-controls="v-novo" aria-selected="false" tabindex="-1">Notebook novo</button></div>
+  <div id="v-geral" role="tabpanel" aria-labelledby="aba-geral">
+  <div id="reinicio"></div>
+  <div class="faixa" id="faixa"></div>
+  <div class="grade" id="grade"></div>
+  <div class="dois">
+    <section class="card" id="s-wu" aria-label="Windows Update"></section>
+    <section class="card" id="s-nv" aria-label="Driver de vídeo"></section>
+  </div>
+  <div class="dois">
+    <section class="card" id="s-disp" aria-label="Dispositivos"></section>
+    <section class="card" id="s-prog" aria-label="Programas desatualizados"></section>
+  </div>
+  <div class="dois">
+    <section class="card" id="s-hist" aria-label="Histórico"></section>
+    <section class="card" id="s-ferr" aria-label="Ferramentas"></section>
+  </div>
+  </div>
+  <div id="v-novo" role="tabpanel" aria-labelledby="aba-novo" hidden></div>
+</main>
+</div>
+<div id="toast" role="status" aria-live="polite"></div>
+<div class="fundo" id="fundo"><div class="modal" id="modal" role="dialog" aria-modal="true"></div></div>
+<div id="tt" tabindex="-1" role="dialog" aria-modal="true" aria-label="Teste da tela"><div class="tt-dica" id="tt-dica"></div>
+  <div class="tt-perg" id="tt-perg" hidden><div class="modal">
+    <h2>Encontrou algum problema na tela?</h2>
+    <div class="sub" style="font-size:14px">Ponto que não acende, ponto aceso o tempo todo, mancha ou luz vazando pelas bordas.</div>
+    <div class="acoes" style="justify-content:flex-end;margin-top:18px"><button class="btn btn-sec" id="tt-rever">Ver as cores de novo</button><button class="btn btn-sec" id="tt-prob">Encontrei um problema</button><button class="btn btn-pri" id="tt-ok">Está tudo certo</button></div>
+  </div></div>
+</div>
+<script src="ponte.js" data-prefixo="prep_"></script>
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
+function toast(m) { const t = $('#toast'); t.textContent = m; t.classList.add('vis'); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('vis'), 3600); }
+const limpar = n => String(n || '').replace(/\((R|TM)\)/gi, '').replace(/\s+/g, ' ').trim();
+const dmy = iso => { const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso || ''); return m ? `${m[3]}/${m[2]}/${m[1]}` : (iso || ''); };
+const plural = (n, um, varios) => `${n} ${n === 1 ? um : varios}`;
+function quando(iso) {
+  const d = new Date(iso); if (isNaN(d)) return esc(iso || '');
+  const hoje = new Date(); hoje.setHours(0, 0, 0, 0); const dia = new Date(d); dia.setHours(0, 0, 0, 0);
+  const h = d.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'}), dif = Math.round((hoje - dia) / 864e5);
+  return dif === 0 ? `hoje, ${h}` : dif === 1 ? `ontem, ${h}` : d.toLocaleDateString('pt-BR');
+}
+const IC = {
+  win: '<rect x="3" y="3" width="8" height="8"/><rect x="13" y="3" width="8" height="8"/><rect x="3" y="13" width="8" height="8"/><rect x="13" y="13" width="8" height="8"/>',
+  gpu: '<rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 18v2M18 18v2M7 10h4v4H7z"/>',
+  chip: '<rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M9 1v3M15 1v3M9 20v3M15 20v3M1 9h3M1 15h3M20 9h3M20 15h3"/>',
+  bios: '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 8h10M7 12h6"/>',
+  app: '<rect x="5" y="2" width="14" height="20" rx="2"/><path d="M11 18h2"/>',
+  disp: '<path d="M9 3v3M15 3v3M7 6h10v5a5 5 0 0 1-10 0z"/><path d="M12 16v5"/>',
+  esc: '<path d="M12 2 4 5v6c0 5 3.4 9.4 8 11 4.6-1.6 8-6 8-11V5z"/><path d="m9 12 2 2 4-4"/>',
+  alerta: '<path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/>',
+  ok: '<path d="m5 12 5 5 9-10"/>', baixar: '<path d="M12 3v12M7 10l5 5 5-5"/><path d="M4 17v3h16v-3"/>',
+  lista: '<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>',
+  globo: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>',
+  exc: '<path d="M12 8v5M12 16h.01"/><circle cx="12" cy="12" r="9"/>', seta: '<path d="M12 5v14M5 12l7 7 7-7"/>',
+};
+const svg = (k, t = 16, sw = 1.8) => `<svg width="${t}" height="${t}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC[k]}</svg>`;
+// só redesenha quando o conteúdo muda (não perde o foco do teclado nem reinicia as animações a cada consulta)
+function pintar(el, html) { if (el._h === html) return false; el._h = html; el.innerHTML = html; return true; }
+const girando = (txt, grande) => `<span class="mini"${grande ? ' style="width:20px;height:20px"' : ''}></span>${txt ? esc(txt) : ''}`;
+
+/* ---------- modal ---------- */
+function abrirModal(html) { $('#modal').innerHTML = html; $('#fundo').classList.add('vis'); const b = $('#modal button'); if (b) b.focus(); }
+function fecharModal() { $('#fundo').classList.remove('vis'); }
+$('#fundo').addEventListener('click', e => { if (e.target.id === 'fundo') fecharModal(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') fecharModal(); });
+function confirmar(titulo, corpo, botao) {
+  return new Promise(ok => {
+    abrirModal(`<h2>${titulo}</h2><div class="sub" style="font-size:14px">${corpo}</div><div class="acoes" style="justify-content:flex-end;margin-top:18px"><button class="btn btn-sec" id="m-nao">Cancelar</button><button class="btn btn-pri" id="m-sim">${botao}</button></div>`);
+    $('#m-nao').onclick = () => { fecharModal(); ok(false); }; $('#m-sim').onclick = () => { fecharModal(); ok(true); };
+  });
+}
+
+/* ---------- estado ---------- */
+let api, INI = {}, V = null, NV = null, NV_STUDIO = false, NV_E = {fase: 'parado'}, WU = null, DISP = null, PROG = null, PROG_ATU = null, BENCH = null, HIST = null, BK = null, PROC = null;
+let ADM_ACAO = null, TUDO = null, marcadas = new Set(), wuQtd = -1, progTodos = false, ultimaVerif = '';
+
+/* ---------- cartões ---------- */
+function cartao({ic, img, titulo, valor, det, selo, nivel, link}) {
+  return `<div class="sc ${nivel === 'at' ? 'at' : nivel === 'pr' ? 'pr' : ''}"><div class="t">${img || svg(ic)}${esc(titulo)}</div>
+    <div class="v">${valor}</div><div class="d">${det || ''}</div>
+    <div class="rod">${selo ? `<span class="selo ${nivel || 'neu'}">${esc(selo)}</span>` : ''}${link ? `<button class="link" data-acao="${link[1]}">${esc(link[0])}</button>` : ''}</div></div>`;
+}
+const carregando = (ic, titulo, txt = 'Verificando…', img) => cartao({ic, img, titulo, valor: `<span class="c" style="font-size:15px;font-weight:500">${girando(txt)}</span>`, nivel: 'car'});
+
+function wuPendentes() { const b = WU && WU.busca; return b && b.fase === 'pronto' ? b.itens.filter(u => !u.falta_reiniciar) : []; }
+const wuSemBios = () => wuPendentes().filter(u => u.tipo !== 'firmware');
+function wuInstalando() { const i = WU && WU.instalacao; return !!(i && ['aguardando_permissao', 'procurando', 'baixando', 'instalando'].includes(i.fase) && Date.now() / 1000 - (i.quando || 0) < 3600); }
+const placaNV = () => V && (V.video || []).find(x => /NVIDIA/i.test(x.nome));
+const placaAMD = () => V && (V.video || []).find(x => /RX\s*\d{4}/i.test(x.nome));
+const integrada = () => V && (V.video || []).find(x => !/NVIDIA|Basic|Remote|Virtual|Parsec|Meta|Display ?Link/i.test(x.nome) && !/RX\s*\d{4}/i.test(x.nome));
+const problemas = () => DISP && !DISP.erro ? DISP.problemas.filter(p => !p.desativado) : [];
+const progItens = () => PROG && PROG.lista && PROG.lista.fase === 'pronto' ? PROG.lista.itens || [] : [];
+const marca = () => esc(INI.marca_nome || 'marca');
+const admOcupado = () => !!ADM_ACAO;          // backup e nova busca de drivers: uma por vez (o mesmo arquivo de andamento)
+
+function rCartoes() {
+  const c = [];
+  // Windows
+  if (!V || !WU || WU.busca.fase === 'buscando') c.push(carregando('win', 'Windows', WU && WU.busca.fase === 'buscando' ? 'Procurando atualizações…' : 'Verificando…'));
+  else {
+    const nome = esc(limpar((V.windows || 'Windows').replace('Microsoft ', '')) + (V.windows_versao ? ' ' + V.windows_versao : '')), p = wuSemBios(), bios = wuPendentes().length > p.length;
+    const erro = WU.busca.fase === 'erro';
+    c.push(cartao({ic: 'win', titulo: 'Windows', valor: nome,
+      det: erro ? 'Não foi possível consultar o Windows Update' : [p.length ? plural(p.length, 'atualização disponível', 'atualizações disponíveis') : 'Nenhuma atualização pendente', bios ? 'BIOS disponível (opcional)' : '', WU.reinicio ? 'reinicialização pendente' : 'nenhuma reinicialização pendente'].filter(Boolean).join(' · '),
+      selo: wuInstalando() ? 'Instalando' : erro ? 'Sem resposta' : p.length ? plural(p.length, 'pendente', 'pendentes') : WU.reinicio ? 'Reiniciar' : 'Em dia',
+      nivel: erro ? 'neu' : p.length || WU.reinicio ? 'at' : 'ok'}));
+  }
+  // placa de vídeo dedicada
+  if (!V) c.push(carregando('gpu', 'Driver de vídeo'));
+  else if (placaNV()) {
+    if (!NV) c.push(carregando('gpu', 'Driver NVIDIA', 'Consultando a NVIDIA…'));
+    else if (NV.erro) c.push(cartao({ic: 'gpu', titulo: 'Driver NVIDIA', valor: esc(NV.instalado || '—'), det: esc(NV.erro), selo: 'Confira', nivel: 'neu', link: ['Página oficial', 'nv-pagina']}));
+    else c.push(cartao({ic: 'gpu', titulo: 'Driver NVIDIA', valor: NV.desatualizado ? `${esc(NV.instalado || '—')} <span class="seta">→</span> ${esc(NV.versao)}` : esc(NV.instalado || NV.versao),
+      det: NV.desatualizado ? `${NV_STUDIO ? 'Studio' : 'Game Ready'}${NV.data ? ' lançado em ' + esc(dmy(NV.data)) : ''}` : `O mais recente da linha ${NV_STUDIO ? 'Studio' : 'Game Ready'}`,
+      selo: NV.desatualizado ? 'Atualizar' : 'Em dia', nivel: NV.desatualizado ? 'at' : 'ok'}));
+  } else if (placaAMD()) c.push(cartao({ic: 'gpu', titulo: 'Driver AMD', valor: esc(limpar(placaAMD().nome).replace(/^AMD /, '')), det: `${esc(placaAMD().versao)} · atualize pelo AMD Software: Adrenalin`, selo: 'Confira', nivel: 'neu'}));
+  // vídeo integrado
+  const it = integrada();
+  if (!V) c.push(carregando('chip', 'Vídeo integrado'));
+  else if (it) c.push(cartao({ic: 'chip', titulo: 'Vídeo integrado', valor: esc(limpar(it.nome)), det: `${esc(it.versao)}${it.data ? ' · ' + esc(dmy(it.data)) : ''} · atualizado pelo Windows Update e pelo aplicativo da ${marca()}`, selo: 'Pelo Windows', nivel: 'neu'}));
+  // BIOS
+  if (!V) c.push(carregando('bios', 'BIOS'));
+  else c.push(cartao({ic: 'bios', titulo: 'BIOS', valor: esc(V.bios || '—'), det: `${V.bios_data ? esc(dmy(V.bios_data)) + ' · ' : ''}atualize somente pelo aplicativo da ${marca()}`, selo: 'Confira', nivel: 'neu', link: ['Suporte do seu modelo', 'suporte']}));
+  // aplicativo da marca
+  const apps = INI.apps_marca || [];
+  if (INI.marca && INI.marca !== 'outra') {
+    c.push(cartao({ic: 'app', titulo: `Aplicativo da ${INI.marca_nome}`, valor: esc(apps.length ? apps.join(', ') : (INI.app_marca_nome || 'Aplicativo da marca')),
+      det: (apps.length ? 'Instalado' : 'Não encontrado') + ' · traz a BIOS, os drivers da marca e os modos de desempenho',
+      selo: apps.length ? 'Instalado' : 'Instalar', nivel: apps.length ? 'ok' : 'at',
+      link: apps.length ? ['Abrir', 'marca-abrir'] : INI.loja_marca ? [INI.marca === 'dell' ? 'Site da Dell' : 'Microsoft Store', 'marca-loja'] : null}));
+  }
+  // dispositivos
+  if (!DISP) c.push(carregando('disp', 'Dispositivos'));
+  else if (DISP.erro) c.push(cartao({ic: 'disp', titulo: 'Dispositivos', valor: '—', det: esc(DISP.erro), selo: 'Sem leitura', nivel: 'neu'}));
+  else {
+    const p = problemas();
+    c.push(cartao({ic: 'disp', titulo: 'Dispositivos', valor: p.length ? plural(p.length, 'com problema', 'com problema') : 'Todos funcionando',
+      det: p.length ? `${esc(p[0].nome)}${p.length > 1 ? ` e mais ${p.length - 1}` : ''}` : `${DISP.total - DISP.problemas.length} dispositivos sem erro no Windows`,
+      selo: p.length ? 'Resolver' : 'Em dia', nivel: p.length ? 'at' : 'ok'}));
+  }
+  // suporte do Windows
+  if (!V) c.push(carregando('esc', 'Suporte do Windows'));
+  else {
+    const s = V.suporte || {nivel: 'sem'};
+    c.push(cartao({ic: 'esc', titulo: 'Suporte do Windows', valor: s.nivel === 'problema' ? 'Sem correções de segurança' : 'Correções de segurança', det: esc(s.texto || ''), selo: s.status || '—',
+      nivel: {ok: 'ok', atencao: 'at', problema: 'pr'}[s.nivel] || 'neu'}));
+  }
+  // Bench Labs e Bench Monitor
+  const img = '<img src="logo.png" width="16" height="16" alt="">';
+  if (!BENCH) c.push(carregando(null, 'Bench Labs e Bench Monitor', 'Verificando…', img));
+  else {
+    const at = BENCH.labs_tem || BENCH.monitor_tem, mon = !BENCH.monitor ? 'não instalado' : BENCH.monitor === '?' ? 'instalado' : BENCH.monitor;
+    c.push(cartao({img, titulo: 'Bench Labs e Bench Monitor', valor: `${esc(BENCH.labs)} · ${esc(mon)}`,
+      det: BENCH.labs_tem ? `Bench Labs ${esc(BENCH.labs_nova)} disponível` : BENCH.monitor_tem ? `Bench Monitor ${esc(BENCH.monitor_embutida)} disponível na aba Monitor` : BENCH.labs_erro ? 'Não foi possível verificar agora' : 'Versões mais recentes',
+      selo: at ? 'Atualizar' : BENCH.labs_erro ? 'Sem conexão' : 'Em dia', nivel: at ? 'at' : BENCH.labs_erro ? 'neu' : 'ok',
+      link: BENCH.labs_tem ? ['Atualizar o Bench Labs', 'bench-labs'] : BENCH.monitor_tem ? ['Abrir a aba Monitor', 'bench-monitor'] : null}));
+  }
+  pintar($('#grade'), c.join(''));
+}
+
+/* ---------- faixa de resumo ---------- */
+function itensAtencao() {
+  const a = [], p = wuSemBios();
+  if (p.length) a.push(plural(p.length, 'atualização do Windows', 'atualizações do Windows'));
+  if (WU && WU.reinicio && !p.length) a.push('reiniciar para concluir as atualizações');
+  if (NV && NV.desatualizado) a.push('driver NVIDIA mais recente');
+  if (problemas().length) a.push(plural(problemas().length, 'dispositivo com problema', 'dispositivos com problema'));
+  if (INI.marca && INI.marca !== 'outra' && !(INI.apps_marca || []).length) a.push(`aplicativo da ${INI.marca_nome} não instalado`);
+  if (V && V.suporte && ['problema', 'atencao'].includes(V.suporte.nivel)) a.push(V.suporte.nivel === 'problema' ? 'Windows sem correções de segurança' : 'suporte do Windows terminando');
+  const pg = progItens().length; if (pg) a.push(plural(pg, 'programa desatualizado', 'programas desatualizados'));
+  if (BENCH && (BENCH.labs_tem || BENCH.monitor_tem)) a.push('nova versão do Bench');
+  return a;
+}
+const listaHumana = a => a.length <= 1 ? (a[0] || '') : a.slice(0, -1).join(', ') + ' e ' + a[a.length - 1];
+function podeAtualizarTudo() { return wuSemBios().length > 0 || !!(NV && NV.desatualizado && NV.url) || progItens().some(x => x.pode); }
+function rFaixa() {
+  const f = $('#faixa');
+  if (TUDO) { f.className = 'faixa at'; pintar(f, `<span class="ico">${girando('', true)}</span><div style="flex:1;min-width:0"><b>${esc(TUDO.titulo)}</b><div class="c">${esc(TUDO.det || '')}</div><div class="barra"><div style="width:${TUDO.pct || 4}%"></div></div></div>`); return; }
+  const verificando = !V || !WU || WU.busca.fase === 'buscando' || !DISP || (placaNV() && !NV);
+  const a = itensAtencao();
+  if (verificando && !a.length) { f.className = 'faixa'; pintar(f, `<span class="ico">${girando('', true)}</span><div><b>Verificando este notebook</b><div class="c">O Windows Update costuma levar de 1 a 2 minutos para responder.</div></div>`); return; }
+  if (!a.length) { f.className = 'faixa ok'; pintar(f, `<span class="ico" style="color:var(--ok)">${svg('ok', 22, 2.2)}</span><div><b>Tudo em dia</b><div class="c">Windows, drivers e programas estão atualizados${ultimaVerif ? ' · verificado às ' + ultimaVerif : ''}.</div></div>`); return; }
+  const grave = V && V.suporte && V.suporte.nivel === 'problema';
+  f.className = 'faixa ' + (grave ? 'pr' : 'at');
+  if (!pintar(f, `<span class="ico" style="color:${grave ? 'var(--erro)' : 'var(--alerta)'}">${svg('alerta', 22, 2)}</span><div style="flex:1;min-width:0"><b>${plural(a.length, 'item pede atenção', 'itens pedem atenção')}</b><div class="c">${esc(listaHumana(a).replace(/^./, m => m.toUpperCase()))}.${verificando ? ' Ainda verificando o restante.' : ''}</div></div>
+    ${podeAtualizarTudo() ? '<button class="btn btn-pri dir" id="b-tudo">Atualizar tudo, menos a BIOS</button>' : ''}`)) return;
+  if ($('#b-tudo')) $('#b-tudo').onclick = atualizarTudo;
+}
+
+/* ---------- Windows Update ---------- */
+function rWU() {
+  const s = $('#s-wu'), b = WU && WU.busca, ins = (WU && WU.instalacao) || {};
+  let corpo;
+  if (!WU || b.fase === 'buscando') corpo = `<div class="vazio">${girando('Procurando atualizações… (pode levar de 1 a 2 minutos)')}</div>`;
+  else if (wuInstalando()) {
+    const pct = ins.total ? 100 * (ins.feitos || 0) / ins.total : 5;
+    corpo = `<div class="n2" style="margin-top:6px">${{aguardando_permissao: 'Aguardando a permissão de administrador…', procurando: 'Preparando…', baixando: 'Baixando', instalando: 'Instalando'}[ins.fase]} ${ins.total ? `(${(ins.feitos || 0) + 1} de ${ins.total})` : ''}</div><div class="c">${esc(ins.atual || '')}</div><div class="barra"><div style="width:${pct}%"></div></div>`;
+  } else if (b.fase === 'erro') corpo = `<div class="vazio" style="color:var(--alerta)">${esc(b.erro)}</div>`;
+  else {
+    const aInstalar = b.itens.filter(u => !u.falta_reiniciar), esperando = b.itens.filter(u => u.falta_reiniciar);
+    if (wuQtd !== b.itens.length) { marcadas = new Set(aInstalar.filter(u => u.tipo !== 'firmware').map(u => u.id)); wuQtd = b.itens.length; }
+    if (!b.itens.length) corpo = `<div class="lin prim"><div class="ic ok">${svg('ok', 16, 2.2)}</div><div><div class="n2">Nenhuma atualização pendente</div><div class="c">${b.quando ? 'Verificado às ' + esc(b.quando) : ''}</div></div></div>`;
+    else corpo = aInstalar.map((u, i) => `<div class="lin ${i ? '' : 'prim'}"><span class="cx ${marcadas.has(u.id) ? 'sel' : ''}" data-u="${esc(u.id)}" role="checkbox" aria-checked="${marcadas.has(u.id)}" tabindex="0" aria-label="${esc(u.titulo)}"></span>
+        <div><div class="n2">${esc(u.titulo)}</div><div class="c">${u.mb ? u.mb + ' MB' : ''}${u.tipo === 'firmware' ? (u.mb ? ' · ' : '') + 'desmarcada: instale só com o carregador conectado' : ''}</div></div>
+        ${u.tipo === 'firmware' ? '<span class="tag fw">BIOS · confirme</span>' : u.tipo === 'driver' ? '<span class="tag dr">driver</span>' : '<span class="tag">Windows</span>'}</div>`).join('')
+      + esperando.map((u, i) => `<div class="lin ${aInstalar.length || i ? '' : 'prim'}" style="opacity:.8"><div class="ic ok">${svg('ok', 16, 2.2)}</div><div><div class="n2">${esc(u.titulo)}</div><div class="c">Já instalada · conclui ao reiniciar o notebook</div></div><span class="tag">reiniciar</span></div>`).join('')
+      + (aInstalar.some(u => u.tipo === 'firmware' && marcadas.has(u.id)) ? '<div class="aviso alerta" style="margin:10px 0 0;font-size:13px">BIOS/firmware marcada: mantenha o carregador conectado e não desligue o notebook. Se faltar energia durante o processo, o notebook pode deixar de ligar.</div>' : '');
+  }
+  const nada = !WU || b.fase !== 'pronto' || !b.itens.some(u => !u.falta_reiniciar) || wuInstalando();
+  if (!pintar(s, `<div class="cab"><h2>Windows Update</h2><span class="c">atualizações e drivers distribuídos pelo Windows</span></div>${corpo}
+    <div class="acoes">${nada ? '' : `<button class="btn btn-pri" id="b-wu-inst" ${marcadas.size ? '' : 'disabled'}>Instalar marcadas</button>`}<button class="btn btn-sec" id="b-wu-abrir">Abrir o Windows Update</button></div>`)) return;
+  s.querySelectorAll('[data-u]').forEach(el => { const alterna = () => { const id = el.dataset.u; marcadas.has(id) ? marcadas.delete(id) : marcadas.add(id); rWU(); }; el.onclick = alterna; el.onkeydown = e => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); alterna(); } }; });
+  if ($('#b-wu-inst')) $('#b-wu-inst').onclick = () => instalarWU([...marcadas]);
+  $('#b-wu-abrir').onclick = () => api.abrir_windows_update();
+}
+async function instalarWU(ids) {
+  if (!ids.length) return false;
+  const r = await api.instalar_atualizacoes(ids); if (!r.ok) { toast(r.erro); return false; }
+  WU.instalacao = {fase: 'aguardando_permissao', quando: Date.now() / 1000}; rTudo(); return true;
+}
+
+/* ---------- driver de vídeo ---------- */
+function rNV() {
+  const s = $('#s-nv');
+  if (!V) { pintar(s, `<div class="cab"><h2>Driver de vídeo</h2></div><div class="vazio">${girando('Lendo as placas de vídeo…')}</div>`); return; }
+  const nv = placaNV();
+  if (!nv) {
+    const amd = placaAMD();
+    pintar(s, '<div class="cab"><h2>Driver de vídeo</h2></div>' + (amd
+      ? `<div class="lin prim"><div class="ic">${svg('gpu')}</div><div><div class="n2">${esc(limpar(amd.nome))}</div><div class="c">Versão ${esc(amd.versao)} · a AMD distribui o driver pelo AMD Software: Adrenalin (ou pelo aplicativo da ${marca()}).</div></div></div>`
+      : `<div class="lin prim"><div class="ic">${svg('chip')}</div><div><div class="n2">Sem placa de vídeo dedicada</div><div class="c">O vídeo integrado é atualizado pelo Windows Update e pelo aplicativo da ${marca()}.</div></div></div>`));
+    return;
+  }
+  const nome = esc(limpar(nv.nome).replace(/^NVIDIA (GeForce )?/, ''));
+  if (!NV) { pintar(s, `<div class="cab"><h2>Driver de vídeo NVIDIA</h2><span class="c">${nome}</span></div><div class="vazio">${girando('Consultando o site da NVIDIA…')}</div>`); return; }
+  const linha = NV.erro ? `<div class="lin prim"><div class="ic">${svg('exc')}</div><div><div class="n2">Não foi possível consultar</div><div class="c">${esc(NV.erro)} Use a página oficial.</div></div></div>`
+    : NV.desatualizado ? `<div class="lin prim"><div class="ic at">${svg('seta', 16, 2)}</div><div><div class="n2">Versão ${esc(NV.versao)} disponível</div><div class="c">Você está com a ${esc(NV.instalado || '—')}. O novo driver é baixado do site oficial da NVIDIA, com a assinatura digital conferida.</div></div></div>`
+    : `<div class="lin prim"><div class="ic ok">${svg('ok', 16, 2.2)}</div><div><div class="n2">Driver ${esc(NV.instalado)} em dia</div><div class="c">É o mais recente da linha ${NV_STUDIO ? 'Studio' : 'Game Ready'}.</div></div></div>`;
+  const txt = {baixando: `Baixando… ${Math.round(100 * (NV_E.progresso || 0))}%`, conferindo: 'Conferindo a assinatura digital…', instalando: 'Instalador aberto. Siga as telas da NVIDIA e, ao terminar, clique em "Verificar de novo".', erro: NV_E.erro}[NV_E.fase] || '';
+  const prog = NV_E.fase !== 'parado' ? `<div class="barra"><div style="width:${100 * (NV_E.progresso || 0)}%"></div></div><div class="c" style="margin-top:6px;${NV_E.fase === 'erro' ? 'color:var(--erro)' : ''}">${esc(txt)}</div>` : '';
+  const ocupado = ['baixando', 'conferindo'].includes(NV_E.fase);
+  if (!pintar(s, `<div class="cab"><h2>Driver de vídeo NVIDIA</h2><span class="c">${nome}</span></div>${linha}
+    <div class="lin" style="border:0;padding-bottom:0"><span class="cx ${NV_STUDIO ? 'sel' : ''}" id="nv-studio" role="checkbox" aria-checked="${NV_STUDIO}" tabindex="0" aria-label="Driver Studio"></span><div><div class="n2" style="font-size:14px">Driver Studio (criação) em vez de Game Ready</div><div class="c">Mais estável para Premiere, DaVinci e Blender; o Game Ready recebe as otimizações de jogos antes.</div></div></div>
+    <div class="acoes">${NV.url ? `<button class="btn ${NV.desatualizado ? 'btn-pri' : 'btn-sec'}" id="nv-inst" ${ocupado ? 'disabled' : ''}>${NV.desatualizado ? 'Baixar e instalar' : 'Reinstalar esta versão'}</button>` : ''}${NV.notas ? '<button class="btn btn-sec" id="nv-notas">O que mudou</button>' : ''}<button class="btn btn-sec" id="nv-pag">Página oficial</button></div>
+    ${prog}<div class="nota">Um ponto de restauração é criado antes de abrir o instalador. O Windows pedirá confirmação de administrador.</div>`)) return;
+  const alterna = async () => { NV_STUDIO = !NV_STUDIO; NV = null; rTudo(); NV = await api.nvidia_consultar(NV_STUDIO); rTudo(); };
+  $('#nv-studio').onclick = alterna; $('#nv-studio').onkeydown = e => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); alterna(); } };
+  $('#nv-pag').onclick = () => api.nvidia_pagina();
+  if ($('#nv-notas')) $('#nv-notas').onclick = () => api.abrir_site(NV.notas);
+  if ($('#nv-inst')) $('#nv-inst').onclick = instalarNV;
+}
+async function instalarNV() {
+  const x = await api.nvidia_instalar(); if (!x.ok) { toast(x.erro); return false; }
+  NV_E = {fase: 'baixando', progresso: 0}; rNV(); return true;
+}
+
+/* ---------- dispositivos ---------- */
+function rDisp() {
+  const s = $('#s-disp');
+  let corpo;
+  if (!DISP) corpo = `<div class="vazio">${girando('Lendo o Gerenciador de Dispositivos…')}</div>`;
+  else if (DISP.erro) corpo = `<div class="vazio">${esc(DISP.erro)}</div>`;
+  else {
+    const proc = ADM_ACAO === 'procurar';
+    corpo = DISP.problemas.map((p, i) => `<div class="lin ${i ? '' : 'prim'}"><div class="ic ${p.desativado ? '' : 'at'}">${svg('exc', 16, 2)}</div><div><div class="n2">${esc(p.nome)}</div><div class="c">${esc(p.erro)}${p.dica ? ' · ' + esc(p.dica) : ''}</div></div>
+        ${p.desativado ? '<span class="tag">desativado</span>' : `<button class="btn btn-sec btn-peq" data-procurar ${admOcupado() ? 'disabled' : ''}>${proc ? girando(PROC && PROC.fase === 'aguardando_permissao' ? 'Aguardando permissão…' : 'Procurando…') : 'Procurar driver'}</button>`}</div>`).join('')
+      + `<div class="lin ${DISP.problemas.length ? '' : 'prim'}"><div class="ic ok">${svg('ok', 16, 2.2)}</div><div><div class="n2">${plural(DISP.total - DISP.problemas.length, 'dispositivo funcionando', 'dispositivos funcionando')}</div><div class="c">Placa de vídeo, áudio, Wi-Fi, Bluetooth, câmera, touchpad, portas USB e o restante, sem erro no Windows</div></div><button class="link" id="b-drivers">Ver todos os drivers</button></div>`
+      + (DISP.depois_da_busca && problemas().length ? `<div class="nota">O Windows não encontrou o driver sozinho. Ele pode estar em <button class="link" id="b-opc">Atualizações opcionais</button> do Windows Update ou na <button class="link" id="b-sup2">página de suporte do seu modelo</button>.</div>` : '');
+  }
+  if (!pintar(s, `<div class="cab"><h2>Dispositivos sem driver ou com erro</h2></div>${corpo}`)) return;
+  s.querySelectorAll('[data-procurar]').forEach(b => b.onclick = procurarDrivers);
+  if ($('#b-drivers')) $('#b-drivers').onclick = verDrivers;
+  if ($('#b-opc')) $('#b-opc').onclick = () => api.abrir_atualizacoes_opcionais();
+  if ($('#b-sup2')) $('#b-sup2').onclick = suporteModelo;
+}
+async function procurarDrivers() {
+  const r = await api.drivers_procurar(); if (!r.ok) { toast(r.erro); return; }
+  ADM_ACAO = 'procurar'; PROC = {fase: 'aguardando_permissao'}; rTudo();
+}
+async function verDrivers() {
+  abrirModal(`<h2>Drivers instalados</h2><div class="vazio">${girando('Lendo os drivers…')}</div>`);
+  const r = await api.drivers_lista();
+  if (r.erro) { $('#modal').innerHTML = `<h2>Drivers instalados</h2><div class="vazio">${esc(r.erro)}</div><div class="acoes" style="justify-content:flex-end"><button class="btn btn-sec" id="m-fechar">Fechar</button></div>`; $('#m-fechar').onclick = fecharModal; return; }
+  let grupo = '', linhas = '';
+  for (const d of r.itens) {
+    if (d.grupo !== grupo) { grupo = d.grupo; linhas += `<tr><th colspan="3">${esc(grupo)}</th></tr>`; }
+    linhas += `<tr><td>${esc(limpar(d.nome))}<div class="c">${esc(d.fornecedor)}${d.assinado ? '' : ' · <span style="color:var(--alerta)">sem assinatura digital</span>'}</div></td><td class="v">${esc(d.versao)}</td><td class="v">${esc(dmy(d.data))}</td></tr>`;
+  }
+  $('#modal').innerHTML = `<h2>Drivers instalados</h2><div class="c" style="margin-bottom:4px">${plural(r.itens.length, 'driver', 'drivers')}, sem os genéricos do próprio Windows · versão e data de cada um</div>
+    <table class="tabela"><tbody>${linhas}</tbody></table><div class="acoes" style="justify-content:flex-end"><button class="btn btn-sec" id="m-fechar">Fechar</button></div>`;
+  $('#m-fechar').onclick = fecharModal;
+}
+
+/* ---------- programas ---------- */
+function rProg() {
+  const s = $('#s-prog'), L = PROG && PROG.lista, A = PROG_ATU, itens = progItens();
+  const atualizando = !!(A && A.fase === 'atualizando');
+  const res = id => ((A && A.resultados) || []).find(r => r.id === id);
+  let corpo;
+  if (!L || L.fase === 'buscando') corpo = `<div class="vazio">${girando('Consultando os programas instalados… (pode levar até 1 minuto)')}</div>`;
+  else if (L.fase === 'erro' && L.erro === 'sem_winget') corpo = `<div class="lin prim"><div class="ic">${svg('exc')}</div><div><div class="n2">O winget não está disponível neste Windows</div><div class="c">Ele vem no "Instalador de Aplicativo", da Microsoft Store.</div></div><button class="btn btn-sec btn-peq" id="b-winget">Instalar</button></div>`;
+  else if (L.fase === 'erro') corpo = `<div class="vazio">${esc(L.erro)}</div>`;
+  else if (!itens.length) corpo = `<div class="lin prim"><div class="ic ok">${svg('ok', 16, 2.2)}</div><div><div class="n2">Todos os programas estão em dia</div><div class="c">Entre os que o winget sabe atualizar${L.quando ? ' · verificado às ' + esc(L.quando) : ''}</div></div></div>`;
+  else {
+    const vis = progTodos ? itens : itens.slice(0, 6);
+    corpo = vis.map((x, i) => {
+      const r = res(x.id), agora = atualizando && A.atual === (x.nome || x.id);
+      const acao = r ? (r.ok ? '<span class="tag ok">atualizado</span>' : `<span class="tag pr">não atualizou</span>`)
+        : agora ? `<span class="c">${girando('Atualizando…')}</span>`
+        : x.pode ? `<button class="btn btn-sec btn-peq" data-prog="${esc(x.id)}" ${atualizando ? 'disabled' : ''}>Atualizar</button>` : '<span class="c">atualize pelo próprio programa</span>';
+      return `<div class="lin ${i ? '' : 'prim'}"><div><div class="n2">${esc(x.nome)}</div>${r && !r.ok ? `<div class="c" style="color:var(--alerta)">${esc(r.erro)}</div>` : ''}</div><span class="ver">${esc(x.versao)} → <b>${esc(x.nova)}</b></span>${acao}</div>`;
+    }).join('') + (itens.length > 6 ? `<div style="padding-top:8px"><button class="link" id="b-prog-todos">${progTodos ? 'Mostrar menos' : `Mostrar todos (${itens.length})`}</button></div>` : '');
+  }
+  const pendentes = itens.filter(x => x.pode && !(res(x.id) || {}).ok);
+  if (!pintar(s, `<div class="cab"><h2>Programas desatualizados</h2>${pendentes.length > 1 ? `<button class="btn btn-sec btn-peq dir" id="b-prog-tudo" ${atualizando ? 'disabled' : ''}>Atualizar todos</button>` : ''}</div>${corpo}
+    ${L && L.fase === 'pronto' ? '<div class="nota">Pelo winget, a ferramenta de atualização do próprio Windows. Só aparecem os programas que ele sabe atualizar; alguns instaladores pedem permissão de administrador.</div>' : ''}`)) return;
+  s.querySelectorAll('[data-prog]').forEach(b => b.onclick = () => atualizarProgramas(itens.filter(x => x.id === b.dataset.prog)));
+  if ($('#b-prog-tudo')) $('#b-prog-tudo').onclick = () => atualizarProgramas(pendentes);
+  if ($('#b-prog-todos')) $('#b-prog-todos').onclick = () => { progTodos = !progTodos; rProg(); };
+  if ($('#b-winget')) $('#b-winget').onclick = () => api.abrir_loja_winget();
+}
+async function atualizarProgramas(lista) {
+  if (!lista.length) return false;
+  const r = await api.programas_atualizar(lista.map(x => ({id: x.id, nome: x.nome}))); if (!r.ok) { toast(r.erro); return false; }
+  PROG_ATU = {fase: 'atualizando', feitos: 0, total: lista.length, atual: lista[0].nome, resultados: []}; rProg(); return true;
+}
+
+/* ---------- histórico e ferramentas ---------- */
+function rHist() {
+  const s = $('#s-hist');
+  const corpo = !HIST ? `<div class="vazio">${girando('Lendo o histórico…')}</div>`
+    : !HIST.itens.length ? '<div class="vazio">Nenhum registro encontrado.</div>'
+    : `<div class="hist">${HIST.itens.map((h, i) => `<div class="h ${i ? '' : 'novo'}"><div class="dt">${quando(h.quando)}${h.ok === false ? ' · <span style="color:var(--erro)">não instalou</span>' : ''}</div><div class="tx">${esc(h.texto)}</div></div>`).join('')}</div>`;
+  pintar(s, `<div class="cab"><h2>Histórico recente</h2><span class="c">o que mudou neste notebook</span></div>${corpo}
+    <div class="nota">Se algo começou a dar problema depois de uma atualização, é aqui que se descobre o que mudou e quando.</div>`);
+}
+function rFerr() {
+  const s = $('#s-ferr'), bk = BK;
+  const bkTxt = !bk ? 'Salva todos os drivers numa pasta, para reinstalar depois de formatar'
+    : {aguardando_permissao: 'Aguardando a permissão de administrador…', copiando: `Copiando os drivers… ${bk.feitos || ''}`, concluido: `${plural(bk.feitos || 0, 'driver salvo', 'drivers salvos')} em Documentos\\Bench Labs\\Drivers`, erro: bk.erro || 'Não foi possível fazer o backup.'}[bk.fase] || '';
+  const bkOcupado = !!(bk && ['aguardando_permissao', 'copiando'].includes(bk.fase));
+  if (!pintar(s, `<div class="cab"><h2>Ferramentas</h2></div>
+    <div class="lin prim"><div class="ic">${svg('baixar')}</div><div><div class="n2">Backup dos drivers</div><div class="c" ${bk && bk.fase === 'erro' ? 'style="color:var(--alerta)"' : ''}>${bkOcupado ? girando('') : ''}${esc(bkTxt)}</div></div>
+      ${bk && bk.fase === 'concluido' ? '<button class="btn btn-sec btn-peq" id="b-bk-pasta">Abrir pasta</button>' : `<button class="btn btn-sec btn-peq" id="b-bk" ${admOcupado() ? 'disabled' : ''}>Fazer backup</button>`}</div>
+    <div class="lin"><div class="ic">${svg('lista')}</div><div><div class="n2">Drivers instalados</div><div class="c">Versão, data e assinatura de cada driver</div></div><button class="btn btn-sec btn-peq" id="b-lista">Ver lista</button></div>
+    <div class="lin"><div class="ic">${svg('globo')}</div><div><div class="n2">Página de suporte do seu modelo</div><div class="c">Drivers e BIOS no site da ${marca()}${INI.marca === 'dell' ? ', direto pelo número de série' : ', com o número de série já copiado'}</div></div><button class="btn btn-sec btn-peq" id="b-sup">Abrir</button></div>`)) return;
+  if ($('#b-bk')) $('#b-bk').onclick = async () => { const r = await api.drivers_backup(); if (!r.ok) { toast(r.erro); return; } ADM_ACAO = 'backup'; BK = {fase: 'aguardando_permissao', destino: r.destino}; rTudo(); };
+  if ($('#b-bk-pasta')) $('#b-bk-pasta').onclick = () => api.abrir_pasta(bk.destino);
+  $('#b-lista').onclick = verDrivers;
+  $('#b-sup').onclick = suporteModelo;
+}
+async function suporteModelo() {
+  const r = await api.suporte_modelo();
+  toast(r.direto ? 'Página do seu modelo aberta no navegador.' : r.copiado ? `Número de série ${r.serie} copiado: cole na busca da página.` : 'Página de suporte aberta no navegador.');
+}
+
+/* ---------- atualizar tudo, menos a BIOS ---------- */
+const esperar = ms => new Promise(ok => setTimeout(ok, ms));
+async function atualizarTudo() {
+  const wu = wuSemBios(), pg = progItens().filter(x => x.pode), nv = !!(NV && NV.desatualizado && NV.url);
+  const passos = [wu.length && `Instalar ${plural(wu.length, 'atualização', 'atualizações')} do Windows (o Windows pede permissão de administrador)`,
+    pg.length && `Atualizar ${plural(pg.length, 'programa', 'programas')} pelo winget (alguns instaladores pedem permissão)`,
+    nv && `Baixar o driver NVIDIA ${esc(NV.versao)} e abrir o instalador (você conclui nas telas da NVIDIA)`].filter(Boolean);
+  if (!passos.length) return;
+  const ok = await confirmar('Atualizar tudo, menos a BIOS', `Nesta ordem:<ol>${passos.map(p => `<li>${p}</li>`).join('')}</ol><div class="nota">Mantenha o notebook no carregador. A BIOS fica de fora: atualize somente pelo aplicativo da ${marca()}.</div>`, 'Começar');
+  if (!ok) return;
+  let n = 0; const total = passos.length;
+  if (wu.length) {
+    TUDO = {titulo: `Atualizando ${++n} de ${total}: Windows Update`, det: 'Confirme a permissão de administrador na janela do Windows.', pct: 100 * (n - 1) / total}; rFaixa();
+    if (await instalarWU(wu.map(u => u.id))) {
+      await esperar(4000);
+      for (let t = 0; t < 2400 && wuInstalando(); t++) { const i = WU.instalacao || {}; if (i.atual) TUDO.det = `${i.fase === 'baixando' ? 'Baixando' : 'Instalando'}: ${i.atual}`; rFaixa(); await esperar(1500); }
+    }
+  }
+  if (pg.length) {
+    TUDO = {titulo: `Atualizando ${++n} de ${total}: programas`, det: '', pct: 100 * (n - 1) / total}; rFaixa();
+    if (await atualizarProgramas(pg)) {
+      await esperar(1500);
+      for (let t = 0; t < 4000 && PROG_ATU && PROG_ATU.fase === 'atualizando'; t++) { TUDO.det = PROG_ATU.atual ? `${PROG_ATU.atual} (${(PROG_ATU.feitos || 0) + 1} de ${PROG_ATU.total})` : ''; rFaixa(); await esperar(1500); }
+    }
+  }
+  if (nv) {
+    TUDO = {titulo: `Atualizando ${++n} de ${total}: driver NVIDIA`, det: 'Baixando do site oficial da NVIDIA…', pct: 100 * (n - 1) / total}; rFaixa();
+    if (await instalarNV()) for (let t = 0; t < 2400 && ['baixando', 'conferindo'].includes(NV_E.fase); t++) { TUDO.det = NV_E.fase === 'baixando' ? `Baixando… ${Math.round(100 * (NV_E.progresso || 0))}%` : 'Conferindo a assinatura digital…'; rFaixa(); await esperar(1000); }
+  }
+  TUDO = null; toast(nv ? 'Pronto. Conclua a instalação do driver nas telas da NVIDIA.' : 'Atualizações concluídas.');
+  verificarTudo(false);
+}
+
+/* ---------- guia "Notebook novo" ---------- */
+let GUIA = null, GUIA_T = 0, ABA = 'geral';
+try { if (localStorage.getItem('prep_aba') === 'novo') ABA = 'novo'; } catch (e) { /* sem armazenamento local */ }
+const TITULOS = {
+  geral: ['Este notebook está em dia?', 'Windows, drivers, BIOS e programas, verificados num só lugar. Nada é instalado sem a sua confirmação.'],
+  novo: ['Primeiros passos com o seu notebook', 'Oito passos para os primeiros dias: conferir se veio tudo certo enquanto ainda dá para trocar, deixar em dia e ajustar o que quase ninguém ajusta. O Bench Labs confere sozinho o que dá.'],
+};
+function trocarAba(aba, focar) {
+  ABA = aba === 'novo' ? 'novo' : 'geral';
+  try { localStorage.setItem('prep_aba', ABA); } catch (e) { /* sem armazenamento local */ }
+  document.querySelectorAll('.abas [role=tab]').forEach(b => { const s = b.dataset.aba === ABA; b.setAttribute('aria-selected', s); b.tabIndex = s ? 0 : -1; if (s && focar) b.focus(); });
+  $('#v-geral').hidden = ABA !== 'geral'; $('#v-novo').hidden = ABA !== 'novo';
+  $('#titulo').textContent = TITULOS[ABA][0]; $('#subtitulo').textContent = TITULOS[ABA][1];
+  $('#conteudo').scrollTop = 0;
+  if (api && ABA === 'novo' && Date.now() - GUIA_T > 30000) carregarGuia();
+}
+document.querySelectorAll('.abas [role=tab]').forEach(b => {
+  b.onclick = () => trocarAba(b.dataset.aba);
+  b.onkeydown = e => { if (['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.key)) { e.preventDefault(); trocarAba(ABA === 'geral' ? 'novo' : 'geral', true); } };
+});
+async function carregarGuia() {
+  GUIA_T = Date.now();
+  try { GUIA = await api.guia_estado(); } catch (e) { GUIA = {erro: 'Não foi possível ler o estado do notebook.', marcados: (GUIA && GUIA.marcados) || {}}; }
+  rGuia();
+}
+const MARC = () => (GUIA && GUIA.marcados) || {};
+const marcado = id => (MARC()[id] || {}).como || '';
+const ANTIVIRUS = /McAfee|Norton|Avast|AVG|Avira|Kaspersky/;
+const negrito = s => `<b>${esc(s)}</b>`;
+function passosGuia() {
+  const g = GUIA || {}, lendo = !GUIA, P = [];
+  const lnk = (txt, acao, extra = '') => `<button class="link" data-g="${acao}" ${extra}>${txt}</button>`;
+  const btn = (txt, acao, pri, extra = '') => `<button class="btn ${pri ? 'btn-pri' : 'btn-sec'} btn-peq" data-g="${acao}" ${extra}>${txt}</button>`;
+  const desfazer = id => lnk('Desmarcar', 'desfazer', `data-p="${id}"`);
+
+  // 1. veio o que comprou (a pessoa confere a Ficha com o anúncio)
+  {
+    const feito = !!marcado('ficha'), resumo = g.ficha ? `<b>${esc(g.ficha)}.</b> ` : '';
+    P.push({id: 'ficha', etapa: 1, titulo: 'Veio o que você comprou', estado: feito ? 'feito' : 'pendente',
+      desc: lendo ? girando('Lendo a Ficha…') : feito ? `${resumo}Conferido com o anúncio.`
+        : g.ficha_lida ? `${resumo}Compare com o anúncio ou a nota fiscal. Se algo não bater, guarde um print da Ficha: ele serve de comprovação na troca.`
+        : 'Abra a Ficha e compare processador, placa de vídeo, memória, SSD e tela com o anúncio ou a nota fiscal.',
+      acoes: lnk('Abrir a Ficha', 'ficha') + (feito ? desfazer('ficha') : btn('Conferi', 'marcar', false, 'data-p="ficha"'))});
+  }
+  // 2. saúde de fábrica
+  {
+    const b = g.bateria, ok = [], at = [];
+    if (b) {
+      ok.push(`Bateria com ${b.saude}% da capacidade${b.ciclos != null ? ` e ${plural(b.ciclos, 'ciclo', 'ciclos')}` : ''}`);
+      if (b.saude < 90) at.push(`a bateria está com <b>${b.saude}% da capacidade original</b> (no notebook novo, o normal é ficar perto de 100%)`);
+      if (b.ciclos > 20) at.push(`a bateria já tem <b>${b.ciclos} ciclos</b> (no notebook novo, costuma ficar abaixo de 10; vale perguntar à loja se não é unidade de demonstração)`);
+    }
+    if (g.ssd_ok === true) ok.push('SSD saudável'); else if (g.ssd_ok === false) at.push('o Windows indica <b>problema de saúde no SSD</b>');
+    const pd = problemas();
+    if (DISP && !DISP.erro) { if (pd.length) at.push(`<b>${plural(pd.length, 'dispositivo está', 'dispositivos estão')} com erro</b> no Windows`); else ok.push(`${DISP.total} dispositivos sem erro`); }
+    const esperando = lendo || !DISP;
+    P.push({id: 'saude', etapa: 1, titulo: 'Saúde de fábrica', auto: true, estado: at.length ? 'atencao' : esperando ? 'pendente' : 'feito',
+      desc: at.length ? `${listaHumana(at).replace(/^./, m => m.toUpperCase())}.${ok.length ? ' ' + ok.join(' · ') + '.' : ''}`
+        : esperando ? girando('Conferindo bateria, SSD e dispositivos…') : ok.join(' · ') + '.',
+      acoes: pd.length ? btn('Ver os dispositivos', 'geral') : ''});
+  }
+  // 3. teste de estabilidade (último Stress total do Bench Marks)
+  {
+    const s = g.stress, dia = s ? esc(String(s.data || '').slice(0, 5)) : '';
+    P.push({id: 'estab', etapa: 1, titulo: 'Teste de estabilidade', estado: s && s.estavel ? 'feito' : s ? 'atencao' : 'pendente',
+      desc: lendo ? girando('Procurando o último teste…')
+        : s && s.estavel ? `Stress total de ${dia}: estável${s.minutos ? `, ${plural(Math.round(s.minutos), 'minuto', 'minutos')} no limite` : ''}${s.tmax ? `, máxima de ${Math.round(s.tmax)} °C no processador` : ''}.`
+        : s ? `O Stress total de ${dia} não terminou estável${s.motivo ? ` (${esc(s.motivo.replace(/^./, m => m.toLowerCase()))})` : ''}. Repita com o carregador conectado; se o problema voltar, é motivo para troca dentro do prazo.`
+        : 'Em Testes, rode o Stress total: processador e placa de vídeo no limite ao mesmo tempo (10 minutos bastam). Defeito de fábrica, como desligamento, tela azul ou aquecimento fora do normal, aparece agora, e não depois do prazo.',
+      acoes: s && s.estavel ? '' : btn(s ? 'Repetir o teste' : 'Fazer o teste', 'testes', !s)});
+  }
+  // 4. teste da tela
+  {
+    const t = marcado('tela');
+    P.push({id: 'tela', etapa: 1, titulo: 'Teste da tela', estado: t === 'feito' ? 'feito' : t === 'problema' ? 'problema' : 'pendente',
+      desc: t === 'feito' ? 'Sem pontos mortos, manchas ou vazamento de luz.'
+        : t === 'problema' ? 'Você encontrou um problema na tela. Fotografe o defeito com o fundo da cor em que ele aparece e procure a loja dentro do prazo de troca.'
+        : 'Cores em tela cheia para achar pontos mortos, manchas e vazamento de luz nas bordas. Leva 1 minuto.',
+      acoes: t === 'feito' ? lnk('Testar de novo', 'tela') : btn(t ? 'Testar de novo' : 'Testar a tela', 'tela')});
+  }
+  // 5. deixe tudo em dia (vem da Visão geral)
+  {
+    const p = wuSemBios(), apps = INI.apps_marca || [], temMarca = INI.marca && INI.marca !== 'outra', inst = [];
+    if (p.length) inst.push(negrito(plural(p.length, 'atualização do Windows', 'atualizações do Windows')));
+    if (temMarca && !apps.length) inst.push(`o ${negrito(INI.app_marca_nome || 'aplicativo da ' + INI.marca_nome)} (é por ele que vêm a BIOS, os drivers da ${marca()} e os modos de desempenho)`);
+    if (NV && NV.desatualizado) inst.push(`o ${negrito('driver NVIDIA ' + NV.versao)}`);
+    const reini = !!(WU && WU.reinicio), verificando = !V || !WU || WU.busca.fase === 'buscando' || (placaNV() && !NV), erro = WU && WU.busca.fase === 'erro';
+    const falta = inst.length ? `Falta instalar ${listaHumana(inst)}${reini ? ' e reiniciar o notebook' : ''}.` : reini ? 'Falta reiniciar o notebook para concluir as atualizações.' : '';
+    const pronto = ['Windows', placaNV() ? 'driver NVIDIA' : '', temMarca ? `aplicativo da ${marca()}` : ''].filter(Boolean);
+    P.push({id: 'em_dia', etapa: 2, titulo: 'Deixe tudo em dia', auto: true, estado: falta ? 'atencao' : verificando || erro ? 'pendente' : 'feito',
+      desc: falta ? `${falta} No notebook novo, o Windows Update costuma pedir 2 ou 3 reinicializações até não sobrar nada.`
+        : verificando ? girando('Verificando o Windows Update e os drivers…') : erro ? 'Não foi possível consultar o Windows Update agora. Tente "Verificar de novo".'
+        : `${listaHumana(pronto).replace(/^./, m => m.toUpperCase())} em dia.`,
+      acoes: falta ? btn('Ver atualizações', 'geral') : ''});
+  }
+  // 6. taxa máxima da tela
+  {
+    const hz = g.hz, mx = g.hz_max, conferido = marcado('taxa'), leu = !!(hz && mx);
+    P.push({id: 'taxa', etapa: 2, titulo: 'Tela na taxa máxima', auto: true, estado: leu ? (hz >= mx ? 'feito' : 'atencao') : conferido ? 'feito' : 'pendente',
+      desc: lendo ? girando('Lendo a tela…')
+        : leu && hz >= mx ? `Está em <b>${hz} Hz</b>, o máximo da tela.`
+        : leu ? `Está em <b>${hz} Hz</b>, mas a tela vai até <b>${mx} Hz</b>. Muitos notebooks saem de fábrica assim, e a imagem fica menos fluida. Na bateria, alguns aplicativos da marca baixam a taxa de propósito: confira com o carregador conectado.`
+        : conferido ? 'Conferido nas configurações de tela.'
+        : 'Não foi possível ler a taxa da tela. Em Configurações › Sistema › Tela › Tela avançada, escolha o maior valor.',
+      acoes: leu ? (hz < mx ? btn(`Mudar para ${mx} Hz`, 'taxa', true, `data-hz="${mx}"`) : '')
+        : conferido ? desfazer('taxa') : lnk('Abrir as configurações', 'cfg-tela') + btn('Já conferi', 'marcar', false, 'data-p="taxa"')});
+  }
+  // 7. limite de carga (texto da linha do notebook)
+  {
+    const ln = g.linha || {}, m = marcado('limite'), lig = g.limite_ligado === true;
+    const onde = ln.app ? `Onde ligar: ${esc(ln.limite || '').replace(/^([^(]+?)(\s*\(|$)/, '<b>$1</b>$2')}${ln.conferir ? '. O nome do menu pode mudar conforme a versão do aplicativo' : ''}.` : esc(ln.limite || GEN_LIMITE);
+    const apps = (INI.apps_marca || []).length;
+    P.push({id: 'limite', etapa: 2, titulo: 'Limite de carga da bateria', estado: lig || m ? 'feito' : 'pendente',
+      desc: m === 'ignorado' ? 'Você usa o notebook mais na bateria: o limite de carga não é necessário.'
+        : m ? 'Limite de carga ligado.'
+        : lig ? 'O limite de carga está ligado: na tomada, a bateria para de carregar antes de encher.'
+        : `Se o notebook fica quase sempre na tomada, ligue o limite de carga: a bateria para em cerca de 80% e dura mais anos.${g.limite_ligado === false ? ' Agora ele está na tomada com a bateria cheia, sinal de que o limite está desligado.' : ''} ${onde}`,
+      acoes: m ? desfazer('limite') : lig ? '' : (apps ? lnk('Abrir o aplicativo', 'marca') : '') + lnk('Não uso na tomada', 'marcar', 'data-p="limite" data-como="ignorado"') + btn('Já fiz', 'marcar', false, 'data-p="limite"')});
+  }
+  // 8. programas de teste que vieram de fábrica
+  {
+    const l = g.programas_teste || [], m = marcado('testes'), nomes = listaHumana(l.map(negrito));
+    P.push({id: 'testes', etapa: 2, titulo: 'Programas de teste que vieram instalados', auto: true, estado: lendo ? 'pendente' : !l.length || m ? 'feito' : 'atencao',
+      desc: lendo ? girando('Procurando…') : !l.length ? 'Nenhum encontrado (McAfee, Norton, ExpressVPN e outros testes que costumam vir de fábrica).'
+        : m ? `${nomes}: você preferiu manter.`
+        : `${nomes}. Vieram de fábrica como teste ou propaganda: os testes expiram e passam a pedir assinatura.${l.some(n => ANTIVIRUS.test(n)) ? ' Pode desinstalar: o Windows já vem com antivírus (Microsoft Defender).' : ''}`,
+      acoes: !l.length ? '' : m ? desfazer('testes') : lnk('Vou manter', 'marcar', 'data-p="testes" data-como="ignorado"') + btn('Aplicativos instalados', 'cfg-apps')});
+  }
+  return P;
+}
+const GEN_LIMITE = 'Procure por "limite de carga" ou "proteção da bateria" no aplicativo da marca.';
+function rGuia() {
+  const el = $('#v-novo'); if (!el) return;
+  const P = passosGuia(), feito = p => p.estado === 'feito', n = P.filter(feito).length, e1 = P.filter(p => p.etapa === 1);
+  const C = 2 * Math.PI * 27, ln = (GUIA && GUIA.linha) || {};
+  const icone = (p, i) => p.estado === 'feito' ? `<div class="g-n ok">${svg('ok', 14, 2.6)}</div>` : p.estado === 'atencao' ? '<div class="g-n at">!</div>' : p.estado === 'problema' ? '<div class="g-n pr">!</div>' : `<div class="g-n">${i + 1}</div>`;
+  const linha = (p, i) => `<div class="g-p ${p.estado}"><div aria-hidden="true">${icone(p, i)}</div><div class="g-x"><div class="g-tt">${esc(p.titulo)}${p.auto ? '<span class="g-auto">conferido pelo Bench Labs</span>' : ''}<span class="sr">${{feito: ' (feito)', atencao: ' (pede atenção)', problema: ' (problema encontrado)', pendente: ''}[p.estado]}</span></div><div class="g-d">${p.desc}</div></div>${p.acoes ? `<div class="g-acs">${p.acoes}</div>` : ''}</div>`;
+  const fase = (num, titulo, nota, itens, ini) => `<section class="g-fase" aria-label="${esc(titulo)}"><div class="g-cab"><h2>${num}. ${esc(titulo)}</h2><span class="c">${esc(nota)}</span><span class="g-cont">${itens.filter(feito).length} de ${itens.length}</span></div>${itens.map((p, i) => linha(p, ini + i)).join('')}</section>`;
+  const e1ok = e1.every(feito), modelo = esc(INI.nome || '') + (ln.linha ? ` · os textos abaixo são os da linha ${esc(ln.linha)}` : '');
+  pintar(el, `<div class="g-prog"><div class="g-anel" role="img" aria-label="${n} de ${P.length} passos feitos"><svg width="64" height="64" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="27" fill="none" style="stroke:var(--card2)" stroke-width="7"/><circle cx="32" cy="32" r="27" fill="none" style="stroke:var(--am,var(--amarelo));transition:stroke-dashoffset .5s" stroke-width="7" stroke-linecap="round" stroke-dasharray="${C.toFixed(1)}" stroke-dashoffset="${(C * (1 - n / P.length)).toFixed(1)}" transform="rotate(-90 32 32)"/></svg><b>${n}/${P.length}</b></div>
+      <div><div class="t">${n === P.length ? 'Tudo pronto' : `${n} de ${P.length} passos feitos`}</div><div class="c">${n === P.length ? 'O notebook foi conferido, está em dia e configurado.' : e1ok ? 'A primeira etapa está concluída. Falta pouco.' : `${e1.some(feito) ? 'Termine a' : 'Comece pela'} primeira etapa: é a que precisa ser feita enquanto ainda dá para trocar o notebook.`}</div>${modelo ? `<div class="c" style="color:var(--txt3);margin-top:2px">${modelo}</div>` : ''}${GUIA && GUIA.erro ? `<div class="c" style="color:var(--alerta)">${esc(GUIA.erro)}</div>` : ''}</div></div>
+    ${e1ok ? '' : `<div class="g-lei"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v5h1"/></svg><div><b>Comprou pela internet?</b> O Código de Defesa do Consumidor (art. 49) dá 7 dias, a partir do recebimento, para desistir da compra. Faça a primeira etapa dentro desse prazo.</div></div>`}
+    ${fase(1, 'Confira se veio tudo certo', 'nos primeiros 7 dias', e1, 0)}${fase(2, 'Deixe em dia e ajuste', 'o que quase ninguém faz', P.filter(p => p.etapa === 2), e1.length)}`);
+}
+$('#v-novo').addEventListener('click', async e => {
+  const b = e.target.closest('[data-g]'); if (!b || !api) return;
+  const g = b.dataset.g;
+  if (g === 'marcar' || g === 'desfazer') {
+    try { const m = await api.guia_marcar(b.dataset.p, g === 'marcar' ? (b.dataset.como || 'feito') : ''); GUIA = Object.assign(GUIA || {}, {marcados: m}); } catch (x) { toast('Não foi possível salvar.'); }
+    rGuia();
+  } else if (g === 'ficha' || g === 'testes') irPara(g);
+  else if (g === 'geral') trocarAba('geral');
+  else if (g === 'tela') abrirTesteTela();
+  else if (g === 'taxa') mudarTaxa(+b.dataset.hz);
+  else if (g === 'cfg-tela') api.abrir_configuracao('display-advanced');
+  else if (g === 'cfg-apps') api.abrir_configuracao('appsfeatures');
+  else if (g === 'marca') api.abrir_app_marca(INI.marca).then(r => { if (!r.ok) toast(r.erro); });
+});
+function irPara(aba) {
+  try { if (window.parent !== window && window.parent.__irPara) { window.parent.__irPara(aba); return; } } catch (x) { /* fora do Bench Labs */ }
+  toast(aba === 'ficha' ? 'Abra a aba Ficha no menu lateral.' : 'Abra a aba Testes no menu lateral.');
+}
+async function mudarTaxa(hz) {
+  const r = await api.guia_taxa_tela(hz);
+  toast(r.ok ? `Pronto: a tela agora está em ${hz} Hz.` : r.erro);
+  carregarGuia();
+}
+// quem desinstala os programas de teste ou muda algo fora do Bench Labs volta para cá: confere de novo
+document.addEventListener('visibilitychange', () => { if (!document.hidden && api && ABA === 'novo' && Date.now() - GUIA_T > 8000) carregarGuia(); });
+window.addEventListener('focus', () => { if (api && ABA === 'novo' && Date.now() - GUIA_T > 8000) carregarGuia(); });
+
+/* ---------- teste da tela: cores em tela cheia ---------- */
+const CORES_TESTE = [
+  ['#000000', 'Preto', 'procure pontos acesos e luz vazando pelas bordas'],
+  ['#FFFFFF', 'Branco', 'procure pontos escuros e manchas'],
+  ['#FF0000', 'Vermelho', 'procure pontos de outra cor'],
+  ['#00FF00', 'Verde', 'procure pontos de outra cor'],
+  ['#0000FF', 'Azul', 'procure pontos de outra cor'],
+  ['#808080', 'Cinza', 'procure manchas e faixas mais claras ou mais escuras'],
+];
+let TT = -1;
+function telaCheia(on) {
+  try { const pv = window.parent !== window && window.parent.pywebview; if (pv && pv.api && pv.api.marks_tela_cheia) return pv.api.marks_tela_cheia(on).catch(() => {}); } catch (x) { /* fora do Bench Labs */ }
+  return Promise.resolve();
+}
+async function abrirTesteTela() {
+  const ok = await confirmar('Teste da tela', `As cores ocupam a tela inteira, uma de cada vez. Em cada uma, olhe a tela toda com calma:<ol><li><b>Preto</b>: pontos acesos e luz vazando pelas bordas. Faça num ambiente escuro, com o brilho no máximo.</li><li><b>Branco</b>: pontos escuros e manchas.</li><li><b>Vermelho, verde, azul e cinza</b>: pontos de outra cor e faixas.</li></ol><div class="nota">Clique ou aperte a barra de espaço para passar de cor. Esc sai do teste.</div>`, 'Começar');
+  if (!ok) return;
+  await telaCheia(true);
+  TT = 0; corTeste();
+  $('#tt').classList.add('vis'); $('#tt').focus();
+}
+function corTeste() {
+  const c = CORES_TESTE[TT], d = $('#tt-dica');
+  $('#tt').style.background = c[0]; $('#tt-perg').hidden = true;
+  d.textContent = `${TT + 1} de ${CORES_TESTE.length} · ${c[1]}: ${c[2]}`;
+  d.classList.remove('some'); clearTimeout(d._h); d._h = setTimeout(() => d.classList.add('some'), 2600);
+}
+function andarTeste(passo) {
+  if (TT < 0 || !$('#tt-perg').hidden) return;
+  const n = TT + passo; if (n < 0) return;
+  if (n < CORES_TESTE.length) { TT = n; corTeste(); return; }
+  $('#tt').style.background = ''; $('#tt-dica').classList.add('some'); $('#tt-perg').hidden = false; $('#tt-ok').focus();
+}
+async function fecharTeste(resultado) {
+  TT = -1; $('#tt').classList.remove('vis'); $('#tt-perg').hidden = true;
+  await telaCheia(false);
+  if (resultado && api) {
+    try { const m = await api.guia_marcar('tela', resultado); GUIA = Object.assign(GUIA || {}, {marcados: m}); } catch (x) { toast('Não foi possível salvar.'); }
+    rGuia();
+    if (resultado === 'problema') toast('Fotografe o defeito e procure a loja dentro do prazo de troca.');
+  }
+  const b = $('#v-novo [data-g="tela"]'); if (b) b.focus();
+}
+$('#tt').addEventListener('click', e => { if (!e.target.closest('.modal')) andarTeste(1); });
+$('#tt').addEventListener('keydown', e => {
+  if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); fecharTeste(null); return; }
+  if (!$('#tt-perg').hidden) return;
+  if ([' ', 'Enter', 'ArrowRight', 'PageDown'].includes(e.key)) { e.preventDefault(); andarTeste(1); }
+  else if (['ArrowLeft', 'PageUp', 'Backspace'].includes(e.key)) { e.preventDefault(); andarTeste(-1); }
+});
+$('#tt-rever').onclick = () => { TT = 0; corTeste(); $('#tt').focus(); };
+$('#tt-prob').onclick = () => fecharTeste('problema');
+$('#tt-ok').onclick = () => fecharTeste('feito');
+
+/* ---------- ciclo ---------- */
+function rReinicio() {
+  const r = $('#reinicio');
+  if (!pintar(r, WU && WU.reinicio ? `<div class="aviso alerta"><div style="flex:1">O Windows precisa ser reiniciado para concluir a instalação das atualizações. Depois de reiniciar, abra esta tela de novo: é comum aparecer um novo lote.</div><button class="btn btn-pri btn-peq" id="b-reini">Reiniciar agora</button></div>` : '')) return;
+  if ($('#b-reini')) $('#b-reini').onclick = async () => { if (await confirmar('Reiniciar o notebook?', 'Salve o que estiver aberto. O notebook reinicia em 10 segundos.', 'Reiniciar')) api.reiniciar(); };
+}
+function rTudo() { rReinicio(); rCartoes(); rFaixa(); rWU(); rNV(); rDisp(); rProg(); rHist(); rFerr(); rGuia(); }
+document.addEventListener('click', e => {
+  const a = e.target.closest('[data-acao]'); if (!a) return;
+  const acao = a.dataset.acao;
+  if (acao === 'suporte') suporteModelo();
+  else if (acao === 'nv-pagina') api.nvidia_pagina();
+  else if (acao === 'marca-abrir') api.abrir_app_marca(INI.marca).then(r => { if (!r.ok) toast(r.erro); });
+  else if (acao === 'marca-loja') api.abrir_loja_marca(INI.marca);
+  else if (acao === 'bench-labs') { try { window.parent.document.getElementById('versao').click(); } catch (x) { toast('Use o botão da versão, no canto inferior esquerdo.'); } }
+  else if (acao === 'bench-monitor') { try { window.parent.document.querySelector('[data-aba="monitor"]').click(); } catch (x) { toast('Abra a aba Monitor no menu.'); } }
+});
+
+const atualizarHist = () => api.historico().then(h => { HIST = h; rHist(); });
+async function ciclo() {
+  try {
+    const ant = WU && WU.instalacao && WU.instalacao.fase;
+    WU = await api.atualizacoes_status();
+    if (ant && ['baixando', 'instalando', 'procurando'].includes(ant) && WU.instalacao && WU.instalacao.fase === 'concluido') {
+      const falhas = (WU.instalacao.resultados || []).filter(r => !r.ok).length;
+      toast(falhas ? `${plural(falhas, 'atualização não foi instalada', 'atualizações não foram instaladas')}.` : 'Atualizações do Windows instaladas.');
+      wuQtd = -1; api.buscar_atualizacoes(); atualizarHist();
+    }
+    const p = await api.programas_status(), antes = PROG_ATU && PROG_ATU.fase;
+    PROG = p; PROG_ATU = p.atualizacao || PROG_ATU;
+    if (antes === 'atualizando' && PROG_ATU && PROG_ATU.fase === 'concluido') { api.programas_buscar(); atualizarHist(); }
+    if (['baixando', 'conferindo'].includes(NV_E.fase)) { NV_E = await api.nvidia_status(); if (NV_E.fase === 'instalando') atualizarHist(); }
+    if (ADM_ACAO) {
+      const e = await api.drivers_status(), acao = ADM_ACAO;
+      if (e.fase === 'aguardando_permissao' && Date.now() / 1000 - (e.quando || Date.now() / 1000) > 180) Object.assign(e, {fase: 'erro', erro: 'A permissão de administrador não foi concedida.'});
+      const fim = ['concluido', 'erro'].includes(e.fase);
+      if (acao === 'backup') BK = Object.assign({destino: BK && BK.destino}, e); else PROC = e;
+      if (fim) {
+        ADM_ACAO = null;
+        if (acao === 'procurar') { DISP = await api.dispositivos(); DISP.depois_da_busca = true; toast(e.fase === 'erro' ? 'Não foi possível procurar os drivers.' : problemas().length ? 'O Windows não encontrou todos os drivers.' : 'Drivers encontrados e instalados.'); }
+        else { if (e.fase === 'concluido') toast('Backup dos drivers concluído.'); atualizarHist(); }
+      }
+    }
+    if (!ultimaVerif && WU.busca.fase !== 'buscando' && PROG.lista && PROG.lista.fase !== 'buscando')
+      ultimaVerif = new Date().toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'});
+    $('#verif').textContent = ultimaVerif ? `Verificado às ${ultimaVerif}` : 'Verificando…';
+    rTudo();
+  } catch (e) { console.error(e); }
+}
+function verificarTudo(manual) {
+  ultimaVerif = ''; wuQtd = -1; V = null; NV = null; DISP = null; BENCH = null; HIST = null;
+  if (manual) NV_E = {fase: 'parado'};
+  rTudo();
+  api.buscar_atualizacoes(); api.programas_buscar();
+  api.versoes(true).then(v => { V = v; rTudo(); if (placaNV()) api.nvidia_consultar(NV_STUDIO).then(r => { NV = r; rTudo(); }); });
+  api.dispositivos().then(d => { DISP = d; rTudo(); });
+  api.bench_versoes().then(b => { BENCH = b; rTudo(); }).catch(() => { BENCH = {labs: '—', labs_erro: 'erro'}; rTudo(); });
+  atualizarHist(); carregarGuia();
+}
+async function iniciarApp() {
+  api = BENCH_API();
+  INI = await api.inicio();
+  $('#pil').textContent = INI.nome || '';
+  $('#b-verif').onclick = () => verificarTudo(true);
+  verificarTudo(false);
+  ciclo(); setInterval(() => { if (!document.hidden) ciclo(); }, 2500);
+}
+if (window.parent !== window) document.body.classList.add('embutido');
+trocarAba(ABA);
+rTudo();
+BENCH_ESPERAR(iniciarApp);
+</script></body></html>

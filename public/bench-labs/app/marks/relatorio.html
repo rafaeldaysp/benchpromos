@@ -1,0 +1,400 @@
+<meta charset="utf-8">
+<title>Relatório Bench Marks</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..900&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+.gx{margin-top:16px}.gx+.gx{margin-top:22px}
+.gx-cab{display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap}.gx-tit{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--txt)}
+.gx-sub{font-size:13px;color:var(--txt2);margin-top:3px;max-width:78ch}.gx-leitura{font-size:13.5px;color:var(--txt);margin-top:8px;padding:8px 12px;border-radius:10px;background:rgba(255,229,0,.07);border-left:3px solid #FFE500}
+.gx-area{display:grid;grid-template-columns:52px 1fr;margin-top:12px}.gx-y{position:relative}.gx-y span{position:absolute;right:8px;transform:translateY(-50%);font-size:11.5px;color:var(--txt3);font-variant-numeric:tabular-nums;white-space:nowrap}
+.gx-plot{position:relative}.gx-plot svg{display:block}.gx-x{position:relative;height:20px;grid-column:2}.gx-x span{position:absolute;top:5px;transform:translateX(-50%);font-size:11.5px;color:var(--txt3);white-space:nowrap}
+.gx-x span:first-child{transform:none}.gx-x span:last-child{transform:translateX(-100%)}
+.gx-media{position:absolute;right:4px;font-size:11.5px;color:var(--txt2);background:var(--card,#1d1530);padding:0 4px;transform:translateY(-120%)}
+.gx-un{font-size:11px;color:var(--txt3);grid-column:1;text-align:right;padding-right:8px;margin-bottom:2px}
+
+/* Layout: relatório de bancada — cabeçalho com a máquina, linha do tempo da sessão, comparação entre rodadas, depois um bloco por teste */
+:root {
+  --bg: #130C1E; --sup: #1D1430; --sup2: #251A3B; --linha: #33274A;
+  --txt: #F3EEF9; --txt2: #B8ACC9; --txt3: #85799A;
+  --amarelo: #FFE500; --ciano: #62D2FF; --laranja: #FF8A5C; --roxo: #B57CFF;
+  --ok: #57E38E; --alerta: #FFB547; --erro: #FF6B6B;
+  --f-disp: "Archivo", "Arial Narrow", system-ui, sans-serif;
+  --f-txt: "Archivo", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-num: "JetBrains Mono", ui-monospace, Consolas, monospace;
+  color-scheme: dark;
+}
+body { background: var(--bg); color: var(--txt); font-family: var(--f-txt); font-size: 15px; line-height: 1.5; }
+.pag { max-width: 1180px; margin: 0 auto; padding-block: 36px 64px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: flex; flex-direction: column; gap: 40px; }
+h1, h2, h3 { font-family: var(--f-disp); margin: 0; text-wrap: balance; }
+h1 { font-size: clamp(34px, 6vw, 58px); font-weight: 850; font-stretch: 85%; line-height: 1; letter-spacing: -.01em; }
+h2 { font-size: 24px; font-weight: 800; font-stretch: 90%; }
+h3 { font-size: 18px; font-weight: 750; }
+.eti { font-size: 11.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--txt3); font-weight: 600; }
+.num { font-family: var(--f-num); font-variant-numeric: tabular-nums; }
+.c { color: var(--txt2); }
+.c3 { color: var(--txt3); font-size: 13px; }
+a { color: var(--amarelo); }
+
+.topo { display: flex; flex-direction: column; gap: 14px; }
+.marca { display: flex; align-items: center; gap: 10px; font-weight: 800; letter-spacing: .08em; font-size: 13px; }
+.marca i { width: 22px; height: 22px; border-radius: 5px; background: var(--amarelo); display: inline-grid; place-items: center; color: #130C1E; font-style: normal; font-size: 13px; font-weight: 900; }
+.specs { display: flex; flex-wrap: wrap; gap: 8px; }
+.spec { border: 1px solid var(--linha); border-radius: 999px; padding: 5px 12px; font-size: 13px; color: var(--txt2); }
+.spec b { color: var(--txt); font-weight: 600; }
+
+.destaques { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.dest { background: var(--sup); border: 1px solid var(--linha); border-radius: 10px; padding: 18px; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.dest .v { font-family: var(--f-disp); font-size: 38px; font-weight: 850; font-stretch: 85%; line-height: 1; color: var(--amarelo); }
+.dest .v small { font-size: 16px; color: var(--txt2); font-weight: 600; margin-left: 4px; }
+
+.sec { display: flex; flex-direction: column; gap: 14px; }
+.sec-cab { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+
+/* linha do tempo da sessão */
+.tl { background: var(--sup); border: 1px solid var(--linha); border-radius: 10px; padding: 18px 18px 12px; overflow-x: auto; }
+.tl svg { display: block; min-width: 760px; }
+
+/* comparação */
+.comp-grade { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.comp { background: var(--sup); border: 1px solid var(--linha); border-radius: 10px; padding: 18px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.tabela { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+th { text-align: right; font-weight: 600; color: var(--txt3); font-size: 11.5px; letter-spacing: .08em; text-transform: uppercase; padding: 6px 8px; white-space: nowrap; }
+th:first-child, td:first-child { text-align: left; padding-left: 0; }
+td { text-align: right; padding: 9px 8px; border-top: 1px solid var(--linha); white-space: nowrap; }
+td:first-child { white-space: normal; color: var(--txt2); }
+td.melhor { color: var(--amarelo); font-weight: 700; }
+.delta { font-size: 12px; font-weight: 700; }
+.delta.mais { color: var(--ok); } .delta.menos { color: var(--erro); }
+.nota { font-size: 13px; color: var(--txt2); border-left: 2px solid var(--roxo); padding-left: 10px; }
+.tag { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; padding: 2px 7px; border-radius: 4px; background: var(--sup2); color: var(--txt2); vertical-align: middle; }
+.tag.conf { color: var(--alerta); }
+
+/* testes */
+.teste { background: var(--sup); border: 1px solid var(--linha); border-radius: 12px; padding: 22px; display: flex; flex-direction: column; gap: 18px; }
+.teste-cab { display: flex; gap: 14px; align-items: baseline; flex-wrap: wrap; }
+.teste-cab .hora { font-family: var(--f-num); color: var(--amarelo); font-size: 14px; }
+.veredito { font-family: var(--f-disp); font-size: 26px; font-weight: 800; font-stretch: 88%; line-height: 1.15; }
+.metricas { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+.metricas div { background: var(--sup2); border-radius: 8px; padding: 12px 14px; display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.metricas span { font-size: 12px; color: var(--txt3); }
+.metricas b { font-family: var(--f-num); font-size: 17px; font-weight: 600; }
+.estrelas{position:relative;display:inline-block;font-size:15px;letter-spacing:1px;line-height:1;white-space:nowrap;vertical-align:-1px}.estrelas .e-base{color:var(--linha2,#43355A)}.estrelas .e-cheia{position:absolute;left:0;top:0;overflow:hidden;color:var(--destaque,var(--amarelo,#FFE500))}.e-num{margin-left:6px;font-size:12px;font-weight:700;color:var(--txt2)}
+.progs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 18px; }
+.prog { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 10px; padding: 8px 0; border-top: 1px solid var(--linha); font-size: 13.5px; }
+.prog em { font-style: normal; font-weight: 700; font-size: 12.5px; }
+.prog span { grid-column: 1 / -1; color: var(--txt2); font-size: 12.5px; }
+.nv0 { color: var(--erro); } .nv1 { color: var(--alerta); } .nv2, .nv3 { color: var(--ok); } .nv4 { color: var(--amarelo); }
+.grafico { display: flex; flex-direction: column; gap: 8px; }
+.leg { display: flex; flex-wrap: wrap; gap: 14px; font-size: 12.5px; color: var(--txt2); }
+.leg i { display: inline-block; width: 12px; height: 3px; border-radius: 2px; vertical-align: middle; margin-right: 6px; }
+.grafico svg { width: 100%; height: auto; display: block; }
+.rodape { color: var(--txt3); font-size: 13px; display: flex; flex-direction: column; gap: 6px; border-top: 1px solid var(--linha); padding-top: 18px; }
+
+@media (max-width: 860px) {
+  .destaques { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .comp-grade, .progs { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 440px) { .dest .v { font-size: 30px; } .teste { padding: 16px; } }
+</style>
+
+<div class="pag" id="pag">
+  <header class="topo">
+    <div class="marca"><i>B</i><span id="marca-txt">BENCH MARKS · RELATÓRIO DA SESSÃO</span></div>
+    <h1 id="titulo"></h1>
+    <div class="specs" id="specs"></div>
+    <p class="c" style="margin:0;max-width:70ch" id="resumo"></p>
+  </header>
+  <section class="destaques" id="destaques"></section>
+  <section class="sec">
+    <div class="sec-cab"><h2>Linha do tempo</h2><span class="c3" id="tl-sub"></span></div>
+    <div class="tl" id="tl"></div>
+  </section>
+  <section class="sec" id="sec-comp">
+    <div class="sec-cab"><h2>Testes repetidos</h2><span class="c3">diferenças entre as rodadas</span></div>
+    <div class="comp-grade" id="comp"></div>
+  </section>
+  <section class="sec">
+    <div class="sec-cab"><h2>Resultados por teste</h2><span class="c3">sensores lidos uma vez por segundo</span></div>
+    <div id="testes" style="display:flex;flex-direction:column;gap:14px"></div>
+  </section>
+  <footer class="rodape" id="rodape"></footer>
+</div>
+
+<script>
+const DADOS = /*DADOS*/[];
+const $ = s => document.querySelector(s);
+const fmt = (v, d = 0) => v == null || isNaN(v) ? '—' : Number(v).toLocaleString('pt-BR', {minimumFractionDigits: d, maximumFractionDigits: d});
+const tempo = s => s == null ? '—' : s < 60 ? `${fmt(s, s < 10 ? 1 : 0)} s` : `${Math.floor(s / 60)} min ${String(Math.round(s % 60)).padStart(2, '0')} s`;
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
+// estrelas de 1 a 5 (com meia estrela); resultados antigos sem 'estrelas' usam o nível de 0 a 4
+const estrelasHTML = p => {
+  const n = Math.max(1, Math.min(5, p.estrelas ?? ((p.nivel ?? 1) + 1))), txt = String(n).replace('.', ',');
+  return `<span class="estrelas" role="img" aria-label="${txt} de 5 estrelas" title="${esc(p.rotulo || '')}"><span class="e-base">★★★★★</span><span class="e-cheia" style="width:${n / 5 * 100}%">★★★★★</span></span><small class="e-num">${txt}</small>`;
+};
+
+const CORES = {gpu_uso: 'var(--amarelo)', gpu_watts: 'var(--ciano)', gpu_temp: 'var(--laranja)', cpu_uso: 'var(--roxo)'};
+const ROT = {gpu_uso: 'Uso da placa (%)', gpu_watts: 'Consumo da placa (W)', gpu_temp: 'Temp. da placa (°C)', cpu_uso: 'Uso do processador (%)'};
+const media = a => { const v = a.filter(x => x != null); return v.length ? v.reduce((s, x) => s + x, 0) / v.length : null; };
+const maior = a => { const v = a.filter(x => x != null); return v.length ? Math.max(...v) : null; };
+
+// ---------- cabeçalho
+const INFO = /*INFO*/{};
+const g = DADOS[0];
+const [ano, mes, dia] = (g.data || '').split('-').map(Number);
+const MESES = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
+const dataLonga = dia ? `${dia} de ${MESES[mes - 1]} de ${ano}` : '';
+$('#titulo').textContent = INFO.notebook || 'Notebook';
+if (dataLonga) $('#marca-txt').textContent = `BENCH MARKS · RELATÓRIO DA SESSÃO · ${dataLonga.toUpperCase()}`;
+document.title = `${INFO.notebook || 'Bench Marks'} · ${g.data ? g.data.split('-').reverse().join('/') : ''}`;
+const gpu = INFO.gpu || {}, ram = INFO.ram || {};
+$('#specs').innerHTML = [['Processador', (INFO.cpu || {}).nome], ['Placa de vídeo', [gpu.nome && gpu.nome.replace(/^NVIDIA GeForce /, ''), gpu.vram && `${gpu.vram} GB`, gpu.tgp && `até ${gpu.tgp} W`].filter(Boolean).join(' · ')],
+  ['Memória', ram.gb ? `${ram.gb} GB ${ram.tipo || ''}${ram.mhz ? '-' + ram.mhz : ''}` : ''], ['Windows', INFO.windows], ['Driver de vídeo', INFO.driver], ['BIOS', INFO.bios],
+  ['SSD', INFO.ssd && [INFO.ssd.nome, INFO.ssd.gb && `${INFO.ssd.gb} GB`, INFO.ssd.barramento].filter(Boolean).join(' · ')]]
+  .filter(([, v]) => v).map(([k, v]) => `<span class="spec">${k} <b>${esc(v)}</b></span>`).join('');
+const minutosSessao = DADOS.reduce((s, d) => s + (d.serie.s.length || 0), 0) / 60;
+const repetidos = [...new Set(DADOS.map(d => d.teste))].filter(t => DADOS.filter(d => d.teste === t).length > 1);
+$('#resumo').textContent = `${DADOS.length} teste${DADOS.length > 1 ? 's' : ''} entre ${g.hora} e ${DADOS[DADOS.length - 1].hora}, somando ${fmt(Math.max(1, minutosSessao))} minuto${Math.round(minutosSessao) > 1 ? 's' : ''} de medição.${repetidos.length ? ` ${repetidos.length === 1 ? 'Um teste foi executado' : `${repetidos.length} testes foram executados`} mais de uma vez; as diferenças entre as rodadas são apresentadas abaixo.` : ''}`;
+$('#tl-sub').textContent = `${DADOS.length === 1 ? 'o teste' : `os ${DADOS.length} testes`} na ordem de execução`;
+const versoes = [...new Set(DADOS.map(d => d.versao.replace(' beta', '')))];
+$('#rodape').innerHTML = [
+  `Gerado pelo Bench Marks ${esc(INFO.versao || '')} a partir dos registros da pasta Documentos › Bench Marks › Logs${versoes.length > 1 ? ` (testes realizados nas versões ${versoes.join(', ')})` : ''}.`,
+  `Sensores lidos uma vez por segundo. Dados da placa de vídeo obtidos pelo ${esc((g.s && g.s.fonte_gpu) || 'nvidia-smi')}${DADOS.some(d => d.s && d.s.fonte_cpu === 'Bench Monitor') ? '; do processador, pelo Bench Monitor.' : DADOS.some(d => d.s && d.s.hwinfo) ? '; do processador, pelo HWiNFO.' : DADOS.some(d => d.s && d.s.fonte_cpu === 'Windows') ? '; consumo do processador obtido pelo contador de energia do Windows. A temperatura do processador aparece quando o HWiNFO está aberto com "Shared Memory Support" ativado.' : '. A temperatura e o consumo do processador aparecem quando o HWiNFO está aberto com "Shared Memory Support" ativado.'}`,
+  DADOS.some(d => d.conf) ? 'As rodadas marcadas como <span class="tag conf">reduzida</span> usaram o modo conferência, com 1/4 da duração normal; destinam-se apenas à verificação do aplicativo e não devem ser consideradas resultado final do notebook.' : '',
+  `Modo de energia do Windows: ${esc(INFO.windows || '—')}. O modo do aplicativo do fabricante (Turbo, Desempenho…) não é lido pelo Bench Marks.`,
+].filter(Boolean).map(x => `<div>${x}</div>`).join('');
+
+// ---------- destaques: até 4, na ordem de importância
+const ultimo = t => [...DADOS].reverse().find(d => d.teste === t);
+const DEST = [
+  ['video', d => ['Exportar 10 min em 4K', d.r.export_4k_s != null ? `${Math.floor(d.r.export_4k_s / 60)}<small>min</small> ${Math.round(d.r.export_4k_s % 60)}<small>s</small>` : '—', 'H.264 pelo codificador da placa']],
+  ['gpu', d => ['GPU', `${fmt(d.r.nota)}<small>pts</small>`, `${fmt(d.r.fps, 1)} fps médios · ${esc(d.r.resolucao || 'QHD')}`]],
+  ['cpu', d => ['CPU · todos os núcleos', `${fmt(d.r.multi)}<small>pts</small>`, `um núcleo: ${fmt(d.r.single)} pontos`]],
+  ['render3d', d => ['Render 3D por quadro', `${fmt(d.r.render_placa_s, 1)}<small>s</small>`, 'sala de estar · Full HD · 256 amostras']],
+  ['ia', d => ['IA · modelo de 8B', `${fmt(d.r.palavras_8b)}<small>pal./s</small>`, `imagem SDXL em ${fmt(d.r.imagem_s, 1)} s (estimado)`]],
+  ['arquitetura', d => ['Arquitetura', `${fmt(d.r.nav_sombreado)}<small>fps</small>`, `navegação 3D · BIM em ${fmt(d.r.bim_s, 2)} s`]],
+  ['p_video', d => ['Vídeo · pesado', d.r.export_30min_s != null ? `${Math.floor(d.r.export_30min_s / 60)}<small>min</small> ${Math.round(d.r.export_30min_s % 60)}<small>s</small>` : '—', `30 min de 4K para exportar · ${fmt(d.r.multicam)} câmeras juntas`]],
+  ['p_engenharia', d => ['Engenharia · pesado', `${fmt(d.r.fea_it_s)}<small>/s</small>`, `simulação de estrutura · CAD ${fmt(d.r.cad_fps)} fps`]],
+  ['p_programacao', d => ['Programação · pesado', `${fmt(d.r.build_s, 1)}<small>s</small>`, `compilar 5.000 arquivos · ${fmt(d.r.ambientes_ok)} ambientes juntos`]],
+  ['p_design', d => ['Design · pesado', `${fmt(d.r.filtro_medio_s, 2)}<small>s</small>`, `por filtro na foto de 100 MP · 200 fotos em ${tempo(d.r.jpeg_200_s)}`]],
+  ['p_odonto', d => ['Odontologia · pesado', `${fmt(d.r.cbct_fps)}<small>fps</small>`, `tomografia 3D · escaneamento ${fmt(d.r.scan_ips)} imagens/s`]],
+  ['p_arquitetura', d => ['Arquitetura · pesado', `${fmt(d.r.nav_condominio)}<small>fps</small>`, `condomínio · ray tracing ${fmt(d.r.rt_fps)} fps`]],
+  ['jogos', d => ['CPU para jogos', `${fmt(d.r.sps, 1)}<small>sim/s</small>`, 'batalha com 30 mil unidades']],
+  ['stress', d => ['Stress total', d.r.estavel ? 'Estável' : 'Instável', `${d.r.erros_calculo} erros em ${fmt(d.r.conferidos)} conferências`]],
+  ['ssd', d => ['Carregar mapa de jogo', `${fmt(d.r.carregamento_s, 1)}<small>s</small>`, `${fmt(d.r.seq_leitura)} MB/s de leitura`]],
+  ['memoria', d => ['Memória', `${fmt(d.r.leitura, 1)}<small>GB/s</small>`, `latência ${fmt(d.r.latencia)} ns`]],
+].filter(([t]) => ultimo(t)).slice(0, 4);
+$('#destaques').innerHTML = DEST.map(([t, f]) => { const [e, v, sub] = f(ultimo(t)); return `<div class="dest"><div class="eti">${e}</div><div class="v">${v}</div><div class="c3">${sub}</div></div>`; }).join('');
+if (!DEST.length) $('#destaques').hidden = true;
+
+// ---------- linha do tempo (em sequência; largura pela duração, altura pelo consumo da placa)
+(() => {
+  const nomesCurtos = {p_arquitetura: 'Arq. pesado', p_odonto: 'Odonto', p_engenharia: 'Eng. pesado', p_programacao: 'Prog. pesado', p_design: 'Design', p_video: 'Vídeo pesado', video: 'Vídeo', arquitetura: 'Arquitetura', cpu: 'CPU', ia: 'IA', render3d: '3D', stress: 'Stress', gpu: 'GPU', jogos: 'Jogos', memoria: 'Memória', ssd: 'SSD'};
+  const durs = DADOS.map(d => Math.max(d.serie.s.length, 1));
+  const W = 1000, H = 150, base = 108, gap = 10, minW = 62;
+  const escala = (W - gap * (DADOS.length - 1) - minW * DADOS.length) / durs.reduce((a, b) => a + b, 0);
+  let x = 0, svg = '';
+  DADOS.forEach((d, i) => {
+    const w = (media(d.serie.gpu_watts) || 0) + (media(d.serie.cpu_watts) || 0), alt = 14 + Math.min(w, 250) / 250 * 64, larg = minW + durs[i] * escala;
+    svg += `<rect x="${x}" y="${base - alt}" width="${larg}" height="${alt}" rx="4" fill="${d.conf ? 'var(--sup2)' : 'var(--amarelo)'}" stroke="${d.conf ? 'var(--alerta)' : 'none'}"><title>${d.hora} · ${d.nome} · ${fmt(w)} W médios (placa + processador)</title></rect>`;
+    svg += `<text x="${x + 6}" y="${base - alt - 7}" fill="var(--txt)" font-size="12.5" font-weight="600" font-family="Archivo, sans-serif">${nomesCurtos[d.teste]}</text>`;
+    svg += `<text x="${x + 6}" y="${base - alt + 16}" fill="${d.conf ? 'var(--txt2)' : '#130C1E'}" font-size="11" font-family="JetBrains Mono, monospace">${fmt(w)} W</text>`;
+    svg += `<text x="${x}" y="${base + 18}" fill="var(--txt3)" font-size="11.5" font-family="JetBrains Mono, monospace">${d.hora}</text>`;
+    svg += `<text x="${x}" y="${base + 34}" fill="var(--txt3)" font-size="11" font-family="JetBrains Mono, monospace">${durs[i] >= 60 ? Math.round(durs[i] / 60) + ' min' : durs[i] + ' s'}</text>`;
+    x += larg + gap;
+  });
+  $('#tl').innerHTML = `<svg viewBox="0 0 ${W} ${H}">${svg}</svg><div class="leg" style="margin-top:6px"><span><i style="background:var(--amarelo)"></i>rodada normal</span>${DADOS.some(d => d.conf) ? '<span><i style="background:var(--alerta)"></i>rodada reduzida (conferência)</span>' : ''}<span class="c3">largura: duração · altura: consumo médio da placa + processador</span></div>`;
+})();
+
+// ---------- comparação entre rodadas
+const COMP = {
+  gpu: {titulo: 'GPU', linhas: [['Nota', r => r.nota, false, v => `${fmt(v)} pts`], ['FPS médio', r => r.fps, false, v => `${fmt(v, 1)} fps`], ['Pior segundo', r => r.pior_segundo, false, v => `${fmt(v)} fps`], ['Desempenho no fim', r => r.estabilidade, false, v => `${fmt(v)}%`]]},
+  cpu: {titulo: 'CPU', linhas: [['Todos os núcleos', r => r.multi, false, v => `${fmt(v)} pts`], ['Um núcleo', r => r.single, false, v => `${fmt(v)} pts`]]},
+  jogos: {titulo: 'CPU para jogos', linhas: [['Simulações por segundo', r => r.sps, false, v => fmt(v, 1)]]},
+  memoria: {titulo: 'Memória', linhas: [['Leitura', r => r.leitura, false, v => `${fmt(v, 1)} GB/s`], ['Gravação', r => r.gravacao, false, v => `${fmt(v, 1)} GB/s`], ['Latência', r => r.latencia, true, v => `${fmt(v)} ns`]]},
+  ssd: {titulo: 'SSD', linhas: [['Carregar mapa de jogo', r => r.carregamento_s, true, v => `${fmt(v, 1)} s`], ['Leitura sequencial', r => r.seq_leitura, false, v => `${fmt(v)} MB/s`], ['Gravação sequencial', r => r.seq_gravacao, false, v => `${fmt(v)} MB/s`]]},
+  video: {titulo: 'Edição de vídeo', linhas: [['Exportar 10 min em 4K', r => r.export_4k_s, true, tempo], ['Exportar 10 min em Full HD', r => r.exportar && r.exportar.fhd_h264, true, tempo], ['Motion · 10 s em 4K', r => r.motion_10s, true, tempo], ['Cor e efeitos 4K', r => r.efeitos_fps, false, v => `${fmt(v)} fps`], ['Timeline 4K', r => r.timeline, false, v => `${v} vídeos`]]},
+  ia: {titulo: 'IA no notebook', linhas: [['Memória de vídeo', r => r.banda_gbs, false, v => `${fmt(v)} GB/s`], ['Força de cálculo', r => r.tflops, false, v => `${fmt(v, 1)} TFLOPS`], ['Modelo 8B', r => r.palavras_8b, false, v => `${fmt(v)} palavras/s`], ['Imagem SDXL', r => r.imagem_s, true, v => `${fmt(v, 1)} s`], ['Whisper · 1 h de áudio', r => r.whisper_min_por_hora, true, v => `${fmt(v, 1)} min`]]},
+  arquitetura: {titulo: 'Arquitetura e Engenharia', linhas: [['Modelagem BIM', r => r.bim_s, true, v => `${fmt(v, 2)} s`], ['Navegação · sombreado', r => r.nav_sombreado, false, v => `${fmt(v)} fps`], ['Navegação · realista', r => r.nav_realista, false, v => `${fmt(v)} fps`], ['40 pranchas em PDF', r => r.pranchas_s, true, v => `${fmt(v, 1)} s`], ['Render 4K', r => r.render_s, true, v => `${fmt(v)} s`]]},
+  render3d: {titulo: '3D e animação', linhas: [['Render por quadro', r => r.render_placa_s, true, v => `${fmt(v, 1)} s`], ['Viewport sólido', r => r.viewport_solido, false, v => `${fmt(v)} fps`], ['Viewport com material', r => r.viewport_material, false, v => `${fmt(v)} fps`], ['Simulação', r => r.simulacao_s, true, v => `${fmt(v)} s`]]},
+  p_arquitetura: {titulo: 'Teste pesado · Arquitetura', linhas: [['Navegação · condomínio', r => r.nav_condominio, false, v => `${fmt(v)} fps`], ['Navegação · bairro', r => r.nav_bairro, false, v => `${fmt(v)} fps`], ['Ray tracing em tempo real', r => r.rt_fps, false, v => `${fmt(v, 1)} fps`], ['Regenerar', r => r.regen_s, true, v => `${fmt(v, 2)} s`], ['Render 4K (estimado)', r => r.render4k_s, true, tempo], ['Fim do render', r => r.fim_cpu, false, v => `${fmt(v)}%`]]},
+  p_engenharia: {titulo: 'Teste pesado · Engenharia', linhas: [['Montagem CAD', r => r.cad_fps, false, v => `${fmt(v, 1)} fps`], ['Simulação de estrutura', r => r.fea_it_s, false, v => `${fmt(v)}/s`], ['Fluido na placa', r => r.lbm_mlups, false, v => `${fmt(v)} mi células/s`], ['Matrizes', r => r.dgemm_gflops, false, v => `${fmt(v, 1)} GFLOPS`], ['Fim da simulação', r => r.fim_cpu, false, v => `${fmt(v)}%`]]},
+  p_programacao: {titulo: 'Teste pesado · Programação', linhas: [['Compilar 5.000 arquivos', r => r.build_s, true, v => tempo(v)], ['50 mil arquivos', r => r.arq_ciclo_s, true, v => tempo(v)], ['Ambientes juntos', r => r.ambientes_ok, false, v => fmt(v)], ['IA 7B', r => (r.ia_modelos || [])[0] && r.ia_modelos[0].tokens_s, false, v => `${fmt(v)} tokens/s`], ['Fim da compilação', r => r.fim_cpu, false, v => `${fmt(v)}%`]]},
+  p_design: {titulo: 'Teste pesado · Design gráfico', linhas: [['Filtro (100 MP)', r => r.filtro_medio_s, true, v => `${fmt(v, 2)} s`], ['Exportar 200 fotos', r => r.jpeg_200_s, true, v => tempo(v)], ['Remover ruído com IA', r => r.ia_foto_s, true, v => `${fmt(v, 1)} s/foto`], ['Ilustração', r => r.vetor_fps, false, v => `${fmt(v, 1)}/s`], ['Tela sRGB', r => r.tela && !r.tela.generico ? r.tela.srgb : null, false, v => `${fmt(v)}%`]]},
+  p_video: {titulo: 'Teste pesado · Edição de vídeo', linhas: [['Exportar 30 min de 4K', r => r.export_30min_s, true, v => tempo(v)], ['Redução de ruído 4K', r => r.nr_fps, false, v => `${fmt(v, 1)} fps`], ['4:2:2 10-bit', r => r.c422_fps, false, v => `${fmt(v)} fps`], ['Multicâmera', r => r.multicam, false, v => `${fmt(v)} câmeras`], ['Fim da exportação', r => r.fim_gpu, false, v => `${fmt(v)}%`]]},
+  p_odonto: {titulo: 'Teste pesado · Odontologia', linhas: [['Tomografia 3D', r => r.cbct_fps, false, v => `${fmt(v, 1)} fps`], ['Escaneamento', r => r.scan_ips, false, v => `${fmt(v)} imagens/s`], ['Prótese', r => r.protese_fps, false, v => `${fmt(v, 1)} fps`], ['Fatias', r => r.fatias_s, false, v => `${fmt(v)}/s`], ['Fim da tomografia', r => r.fim_gpu, false, v => `${fmt(v)}%`]]},
+};
+$('#comp').innerHTML = Object.entries(COMP).map(([t, c]) => {
+  const rods = DADOS.filter(d => d.teste === t);
+  if (rods.length < 2) return '';
+  const iguais = new Set(rods.map(d => d.versao + d.conf)).size === 1;
+  const nota = iguais ? 'Mesma versão do aplicativo e mesma duração em todas as rodadas: as diferenças decorrem do próprio notebook (temperatura, energia, tarefas em segundo plano).' : `As rodadas usaram ${new Set(rods.map(d => d.versao)).size > 1 ? 'versões diferentes do aplicativo' : 'durações diferentes (normal e reduzida)'}. Parte da diferença pode decorrer disso; por isso, a variação percentual não é exibida.`;
+  const cab = rods.map(d => `<th>${d.hora}<br><span class="tag ${d.conf ? 'conf' : ''}">${d.conf ? 'reduzida' : 'v' + d.versao.replace(' beta', '')}</span></th>`).join('');
+  const linhas = c.linhas.map(([nome, f, menor, show]) => {
+    const vals = rods.map(d => f(d.r)); const ok = vals.filter(v => v != null);
+    const melhor = ok.length ? (menor ? Math.min(...ok) : Math.max(...ok)) : null;
+    const a = vals[0], b = vals[vals.length - 1];
+    let dl = '';
+    if (iguais && a && b && a !== b) { const p = (b / a - 1) * 100 * (menor ? -1 : 1); dl = `<span class="delta ${p >= 0 ? 'mais' : 'menos'}">${p >= 0 ? '+' : ''}${fmt(p)}%</span>`; }
+    return `<tr><td>${nome}</td>${vals.map(v => `<td class="num ${v != null && v === melhor && ok.length > 1 ? 'melhor' : ''}">${v == null ? '—' : show(v)}</td>`).join('')}<td>${dl}</td></tr>`;
+  }).join('');
+  return `<div class="comp"><h3>${c.titulo}</h3><div class="tabela"><table><thead><tr><th></th>${cab}<th>${iguais ? '1ª → última' : ''}</th></tr></thead><tbody>${linhas}</tbody></table></div><div class="nota">${nota}</div></div>`;
+}).join('');
+if (!$('#comp').innerHTML.trim()) $('#sec-comp').style.display = 'none';
+
+// ---------- gráfico de sensores
+// ------------------------------------------------------------------ gráfico fácil de ler (uma grandeza por gráfico)
+// series: [{nome, cor, pts (1 por segundo) | xy: [[s, v]...]}]; unidade: 'fps', '°C'...; media: mostra a linha tracejada
+function graficoClaro({titulo, sub = '', leitura = '', series, unidade = '', maxY, media = false, refs = [], faixas = [], altura = 170, casas = 0}) {
+  const ss = series.map(x => ({...x, xy: x.xy || (x.pts || []).map((v, i) => [i, v])})).map(x => ({...x, xy: x.xy.filter(p => p[1] != null && !isNaN(p[1]))}))
+    .filter(x => x.xy.length > 1);
+  if (!ss.length) return '';
+  const dur = Math.max(...ss.map(x => x.xy.at(-1)[0]), 1);
+  const topo = Math.max(...ss.flatMap(x => x.xy.map(p => p[1])), ...refs.map(r => r.v), 1);
+  const passo = (m => { const e = 10 ** Math.floor(Math.log10(m / 4)), f = m / 4 / e; return (f <= 1 ? 1 : f <= 2 ? 2 : f <= 2.5 ? 2.5 : f <= 5 ? 5 : 10) * e; })(maxY || topo * 1.08);
+  const mx = maxY || Math.ceil(topo * 1.08 / passo) * passo;
+  const W = 1000, H = altura, X = t => t / dur * W, Y = v => H - Math.min(v, mx) / mx * H;
+  let svg = '';
+  faixas.forEach(f => svg += `<rect x="${X(f.ini)}" y="0" width="${Math.max(1, X(f.fim) - X(f.ini))}" height="${H}" fill="#FFFFFF" opacity=".035"/>`);
+  for (let v = 0; v <= mx + 1e-9; v += passo) svg += `<line x1="0" x2="${W}" y1="${Y(v)}" y2="${Y(v)}" stroke="rgba(255,255,255,${v ? .07 : .16})" vector-effect="non-scaling-stroke"/>`;
+  refs.forEach(r => svg += `<line x1="0" x2="${W}" y1="${Y(r.v)}" y2="${Y(r.v)}" stroke="${r.cor || '#FF6B6B'}" stroke-dasharray="3 5" opacity=".7" vector-effect="non-scaling-stroke"/>`);
+  ss.forEach((x, i) => {
+    const d = x.xy.map(p => `${X(p[0]).toFixed(1)} ${Y(p[1]).toFixed(1)}`).join(' L');
+    if (ss.length === 1) svg += `<path d="M${X(x.xy[0][0])} ${H} L${d} L${X(x.xy.at(-1)[0])} ${H}Z" fill="${x.cor}" opacity=".10"/>`;
+    svg += `<path d="M${d}" fill="none" stroke="${x.cor}" stroke-width="2.2" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>`;
+  });
+  let rotMedia = '';
+  if (media) {
+    const v = ss[0].xy.map(p => p[1]), m = v.reduce((a, b) => a + b, 0) / v.length;
+    svg += `<line x1="0" x2="${W}" y1="${Y(m)}" y2="${Y(m)}" stroke="#FFFFFF" stroke-dasharray="7 6" opacity=".55" vector-effect="non-scaling-stroke"/>`;
+    rotMedia = `<span class="gx-media" style="top:${Y(m) / H * 100}%">média ${fmt(m, casas)} ${unidade}</span>`;
+  }
+  const ys = []; for (let v = 0; v <= mx + 1e-9; v += passo) ys.push(`<span style="top:${Y(v) / H * 100}%">${fmt(v, passo < 1 ? 1 : 0)}</span>`);
+  const nX = 5, xs = Array.from({length: nX + 1}, (_, i) => { const t = dur * i / nX; return `<span style="left:${i / nX * 100}%">${i === 0 ? '0' : dur >= 600 ? `${Math.round(t / 60)} min` : dur >= 60 ? mmss(t) : `${Math.round(t)} s`}</span>`; });
+  const leg = ss.length > 1 || refs.length ? `<div class="leg" style="margin-left:auto">${ss.map(x => `<span><i style="background:${x.cor}"></i>${esc(x.nome || '')}</span>`).join('')}${refs.filter(r => r.rotulo).map(r => `<span><i style="background:${r.cor || '#FF6B6B'};height:2px"></i>${esc(r.rotulo)}</span>`).join('')}</div>` : '';
+  return `<div class="gx"><div class="gx-cab"><div><div class="gx-tit">${titulo}${unidade ? ` <span style="color:var(--txt3);font-weight:600">· ${esc(unidade)}</span>` : ''}</div>${sub ? `<div class="gx-sub">${sub}</div>` : ''}</div>${leg}</div>
+    ${leitura ? `<div class="gx-leitura">${leitura}</div>` : ''}
+    <div class="gx-area"><div class="gx-y" style="height:${H}px">${ys.join('')}</div>
+    <div class="gx-plot" style="height:${H}px"><svg width="100%" height="${H}" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">${svg}</svg>${rotMedia}</div>
+    <div class="gx-x">${xs.join('')}</div></div></div>`;
+}
+const mmss = s => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+function grafico(d) {
+  const S = d.serie, n = S.s.length; if (n < 2) return '';
+  const col = k => S.s.map((t, i) => [t, (S[k] || [])[i]]);
+  const faixas = []; let ini = 0, par = 0;
+  for (let i = 1; i <= n; i++) if (i === n || S.etapa[i] !== S.etapa[ini]) { if (S.etapa[ini] && par++ % 2) faixas.push({ini: S.s[ini], fim: S.s[i - 1]}); ini = i; }
+  const placa = Math.max(0, ...(S.gpu_uso || []).filter(x => x != null)) > 20;
+  const ser = (kp, kc) => [...(placa ? [{nome: 'Placa de vídeo', xy: col(kp), cor: '#FFE500'}] : []), {nome: 'Processador', xy: col(kc), cor: '#B57CFF'}];
+  return '<div class="grafico">' + [
+    graficoClaro({titulo: 'Uso', sub: 'Percentual de uso do processador e da placa de vídeo durante o teste.', series: ser('gpu_uso', 'cpu_uso'), unidade: '%', maxY: 100, faixas, altura: 110}),
+    graficoClaro({titulo: 'Consumo de energia', sub: 'Potência consumida, em watts, a cada segundo.', series: ser('gpu_watts', 'cpu_watts'), unidade: 'W', faixas, altura: 110}),
+    graficoClaro({titulo: 'Temperatura', sub: 'Temperaturas de até cerca de 90 °C são normais em notebooks sob carga.', series: ser('gpu_temp', 'cpu_temp'), unidade: '°C', maxY: 110, faixas, altura: 110}),
+  ].join('') + '</div>';
+}
+
+function etapasTabela(d) {
+  const S = d.serie, nomes = [...new Set(S.etapa.filter(Boolean))];
+  if (nomes.length < 2) return '';
+  const lin = nomes.map(nm => {
+    const idx = S.etapa.map((e, i) => e === nm ? i : -1).filter(i => i >= 0);
+    const col = k => idx.map(i => S[k][i]);
+    return `<tr><td>${esc(nm)}</td><td class="num">${idx.length} s</td><td class="num">${fmt(media(col('gpu_uso')))}%</td><td class="num">${fmt(media(col('gpu_watts')))} W</td><td class="num">${fmt(maior(col('gpu_temp')))} °C</td><td class="num">${fmt(media(col('gpu_mhz')))} MHz</td><td class="num">${fmt(media(col('cpu_uso')))}%</td></tr>`;
+  }).join('');
+  return `<div class="tabela"><table><thead><tr><th>Etapa</th><th>Duração</th><th>Uso placa</th><th>Consumo placa</th><th>Temp. máx.</th><th>Clock placa</th><th>Uso CPU</th></tr></thead><tbody>${lin}</tbody></table></div>`;
+}
+
+function metricasDe(d) {
+  const r = d.r, s = d.s || {};
+  const M = {
+    video: [['Exportar 10 min 4K', tempo(r.export_4k_s)], ['Exportar 10 min Full HD', tempo(r.exportar && r.exportar.fhd_h264)], ['Motion 10 s em 4K', tempo(r.motion_10s)], ['Cor e efeitos', `${fmt(r.efeitos_fps)} fps`], ['Timeline 4K', `${r.timeline} vídeos`]],
+    ia: [['Memória de vídeo', `${fmt(r.banda_gbs)} GB/s${r.banda_ia && r.banda_ia !== r.banda_gbs ? ` (o cálculo usa ${fmt(r.banda_ia)})` : ''}`], ['Força de cálculo', `${fmt(r.tflops, 1)} TFLOPS`], ['Modelo 8B', `${fmt(r.palavras_8b)} pal./s`], ['Imagem SDXL', `${fmt(r.imagem_s, 1)} s`], ['Whisper 1 h', `${fmt(r.whisper_min_por_hora, 1)} min`]],
+    p_arquitetura: [['Navegação casa', `${fmt(r.nav_casa)} fps`], ['Condomínio', `${fmt(r.nav_condominio)} fps`], ['Bairro', `${fmt(r.nav_bairro)} fps`], ['Ray tracing', `${fmt(r.rt_fps, 1)} fps`], ['Regenerar', `${fmt(r.regen_s, 2)} s`], ['Render 4K (estimado)', tempo(r.render4k_s)], ['Fim do render', `${fmt(r.fim_cpu)}%`]],
+    p_engenharia: [['Montagem CAD', `${fmt(r.cad_fps, 1)} fps`], ['Simulação de estrutura', `${fmt(r.fea_it_s)}/s`], ['Fluido na placa', `${fmt(r.lbm_mlups)} mi células/s`], ['Matrizes', `${fmt(r.dgemm_gflops, 1)} GFLOPS`], ['Fim da simulação', `${fmt(r.fim_cpu)}%`], ['Fim da placa', `${fmt(r.fim_gpu)}%`]],
+    p_programacao: [['Compilar 5.000 arquivos', tempo(r.build_s)], ['50 mil arquivos', tempo(r.arq_ciclo_s)], ['Ambientes juntos', fmt(r.ambientes_ok)], ['IA 7B', `${fmt(((r.ia_modelos || [])[0] || {}).tokens_s)} tokens/s`], ['Fim da compilação', `${fmt(r.fim_cpu)}%`]],
+    p_design: [['Filtro (100 MP)', `${fmt(r.filtro_medio_s, 2)} s`], ['Exportar 200 fotos', tempo(r.jpeg_200_s)], ['Remover ruído com IA', `${fmt(r.ia_foto_s, 1)} s/foto`], ['Ilustração', `${fmt(r.vetor_fps, 1)}/s`], ['Tela', r.tela && r.tela.generico ? 'valores padrão (não medidos)' : r.tela && r.tela.srgb != null ? `${r.tela.srgb}% sRGB · ${fmt(r.tela.p3)}% P3` : '—']],
+    p_video: [['Exportar 30 min de 4K', tempo(r.export_30min_s)], ['Redução de ruído 4K', `${fmt(r.nr_fps, 1)} fps`], ['4:2:2 10-bit', r.c422_fps != null ? `${fmt(r.c422_fps)} fps (${r.c422_via})` : r.c422_via === 'previsto' ? `na placa (${r.c422_quem || 'previsto'})` : 'pelo processador'], ['Multicâmera', `${fmt(r.multicam)} câmeras`], ['Fim da exportação', `${fmt(r.fim_gpu)}%`]],
+    p_odonto: [['Tomografia 3D', `${fmt(r.cbct_fps, 1)} fps`], ['Escaneamento', `${fmt(r.scan_ips)} imagens/s`], ['Prótese 10 mi tri.', `${fmt(r.protese_fps, 1)} fps`], ['Fatias', `${fmt(r.fatias_s)}/s`], ['Fim da tomografia', `${fmt(r.fim_gpu)}%`], ['Fim do escaneamento', `${fmt(r.fim_cpu)}%`]],
+    arquitetura: [['Modelagem BIM', `${fmt(r.bim_s, 2)} s`], ['Navegação sombreado', `${fmt(r.nav_sombreado)} fps`], ['Somente arestas', `${fmt(r.nav_arestas)} fps`], ['Realista', `${fmt(r.nav_realista)} fps`], ['40 pranchas', `${fmt(r.pranchas_s, 1)} s`], ['Render 4K', `${fmt(r.render_s)} s`], ['Abrir 600 MB', `${fmt(r.projeto_s, 1)} s`]],
+    render3d: [['Render por quadro', `${fmt(r.render_placa_s, 1)} s`], ['Animação 10 s', tempo(r.animacao_placa_s)], ['Viewport sólido', `${fmt(r.viewport_solido)} fps`], ['Com material', `${fmt(r.viewport_material)} fps`], ['Simulação', `${fmt(r.simulacao_s)} s`]],
+    cpu: [['Todos os núcleos', `${fmt(r.multi)} pts`], ['Um núcleo', `${fmt(r.single)} pts`], ['Threads', r.threads], ['Clock médio', `${fmt(s.cpu_mhz)} MHz`]],
+    gpu: [['Nota', `${fmt(r.nota)} pts`], ['FPS médio', `${fmt(r.fps, 1)}`], ['Pior segundo', `${fmt(r.pior_segundo)} fps`], ['Desempenho no fim', `${fmt(r.estabilidade)}%`], ...(corteGPU(d) ? [['Queda no meio', `${corteGPU(d).seg} s a ~${fmt(corteGPU(d).baixo)} W`]] : []), ['Resolução', esc(r.resolucao || '—')]],
+    jogos: [['Simulações/s', fmt(r.sps, 1)], ['Núcleo principal', `${fmt(r.principal)}%`], ['Outros núcleos', `${fmt(r.outros)}%`]],
+    memoria: [['Leitura', `${fmt(r.leitura, 1)} GB/s`], ['Gravação', `${fmt(r.gravacao, 1)} GB/s`], ['Cópia', `${fmt(r.copia, 1)} GB/s`], ['Latência', `${fmt(r.latencia)} ns`]],
+    ssd: [['Mapa de jogo', `${fmt(r.carregamento_s, 1)} s`], ['Leitura seq.', `${fmt(r.seq_leitura)} MB/s`], ['Gravação seq.', `${fmt(r.seq_gravacao)} MB/s`], ['Arquivos pequenos', `${fmt(r.rnd_leitura, 1)} MB/s`]],
+    stress: [['Duração', `${fmt(r.minutos, 1)} min`], ['Erros de cálculo', `${r.erros_calculo} em ${fmt(r.conferidos)}`], ['Erros de hardware', r.whea], ['Reinícios do driver', r.driver], ['Fim · CPU / GPU', `${r.cpu_fim_pct ?? '—'}% / ${r.gpu_fim_pct ?? '—'}%`], ['Processador · média', d.s && d.s.cpu_mhz ? `${fmt(d.s.cpu_mhz)} MHz${d.s.cpu_watts ? ` · ${fmt(d.s.cpu_watts)} W` : ''}` : '—'], ['Placa · média', d.s && d.s.gpu_watts ? `${fmt(d.s.gpu_watts)} W` : '—'], ...(totalWatts(d) ? [['Placa + processador', `${fmt(totalWatts(d).media)} W`], ['Placa + proc. · pico', `${fmt(totalWatts(d).pico)} W`]] : [])],
+  }[d.teste] || [];
+  return M.concat([['Placa · uso médio', `${fmt(s.gpu_uso)}%`], ['Placa · pico', `${fmt(s.gpu_watts_pico)} W`], ['Placa · temp. máx.', `${fmt(s.gpu_temp_max)} °C`], ['Memória de vídeo máx.', `${fmt(s.gpu_vram_max, 1)} GB`]]);
+}
+
+// consumo somado de placa + processador, segundo a segundo (média e pico do conjunto)
+function totalWatts(d) {
+  const S = d.serie || {}, c = S.cpu_watts || [], g = S.gpu_watts || [];
+  const soma = c.map((x, i) => x != null && g[i] != null ? x + g[i] : null).filter(x => x != null);
+  if (soma.length < 3) return null;
+  return {media: soma.reduce((a, b) => a + b, 0) / soma.length, pico: Math.max(...soma)};
+}
+function fraseStress(d) {
+  const r = d.r, sx = d.s || {}, p = [];
+  if (r.cpu_fim_pct != null && r.cpu_fim_pct < 90) p.push(`o processador terminou com ${r.cpu_fim_pct}% do desempenho inicial (queda de ${100 - r.cpu_fim_pct}%)`);
+  if (r.gpu_fim_pct != null && r.gpu_fim_pct < 90) p.push(`a placa de vídeo terminou com ${r.gpu_fim_pct}% do desempenho inicial (queda de ${100 - r.gpu_fim_pct}%)`);
+  let f = !p.length ? (r.estavel ? 'Sem erros e sem queda de desempenho ao longo do teste.' : '')
+    : `${r.estavel ? 'Sem erros, mas ' : ''}${p.join(' e ')}, devido a limite de temperatura ou de energia.`.replace(/^./, c => c.toUpperCase());
+  // processador dividindo energia com a placa: compara com o teste de CPU sozinho da mesma sessão
+  // referência: clock médio só na etapa com todos os núcleos (a etapa de um núcleo puxaria a média para cima)
+  const clockMulti = x => {
+    const S = x.serie, v = [];
+    S.s.forEach((t, i) => { if (t >= 5 && /todos/i.test(S.etapa[i] || '') && S.cpu_mhz[i] != null) v.push(S.cpu_mhz[i]); });
+    return v.length > 5 ? Math.round(v.reduce((a, b) => a + b, 0) / v.length) : x.s.cpu_mhz;
+  };
+  const cpu = DADOS.filter(x => x.teste === 'cpu' && x.s && x.s.cpu_mhz).at(-1);
+  if (cpu && sx.cpu_mhz) {
+    const ref = clockMulti(cpu), pct = Math.round(100 * sx.cpu_mhz / ref);
+    if (pct < 85) f += ` Com a placa de vídeo em uso total${sx.gpu_watts ? ` (${fmt(sx.gpu_watts)} W)` : ''}, o processador operou a ${fmt(sx.cpu_mhz)} MHz${sx.cpu_watts ? ` e ${fmt(sx.cpu_watts)} W` : ''}, em comparação com ${fmt(ref)} MHz${cpu.s.cpu_watts_pico ? ` e até ${fmt(cpu.s.cpu_watts_pico)} W` : ''} no teste exclusivo do processador, com todos os núcleos (${pct}% do clock). O notebook divide a energia entre os dois componentes quando ambos estão em uso intenso, como em um jogo pesado.`;
+    else f += ` Mesmo com a placa de vídeo em uso total, o processador manteve ${pct}% do clock registrado no teste exclusivo do processador.`;
+  }
+  const tw = totalWatts(d);
+  if (tw) f += ` Somando placa e processador, o notebook entregou em média ${fmt(tw.media)} W (pico de ${fmt(tw.pico)} W) durante o teste.`;
+  return f;
+}
+// trecho em que a placa, mesmo em uso total, cortou o consumo (o que derruba o FPS no meio do teste)
+function corteGPU(d) {
+  const S = d.serie || {}, u = S.gpu_uso || [], w = S.gpu_watts || [], t = S.gpu_temp || [], s = S.s || [];
+  const cheios = w.filter((x, i) => x != null && u[i] >= 90).sort((a, b) => a - b);
+  if (cheios.length < 10) return null;
+  const normal = cheios[Math.floor(cheios.length * .75)];
+  const baixos = w.map((x, i) => i > 2 && x != null && u[i] >= 90 && x < normal * .6 ? i : -1).filter(i => i >= 0);
+  if (baixos.length < 3) return null;
+  const vals = baixos.map(i => w[i]), temps = baixos.map(i => t[i]).filter(x => x != null);
+  return {seg: baixos.length, desde: s[baixos[0]] || 0, normal, baixo: vals.reduce((a, b) => a + b, 0) / vals.length, temp: temps.length ? Math.max(...temps) : null};
+}
+function fraseCorte(d) {
+  const c = corteGPU(d); if (!c) return '';
+  const quente = c.temp != null && c.temp >= 85;
+  return ` Atenção: durante ${c.seg} segundos (a partir de ${mmss(c.desde)}), o consumo da placa caiu de ~${fmt(c.normal)} W para ~${fmt(c.baixo)} W, mesmo em uso total${quente ? `, a ${fmt(c.temp)} °C: a causa foi o aquecimento.` : `${c.temp != null ? `, sem temperatura elevada (${fmt(c.temp)} °C)` : ''}: tratou-se de um corte de energia do próprio notebook (aplicativo do fabricante ou energia dividida com o processador).`}${d.teste === 'gpu' && d.r.pior_segundo ? ` Isso explica o pior segundo, de ${fmt(d.r.pior_segundo)} fps.` : ''}`;
+}
+function fraseGPU(d) {
+  return fraseGPUbase(d) + fraseCorte(d);
+}
+function fraseGPUbase(d) {
+  const sx = d.s || {}, tgp = (INFO.gpu || {}).tgp, lim = sx.gpu_limites || {};
+  if (!tgp || !sx.gpu_watts) return '';
+  const pct = Math.round(100 * sx.gpu_watts / tgp);
+  if (pct >= 80) return `A placa operou no limite de energia: média de ${fmt(sx.gpu_watts)} W de ${tgp} W.`;
+  if ((lim.energia_pct ?? 0) >= 50) return `A placa permaneceu no limite de energia, porém esse limite estava em ~${fmt(sx.gpu_watts_pico || sx.gpu_watts)} W, abaixo dos ${tgp} W suportados por ela (média de ${fmt(sx.gpu_watts)} W). Na maioria dos casos, a causa é o modo de energia do aplicativo do fabricante; recomenda-se repetir o teste no modo de desempenho máximo.`;
+  return `A placa consumiu em média ${fmt(sx.gpu_watts)} W, ${pct}% dos ${tgp} W suportados por ela, sem atingir o limite de energia na maior parte do tempo. Em geral, isso se deve ao modo de energia do aplicativo do fabricante ou ao calor compartilhado com o processador${sx.cpu_temp_max >= 95 ? ` (que chegou a ${fmt(sx.cpu_temp_max)} °C)` : ''}. Recomenda-se repetir o teste no modo de desempenho máximo.`;
+}
+$('#testes').innerHTML = DADOS.map(d => {
+  const v = d.r.veredito || (d.teste === 'stress' ? {frase: fraseStress(d)} : d.teste === 'gpu' ? {frase: fraseGPU(d)} : null);
+  const titulo = v && v.titulo ? v.titulo : d.teste === 'stress' ? (d.r.estavel ? 'Estável' : 'Instável') : d.teste === 'cpu' ? `${fmt(d.r.multi)} pontos` : d.teste === 'gpu' ? `${fmt(d.r.nota)} pontos` : '';
+  return `<article class="teste">
+    <div class="teste-cab"><span class="hora">${d.hora}</span><h2>${esc(d.nome)}</h2><span class="tag ${d.conf ? 'conf' : ''}">${d.conf ? 'reduzida' : ''}${d.conf ? ' · ' : ''}v${esc(d.versao.replace(' beta', ''))}</span>${d.energia ? `<span class="tag">${d.energia.tomada ? 'na tomada' : `na bateria · ${d.energia.pct}%`}</span>` : ''}</div>
+    <div style="display:flex;flex-direction:column;gap:6px"><div class="veredito" style="${d.teste === 'stress' ? `color:${d.r.estavel ? 'var(--ok)' : 'var(--erro)'}` : ''}">${esc(titulo)}</div>${v && v.frase ? `<div class="c" style="max-width:80ch">${esc(v.frase)}</div>` : ''}</div>
+    <div class="metricas">${metricasDe(d).map(([k, x]) => `<div><span>${k}</span><b>${x}</b></div>`).join('')}</div>
+    ${v && v.programas ? `<div class="progs">${v.programas.map(p => `<div class="prog"><b>${esc(p.nome)}</b><em class="nv${p.nivel}">${estrelasHTML(p)}</em><span>${esc(p.texto)}</span></div>`).join('')}</div>` : ''}
+    ${grafico(d)}
+    ${etapasTabela(d)}
+  </article>`;
+}).join('');
+</script>

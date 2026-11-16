@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="pt-BR"><head>
+<script src="site-guard.js"></script><meta charset="utf-8"><title>Bench Monitor</title>
+<style>
+:root{--bg:#170F23;--card:#21172F;--card2:#2A1F38;--linha:#30243D;--linha2:#43355A;--txt:#F5F2F9;--txt2:#C9BFD6;--txt3:#8E809F;--amarelo:#FFE500;--amarelo-txt:#170F23;--ok:#5FD38D;--erro:#FF7A7A;--alerta:#FFC861;--raio:14px;
+  --c-cpu:#E5B21C;--c-gpu:#BB60E0;--c-fps:#46B8D3}
+*{box-sizing:border-box}html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--txt);font:15px/1.5 "Segoe UI Variable Text","Segoe UI",system-ui,sans-serif;-webkit-font-smoothing:antialiased;user-select:none;overflow:hidden}
+button{font:inherit;color:inherit;cursor:pointer}
+main{height:100vh;overflow-y:auto;padding:28px 34px 40px}
+.rotulo{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--txt3);font-weight:600}
+h1{font-size:28px;line-height:1.15;margin:6px 0 8px;font-weight:700}h2{font-size:17px;margin:0}
+.sub{color:var(--txt2);margin:0 0 18px;max-width:640px}.muted{color:var(--txt3);font-size:13px}
+.card{background:var(--card);border:1px solid var(--linha);border-radius:var(--raio);padding:18px}
+.btn{border:0;border-radius:11px;padding:10px 18px;font-weight:700;font-size:14px;white-space:nowrap}.btn-pri{background:var(--amarelo);color:var(--amarelo-txt)}
+.btn-sec{background:var(--card2);border:1px solid var(--linha2);font-weight:600}.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn-peq{padding:6px 12px;font-size:13px;border-radius:9px}
+.acoes{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:16px}
+
+/* topo */
+.topo{display:grid;grid-template-columns:1fr 300px;gap:18px;align-items:stretch;margin-bottom:18px}
+.status{display:inline-flex;align-items:center;gap:8px;padding:4px 12px;border-radius:999px;font-size:13px;font-weight:600;border:1px solid var(--linha2);color:var(--txt2)}
+.status i{width:8px;height:8px;border-radius:50%;background:var(--txt3)}
+.status.on{color:var(--ok);border-color:color-mix(in srgb,var(--ok) 40%,transparent)}.status.on i{background:var(--ok);box-shadow:0 0 0 4px color-mix(in srgb,var(--ok) 20%,transparent)}
+.status.novo{color:var(--alerta);border-color:color-mix(in srgb,var(--alerta) 45%,transparent)}.status.novo i{background:var(--alerta)}
+.hero{position:relative;overflow:hidden}
+.hero .linha1{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.barra{height:8px;border-radius:99px;background:var(--card2);overflow:hidden;margin-top:12px;max-width:420px}.barra div{height:100%;background:var(--amarelo);width:0;transition:width .4s}
+.nota{font-size:13px;color:var(--txt3);margin-top:12px;display:flex;gap:8px;align-items:flex-start;max-width:640px}
+.nota svg{flex-shrink:0;margin-top:2px}
+
+/* prévia do painel do jogo */
+.palco{border-radius:var(--raio);border:1px solid var(--linha);background:
+  radial-gradient(120% 90% at 80% 100%,color-mix(in srgb,var(--c-gpu) 26%,transparent),transparent 60%),
+  radial-gradient(90% 80% at 0% 0%,color-mix(in srgb,var(--c-fps) 22%,transparent),transparent 60%),#0c0a10;
+  position:relative;padding:14px;display:flex;flex-direction:column;justify-content:space-between;min-height:220px}
+.palco .leg{font-size:11.5px;color:#cfc8d8;opacity:.75}
+.ov{align-self:flex-end;width:206px;background:rgba(18,17,16,.86);border-radius:8px;padding:9px 10px;font:600 11px/1.25 "Segoe UI",system-ui,sans-serif;color:#fff;font-variant-numeric:tabular-nums}
+.ov .t{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px}
+.ov .fps{font-size:24px;font-weight:800;color:var(--c-fps)}.ov .fps small{font-size:10px;color:#8C8A86;font-weight:600;margin-left:3px}
+.ov .low{color:#8C8A86;font-size:10px;text-align:right}
+.ov svg{display:block;width:100%;height:20px;margin:2px 0 6px}
+.ov .r{display:grid;grid-template-columns:30px 1fr 1.15fr 1fr;white-space:nowrap;gap:4px;padding:3px 0;border-top:1px solid rgba(255,255,255,.07)}
+.ov .r b{font-weight:800}.ov .cpu b{color:var(--c-cpu)}.ov .gpu b{color:var(--c-gpu)}
+.ov .bat{margin-top:5px;height:5px;border-radius:3px;background:rgba(255,255,255,.1);overflow:hidden}.ov .bat div{width:72%;height:100%;background:#8DE462}
+
+/* trio */
+.trio{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:18px}
+.trio .card{display:flex;flex-direction:column;gap:6px}
+.trio .val{font-size:18px;font-weight:700}
+.teclas{display:grid;grid-template-columns:auto 1fr;gap:8px 12px;align-items:center;margin-top:2px}
+kbd{font:700 12.5px/1 "Segoe UI",system-ui,sans-serif;background:var(--card2);border:1px solid var(--linha2);border-bottom-width:3px;border-radius:7px;padding:5px 9px;min-width:44px;text-align:center;color:var(--txt)}
+.teclas span{font-size:13.5px;color:var(--txt2)}
+.sim{color:var(--ok)}.nao{color:var(--txt2)}
+
+/* benchmarks */
+.cab{display:flex;align-items:center;gap:12px;margin:6px 0 12px}.cab .dir{margin-left:auto;display:flex;gap:8px}
+.tabela{background:var(--card);border:1px solid var(--linha);border-radius:var(--raio);overflow:hidden}
+.lin{display:grid;grid-template-columns:minmax(180px,1.6fr) 92px 92px 108px 108px 120px;gap:12px;align-items:center;padding:12px 16px;border-top:1px solid var(--linha)}
+.lin:first-child{border-top:0}
+.lin.h{font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--txt3);font-weight:600;background:var(--card2)}
+.lin .jogo{font-weight:650;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lin .det{font-size:12.5px;color:var(--txt3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.num{font-variant-numeric:tabular-nums;font-weight:650}.num small{color:var(--txt3);font-weight:500;font-size:11.5px;margin-left:2px}
+.fpsv{color:var(--destaque,var(--amarelo));font-size:18px;font-weight:800}
+.lin .acao{text-align:right}
+.vazio{padding:34px 20px;text-align:center;color:var(--txt2)}
+.vazio .ic{width:48px;height:48px;border-radius:14px;background:var(--card2);display:grid;place-items:center;margin:0 auto 12px;color:var(--txt3)}
+.vazio kbd{margin:0 2px}
+
+/* relatório aberto */
+.leitor{position:fixed;inset:0;background:var(--bg);display:none;grid-template-rows:auto 1fr;z-index:40}
+.leitor.vis{display:grid}
+.leitor header{display:flex;align-items:center;gap:12px;padding:12px 20px;border-bottom:1px solid var(--linha)}
+.leitor header b{font-weight:650}.leitor iframe{width:100%;height:100%;border:0;background:#fff}
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);opacity:0;background:var(--card2);border:1px solid var(--linha2);padding:10px 18px;border-radius:10px;transition:.25s;pointer-events:none;z-index:60}#toast.vis{opacity:1;transform:translateX(-50%)}
+/* painel no jogo */
+.pj{display:none;align-items:center;gap:20px;margin-bottom:18px}
+body.inst .pj{display:flex}
+.pj .ic{width:52px;height:52px;border-radius:14px;background:var(--card2);display:grid;place-items:center;flex-shrink:0}
+.pj .meio{flex:1;display:flex;flex-direction:column;gap:4px;min-width:0}
+.pj .tit{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.pj .tit b{font-size:18px}
+.pj.alerta{border-color:color-mix(in srgb,var(--alerta) 45%,transparent)}
+.pj .desc{font-size:13.5px;color:var(--txt2)}
+.so-inst{display:none}body.inst .so-inst{display:block}body.inst .trio.so-inst{display:grid}body.inst .so-nao{display:none}.trio.so-nao{display:grid}body.inst .trio.so-nao{display:none}
+@media (max-width:1180px){.topo{grid-template-columns:1fr}.palco{min-height:180px}.lin{grid-template-columns:minmax(160px,1.5fr) 80px 80px 96px 120px}.lin .c-cons{display:none}}
+</style><link rel="stylesheet" href="cores.css">
+</head><body>
+<main>
+  <div class="topo">
+    <section class="card hero">
+      <div class="rotulo">Painel de desempenho nos jogos</div>
+      <div class="linha1"><h1>Bench Monitor</h1><span class="status" id="status"><i></i><span>Verificando…</span></span></div>
+      <p class="sub" id="desc">FPS, 1% low, temperaturas, clocks e consumo da CPU e da placa de vídeo por cima do jogo, com gravação de benchmark e relatório.</p>
+      <div class="acoes" id="acoes"></div>
+      <div class="barra" id="barra" hidden><div></div></div>
+      <div class="nota"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5v.01"/></svg>
+        <span id="nota">O Bench Monitor roda separado do Bench Labs, como administrador, para ler os quadros do jogo sem pesar no desempenho.</span></div>
+    </section>
+    <div class="palco" aria-hidden="true">
+      <div class="leg">Assim ele aparece no jogo</div>
+      <div class="ov">
+        <div class="t"><span class="fps">144<small>FPS</small></span><span class="low">1% low 118<br>média 139</span></div>
+        <svg viewBox="0 0 160 20" preserveAspectRatio="none"><polyline fill="none" stroke="#E8E8E8" stroke-width="1.2" points="0,12 10,11 20,13 30,10 40,12 50,9 60,12 70,11 80,15 90,10 100,11 110,12 120,9 130,11 140,10 150,12 160,11"/></svg>
+        <div class="r cpu"><b>CPU</b><span>72°C</span><span>4,8 GHz</span><span>55 W</span></div>
+        <div class="r gpu"><b>GPU</b><span>68°C</span><span>2,3 GHz</span><span>115 W</span></div>
+        <div class="bat"><div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <section class="card pj" id="pj" aria-live="polite">
+    <div class="ic" id="pj-ic"></div>
+    <div class="meio">
+      <div class="rotulo">Painel no jogo</div>
+      <div class="tit"><b id="pj-tit">—</b><span class="status" id="pj-st"><i></i><span></span></span></div>
+      <div class="desc" id="pj-desc"></div>
+    </div>
+    <button class="btn" id="b-pj" hidden></button>
+  </section>
+
+  <div class="trio so-nao">
+    <section class="card"><div class="rotulo">No jogo</div><div class="val">Painel por cima da tela</div>
+      <div class="muted">FPS, 1% low e o gráfico do tempo de cada quadro, com temperatura, clock e consumo da CPU e da placa de vídeo.</div></section>
+    <section class="card"><div class="rotulo">Benchmark</div><div class="val">Gravação com uma tecla</div>
+      <div class="muted">Grava a partida inteira e gera um relatório com gráficos, que aparece aqui no Bench Labs.</div></section>
+    <section class="card"><div class="rotulo">Leve</div><div class="val">Feito para não pesar</div>
+      <div class="muted">Roda à parte, com prioridade própria, e só mostra o painel quando um jogo está aberto.</div></section>
+  </div>
+
+  <div class="trio so-inst">
+    <section class="card">
+      <div class="rotulo">Preset do painel</div>
+      <div class="val" id="preset">—</div>
+      <div class="muted" id="preset-d"></div>
+    </section>
+    <section class="card">
+      <div class="rotulo">Teclas no jogo</div>
+      <div class="teclas">
+        <kbd id="k-ini">Num −</kbd><span>inicia a gravação do benchmark</span>
+        <kbd id="k-fim">Num +</kbd><span>encerra e gera o relatório</span>
+        <kbd id="k-mos">\</kbd><span>mostra ou esconde o painel</span>
+      </div>
+    </section>
+    <section class="card">
+      <div class="rotulo">Iniciar com o Windows</div>
+      <div class="val" id="auto">—</div>
+      <div class="muted" id="auto-d"></div>
+    </section>
+  </div>
+
+  <section class="so-inst">
+    <div class="cab"><h2>Benchmarks gravados</h2><span class="muted" id="qtd"></span>
+      <div class="dir"><button class="btn btn-sec btn-peq" id="b-pasta">Abrir a pasta</button></div></div>
+    <div class="tabela" id="lista"></div>
+  </section>
+</main>
+
+<div class="leitor" id="leitor" role="dialog" aria-label="Relatório do benchmark">
+  <header><button class="btn btn-sec btn-peq" id="b-voltar">← Voltar</button><b id="l-tit"></b><span class="muted" id="l-sub"></span>
+    <button class="btn btn-sec btn-peq" id="b-lpasta" style="margin-left:auto">Abrir a pasta</button></header>
+  <iframe id="l-frame" title="Relatório" sandbox="allow-scripts"></iframe>
+</div>
+<div id="toast" role="status"></div>
+
+<script src="ponte.js" data-prefixo="mon_"></script>
+<script>
+const $ = s => document.querySelector(s);
+let API, EST = null, INFO = null, POLL = null, ABERTO = null;
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
+const n0 = v => v == null ? '—' : Math.round(v).toLocaleString('pt-BR');
+const n1 = v => v == null ? '—' : v.toLocaleString('pt-BR', {minimumFractionDigits: 1, maximumFractionDigits: 1});
+function toast(t) { const e = $('#toast'); e.textContent = t; e.classList.add('vis'); clearTimeout(e._t); e._t = setTimeout(() => e.classList.remove('vis'), 3400); }
+if (window.parent !== window) document.body.classList.add('embutido');
+
+function status(cls, txt) { const s = $('#status'); s.className = 'status ' + cls; s.querySelector('span').textContent = txt; }
+
+function desenharTopo() {
+  const e = EST || {}, i = INFO || {};
+  document.body.classList.toggle('inst', !!e.instalado);
+  const a = $('#acoes');
+  if (!e.instalado) {
+    status('', 'Não instalado');
+    $('#nota').textContent = 'A instalação pede permissão de administrador uma vez: o Bench Monitor precisa dela para ler os quadros do jogo e os sensores.';
+    a.innerHTML = `<button class="btn btn-pri" id="b-inst">${i.nova ? 'Instalar o Bench Monitor ' + esc(i.nova) : 'Instalar o Bench Monitor'}</button>
+      <span class="muted">${i.local ? 'Já vem com o Bench Labs, sem download.' : i.erro ? esc(i.erro) : i.nova ? 'Download direto do Bench, com conferência do arquivo.' : 'Consultando a versão mais recente…'}</span>`;
+  } else {
+    const nova = i.tem && i.nova;
+    status(nova ? 'novo' : e.rodando ? 'on' : '', nova ? 'Versão ' + i.nova + ' disponível' : e.rodando ? 'Ligado' : 'Desligado');
+    $('#nota').textContent = e.rodando
+      ? 'Ele já está ligado e mostra o painel assim que um jogo abrir. As opções completas ficam na tela do próprio Bench Monitor.'
+      : 'O Bench Monitor roda separado do Bench Labs, como administrador, para ler os quadros do jogo sem pesar no desempenho.';
+    a.innerHTML = `<button class="btn btn-pri" id="b-abrir">${e.rodando ? 'Abrir as opções do Monitor' : 'Ligar o Bench Monitor'}</button>
+      ${nova ? `<button class="btn btn-sec" id="b-inst">Atualizar para ${esc(i.nova)}</button>` : ''}
+      <span class="muted">Versão ${esc(e.versao || '—')}</span>`;
+  }
+  const bi = $('#b-inst'); if (bi) bi.onclick = instalar;
+  const ba = $('#b-abrir'); if (ba) ba.onclick = abrir;
+  if (!e.instalado) return;
+  desenharPainelJogo(e.painelJogo || {});
+  $('#preset').textContent = e.preset ? e.preset.nome : '—';
+  $('#preset-d').textContent = e.preset ? (e.preset.descricao || 'Preset personalizado') + (e.presets.length > 1 ? ` · ${e.presets.length} presets disponíveis` : '') : '';
+  $('#k-ini').textContent = e.teclas.iniciar; $('#k-fim').textContent = e.teclas.encerrar; $('#k-mos').textContent = e.teclas.mostrar;
+  $('#auto').innerHTML = e.iniciaComWindows ? '<span class="sim">Ligado</span>' : '<span class="nao">Desligado</span>';
+  $('#auto-d').textContent = e.iniciaComWindows
+    ? 'Ele abre junto com o Windows e o Bench Labs consegue ligá-lo sem pedir permissão.'
+    : 'Sem isso, cada vez que ele for ligado o Windows pede permissão de administrador. Ative nas opções do Monitor.';
+}
+
+const ICONE_TELA = c => `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="12" rx="2"/><path d="M8 21h8M12 17v4"/></svg>`;
+
+function desenharPainelJogo(p) {
+  const card = $('#pj'), b = $('#b-pj'), st = $('#pj-st');
+  card.classList.toggle('alerta', !p.ativo);
+  $('#pj-ic').innerHTML = ICONE_TELA(p.ativo ? 'var(--ok)' : 'var(--alerta)');
+  if (p.ativo) {
+    $('#pj-tit').textContent = 'Dentro do jogo';
+    st.className = 'status on'; st.querySelector('span').textContent = 'Aparece nas gravações';
+    $('#pj-desc').textContent = 'O painel é desenhado dentro do jogo: sai nas gravações da NVIDIA e do OBS e funciona em tela cheia.';
+    b.hidden = false; b.className = 'btn btn-sec'; b.textContent = 'Abrir no Monitor'; b.onclick = async () => { const r = await API.abrir(true); if (!r.ok) toast(r.erro); };
+  } else {
+    $('#pj-tit').textContent = 'Por cima do jogo (janela)';
+    st.className = 'status novo'; st.querySelector('span').textContent = 'Não sai nas gravações';
+    if (p.suporta) {
+      $('#pj-desc').textContent = 'Ative para o painel aparecer dentro do jogo e nas gravações. O Monitor instala e ajusta tudo sozinho, com um componente gratuito.';
+      b.hidden = false; b.className = 'btn btn-pri'; b.textContent = 'Ativar painel no jogo'; b.onclick = abrirPainelJogo;
+    } else {
+      $('#pj-desc').textContent = 'Atualize o Bench Monitor para poder ativar o painel dentro do jogo (aparece nas gravações).';
+      b.hidden = true;
+    }
+  }
+}
+
+async function abrirPainelJogo() {
+  const b = $('#b-pj'); b.disabled = true;
+  const r = await API.painel_jogo();
+  b.disabled = false;
+  if (!r.ok) return toast(r.erro);
+  toast(r.semPermissao ? 'Abrindo a tela do painel no jogo no Bench Monitor…' : 'Confirme a permissão de administrador para abrir o Bench Monitor.');
+  setTimeout(atualizar, 4000); setTimeout(atualizar, 15000);
+}
+
+async function carregarLista() {
+  const r = await API.benchmarks();
+  const L = r.lista || [];
+  $('#qtd').textContent = r.total ? `${r.total} ${r.total === 1 ? 'gravação' : 'gravações'}` : '';
+  if (!L.length) {
+    $('#lista').innerHTML = `<div class="vazio"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3" fill="currentColor"/></svg></div>
+      <b>Nenhum benchmark gravado ainda.</b><div class="muted" style="margin-top:4px">Durante o jogo, aperte <kbd>${esc(EST.teclas.iniciar)}</kbd> para começar e <kbd>${esc(EST.teclas.encerrar)}</kbd> para encerrar. O relatório aparece aqui.</div></div>`;
+    return;
+  }
+  $('#lista').innerHTML = `<div class="lin h"><span>Jogo</span><span>FPS médio</span><span>1% low</span><span>CPU</span><span>Placa</span><span></span></div>` +
+    L.map((b, k) => `<div class="lin">
+      <div style="min-width:0"><div class="jogo">${esc(b.jogo)}</div><div class="det">${esc([b.data, b.resolucao, b.api, b.duracao ? Math.round(b.duracao / 60) + ' min' : ''].filter(Boolean).join(' · '))}</div></div>
+      <span class="num fpsv">${b.incompleto ? '<small>incompleto</small>' : n0(b.fps)}</span>
+      <span class="num">${n0(b.low1)}</span>
+      <span class="num">${b.cpuTemp != null ? n0(b.cpuTemp) + '<small>°C</small>' : '—'}${b.cpuW != null ? ' <small>' + n1(b.cpuW) + ' W</small>' : ''}</span>
+      <span class="num">${b.gpuTemp != null ? n0(b.gpuTemp) + '<small>°C</small>' : '—'}${b.gpuW != null ? ' <small>' + n1(b.gpuW) + ' W</small>' : ''}</span>
+      <span class="acao">${b.relatorio ? `<button class="btn btn-sec btn-peq" data-k="${k}">Ver relatório</button>` : `<button class="btn btn-sec btn-peq" data-p="${k}">Pasta</button>`}</span>
+    </div>`).join('');
+  $('#lista').querySelectorAll('[data-k]').forEach(b => b.onclick = () => verRelatorio(L[+b.dataset.k]));
+  $('#lista').querySelectorAll('[data-p]').forEach(b => b.onclick = () => API.abrir_pasta(L[+b.dataset.p].pasta));
+}
+
+async function verRelatorio(b) {
+  const r = await API.relatorio(b.pasta);
+  if (!r.ok) return toast(r.erro);
+  ABERTO = b;
+  $('#l-tit').textContent = b.jogo; $('#l-sub').textContent = b.data || '';
+  $('#l-frame').srcdoc = r.html;
+  $('#leitor').classList.add('vis');
+}
+$('#b-voltar').onclick = () => { $('#leitor').classList.remove('vis'); $('#l-frame').srcdoc = ''; ABERTO = null; };
+$('#b-lpasta').onclick = () => ABERTO && API.abrir_pasta(ABERTO.pasta);
+$('#b-pasta').onclick = () => API.abrir_pasta('');
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && ABERTO) $('#b-voltar').click(); });
+
+async function abrir() {
+  const b = $('#b-abrir'); b.disabled = true;
+  const r = await API.abrir(true);
+  b.disabled = false;
+  if (!r.ok) return toast(r.erro);
+  toast(r.semPermissao ? 'Abrindo o Bench Monitor…' : 'Confirme a permissão de administrador para abrir o Bench Monitor.');
+  setTimeout(atualizar, 2500); setTimeout(atualizar, 6000);
+}
+
+async function instalar() {
+  const b = $('#b-inst'); if (b) b.disabled = true;
+  const r = await API.instalar();
+  if (!r.ok) { if (b) b.disabled = false; return toast(r.erro); }
+  if (r.local) {
+    toast('Confirme a permissão de administrador para concluir a instalação.');
+    let n = 0; const espera = setInterval(async () => { await atualizar(); if (++n > 40 || EST.instalado) { clearInterval(espera); INFO = await API.verificar(); desenharTopo(); } }, 3000);
+    return;
+  }
+  const barra = $('#barra'); barra.hidden = false;
+  const t = setInterval(async () => {
+    const s = await API.status_instalacao();
+    barra.firstElementChild.style.width = Math.round((s.progresso || 0) * 100) + '%';
+    if (s.fase === 'erro') { clearInterval(t); barra.hidden = true; if (b) b.disabled = false; toast(s.erro); }
+    if (s.fase === 'pronto') {
+      clearInterval(t); barra.hidden = true;
+      toast('Confirme a permissão de administrador para concluir a instalação.');
+      let n = 0; const espera = setInterval(async () => { await atualizar(); if (++n > 40 || (EST.instalado && !(INFO = await API.verificar()).tem)) { clearInterval(espera); desenharTopo(); } }, 3000);
+    }
+  }, 400);
+}
+
+async function atualizar() {
+  const antes = EST && EST.instalado;
+  EST = await API.estado();
+  desenharTopo();
+  if (EST.instalado && (!antes || !$('#lista').childElementCount)) carregarLista();
+}
+
+BENCH_ESPERAR(async () => {
+  API = BENCH_API();
+  await atualizar();
+  API.verificar().then(i => { INFO = i; desenharTopo(); });
+  POLL = setInterval(() => { if (!document.hidden) atualizar(); }, 5000);
+  setInterval(() => { if (!document.hidden && EST && EST.instalado && !ABERTO) carregarLista(); }, 30000);
+});
+</script>
+</body></html>

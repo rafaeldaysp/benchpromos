@@ -1,39 +1,36 @@
 'use client'
 
-import Image, { type StaticImageData } from 'next/image'
 import * as React from 'react'
 
-import monitorBlocos from '@/assets/bench-labs/monitor-blocos.jpg'
-import monitorPainel from '@/assets/bench-labs/monitor-painel.jpg'
-import monitorRaioX from '@/assets/bench-labs/monitor-raio-x.jpg'
 import { cn } from '@/lib/utils'
+import { DemoFrame } from './demo-frame'
 
 const themes: {
   id: string
   label: string
   caption: string
-  image: StaticImageData
+  theme: 'raiox' | 'painel' | 'bento'
 }[] = [
   {
     id: 'raio-x',
     label: 'Raio-X',
     caption:
       'Um desenho do seu notebook por dentro: as ventoinhas giram mais rápido conforme o consumo e cada componente muda de cor com a temperatura.',
-    image: monitorRaioX,
+    theme: 'raiox',
   },
   {
     id: 'painel',
     label: 'Painel',
     caption:
       'Mostradores no estilo painel de carro para processador, consumo e placa de vídeo, com faixa vermelha acima de 90 °C.',
-    image: monitorPainel,
+    theme: 'painel',
   },
   {
     id: 'blocos',
     label: 'Blocos',
     caption:
       'Todos os números lado a lado, com gráficos dos últimos 60 segundos, o laudo de saúde e o checklist antes de testar.',
-    image: monitorBlocos,
+    theme: 'bento',
   },
 ]
 
@@ -83,24 +80,15 @@ export function MonitorShowcase() {
         <div
           id="bench-labs-monitor-panel"
           role="tabpanel"
-          className="relative min-w-0 self-start overflow-hidden rounded-2xl border border-white/10 bg-[#16111f] shadow-[0_40px_120px_-40px_rgba(255,224,27,0.25)]"
+          className="min-w-0 self-start"
         >
-          {themes.map((theme) => (
-            <Image
-              key={theme.id}
-              src={theme.image}
-              alt={`Monitor do Bench Labs no tema ${theme.label}`}
-              placeholder="blur"
-              sizes="(max-width: 1024px) 100vw, (max-width: 1500px) 80vw, 1200px"
-              className={cn(
-                'w-full transition-opacity duration-300',
-                theme.id === active.id
-                  ? 'relative opacity-100'
-                  : 'absolute inset-0 opacity-0',
-              )}
-              aria-hidden={theme.id !== active.id}
-            />
-          ))}
+          <DemoFrame
+            view="inicio"
+            theme={active.theme}
+            title={`Monitor do Bench Labs no tema ${active.label}`}
+            detail="sensores"
+            height={640}
+          />
         </div>
         <div
           role="group"
@@ -122,12 +110,13 @@ export function MonitorShowcase() {
                   : 'ring-transparent hover:bg-white/[0.06] hover:ring-white/30',
               )}
             >
-              <Image
-                src={theme.image}
-                alt=""
-                placeholder="blur"
-                sizes="(max-width: 1024px) 30vw, 220px"
-                className="w-full rounded-lg outline outline-1 -outline-offset-1 outline-white/10"
+              <DemoFrame
+                view="inicio"
+                theme={theme.theme}
+                title={theme.label}
+                detail="sensores"
+                height={640}
+                preview
               />
               <span
                 className={cn(

@@ -1,0 +1,1129 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<script src="site-guard.js"></script>
+<meta charset="utf-8">
+<title>Bench Labs</title>
+<link rel="icon" href="logo.png">
+<style>
+:root{--disp:"Segoe UI Variable Display","Segoe UI",system-ui,sans-serif;
+  --bg:#120B1C;--rail:#150D20;--rail-borda:#241A31;--card:#1D1429;--card-rx:#170F23;--seletor:#120B1A;--linha:#30243D;--linha2:#2A1F38;--linha3:#43355A;
+  --txt:#F5F2F9;--txt2:#C9BFD6;--txt3:#8E809F;--txt4:#6E6280;--amarelo:#FFE500;--sobre-amarelo:#120B1C;--destaque:#FFE500;
+  --roxo:#B57CFF;--ok:#5FD38D;--atencao:#FFC861;--problema:#FF6B6B;--laranja:#FF6B3D;--c-ram:#62D2FF;--c-cpu:#FF8A5C;--c-quente:#FF5C5C;
+  --tint-atencao:#2A2418;--tint-laranja:#2A1810;--tint-laranja2:#2A140C;
+  --t0:#B57CFF;--t1:#62D2FF;--t2:#5FD38D;--t3:#FFE500;--t4:#FFC861;--t5:#FF8A5C;--t6:#FF5C5C;
+  --rx-chassi:#140C1E;--rx-topo:#100916;--rx-l:#3B2E4F;--rx-l2:#4E3F66;--rx-l3:#6B5A88;--rx-peca:#241B30;--rx-pe:#120A1B;--rx-placa:#1A1127;--rx-tubo:#C98B5A;--rx-pa:#8E7FB0;
+  --rx-cpu:#3A2440;--rx-gpu:#3A3420;--rx-ram:#18202E;--rx-bat:#151E2A;--rx-vc:#2B1F22;--agua-q:#FF8A5C;--agua-m:#C9A2FF;--agua-f:#62D2FF}
+/* ---------------- variações de cor (Ajuste: Cores) ---------------- */
+html[data-cor=claro]{color-scheme:light;
+  --bg:#F5F3F8;--rail:#FFFFFF;--rail-borda:#E6E0EE;--card:#FFFFFF;--card-rx:#FBFAFD;--seletor:#EFEBF5;--linha:#E2DBEB;--linha2:#ECE7F2;--linha3:#CFC5DC;
+  --txt:#1B1424;--txt2:#463D55;--txt3:#6F6582;--txt4:#9A90AA;--amarelo:#FFE500;--sobre-amarelo:#1B1424;--destaque:#6A2FD6;
+  --roxo:#6A2FD6;--ok:#16884A;--atencao:#B36B00;--problema:#C8323A;--laranja:#D9481C;--c-ram:#0B7FB5;--c-cpu:#D2531F;--c-quente:#C8323A;
+  --tint-atencao:#FFF4DE;--tint-laranja:#FFE9E0;--tint-laranja2:#FFE3D6;
+  --t0:#6A2FD6;--t1:#0B7FB5;--t2:#16884A;--t3:#9C8300;--t4:#B36B00;--t5:#D2531F;--t6:#C8323A;
+  --rx-chassi:#FFFFFF;--rx-topo:#F0ECF5;--rx-l:#D9D1E4;--rx-l2:#B9AECB;--rx-l3:#9A8DB0;--rx-peca:#ECE7F2;--rx-pe:#F3F0F7;--rx-placa:#F6F3FA;--rx-tubo:#C98B5A;--rx-pa:#8A7DA3;
+  --rx-cpu:#FFE3D6;--rx-gpu:#FFF6C2;--rx-ram:#E1F2FB;--rx-bat:#E6F4FB;--rx-vc:#F7E9DF;--agua-q:#D2531F;--agua-m:#8A5BD6;--agua-f:#0B7FB5}
+html[data-cor=grafite]{
+  --bg:#111214;--rail:#0C0D0F;--rail-borda:#1F2125;--card:#191A1E;--card-rx:#141518;--seletor:#0F1012;--linha:#2A2C31;--linha2:#222429;--linha3:#3A3D44;
+  --txt:#F2F2F3;--txt2:#C3C5CB;--txt3:#8B8E97;--txt4:#666A73;
+  --tint-atencao:#262116;--tint-laranja:#2A1912;
+  --rx-chassi:#151619;--rx-topo:#0F1012;--rx-l:#2E3036;--rx-l2:#43464E;--rx-l3:#5C606A;--rx-peca:#202227;--rx-pe:#0F1012;--rx-placa:#18191D;--rx-pa:#7E828C;
+  --rx-cpu:#33231D;--rx-gpu:#33301A;--rx-ram:#16202A;--rx-bat:#141C24;--rx-vc:#2A221E}
+html[data-cor=meianoite]{
+  --bg:#0A1120;--rail:#08101D;--rail-borda:#16233A;--card:#111B2E;--card-rx:#0D1626;--seletor:#0A1322;--linha:#1F2D47;--linha2:#18243A;--linha3:#2B3D5E;
+  --txt:#EEF3FB;--txt2:#B9C7DD;--txt3:#7F91AE;--txt4:#5B6C88;--amarelo:#3EE6FF;--sobre-amarelo:#06121F;--destaque:#3EE6FF;--roxo:#8DA2FF;
+  --tint-atencao:#1F2216;--tint-laranja:#24180F;--t0:#8DA2FF;
+  --rx-chassi:#0E1729;--rx-topo:#0A1222;--rx-l:#22314D;--rx-l2:#33466B;--rx-l3:#4B6190;--rx-peca:#16223A;--rx-pe:#0A1222;--rx-placa:#101A2D;--rx-pa:#7F95BE;
+  --rx-cpu:#2A1E2A;--rx-gpu:#26291E;--rx-ram:#0F2333;--rx-bat:#0E2030;--rx-vc:#22212A}
+html[data-cor=pista]{
+  --bg:#0B0B0C;--rail:#080808;--rail-borda:#1C1C1E;--card:#151516;--card-rx:#101011;--seletor:#0C0C0D;--linha:#2A2A2D;--linha2:#202022;--linha3:#3A3A3E;
+  --txt:#F5F5F5;--txt2:#C8C8CC;--txt3:#8D8D94;--txt4:#68686F;--amarelo:#FF2E2E;--sobre-amarelo:#FFFFFF;--destaque:#FF4A3D;--roxo:#C9C9CF;
+  --tint-atencao:#262014;--tint-laranja:#2A1210;--t0:#9AA0A6;
+  --rx-chassi:#121213;--rx-topo:#0C0C0D;--rx-l:#2C2C30;--rx-l2:#424247;--rx-l3:#5E5E64;--rx-peca:#1D1D20;--rx-pe:#0C0C0D;--rx-placa:#161618;--rx-pa:#85858D;
+  --rx-cpu:#33201C;--rx-gpu:#302C18;--rx-ram:#141E26;--rx-bat:#131B22;--rx-vc:#2A201C}
+html[data-cor=abobora]{
+  --bg:#0F0A07;--rail:#0B0705;--rail-borda:#22170F;--card:#1C130C;--card-rx:#150E09;--seletor:#0D0805;--linha:#36261A;--linha2:#281B12;--linha3:#4D3826;
+  --txt:#FBF4EC;--txt2:#DCC9B6;--txt3:#A68F7A;--txt4:#927D69;--amarelo:#FF7A1A;--sobre-amarelo:#1A0B00;--destaque:#FF8A2B;
+  --roxo:#B57CFF;--ok:#7BD88F;--c-ram:#B57CFF;--tint-atencao:#2A1E0E;--tint-laranja:#2A1608;--tint-laranja2:#2A1206;--t3:#FFB627;
+  --rx-chassi:#17100B;--rx-topo:#110B07;--rx-l:#3A2A1E;--rx-l2:#4F3A29;--rx-l3:#6B5038;--rx-peca:#261A11;--rx-pe:#110B07;--rx-placa:#1A120C;--rx-pa:#B08A6A;
+  --rx-cpu:#3A2216;--rx-gpu:#3A2814;--rx-ram:#221A2C;--rx-bat:#1C1524;--rx-vc:#2B1F16}
+.pop-cores .sec-temp{display:flex;align-items:baseline;gap:8px;padding:12px 4px 6px;margin-top:6px;border-top:1px solid var(--linha2)}
+.pop-cores .sec-temp b{font-size:11px;letter-spacing:.2em;color:#FF8A2B}.pop-cores .sec-temp small{display:inline;font-size:11px}
+.pop-cores label.op-hw{display:flex;align-items:center;gap:10px;margin-top:8px;padding:10px 10px 4px;border-top:1px solid var(--linha2);font-size:13px;color:var(--txt2);cursor:pointer}
+.pop-cores label.op-hw input{width:18px;height:18px;margin:0;accent-color:var(--amarelo)}
+h1 span,.rail button.ativo{color:var(--destaque)!important}
+.rail button.ativo::before{background:var(--destaque)!important}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--txt);font:15px/1.5 "Segoe UI Variable Text","Segoe UI",system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow:hidden}
+.disp{font-family:"Segoe UI Variable Display","Segoe UI",system-ui,sans-serif;font-weight:800;letter-spacing:-.01em}
+.mono{font-family:"Cascadia Mono",Consolas,monospace}
+button{font:inherit;color:inherit}
+.app{display:flex;height:100vh}
+nav.rail{flex:0 0 84px;padding:20px 10px;border-right:1px solid var(--rail-borda);background:var(--rail);display:flex;flex-direction:column;gap:6px}
+.logo{width:40px;height:40px;margin:0 auto 18px;border-radius:12px;background:var(--amarelo);display:grid;place-items:center}
+.logo img{width:28px;height:28px}
+.rail button{position:relative;display:flex;flex-direction:column;align-items:center;gap:5px;padding:10px 4px;border:0;border-radius:12px;background:transparent;color:var(--txt2);font-size:11px;font-weight:600;cursor:pointer}
+.rail button:hover{color:var(--txt)}
+.rail button.ativo{background:var(--linha2);color:var(--amarelo)}
+.rail button.ativo::before{content:"";position:absolute;left:-10px;top:12px;bottom:12px;width:3px;border-radius:3px;background:var(--amarelo)}
+.rail button:focus-visible{outline:2px solid var(--amarelo);outline-offset:2px}
+.rail .b-cores{margin-top:auto}
+.pop-cores{position:fixed;left:92px;bottom:14px;z-index:20;width:260px;background:var(--card);border:1px solid var(--linha);border-radius:16px;padding:12px;box-shadow:0 18px 50px rgba(0,0,0,.35)}
+.pop-cores button{display:flex;align-items:center;gap:12px;width:100%;border:1px solid transparent;background:transparent;border-radius:12px;padding:9px 10px;cursor:pointer;color:var(--txt);font-size:14px;text-align:left}
+.pop-cores button:hover{background:var(--linha2)}
+.pop-cores button[aria-checked=true]{border-color:var(--destaque);font-weight:700}
+.pop-cores .amostra{display:flex;width:54px;height:22px;border-radius:7px;overflow:hidden;border:1px solid var(--linha);flex-shrink:0}
+.pop-cores .amostra i{flex:1 1 0}
+.pop-cores small{display:block;color:var(--txt3);font-size:11.5px;font-weight:400}
+.rail .rodape{border:0;background:transparent;cursor:pointer;padding:6px 0 0;position:relative;font:inherit}
+.rail .rodape.nova::after{content:"";position:absolute;top:2px;right:14px;width:8px;height:8px;border-radius:50%;background:var(--laranja);box-shadow:0 0 0 3px var(--rail)}
+.rail .rodape.nova{color:var(--destaque);font-weight:700}
+.pop-atual{width:300px}.pop-atual .linha-a{display:flex;justify-content:space-between;font-size:13px;padding:3px 0;color:var(--txt2)}.pop-atual .linha-a b{color:var(--txt)}
+.pop-atual .notas{font-size:12px;color:var(--txt3);max-height:120px;overflow:auto;white-space:pre-wrap;margin:8px 0;border-top:1px solid var(--linha);padding-top:8px}
+.pop-atual .barra-a{height:6px;border-radius:3px;background:var(--linha2);overflow:hidden;margin:10px 0 4px}.pop-atual .barra-a i{display:block;height:100%;background:var(--amarelo)}
+.pop-atual .btn{width:100%;margin-top:10px;min-height:42px;padding:10px 14px;justify-content:center;text-align:center;display:flex;align-items:center}.pop-atual .btn-pri,.pop-atual .btn-pri:hover{background:var(--amarelo);color:var(--sobre-amarelo)}.pop-atual .btn-sec,.pop-atual .btn-sec:hover{background:transparent;border:1px solid var(--linha3);color:var(--txt)}.pop-atual .btn:disabled{opacity:.5}
+.rail .rodape{font-size:10px;color:var(--txt4);text-align:center}
+.vistas{flex:1 1 auto;min-width:0;position:relative}
+.vista{position:absolute;inset:0;overflow:auto;display:none}
+.vista.ativa{display:block}
+.vista.frame{overflow:hidden}
+.vista iframe{width:100%;height:100%;border:0;display:block;background:var(--card-rx)}
+main.pag{padding:30px 40px 40px;display:flex;flex-direction:column;gap:20px;max-width:1680px;margin:0 auto}
+.lado{display:flex;flex-direction:column;gap:20px}
+/* ultrawide: o desenho ocupa a largura e o Laudo e o "Antes de testar" vão para uma coluna ao lado */
+@media (min-width:1900px) and (min-aspect-ratio:2/1){
+  #v-inicio main.pag{max-width:3400px;display:grid;grid-template-columns:minmax(0,1fr) clamp(440px,26vw,620px);align-items:start;column-gap:28px}
+  #v-inicio main.pag>header{grid-column:1/-1}
+  #v-inicio .lado{grid-column:2;grid-row:2}
+  #v-inicio .lado .grade-laudo{grid-template-columns:1fr 1fr}
+  #v-inicio .lado .antes .itens{grid-template-columns:1fr}
+  #palco svg{max-height:calc(100vh - 260px)!important}
+}
+.rotulo{font-size:11px;letter-spacing:.2em;color:var(--txt3);font-weight:700;text-transform:uppercase}
+h1{margin:8px 0 0;font-size:48px;line-height:1}
+h1 span{color:var(--amarelo)}
+.sub{margin-top:10px;font-size:13px;color:var(--txt3)}
+.btn{border:0;border-radius:14px;padding:13px 22px;min-height:48px;cursor:pointer;font-weight:700}
+.btn-pri{background:var(--amarelo);color:var(--sobre-amarelo);font-family:"Segoe UI Variable Display","Segoe UI",sans-serif;font-weight:800;letter-spacing:.03em;display:flex;align-items:center;gap:10px}
+.btn-sec{background:transparent;border:1px solid var(--linha3);color:var(--txt)}
+.btn:focus-visible{outline:2px solid var(--amarelo);outline-offset:2px}
+.card{background:var(--card-rx);border:1px solid var(--linha2);border-radius:24px;padding:20px 22px 16px}
+.pulsa{animation:pulsa 1.6s ease-in-out infinite}
+@keyframes pulsa{50%{opacity:.35}}
+/* Raio-X */
+.barra-sel{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+/* ---- temas Painel e Bento: os mesmos sensores do Raio-X ---- */
+.t-painel{display:grid;grid-template-columns:minmax(200px,250px) minmax(0,1fr) minmax(190px,230px);gap:24px;align-items:center;padding:14px 4px 6px}
+.t-painel .barras{display:flex;flex-direction:column;gap:20px}
+.t-barra .topo{display:flex;align-items:baseline;gap:8px}.t-barra .rot,.t-rot{font-size:10.5px;letter-spacing:.18em;font-weight:700;color:var(--txt3)}
+.t-barra b{margin-left:auto;font-family:var(--disp);font-size:18px;white-space:nowrap}
+.t-trilho{height:8px;border-radius:4px;background:var(--linha2);overflow:hidden;margin:7px 0 6px}.t-trilho i{display:block;height:100%;border-radius:4px;transition:width .6s}
+.t-sub{font-size:11.5px;color:var(--txt3);font-family:Cascadia Mono,Consolas,monospace}
+.t-painel svg{width:100%;height:auto;max-height:calc(100vh - 330px);min-height:240px;display:block}
+.t-agulha{transition:transform .9s cubic-bezier(.3,1.4,.5,1);transform-box:view-box}
+.t-arco{transition:stroke-dasharray .9s ease,stroke .4s}
+.t-marchas{display:flex;flex-direction:column;gap:6px}
+.t-marcha{display:flex;align-items:center;gap:12px;padding:9px 12px;border-radius:12px;color:var(--txt4);font-size:13.5px;border:1px solid transparent}
+.t-marcha b{font-family:var(--disp);font-size:22px;width:22px;color:var(--rx-l2)}
+.t-marcha.on{background:var(--tint-atencao);border-color:var(--atencao);color:var(--txt);font-weight:700}.t-marcha.on b{color:var(--atencao)}
+.t-marcha.on.forte{background:var(--tint-laranja);border-color:var(--laranja)}.t-marcha.on.forte b{color:var(--laranja)}
+.t-painel.forte svg .moldura{stroke:var(--laranja)}
+.t-nota{display:flex;flex-wrap:wrap;gap:6px 22px;justify-content:center;font-size:11.5px;color:var(--txt3);padding-top:4px}
+.t-bento{display:grid;gap:12px;grid-template-columns:1.3fr 1fr 1fr 1fr;grid-template-rows:minmax(150px,auto) minmax(150px,auto);grid-template-areas:'cons cpu gpu modo' 'cons ram ssd bat';padding-top:12px}
+.t-bloco{background:var(--card);border:1px solid var(--linha);border-radius:18px;padding:16px 18px;display:flex;flex-direction:column;gap:6px;min-width:0;position:relative}
+.t-bloco .val{font-family:var(--disp);font-size:28px;font-weight:800;line-height:1.05}
+.t-bloco.grande .val{font-size:48px}
+.t-bloco svg.spark{margin-top:auto;width:100%;height:auto;display:block}
+.t-anel{position:absolute;right:16px;bottom:14px}
+.t-anel circle{transition:stroke-dasharray .6s}
+.t-chip{align-self:flex-start;margin-top:auto;font-size:11.5px;font-weight:700;color:var(--sobre-amarelo);background:var(--atencao);padding:4px 10px;border-radius:999px}
+@media (max-width:1180px){.t-painel{grid-template-columns:1fr 1fr}.t-painel svg{grid-column:1/-1;order:-1}
+  .t-bento{grid-template-columns:1fr 1fr;grid-template-areas:'cons cons' 'cpu gpu' 'modo ram' 'ssd bat'}}
+.seletor{display:inline-flex;flex-wrap:wrap;align-items:center;gap:4px;padding:4px;border-radius:999px;background:var(--seletor);border:1px solid var(--linha2)}
+.seletor span{font-size:11px;letter-spacing:.16em;font-weight:700;color:var(--txt3);padding:0 8px 0 10px}
+.seletor button{border:0;background:transparent;font-size:13px;color:var(--txt2);padding:9px 14px;border-radius:999px;cursor:pointer}
+.seletor button[aria-pressed=true]{background:var(--txt);color:var(--bg);font-weight:700}
+.gira{transform-box:fill-box;transform-origin:center;animation:gira 1s linear infinite}
+@keyframes gira{to{transform:rotate(360deg)}}
+.respira{animation:respira 3s ease-in-out infinite}
+@keyframes respira{50%{opacity:.35}}
+.onda{animation:onda 1.4s cubic-bezier(.3,.7,.3,1) 1 both}
+@keyframes onda{from{transform:translateY(-120px);opacity:0}20%{opacity:1}to{transform:translateY(500px);opacity:0}}
+/* water cooler (PC de mesa): a água anda pelas mangueiras e pelo radiador */
+@keyframes fluxo{to{stroke-dashoffset:-32}}
+@keyframes volta{to{stroke-dashoffset:32}}
+.fluxo{stroke-dasharray:6 10;animation:fluxo .8s linear infinite}
+.volta{stroke-dasharray:6 10;animation:volta .8s linear infinite}
+.leg-agua{display:inline-flex;align-items:center;gap:6px}.leg-agua i{width:14px;height:3px;border-radius:2px}
+.reduzir .gira,.reduzir .respira,.reduzir .pulsa,.reduzir .fluxo,.reduzir .volta{animation:none}
+.legenda{display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px;margin-top:6px;font-size:12px;color:var(--txt3)}
+.grade-laudo{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}
+.laudo{background:var(--card);border:1px solid var(--linha);border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;gap:6px}
+.laudo .topo{display:flex;align-items:center;gap:8px;color:var(--txt2);font-size:13px;font-weight:600}
+.laudo .ponto{margin-left:auto;width:10px;height:10px;border-radius:50%}
+.laudo .st{font-family:"Segoe UI Variable Display","Segoe UI",sans-serif;font-size:20px;font-weight:800}
+.laudo .det{font-size:12px;color:var(--txt3);line-height:1.45}
+.antes{background:var(--card);border:1px solid var(--linha);border-radius:18px;padding:14px 20px 6px}
+.antes .itens{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));column-gap:20px}
+.chk{display:flex;gap:12px;align-items:flex-start;padding:9px 0;border-top:1px solid var(--linha2)}
+.chk .ic{width:26px;height:26px;border-radius:8px;display:grid;place-items:center;flex-shrink:0}
+.chk b{font-size:14px;font-weight:600;display:block}
+.chk small{font-size:12px;color:var(--txt3)}
+.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);opacity:0;transition:.25s;background:var(--tint-laranja2);border:1px solid var(--laranja);color:var(--txt);padding:10px 16px;border-radius:12px;font-weight:600;font-size:13.5px;z-index:20;pointer-events:none}
+.toast.vis{opacity:1;transform:translateX(-50%)}
+.selo-modo{margin-left:10px;padding:4px 10px;border-radius:999px;background:var(--laranja);color:var(--bg);letter-spacing:.14em}
+/* troca de modo */
+.trocando{position:absolute;inset:0;display:none;place-items:center;background:var(--bg);z-index:5;text-align:center}
+.trocando.vis{display:grid}
+.trocando .roda{width:44px;height:44px;border-radius:50%;border:4px solid var(--linha2);border-top-color:var(--amarelo);animation:gira .9s linear infinite;margin:0 auto 18px}
+/* Ficha */
+.grade-ficha{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px}
+.fsec{background:var(--card);border:1px solid var(--linha);border-radius:18px;padding:18px 20px 12px}
+.fsec .cab{display:flex;align-items:center;gap:10px}
+.fsec .ico{width:34px;height:34px;border-radius:10px;background:var(--linha2);display:grid;place-items:center;color:var(--amarelo);flex-shrink:0}
+.fsec .dest{font-family:"Segoe UI Variable Display","Segoe UI",sans-serif;font-size:18px;font-weight:800;line-height:1.2}
+.fsec dl{display:grid;grid-template-columns:auto 1fr;column-gap:16px;font-size:13.5px;margin:10px 0 0}
+.fsec dt{color:var(--txt3);padding:8px 0;border-top:1px solid var(--linha2)}
+.fsec dd{margin:0;padding:8px 0;border-top:1px solid var(--linha2);text-align:right;font-weight:600}
+.f-copia{display:inline-grid;place-items:center;width:28px;height:28px;margin:-5px 0 -5px 8px;vertical-align:middle;border:1px solid var(--linha);border-radius:8px;background:transparent;color:var(--txt3);cursor:pointer}
+.f-copia:hover{color:var(--txt);border-color:var(--linha3)}.f-copia:focus-visible{outline:2px solid var(--amarelo);outline-offset:2px}
+.f-copia.ok{color:var(--ok);border-color:var(--ok)}
+.barra{height:8px;border-radius:99px;background:var(--linha2);margin-top:12px}
+.barra div{height:8px;border-radius:99px}
+.barra-txt{font-size:12px;color:var(--txt3);margin-top:6px}
+.fsec.ext.at{border-color:color-mix(in srgb,var(--atencao) 34%,var(--linha))}
+.fsec dd.at{color:var(--atencao)}
+.f-aviso{display:flex;align-items:flex-start;gap:8px;margin:6px 0 8px;padding:10px 12px;border-radius:10px;background:color-mix(in srgb,var(--atencao) 10%,var(--card));font-size:13px;color:var(--txt2)}
+.f-aviso svg{flex:none;margin-top:1px;color:var(--atencao)}
+.f-link{background:none;border:0;padding:0;color:var(--txt);font:inherit;font-weight:600;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.f-link:focus-visible{outline:2px solid var(--amarelo);outline-offset:2px}
+.tela-cheia nav.rail{display:none}
+.cores-tela{display:grid;grid-template-columns:1fr;gap:10px;margin:6px 0 12px}
+.cores-tela svg{width:100%;max-width:260px;height:auto;display:block;margin:0 auto}
+.cor-l{display:grid;grid-template-columns:76px 1fr 42px;gap:8px;align-items:center;font-size:12.5px;color:var(--txt2);margin-bottom:6px}
+.cor-l .barra{margin:0}.cor-l b{text-align:right;color:var(--txt);font-variant-numeric:tabular-nums}
+.cor-chaves{display:flex;gap:12px;flex-wrap:wrap;font-size:11.5px;color:var(--txt3);margin:8px 0 4px}
+.cor-chaves i{display:inline-block;width:12px;height:3px;border-radius:2px;margin-right:5px;vertical-align:middle}
+.cor-chaves i.tr{background:none;border-top:1.5px dashed var(--txt)}.cor-chaves i.tr.p3{border-color:var(--txt3)}
+</style>
+<link rel="stylesheet" href="halloween.css">
+</head>
+<body>
+<div class="app" id="app">
+  <nav class="rail" aria-label="Áreas do Bench Labs">
+    <div class="logo"><img src="logo.png" alt="Bench"></div>
+    <button data-aba="inicio" aria-label="Início"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg>Início</button>
+    <button data-aba="testes" aria-label="Testes de desempenho"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 3L4 14h7l-1 7 9-11h-7z"/></svg>Testes</button>
+    <button data-aba="bateria" aria-label="Testes de bateria"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="16" height="10" rx="2"/><path d="M21 10v4"/></svg>Bateria</button>
+    <button data-aba="ficha" aria-label="Ficha técnica"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/></svg>Ficha</button>
+    <button data-aba="monitor" aria-label="Bench Monitor: painel de FPS nos jogos"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="13" rx="2"/><path d="M8 21h8M12 17v4"/><path d="M6 13l3-3 3 2 4-5"/></svg>Monitor</button>
+    <button data-aba="preparo" aria-label="Atualizações do Windows e drivers"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.6-6.4"/><path d="M21 4v5h-5"/><path d="M12 8v5l3 2"/></svg>Atualizações</button>
+    <button id="b-cores" class="b-cores" aria-label="Cores do aplicativo" aria-haspopup="true" aria-expanded="false"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18c1.2 0 2-.8 2-1.9 0-.5-.2-.9-.5-1.3-.3-.4-.5-.8-.5-1.3 0-1.1.9-1.9 2-1.9H17a4 4 0 0 0 4-4C21 6.4 17 3 12 3z"/><circle cx="7.5" cy="11" r="1.2"/><circle cx="10.5" cy="7" r="1.2"/><circle cx="15" cy="7.5" r="1.2"/></svg>Cores</button>
+    <button class="rodape" id="versao" aria-haspopup="true" aria-expanded="false" title="Versão e atualizações"></button>
+  </nav>
+  <div class="pop-cores pop-atual" id="pop-atual" role="dialog" aria-label="Atualização do Bench Labs" hidden>
+    <div class="rotulo" style="padding:2px 4px 8px">Bench Labs</div>
+    <div id="atual-corpo" style="padding:0 4px"></div>
+  </div>
+  <div class="pop-cores" id="pop-cores" role="dialog" aria-label="Cores do aplicativo" hidden>
+    <div class="rotulo" style="padding:2px 4px 8px">Cores do aplicativo</div>
+    <div id="lista-cores" role="radiogroup" aria-label="Cores"></div>
+    <div id="op-hw"></div>
+  </div>
+
+  <div class="vistas">
+    <!-- ============ INÍCIO (Raio-X) ============ -->
+    <section class="vista" id="v-inicio" aria-label="Início">
+      <main class="pag">
+        <header style="display:flex;flex-wrap:wrap;align-items:flex-end;gap:18px">
+          <div style="flex:1 1 420px">
+            <div class="rotulo" style="display:flex;align-items:center;gap:8px"><span class="pulsa" style="width:7px;height:7px;border-radius:50%;background:var(--ok)"></span>Ao vivo · visto por dentro<span class="selo-modo" id="selo-modo" style="display:none">MODO DESEMPENHO</span></div>
+            <h1 class="disp" id="titulo">—</h1>
+            <div class="sub mono" id="specs">Lendo o computador…</div>
+          </div>
+          <button class="btn btn-pri" id="b-testar">TESTAR ESTE NOTEBOOK <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+        </header>
+
+        <section class="card" id="card-sens" aria-label="Sensores ao vivo">
+          <div class="barra-sel">
+          <div class="seletor" id="sel-tema" role="group" aria-label="Tema da tela inicial">
+            <span>TEMA</span>
+            <button data-tema="raiox">Raio-X</button>
+            <button data-tema="painel">Painel</button>
+            <button data-tema="bento">Blocos</button>
+          </div>
+          <div class="seletor" id="sel-modelo" role="group" aria-label="Modelo do desenho"></div>
+          </div>
+          <div id="palco"></div>
+          <div class="legenda" id="legenda-rx">
+            <span>Temperatura</span><span class="mono">30 °C</span>
+            <div aria-hidden="true" style="flex:0 1 260px;display:flex;border-radius:4px;overflow:hidden" id="escala"></div><span class="mono">95 °C</span>
+            <span id="leg-agua" style="display:none;gap:10px 18px;flex-wrap:wrap"><span class="leg-agua"><i style="background:var(--agua-q)"></i>água quente saindo do processador</span><span class="leg-agua"><i style="background:var(--agua-f)"></i>água fria voltando do radiador</span></span>
+            <span style="margin-left:auto" id="leg-nota">Desenho ilustrativo · as ventoinhas giram mais rápido conforme o consumo · a posição dos componentes varia de modelo para modelo</span>
+          </div>
+        </section>
+
+        <div class="lado">
+        <section aria-label="Laudo" style="display:flex;flex-direction:column;gap:12px">
+          <div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 12px"><h2 class="disp" style="margin:0;font-size:20px">Laudo</h2><span style="font-size:12.5px;color:var(--txt3)" id="laudo-sub">estado de saúde deste notebook</span><span style="margin-left:auto;font-size:13px;font-weight:700" id="laudo-resumo"></span></div>
+          <div class="grade-laudo" id="laudo"><div class="laudo"><div class="det">Lendo a ficha técnica (cerca de 15 segundos na primeira vez)…</div></div></div>
+        </section>
+
+        <section class="antes" aria-label="Antes de testar">
+          <div style="display:flex;align-items:baseline;gap:10px;padding-bottom:4px;flex-wrap:wrap"><h2 class="disp" style="margin:0;font-size:16px">Antes de testar</h2><span style="font-size:12px;color:var(--txt3)" id="antes-sub">para que o teste reflita todo o desempenho do notebook</span><span style="margin-left:auto;font-size:13px;font-weight:700;color:var(--atencao)" id="antes-cont"></span></div>
+          <div class="itens" id="antes"></div>
+        </section>
+        </div>
+      </main>
+    </section>
+
+    <!-- ============ FICHA ============ -->
+    <section class="vista" id="v-ficha" aria-label="Ficha técnica">
+      <main class="pag">
+        <header style="display:flex;flex-wrap:wrap;align-items:flex-end;gap:14px">
+          <div style="flex:1 1 420px"><div class="rotulo">Ficha técnica · lida do hardware</div>
+            <h1 class="disp" id="f-titulo">—</h1>
+            <div class="sub mono" id="f-sub">Lendo o hardware…</div></div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <button class="btn btn-sec" id="f-reler">Ler novamente</button>
+            <button class="btn btn-sec" id="f-copiar" disabled>Copiar texto</button>
+            <button class="btn btn-pri" id="f-salvar" disabled>SALVAR PÁGINA</button>
+          </div>
+        </header>
+        <div class="grade-ficha" id="f-grade"></div>
+        <div style="font-size:12px;color:var(--txt3)">Dados lidos do próprio Windows, sem instalar programas. "Salvar página" grava a ficha como página HTML em Documentos › Bench Labs › Fichas.</div>
+      </main>
+    </section>
+
+    <!-- ============ TESTES e BATERIA (os apps de antes, inteiros) ============ -->
+    <section class="vista frame" id="v-testes" aria-label="Testes de desempenho"></section>
+    <section class="vista frame" id="v-bateria" aria-label="Testes de bateria"></section>
+    <section class="vista frame" id="v-monitor" aria-label="Bench Monitor"></section>
+    <section class="vista frame" id="v-preparo" aria-label="Atualizações do Windows e drivers"></section>
+
+    <div class="trocando" id="trocando"><div><div class="roda"></div><div class="disp" style="font-size:22px" id="trocando-tit">Abrindo os testes…</div><div style="color:var(--txt3);font-size:13.5px;max-width:460px;margin-top:6px" id="trocando-sub"></div></div></div>
+  </div>
+</div>
+<div class="toast" id="toast" role="status"></div>
+
+<script src="demo-dados.js"></script>
+<script src="site-demo.js"></script>
+<script src="ponte.js" data-prefixo=""></script>
+<script src="halloween.js"></script>
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
+const fmt = (n, d = 0) => n == null || isNaN(n) ? '—' : Number(n).toLocaleString('pt-BR', {maximumFractionDigits: d, minimumFractionDigits: d});
+let API, RX, INI = {}, BASICO = {}, FICHA = null, MODO = 'normal', ABA = null, MODELO = 2, TEMA = 'raiox', POLL = null, ULT = null, MODO_WIN = null;
+let PC = {desktop: false};          // notebook ou PC de mesa (aparelho.py): muda o desenho, os textos e os itens de bateria
+const ehPC = () => !!PC.desktop;
+const reduzir = matchMedia('(prefers-reduced-motion: reduce)').matches;
+if (reduzir) document.body.classList.add('reduzir');
+function toast(m) { const t = $('#toast'); t.textContent = m; t.classList.add('vis'); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('vis'), 3600); }
+
+/* ======================= navegação e troca de modo ======================= */
+// Testes rodam com a janela na placa dedicada e sem limite de FPS (modo "gpu"); o resto, no modo normal.
+// a Ficha não tem animação nem mede nada: abre em qualquer modo, sem reabrir a janela
+const PRECISA = {inicio: 'normal', ficha: null, preparo: null, monitor: null, bateria: 'normal', testes: 'gpu'};
+function marcarRail(aba) { document.querySelectorAll('.rail button').forEach(b => { const s = b.dataset.aba === aba; b.classList.toggle('ativo', s); b.setAttribute('aria-current', s ? 'page' : 'false'); }); }
+function testeMarksRodando() {
+  try { const d = $('#v-testes iframe') && $('#v-testes iframe').contentDocument; return !!(d && d.querySelector('#rodando.ativa')); } catch (e) { return false; }
+}
+async function ir(aba) {
+  if (aba === ABA) return;
+  if (PRECISA[aba] && PRECISA[aba] !== MODO) {
+    if (testeMarksRodando()) { toast('Há um teste em andamento. Aguarde o término ou cancele-o antes de trocar de área.'); return; }
+    $('#trocando-tit').textContent = aba === 'testes' ? 'Abrindo os testes…' : ehPC() ? 'Voltando ao Início…' : 'Voltando ao modo econômico…';
+    $('#trocando-sub').textContent = ehPC() ? (aba === 'testes' ? 'Preparando a janela dos testes.' : '')
+      : aba === 'testes' ? 'Ativando a placa de vídeo dedicada para os testes.'
+      : 'Retornando ao vídeo integrado para não consumir bateria desnecessariamente.';
+    $('#trocando').classList.add('vis');
+    const r = await API.app_trocar_modo(PRECISA[aba], aba);
+    if (r && r.ok === false) { $('#trocando').classList.remove('vis'); toast(r.erro); }
+    return;
+  }
+  if (ABA === 'inicio' && aba !== 'inicio') pararAoVivo();
+  ABA = aba; marcarRail(aba);
+  document.querySelectorAll('.vista').forEach(v => v.classList.toggle('ativa', v.id === 'v-' + aba));
+  if (aba === 'inicio') comecarAoVivo();
+  if (aba === 'ficha') abrirFicha();
+  if (aba === 'testes' && !$('#v-testes iframe')) $('#v-testes').innerHTML = '<iframe src="marks/index.html" title="Testes de desempenho" allow="fullscreen"></iframe>';
+  if (aba === 'monitor' && !$('#v-monitor iframe')) $('#v-monitor').innerHTML = '<iframe src="monitor.html" title="Bench Monitor"></iframe>';
+  if (aba === 'preparo' && !$('#v-preparo iframe')) $('#v-preparo').innerHTML = '<iframe src="preparo.html" title="Atualizações"></iframe>';
+  if (aba === 'bateria' && !$('#v-bateria iframe')) $('#v-bateria').innerHTML = '<iframe src="index.html" title="Testes de bateria"></iframe>';
+}
+document.querySelectorAll('.rail button').forEach(b => b.onclick = () => ir(b.dataset.aba));
+$('#b-testar').onclick = () => ir('testes');
+// o Bench Labs (bateria) chama window.atualizarStatus() na janela de cima; repassa para o iframe
+window.atualizarStatus = () => { try { const w = $('#v-bateria iframe').contentWindow; w.atualizarStatus && w.atualizarStatus(); } catch (e) { /* sem iframe */ } };
+// o Bench Marks pede tela cheia nos testes de placa: o menu lateral some
+// chamado pelo app se a janela nova não abrir a tempo: continua nesta
+window.__trocaFalhou = msg => { $('#trocando').classList.remove('vis'); toast(msg || 'Não foi possível trocar de área. Tente novamente.'); };
+// o Preparo (iframe) pede para ir aos testes quando o notebook está pronto
+window.__irPara = aba => ir(aba);
+window.__telaCheia = on => document.body.classList.toggle('tela-cheia', !!on);
+
+/* ======================= Raio-X: desenho ======================= */
+const L = 'var(--rx-l)', L2 = 'var(--rx-l2)';
+const CORES_T = [0, 1, 2, 3, 4, 5, 6].map(i => `var(--t${i})`);
+$('#escala').innerHTML = CORES_T.map(c => `<div style="flex:1 1 0;height:8px;background:${c}"></div>`).join('');
+const idxTemp = t => Math.max(0, Math.min(6, Math.round((t - 30) / 65 * 6)));
+function corTemp(t) { if (t == null) return 'var(--txt3)'; return CORES_T[idxTemp(t)]; }
+const R = (x, y, w, h, extra = '') => `<rect x="${x}" y="${y}" width="${w}" height="${h}" ${extra}></rect>`;
+function fan(cx, cy, r, id) {
+  let pas = '';
+  for (let i = 0; i < 9; i++) {
+    const a = i * 40 * Math.PI / 180, a2 = a + 38 * Math.PI / 180, ac = a + 10 * Math.PI / 180;
+    pas += `<path d="M${(cx + 14 * Math.cos(a)).toFixed(1)} ${(cy + 14 * Math.sin(a)).toFixed(1)} Q${(cx + r * .75 * Math.cos(ac)).toFixed(1)} ${(cy + r * .75 * Math.sin(ac)).toFixed(1)} ${(cx + (r - 6) * Math.cos(a2)).toFixed(1)} ${(cy + (r - 6) * Math.sin(a2)).toFixed(1)}" fill="none" stroke="var(--rx-pa)" stroke-width="2.2" stroke-linecap="round"></path>`;
+  }
+  return `<circle cx="${cx}" cy="${cy}" r="${r + 6}" fill="var(--rail)" stroke="${L2}" stroke-width="1.5"></circle><g class="gira fan" data-fan="${id}">${pas}<circle cx="${cx}" cy="${cy}" r="13" fill="var(--linha2)" stroke="var(--rx-pa)" stroke-width="1.5"></circle>${HW.on() ? HW.hub(cx, cy, r < 45 ? .85 : 1) : ''}</g>`;
+}
+const tubo = (d, op = .9, w = 7) => `<path d="${d}" fill="none" stroke="var(--rx-tubo)" stroke-width="${w}" stroke-linecap="round" opacity="${op}"></path>`;
+function calor(id, cx, cy, r) { return `<circle id="${id}" cx="${cx}" cy="${cy}" r="${r}" fill="url(#qn)" opacity=".3" class="respira"></circle>`; }
+function callout(id, px, py, ly, lado, tit, mini) {
+  const lx = lado === 'e' ? 20 : 980, anc = lado === 'e' ? 'start' : 'end';
+  const p2 = lado === 'e' ? `${px - 40},${ly} ${lx + 150},${ly}` : `${px + 40},${ly} ${lx - 150},${ly}`;
+  const mx = lado === 'e' ? lx : lx - 150;
+  return `<polyline id="${id}-l" points="${px},${py} ${p2}" fill="none" stroke="var(--txt2)" stroke-width="1.2" opacity=".8"></polyline><circle id="${id}-p" cx="${px}" cy="${py}" r="4" fill="var(--txt2)"></circle>
+  <text x="${lx}" y="${ly - 22}" text-anchor="${anc}" font-size="11" letter-spacing="1.8" font-weight="700" fill="var(--txt3)">${tit}</text>
+  <text id="${id}-v" x="${lx}" y="${ly - 2}" text-anchor="${anc}" font-size="21" font-weight="800" fill="var(--txt2)">—</text>
+  <text id="${id}-s" x="${lx}" y="${ly + 16}" text-anchor="${anc}" font-size="11.5" fill="var(--txt2)" font-family="Cascadia Mono, Consolas, monospace"></text>
+  ${mini ? `<path id="${id}-g" data-x="${mx}" data-y="${ly + 24}" d="" fill="none" stroke="var(--txt2)" stroke-width="1.6" opacity=".9"></path><text x="${mx}" y="${ly + 60}" font-size="9.5" fill="var(--txt4)" font-family="Cascadia Mono, Consolas, monospace">últimos 60 s</text>` : ''}`;
+}
+const DEFS = `<defs>${[['n', 'var(--txt3)'], ...CORES_T.map((c, i) => [i, c])].map(([k, c]) => `<radialGradient id="q${k}"><stop offset="0" stop-color="${c}" stop-opacity=".85"></stop><stop offset="1" stop-color="${c}" stop-opacity="0"></stop></radialGradient>`).join('')}
+  <pattern id="pontos" width="14" height="14" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r="1" fill="var(--linha2)"></circle></pattern>
+  <pattern id="hex" width="12" height="20.8" patternUnits="userSpaceOnUse" patternTransform="scale(.9)"><path d="M6 0l6 3.5v6.9l-6 3.5l-6-3.5V3.5zM0 17.3l6 3.5M12 17.3l-6 3.5M6 13.9v6.9" fill="none" stroke="var(--rx-l)" stroke-width="1"></path></pattern>
+  <linearGradient id="rgb" x1="0" x2="1"><stop id="rgb1" offset="0" stop-color="var(--roxo)"></stop><stop id="rgb2" offset=".5" stop-color="var(--amarelo)"></stop><stop id="rgb3" offset="1" stop-color="var(--roxo)"></stop></linearGradient>
+  <linearGradient id="gonda" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="var(--laranja)" stop-opacity="0"></stop><stop offset=".5" stop-color="var(--laranja)" stop-opacity=".35"></stop><stop offset="1" stop-color="var(--laranja)" stop-opacity="0"></stop></linearGradient></defs>`;
+const aletas = (x0, x1, passo, y, h, w) => { let d = ''; for (let x = x0; x < x1; x += passo) d += `M${x} ${y}v${h}`; return `<path d="${d}" stroke="var(--rx-l2)" stroke-width="${w}"></path>`; };
+function chassi(m) {
+  if (m === 1) return `${R(225, 55, 550, 470, `rx="26" fill="var(--rx-chassi)" stroke="${L2}" stroke-width="2"`)}${R(237, 67, 526, 446, `rx="18" fill="url(#pontos)" stroke="${L}"`)}
+    ${R(560, 60, 160, 18, `rx="4" fill="var(--rx-topo)" stroke="${L2}" stroke-width="1.2"`)}${aletas(568, 716, 8, 64, 10, 2.5)}
+    ${R(219, 128, 12, 30, `rx="3" fill="var(--linha2)" stroke="${L2}" stroke-width="1.2"`)}<circle cx="640" cy="152" r="62" fill="url(#hex)"></circle>`;
+  let s = `<polygon points="210,40 790,40 790,510 770,530 230,530 210,510" fill="var(--rx-chassi)" stroke="${L2}" stroke-width="2"></polygon>
+    <polygon points="210,40 790,40 790,96 764,76 236,76 210,96" fill="var(--rx-topo)" stroke="${L2}" stroke-width="1.5"></polygon>${aletas(252, 752, 9, 48, 20, 3)}
+    <polygon points="226,104 244,88 756,88 774,104 774,504 760,516 240,516 226,504" fill="url(#pontos)" stroke="${L}"></polygon>
+    <path d="M210 120h-6v70h6M790 120h6v70h-6M210 300h-6v50h6M790 300h6v50h-6" fill="none" stroke="${L2}" stroke-width="1.5"></path>`;
+  let lat = ''; for (let y = 126; y < 188; y += 8) lat += `M204 ${y}h6M790 ${y}h6`;
+  s += `<path d="${lat}" stroke="var(--rx-l3)" stroke-width="2"></path>`;
+  s += m === 3 ? '<circle cx="300" cy="152" r="64" fill="url(#hex)"></circle><circle cx="500" cy="142" r="56" fill="url(#hex)"></circle><circle cx="700" cy="152" r="64" fill="url(#hex)"></circle>'
+               : '<circle cx="320" cy="152" r="72" fill="url(#hex)"></circle><circle cx="680" cy="152" r="72" fill="url(#hex)"></circle>';
+  return s;
+}
+function tubos(m) {
+  if (m === 1) return tubo('M450 240 C 470 190, 580 180, 612 118') + tubo('M572 242 C 590 200, 640 190, 648 120', .8) + tubo('M455 244 C 500 205, 530 205, 568 244', .8, 6);
+  if (m === 3) return R(415, 196, 200, 96, 'rx="8" fill="var(--rx-vc)" stroke="var(--rx-tubo)" stroke-width="1" opacity=".55"')
+    + tubo('M450 240 C 440 180, 330 170, 310 104') + tubo('M440 236 C 420 200, 280 180, 270 104', .75) + tubo('M455 238 C 470 190, 490 170, 494 108')
+    + tubo('M568 238 C 550 190, 512 170, 508 108', .8) + tubo('M572 242 C 580 180, 670 170, 690 104') + tubo('M582 236 C 610 196, 720 180, 732 104', .75) + tubo('M455 244 C 500 205, 530 205, 568 244', .8, 6);
+  return tubo('M450 240 C 450 170, 360 160, 340 100') + tubo('M440 236 C 420 190, 300 170, 290 98', .75) + tubo('M572 242 C 572 170, 660 160, 680 100') + tubo('M582 236 C 600 190, 720 170, 728 98', .75) + tubo('M455 244 C 500 205, 530 205, 568 244', .8, 6);
+}
+function fans(m) { return m === 1 ? fan(640, 150, 50, 1) : m === 3 ? fan(300, 150, 50, 1) + fan(500, 140, 42, 2) + fan(700, 150, 50, 3) : fan(320, 150, 58, 1) + fan(680, 150, 58, 2); }
+/* ---- PC de mesa: gabinete visto pelo vidro lateral (traseira à esquerda, frente à direita). 4 = air cooler, 5 = water cooler ---- */
+const MODELOS_NB = [[1, 'Básico · 1 ventoinha'], [2, 'Gamer · 2 ventoinhas'], [3, 'Gamer · 3 ventoinhas']];
+const MODELOS_PC = [[4, 'Desktop · air cooler'], [5, 'Desktop · water cooler']];
+// modelo salvo que não combina com o aparelho (ex.: PC que já abriu uma versão só com notebooks) volta ao padrão
+const modeloValido = m => ehPC() ? (m === 4 || m === 5 ? m : 4) : (m >= 1 && m <= 3 ? m : (BASICO.modelo_sugerido >= 1 && BASICO.modelo_sugerido <= 3 ? BASICO.modelo_sugerido : 2));
+const PAS = new Set();
+function pasPC(r) {   // pás de cada tamanho de ventoinha, centradas em 0,0, reaproveitadas com <use>
+  let d = '';
+  for (let i = 0; i < 9; i++) {
+    const a = i * 40 * Math.PI / 180, a2 = a + 38 * Math.PI / 180, ac = a + 10 * Math.PI / 180, h = Math.max(8, r * .24);
+    d += `M${(h * Math.cos(a)).toFixed(1)} ${(h * Math.sin(a)).toFixed(1)}Q${(r * .75 * Math.cos(ac)).toFixed(1)} ${(r * .75 * Math.sin(ac)).toFixed(1)} ${((r - 5) * Math.cos(a2)).toFixed(1)} ${((r - 5) * Math.sin(a2)).toFixed(1)}`;
+  }
+  return `<path id="pas${r}" d="${d}" fill="none" stroke="var(--rx-pa)" stroke-width="${r > 30 ? 2.2 : 1.8}" stroke-linecap="round"></path>`;
+}
+function fanPC(cx, cy, r, anel = false, fundo = 1) {
+  PAS.add(r);
+  return `<circle cx="${cx}" cy="${cy}" r="${r + 6}" fill="var(--rail)"${fundo < 1 ? ` fill-opacity="${fundo}"` : ''} stroke="${L2}" stroke-width="1.5"></circle>`
+    + (anel ? `<circle cx="${cx}" cy="${cy}" r="${r + 3}" fill="none" stroke="var(--roxo)" stroke-width="2" opacity=".75" class="respira"></circle>` : '')
+    + `<g transform="translate(${cx} ${cy})"><g class="gira fan"><use href="#pas${r}"></use><circle r="${Math.max(7, Math.round(r * .22))}" fill="var(--linha2)" stroke="var(--rx-pa)" stroke-width="1.5"></circle>${HW.on() ? HW.hub(0, 0, Math.max(.42, r / 62)) : ''}</g></g>`;
+}
+const AGUA_DEF = '<linearGradient id="agua" gradientUnits="userSpaceOnUse" x1="0" y1="104" x2="0" y2="256"><stop offset="0" stop-color="var(--agua-q)"></stop><stop offset=".55" stop-color="var(--agua-m)"></stop><stop offset="1" stop-color="var(--agua-f)"></stop></linearGradient>';
+function gabinete(agua) {
+  PAS.clear();
+  let s = `<polygon points="300,28 700,28 712,40 712,560 700,572 300,572 288,560 288,40" fill="var(--rx-chassi)" stroke="${L2}" stroke-width="2"></polygon>`;
+  let al = ''; for (let x = 330; x < 672; x += 9) al += `M${x} 34v10`;
+  s += `<path d="${al}" stroke="${L2}" stroke-width="3"></path>` + R(304, 52, 392, 504, `rx="10" fill="url(#pontos)" stroke="${L}"`)
+    + R(316, 572, 70, 8, `rx="3" fill="var(--rx-pe)" stroke="${L2}"`) + R(614, 572, 70, 8, `rx="3" fill="var(--rx-pe)" stroke="${L2}"`)
+    + `<path d="M712 70h6v60h-6" fill="none" stroke="${L2}" stroke-width="1.5"></path><circle cx="715" cy="60" r="3" fill="var(--roxo)" class="respira"></circle>`;
+  // placa-mãe, espelho de conectores (traseira) e chipset
+  let io = ''; for (let y = 80; y < 198; y += 10) io += `M308 ${y}h8`;
+  s += R(318, 64, 268, 362, `rx="6" fill="var(--rx-placa)" stroke="${L}"`) + R(306, 72, 12, 130, `rx="2" fill="${L}" stroke="${L2}"`) + `<path d="${io}" stroke="var(--rx-l3)" stroke-width="2"></path>`
+    + R(340, 396, 40, 22, `rx="3" fill="var(--rx-peca)" stroke="${L2}" stroke-width="1.5"`) + '<path d="M346 402h28M346 407h28M346 412h28" stroke="var(--rx-l3)" stroke-width="1"></path>';
+  s += calor('h-cpu', 455, 185, 95) + calor('h-gpu', 462, 356, 90) + calor('h-ssd', 450, 299, 40);
+  // 4 pentes de memória com LED em cima
+  for (const x of [522, 534, 546, 558]) s += R(x, 100, 8, 162, 'rx="2" fill="var(--rx-ram)" stroke="var(--c-ram)" stroke-width="1.2"') + `<path d="M${x + 4} 108v146" stroke="var(--c-ram)" stroke-dasharray="8 4" opacity=".5" stroke-width="3"></path>`;
+  s += '<path d="M522 100h44" stroke="url(#rgb)" stroke-width="3" class="respira"></path>';
+  // SSD M.2 na placa-mãe
+  s += R(395, 292, 110, 14, 'rx="3" fill="var(--tint-atencao)" stroke="var(--atencao)" stroke-width="1.5"') + R(403, 295, 20, 8, 'rx="1.5" fill="var(--atencao)" opacity=".5"')
+    + R(428, 295, 20, 8, 'rx="1.5" fill="var(--atencao)" opacity=".35"') + R(453, 295, 20, 8, 'rx="1.5" fill="var(--atencao)" opacity=".35"');
+  if (!agua) {
+    // air cooler em torre: aletas, heatpipes de cobre e a ventoinha na frente
+    let fin = ''; for (let x = 407; x < 506; x += 6) fin += `M${x} 102v164`;
+    s += R(400, 96, 110, 176, `rx="6" fill="var(--rx-peca)" stroke="${L2}" stroke-width="1.5"`) + `<path d="${fin}" stroke="${L}" stroke-width="2"></path>`
+      + [425, 455, 485].map(x => `<path d="M${x} 280V100" fill="none" stroke="var(--rx-tubo)" stroke-width="6" stroke-linecap="round" opacity=".85"></path>`).join('')
+      + R(420, 272, 70, 14, 'rx="3" fill="var(--rx-cpu)" stroke="var(--c-cpu)" stroke-width="2"') + fanPC(455, 185, 44);
+  } else {
+    // water cooler: radiador na frente (a água desce em zigue-zague), mangueiras e bomba em cima do processador
+    let rad = ''; for (let y = 92; y < 380; y += 6) rad += `M630 ${y}h50`;
+    const serp = 'M630 104H680V123H632V142H680V161H632V180H680V199H632V218H680V237H632V256';
+    const q = 'M478 165C540 165 560 110 626 104', f = 'M478 205C548 205 560 250 626 256';
+    s += R(626, 84, 58, 300, `rx="6" fill="var(--rx-peca)" stroke="${L2}" stroke-width="1.5"`) + `<path d="${rad}" stroke="${L}" stroke-width="1.5"></path>`
+      + `<path d="${serp}" fill="none" stroke="url(#agua)" stroke-width="7" stroke-linejoin="round" opacity=".18"></path><path d="${serp}" fill="none" stroke="url(#agua)" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" class="fluxo"></path>`;
+    for (const d of [q, f]) s += `<path d="${d}" fill="none" stroke="var(--rx-pe)" stroke-width="12" stroke-linecap="round"></path><path d="${d}" fill="none" stroke="var(--rx-l3)" stroke-width="8" stroke-linecap="round"></path>`;
+    s += `<path d="${q}" fill="none" stroke="var(--agua-q)" stroke-width="3" stroke-linecap="round" class="fluxo"></path><path d="${f}" fill="none" stroke="var(--agua-f)" stroke-width="3" stroke-linecap="round" class="volta"></path>`
+      + R(415, 145, 80, 80, `rx="14" fill="var(--rx-peca)" stroke="${L2}" stroke-width="1.5"`)
+      + '<circle cx="455" cy="185" r="30" fill="var(--rx-cpu)" stroke="var(--c-cpu)" stroke-width="2"></circle><circle cx="455" cy="185" r="22" fill="none" stroke="url(#rgb)" stroke-width="3" class="respira"></circle>'
+      + '<g class="gira fan"><path d="M455 171a14 14 0 0 1 12 7M469 192a14 14 0 0 1-14 7M441 192a14 14 0 0 1 0-14" fill="none" stroke="var(--rx-pa)" stroke-width="2.4" stroke-linecap="round"></path></g>';
+  }
+  // placa de vídeo com 3 ventoinhas
+  s += R(306, 316, 12, 80, `rx="2" fill="${L2}" stroke="var(--rx-l3)"`) + R(318, 322, 282, 68, 'rx="8" fill="var(--rx-gpu)" stroke="var(--amarelo)" stroke-width="2"') + R(560, 314, 24, 8, `rx="2" fill="${L2}"`)
+    + fanPC(390, 356, 25) + fanPC(462, 356, 25) + fanPC(534, 356, 25) + '<path d="M330 385h258" stroke="url(#rgb)" stroke-width="2.5" stroke-linecap="round" class="respira"></path>';
+  // 3 ventoinhas na frente, com aro de luz (no water cooler, o radiador aparece por trás)
+  for (const y of [130, 230, 330]) s += fanPC(655, y, 36, true, agua ? .4 : 1);
+  // tampa da fonte, embaixo
+  s += R(304, 440, 392, 116, `rx="8" fill="var(--rx-topo)" stroke="${L}"`) + R(316, 452, 138, 92, `rx="6" fill="var(--rx-peca)" stroke="${L2}" stroke-width="1.5"`) + `<circle cx="385" cy="498" r="34" fill="url(#hex)" stroke="${L2}"></circle>`
+    + R(470, 470, 212, 56, 'rx="6" fill="url(#hex)" opacity=".7"') + '<path d="M320 438H680" stroke="url(#rgb)" stroke-width="3" stroke-linecap="round" class="respira"></path>';
+  return s + fanPC(352, 118, 34);    // ventoinha traseira (exaustão)
+}
+function svgPC(m) {
+  const agua = m === 5, placa = temPlaca(), corpo = gabinete(agua);
+  return `<svg width="100%" viewBox="0 0 1000 600" role="img" aria-label="Computador visto por dentro, com as temperaturas e o consumo ao vivo" style="display:block;width:100%;height:auto;max-height:calc(100vh - 300px);min-height:420px;margin:0 auto" font-family="Segoe UI Variable Display, Segoe UI, sans-serif">${DEFS}<defs>${[...PAS].map(pasPC).join('')}${agua ? AGUA_DEF : ''}</defs>
+    ${corpo}
+    ${callout('c-cons', 352, 118, 118, 'e', 'CONSUMO')}
+    ${callout('c-cpu', 455, 185, 206, 'e', 'PROCESSADOR', true)}
+    ${callout('c-ssd', 420, 299, 312, 'e', 'ARMAZENAMENTO')}
+    ${callout('c-placa', 360, 407, 470, 'e', 'PLACA-MÃE')}
+    ${callout('c-modo', 655, 130, 118, 'd', 'MODO DE ENERGIA')}
+    ${callout('c-ram', 545, 181, 180, 'd', 'MEMÓRIA RAM')}
+    ${callout('c-gpu', 580, 350, 284, 'd', placa ? 'PLACA DE VÍDEO' : 'VÍDEO', true)}
+    ${HW.on() ? HW.raiox(m) : ''}
+    <rect id="onda" x="288" y="28" width="424" height="120" fill="url(#gonda)" opacity="0"></rect>
+  </svg>`;
+}
+function montarModelos() {
+  const lista = ehPC() ? MODELOS_PC : MODELOS_NB;
+  $('#sel-modelo').innerHTML = '<span>MODELO</span>' + lista.map(([n, t]) => `<button data-modelo="${n}" aria-pressed="${n === MODELO}">${t}</button>`).join('');
+  document.querySelectorAll('#sel-modelo button').forEach(b => b.onclick = () => { MODELO = +b.dataset.modelo; desenhar(MODELO); RX.salvar_modelo(MODELO); });
+}
+// textos e itens que mudam entre notebook e PC de mesa
+function aplicarAparelho() {
+  $('#b-testar').firstChild.textContent = ehPC() ? 'TESTAR ESTE PC ' : 'TESTAR ESTE NOTEBOOK ';
+  const bat = document.querySelector('.rail [data-aba=bateria]'); if (bat) bat.style.display = ehPC() ? 'none' : '';
+  $('#laudo-sub').textContent = `estado de saúde deste ${ehPC() ? 'PC' : 'notebook'}`;
+  $('#antes-sub').textContent = `para que o teste reflita todo o desempenho do ${ehPC() ? 'PC' : 'notebook'}`;
+  $('#leg-nota').textContent = 'Desenho ilustrativo · as ventoinhas giram mais rápido conforme o consumo · ' + (ehPC() ? 'cada gabinete é montado de um jeito' : 'a posição dos componentes varia de modelo para modelo');
+  montarModelos();
+}
+function fimDesenho(m) {
+  document.querySelectorAll('#sel-modelo button').forEach(b => b.setAttribute('aria-pressed', String(+b.dataset.modelo === m)));
+  $('#leg-agua').style.display = m === 5 ? 'inline-flex' : 'none';
+  HW.aplicar(TEMA);
+  if (ULT) atualizarDesenho(ULT);
+}
+function desenhar(m) {
+  document.querySelectorAll('#sel-tema button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.tema === TEMA)));
+  $('#sel-modelo').style.display = TEMA === 'raiox' ? '' : 'none';
+  $('#legenda-rx').style.display = TEMA === 'raiox' ? '' : 'none';
+  if (TEMA !== 'raiox') { desenharTema(); HW.aplicar(TEMA); if (ULT) atualizarDesenho(ULT); return; }
+  if (m >= 4) { $('#palco').innerHTML = svgPC(m); fimDesenho(m); return; }
+  const placa = temPlaca() ;
+  const fanE = m === 1 ? [231, 143] : m === 3 ? [300, 150] : [320, 150], fanD = m === 1 ? [640, 150] : m === 3 ? [700, 150] : [680, 150];
+  const caixa = m === 1 ? [225, 55, 550, 470] : [210, 40, 580, 490];
+  $('#palco').innerHTML = `<svg width="100%" viewBox="0 0 1000 600" role="img" aria-label="Notebook visto por dentro, com as temperaturas e o consumo ao vivo" style="display:block;width:100%;height:auto;max-height:calc(100vh - 300px);min-height:420px;margin:0 auto" font-family="Segoe UI Variable Display, Segoe UI, sans-serif">${DEFS}
+    ${chassi(m)}
+    ${R(390, 180, 240, 190, `rx="10" fill="var(--rx-placa)" stroke="${L}"`)}
+    ${calor('h-cpu', 450, 240, 95)}${calor('h-gpu', 572, 242, 80)}${calor('h-ssd', 685, 318, 46)}${calor('h-bat', 500, 452, 120)}
+    ${tubos(m)}${fans(m)}
+    ${R(428, 220, 44, 40, 'rx="4" fill="var(--rx-cpu)" stroke="var(--c-cpu)" stroke-width="2"')}${R(438, 229, 24, 22, 'rx="2" fill="var(--c-cpu)" opacity=".6"')}
+    ${R(545, 218, 54, 48, 'rx="4" fill="var(--rx-gpu)" stroke="var(--amarelo)" stroke-width="2"')}${R(556, 228, 32, 28, 'rx="2" fill="var(--amarelo)" opacity=".45"')}
+    ${[[530, 200], [600, 200], [530, 274], [600, 274]].map(([x, y]) => R(x, y, 14, 10, 'rx="1.5" fill="var(--rx-l2)"')).join('')}
+    ${R(250, 292, 128, 22, 'rx="3" fill="var(--rx-ram)" stroke="var(--c-ram)" stroke-width="1.5"')}${R(250, 322, 128, 22, 'rx="3" fill="var(--rx-ram)" stroke="var(--c-ram)" stroke-width="1.5"')}
+    <path d="M258 303h112M258 333h112" stroke="var(--c-ram)" stroke-dasharray="10 4" opacity=".55" stroke-width="6"></path>
+    ${R(632, 304, 110, 26, 'rx="4" fill="var(--tint-atencao)" stroke="var(--atencao)" stroke-width="1.5"')}${R(642, 310, 22, 14, 'rx="2" fill="var(--atencao)" opacity=".5"')}${R(670, 310, 22, 14, 'rx="2" fill="var(--atencao)" opacity=".35"')}${R(698, 310, 22, 14, 'rx="2" fill="var(--atencao)" opacity=".35"')}
+    ${R(290, 398, 420, 104, 'rx="12" fill="var(--rx-bat)" stroke="var(--c-ram)" stroke-width="1.5"')}<path d="M395 404v92M500 404v92M605 404v92" stroke="var(--c-ram)" opacity=".35"></path>
+    ${R(296, 404, 0, 92, 'id="bat-nivel" rx="8" fill="var(--c-ram)" opacity=".12"')}
+    ${m === 1 ? '<circle cx="275" cy="495" r="9" fill="var(--rx-peca)" stroke="' + L + '"></circle><circle cx="725" cy="495" r="9" fill="var(--rx-peca)" stroke="' + L + '"></circle>'
+      : `${R(266, 510, 150, 9, `rx="4.5" fill="var(--rx-peca)" stroke="${L}"`)}${R(584, 510, 150, 9, `rx="4.5" fill="var(--rx-peca)" stroke="${L}"`)}<path d="M430 530l16 -12h108l16 12" fill="var(--rx-pe)" stroke="${L2}" stroke-width="1.5"></path><path d="M452 524H548" stroke="url(#rgb)" stroke-width="3" stroke-linecap="round" class="respira"></path>`}
+    ${callout('c-cons', fanE[0], fanE[1], 118, 'e', 'CONSUMO')}
+    ${callout('c-cpu', 450, 240, 206, 'e', 'PROCESSADOR', true)}
+    ${callout('c-ram', 314, 318, 350, 'e', 'MEMÓRIA RAM')}
+    ${callout('c-bat', 500, 450, 470, 'e', 'BATERIA')}
+    ${callout('c-modo', fanD[0], fanD[1], 118, 'd', 'MODO DE ENERGIA')}
+    ${callout('c-gpu', 572, 242, 206, 'd', placa ? 'PLACA DE VÍDEO' : 'VÍDEO', true)}
+    ${callout('c-ssd', 687, 317, 350, 'd', 'ARMAZENAMENTO')}
+    ${HW.on() ? HW.raiox(m) : ''}
+    <rect id="onda" x="${caixa[0]}" y="${caixa[1]}" width="${caixa[2]}" height="120" fill="url(#gonda)" opacity="0"></rect>
+  </svg>`;
+  fimDesenho(m);
+}
+
+
+/* ======================= Temas Painel e Bento (mesmos sensores do Raio-X) ======================= */
+document.querySelectorAll('#sel-tema button').forEach(b => b.onclick = () => { TEMA = b.dataset.tema; desenhar(MODELO); try { RX.salvar_tema(TEMA); } catch (e) { /* sem api */ } });
+const HIST_W = [];   // consumo total dos últimos 60 s (o processador e a placa já vêm com série do app)
+let PICO_W = 0;
+// tudo o que os temas mostram, com o mesmo texto do Raio-X
+function leituras(d) {
+  const cpuW = d.cpu_watts, gpuW = d.gpu_watts, temW = cpuW != null || gpuW != null, total = (cpuW || 0) + (gpuW || 0);
+  if (temW) { HIST_W.push(total); if (HIST_W.length > 30) HIST_W.shift(); PICO_W = Math.max(PICO_W, total); }
+  const g = BASICO.gpu || {}, tCpu = d.cpu_temp, b = d.bateria, saude = FICHA && FICHA.bateria && FICHA.bateria.saude_pct;
+  const m = modoAtual(d), lenovo = d.modo_marca_de === 'Lenovo';
+  const nomeG = (g.nome || '').replace(/NVIDIA GeForce |Laptop GPU|\(R\)|\(TM\)/g, '').trim();
+  return {
+    cons: {v: temW ? `${fmt(total)} W` : '—', s: cpuW != null && gpuW != null ? 'placa + processador' : gpuW != null ? (d.monitor_sensores ? 'somente a placa (processador: ligue o Bench Monitor)' : 'somente a placa (processador: abra o HWiNFO)') : 'processador', n: temW ? total : null, serie: HIST_W.slice()},
+    cpu: {v: tCpu != null ? `${fmt(tCpu)} °C` : d.cpu_uso != null ? `${fmt(d.cpu_uso)}%` : '—', s: [d.cpu_mhz ? `${fmt(d.cpu_mhz / 1000, 1)} GHz` : null, cpuW != null ? `${fmt(cpuW)} W` : null, tCpu == null ? (d.monitor_sensores ? 'temperatura: ligue o Bench Monitor' : 'temperatura: abra o HWiNFO') : null].filter(Boolean).join(' · '),
+          curto: tCpu != null ? [d.cpu_mhz ? `${fmt(d.cpu_mhz / 1000, 1)} GHz` : null, cpuW != null ? `${fmt(cpuW)} W` : null].filter(Boolean).join(' · ') : 'de uso · sem temperatura',
+          cor: tCpu != null ? corTemp(tCpu) : 'var(--roxo)', temp: tCpu, uso: d.cpu_uso, serie: d.serie_cpu},
+    gpu: d.gpu_temp != null ? {v: `${fmt(d.gpu_temp)} °C`, s: [nomeG, gpuW != null ? `${fmt(gpuW)} W` : null, d.gpu_uso != null ? `uso ${fmt(d.gpu_uso)}%` : null].filter(Boolean).join(' · '), cor: corTemp(d.gpu_temp), temp: d.gpu_temp, serie: d.serie_gpu, curto: [gpuW != null ? `${fmt(gpuW)} W` : null, d.gpu_uso != null ? `uso ${fmt(d.gpu_uso)}%` : null].filter(Boolean).join(' · ')}
+                            : {v: nomeG ? nomeG.split(' ').slice(0, 3).join(' ') : '—', s: 'sem sensores de temperatura', curto: 'sem sensores', cor: 'var(--txt2)', temp: null, serie: null},
+    ram: {v: d.ram_usada != null ? `${fmt(d.ram_usada, 1)} GB` : '—', s: d.ram_total ? `de ${fmt(d.ram_instalada || d.ram_total)} GB em uso` : '', pct: d.ram_total ? 100 * d.ram_usada / d.ram_total : 0, cor: 'var(--c-ram)'},
+    ssd: {v: d.disco_livre != null ? `${fmt(d.disco_livre)} GB` : '—', s: d.disco_total ? `livres de ${d.disco_total >= 1000 ? fmt(d.disco_total / 1000, 1) + ' TB' : d.disco_total + ' GB'}` : '', pct: d.disco_total ? 100 * (d.disco_total - d.disco_livre) / d.disco_total : 0, cor: 'var(--atencao)'},
+    bat: ehPC() ? (temVram() ? {v: d.gpu_vram != null ? `${fmt(d.gpu_vram, 1)} GB` : '—', s: d.gpu_vram_total ? `de ${fmt(d.gpu_vram_total)} GB em uso` : '', pct: d.gpu_vram_total ? 100 * (d.gpu_vram || 0) / d.gpu_vram_total : 0, cor: 'var(--amarelo)'}
+                                 : {...placaMae(), pct: 0, cor: 'var(--txt)', semBarra: true})
+             : {v: b ? `${b.pct}%` : 'sem bateria', s: b ? [b.tomada ? 'na tomada' : 'na bateria', saude ? `saúde ${Math.min(100, saude)}%` : null].filter(Boolean).join(' · ') : '', pct: b ? b.pct : 0, cor: b && b.pct < 20 && !b.tomada ? 'var(--problema)' : 'var(--c-ram)'},
+    modo: {v: m, forte: FORCA.has(m), lenovo, s: subModo(m, lenovo)},
+  };
+}
+// placa de vídeo dedicada (NVIDIA ou Radeon RX/Arc); sem ela, o rótulo é só "VÍDEO" (integrado)
+const temPlaca = () => { const g = BASICO.gpu || {}; return g.nvidia !== false || /\bRX\s?\d|Radeon Pro|\bArc\s?[AB]\d/i.test(g.nome || ''); };
+// no PC de mesa, o lugar da bateria nos temas Painel e Blocos mostra a memória de vídeo (placas NVIDIA) ou a placa-mãe
+const temVram = () => !!(BASICO.gpu && BASICO.gpu.nvidia);
+const rotuloBat = () => ehPC() ? (temVram() ? 'MEMÓRIA DE VÍDEO' : 'PLACA-MÃE') : 'BATERIA';
+function sparkPath(v, w, h) {
+  v = (v || []).filter(x => x != null); if (v.length < 2) return '';
+  const mx = Math.max(...v), mn = Math.min(...v);
+  return 'M' + v.map((p, i) => `${(i / (v.length - 1) * w).toFixed(1)} ${(h - 3 - (p - mn) / (mx - mn || 1) * (h - 6)).toFixed(1)}`).join(' L');
+}
+const setT = (id, t) => { const e = document.getElementById(id); if (e && e.textContent !== t) e.textContent = t; };
+const setCor = (id, c) => { const e = document.getElementById(id); if (e) e.style.color = c; };
+// mostrador: arco de 270°, de 135° a 405°
+function mostrador(id, cx, cy, r, rot, alerta) {
+  const pt = (a, rr) => [cx + rr * Math.cos(a * Math.PI / 180), cy + rr * Math.sin(a * Math.PI / 180)];
+  const arco = (a0, a1, rr) => { const [x0, y0] = pt(a0, rr), [x1, y1] = pt(a1, rr); return `M${x0.toFixed(1)} ${y0.toFixed(1)} A${rr} ${rr} 0 ${a1 - a0 > 180 ? 1 : 0} 1 ${x1.toFixed(1)} ${y1.toFixed(1)}`; };
+  let ticks = '';
+  for (let i = 0; i <= 10; i++) { const a = 135 + 27 * i, [x0, y0] = pt(a, r - 4), [x1, y1] = pt(a, r - (i % 5 ? 10 : 15)); ticks += `M${x0.toFixed(1)} ${y0.toFixed(1)}L${x1.toFixed(1)} ${y1.toFixed(1)}`; }
+  const [nx, ny] = pt(135, r - 24);
+  return `<path d="${arco(135, 405, r)}" fill="none" stroke="var(--linha2)" stroke-width="10" stroke-linecap="round"></path>
+    <path id="${id}-arco" class="t-arco" d="${arco(135, 405, r)}" pathLength="100" fill="none" stroke="var(--txt2)" stroke-width="10" stroke-linecap="round" stroke-dasharray="0 100"></path>
+    ${alerta ? `<path d="${arco(135 + 270 * alerta, 405, r + 8)}" fill="none" stroke="var(--c-quente)" stroke-width="3" opacity=".7"></path>` : ''}
+    <path d="${ticks}" stroke="var(--txt4)" stroke-width="1.5"></path>
+    ${HW.on() ? `<g class="hw-tremor" style="transform-origin:${cx}px ${cy}px;animation-delay:${(cx / 160).toFixed(1)}s">` : '<g>'}<line id="${id}-ag" class="t-agulha" x1="${cx}" y1="${cy}" x2="${nx.toFixed(1)}" y2="${ny.toFixed(1)}" stroke="var(--txt)" stroke-width="3" stroke-linecap="round" style="transform-origin:${cx}px ${cy}px"></line></g><circle cx="${cx}" cy="${cy}" r="7" fill="var(--txt)"></circle>${HW.on() ? HW.hub(cx, cy, r > 100 ? .8 : .55) : ''}
+    <text x="${cx}" y="${(cy - r * .5).toFixed(0)}" text-anchor="middle" font-size="${r > 100 ? 11 : 10}" letter-spacing="1.8" font-weight="700" fill="var(--txt3)">${rot}</text>
+    <text id="${id}-v" x="${cx}" y="${(cy + r * .55).toFixed(0)}" text-anchor="middle" font-size="${Math.max(20, r * .27).toFixed(0)}" font-weight="800" fill="var(--txt)">—</text>
+    <text id="${id}-s" x="${cx}" y="${(cy + r * .55 + 17).toFixed(0)}" text-anchor="middle" font-size="${r > 100 ? 11 : 10}" fill="var(--txt2)" font-family="Cascadia Mono, Consolas, monospace"></text>`;
+}
+function ajustarMostrador(id, frac, cor, v, s) {
+  frac = Math.max(0, Math.min(1, frac || 0));
+  const a = document.getElementById(id + '-arco'); if (!a) return;
+  a.setAttribute('stroke-dasharray', `${(frac * 100).toFixed(1)} 100`); a.setAttribute('stroke', cor);
+  document.getElementById(id + '-ag').style.transform = `rotate(${(frac * 270).toFixed(1)}deg)`;
+  const tv = document.getElementById(id + '-v'); tv.textContent = v; tv.setAttribute('fill', cor);
+  document.getElementById(id + '-s').textContent = s;
+}
+const barraT = (id, rot) => `<div class="t-barra"><div class="topo"><span class="rot">${rot}</span><b id="${id}-v">—</b></div><div class="hw-pos"><div class="t-trilho"><i id="${id}-b" style="width:0"></i></div>${HW.on() ? HW.cavaleiro(id) : ''}</div><div class="t-sub" id="${id}-s"></div></div>`;
+const anel = id => `<svg class="t-anel" width="62" height="62" viewBox="0 0 62 62" aria-hidden="true"><circle cx="31" cy="31" r="24" fill="none" stroke="var(--linha2)" stroke-width="8"></circle><circle id="${id}-a" cx="31" cy="31" r="24" fill="none" stroke="var(--c-ram)" stroke-width="8" stroke-linecap="round" stroke-dasharray="0 151" transform="rotate(-90 31 31)"></circle></svg>`;
+const blocoT = (id, area, rot, extra = '', grande = false) => `<div class="t-bloco${grande ? ' grande' : ''}" style="grid-area:${area}"><span class="t-rot">${rot}</span><div class="val" id="${id}-v">—</div><div class="t-sub" id="${id}-s"></div>${extra}</div>`;
+function desenharTema() {
+  const placa = temPlaca();
+  if (TEMA === 'painel') {
+    $('#palco').innerHTML = `<div class="t-painel" id="t-painel">
+      <div class="barras">${barraT('p-ram', 'MEMÓRIA RAM')}${barraT('p-ssd', 'ARMAZENAMENTO')}${barraT('p-bat', rotuloBat())}</div>
+      <svg viewBox="${HW.on() ? '0 -56 640 400' : '0 0 640 330'}" role="img" aria-label="Mostradores ao vivo: processador, consumo e ${placa ? 'placa de vídeo' : 'vídeo'}" font-family="Segoe UI Variable Display, Segoe UI, sans-serif">
+        ${HW.on() ? HW.painelAtras() : ''}
+        <rect class="moldura" x="16" y="10" width="608" height="310" rx="155" fill="var(--rx-chassi)" stroke="var(--rx-l)" stroke-width="1.5"></rect>
+        ${mostrador('p-cpu', 112, 185, 80, 'PROCESSADOR', .8)}${mostrador('p-cons', 320, 168, 116, 'CONSUMO')}${mostrador('p-gpu', 528, 185, 80, placa ? 'PLACA DE VÍDEO' : 'VÍDEO', .8)}
+        ${HW.on() ? HW.painelFrente() : ''}
+      </svg>
+      <div><div class="t-rot" style="padding:0 0 8px 4px">MODO DE ENERGIA</div><div class="t-marchas" id="p-marchas"></div><div class="t-sub" id="p-modo-s" style="padding:8px 4px 0;font-family:inherit;font-size:12.5px;color:var(--txt2)"></div></div>
+    </div>
+    <div class="t-nota"><span>Atualiza a cada 2 segundos</span><span>Faixa vermelha: acima de 90 °C</span><span>No modo Desempenho, o painel acende em laranja</span></div>`;
+  } else {
+    $('#palco').innerHTML = `<div class="t-bento">
+      ${blocoT('b-cons', 'cons', 'CONSUMO AGORA', '<svg class="spark" viewBox="0 0 300 90" preserveAspectRatio="none" aria-hidden="true"><path id="b-cons-g" d="" fill="none" stroke="var(--txt)" stroke-width="2" vector-effect="non-scaling-stroke"></path></svg><span class="t-sub">últimos 60 s</span>', true)}
+      ${blocoT('b-cpu', 'cpu', 'PROCESSADOR', '<svg class="spark" viewBox="0 0 200 34" preserveAspectRatio="none" aria-hidden="true"><path id="b-cpu-g" d="" fill="none" stroke-width="1.8" vector-effect="non-scaling-stroke"></path></svg>')}
+      ${blocoT('b-gpu', 'gpu', placa ? 'PLACA DE VÍDEO' : 'VÍDEO', '<svg class="spark" viewBox="0 0 200 34" preserveAspectRatio="none" aria-hidden="true"><path id="b-gpu-g" d="" fill="none" stroke-width="1.8" vector-effect="non-scaling-stroke"></path></svg>')}
+      ${blocoT('b-modo', 'modo', 'MODO DE ENERGIA', '<span class="t-chip" id="b-modo-chip" style="display:none">Fn+Q</span>')}
+      ${blocoT('b-ram', 'ram', 'MEMÓRIA RAM', anel('b-ram'))}${blocoT('b-ssd', 'ssd', 'ARMAZENAMENTO', anel('b-ssd'))}${blocoT('b-bat', 'bat', rotuloBat(), anel('b-bat'))}
+    </div>`;
+    if (HW.on()) HW.bento($('#palco'));
+  }
+}
+function atualizarTema(V) {
+  if (TEMA === 'painel') {
+    if (!document.getElementById('t-painel')) return;
+    // processador: temperatura de 30 a 105 °C (ou o uso, sem HWiNFO); consumo: escala que acompanha o pico visto
+    ajustarMostrador('p-cpu', V.cpu.temp != null ? (V.cpu.temp - 30) / 75 : (V.cpu.uso || 0) / 100, V.cpu.cor, V.cpu.v, V.cpu.curto);
+    const escW = Math.max(100, Math.ceil(PICO_W * 1.15 / 50) * 50);
+    ajustarMostrador('p-cons', V.cons.n != null ? V.cons.n / escW : 0, V.modo.forte ? 'var(--laranja)' : 'var(--txt)', V.cons.v, V.cons.s);
+    ajustarMostrador('p-gpu', V.gpu.temp != null ? (V.gpu.temp - 30) / 75 : 0, V.gpu.cor, V.gpu.v, V.gpu.curto);
+    for (const k of ['ram', 'ssd', 'bat']) {
+      setT(`p-${k}-v`, V[k].v); setCor(`p-${k}-v`, V[k].cor); setT(`p-${k}-s`, V[k].s);
+      const b = document.getElementById(`p-${k}-b`); b.style.width = `${Math.max(0, Math.min(100, V[k].pct)).toFixed(0)}%`; b.style.background = V[k].cor;
+      b.closest('.hw-pos').style.visibility = V[k].semBarra ? 'hidden' : '';
+      const h = document.getElementById(`p-${k}-hw`); if (h) h.style.left = b.style.width;
+    }
+    const lista = V.modo.lenovo ? ['Silencioso', 'Equilibrado', 'Desempenho'] : ['Economia', 'Equilibrado', 'Desempenho'];
+    if (!lista.includes(V.modo.v) && V.modo.v !== '—') lista.push(V.modo.v);
+    const marchas = lista.map(n => `<div class="t-marcha${n === V.modo.v ? ' on' + (V.modo.forte ? ' forte' : '') : ''}"><b>${n[0]}</b><span>${esc(n)}</span>${n === V.modo.v && HW.on() ? HW.aboboraIcone(22) : ''}</div>`).join('');
+    const pm = $('#p-marchas'); if (pm.dataset.h !== marchas) { pm.innerHTML = marchas; pm.dataset.h = marchas; }   // sem refazer a cada 2 s (o brilho do Halloween recomeçaria)
+    setT('p-modo-s', V.modo.s);
+    $('#t-painel').classList.toggle('forte', V.modo.forte);
+  } else {
+    if (!document.getElementById('b-cons-v')) return;
+    for (const k of ['cons', 'cpu', 'gpu', 'ram', 'ssd', 'bat']) { setT(`b-${k}-v`, V[k].v); setT(`b-${k}-s`, V[k].s); }
+    setCor('b-cons-v', V.modo.forte ? 'var(--laranja)' : 'var(--txt)'); setCor('b-cpu-v', V.cpu.cor); setCor('b-gpu-v', V.gpu.cor);
+    setCor('b-ram-v', V.ram.cor); setCor('b-ssd-v', V.ssd.cor); setCor('b-bat-v', V.bat.cor);
+    $('#b-cons-g').setAttribute('d', sparkPath(V.cons.serie, 300, 90)); $('#b-cons-g').setAttribute('stroke', V.modo.forte ? 'var(--laranja)' : 'var(--txt)');
+    $('#b-cpu-g').setAttribute('d', sparkPath(V.cpu.serie, 200, 34)); $('#b-cpu-g').setAttribute('stroke', V.cpu.cor);
+    $('#b-gpu-g').setAttribute('d', sparkPath(V.gpu.serie, 200, 34)); $('#b-gpu-g').setAttribute('stroke', V.gpu.cor);
+    setT('b-modo-v', V.modo.v); setT('b-modo-s', V.modo.s); setCor('b-modo-v', V.modo.forte ? 'var(--laranja)' : 'var(--atencao)');
+    $('#b-modo-chip').style.display = V.modo.lenovo && !V.modo.forte ? '' : 'none';
+    for (const k of ['ram', 'ssd', 'bat']) { const a = document.getElementById(`b-${k}-a`); a.setAttribute('stroke-dasharray', `${(1.508 * Math.max(0, Math.min(100, V[k].pct))).toFixed(1)} 151`); a.setAttribute('stroke', V[k].cor); a.closest('svg').style.display = V[k].semBarra ? 'none' : ''; }
+  }
+}
+
+/* ======================= Raio-X: dados ao vivo ======================= */
+function setC(id, val, sub, cor) {
+  const v = document.getElementById(id + '-v'); if (!v) return;
+  v.textContent = val; v.setAttribute('fill', cor || 'var(--txt)');
+  const s = document.getElementById(id + '-s'); if (s) s.textContent = sub || '';
+  const l = document.getElementById(id + '-l'), p = document.getElementById(id + '-p');
+  if (l) l.setAttribute('stroke', cor || 'var(--txt2)'); if (p) p.setAttribute('fill', cor || 'var(--txt2)');
+}
+function mini(id, serie, cor) {
+  const g = document.getElementById(id + '-g'); if (!g) return;
+  const v = (serie || []).filter(x => x != null);
+  if (v.length < 2) { g.setAttribute('d', ''); return; }
+  const lado = +g.dataset.x, y = +g.dataset.y, mx = Math.max(...v), mn = Math.min(...v);
+  g.setAttribute('d', 'M' + v.map((p, i) => `${(lado + i / (v.length - 1) * 150).toFixed(1)} ${(y + 22 - (p - mn) / (mx - mn || 1) * 20).toFixed(1)}`).join(' L'));
+  g.setAttribute('stroke', cor);
+}
+function calorDe(id, t, carga) {
+  const c = document.getElementById(id); if (!c) return;
+  c.setAttribute('fill', `url(#q${t == null ? 'n' : idxTemp(t)})`);
+  c.setAttribute('opacity', t == null ? .15 : Math.min(.7, .2 + (t - 30) / 100));
+}
+const nomeModo = m => ({'Melhor desempenho': 'Desempenho', 'Melhor eficiência de energia': 'Economia', 'Economia de energia': 'Economia'})[m] || m || '—';
+const FORCA = new Set(['Desempenho', 'Extremo', 'Personalizado', 'Alto desempenho', 'Desempenho máximo']);
+// o modo da fabricante (Fn+Q no Lenovo) vale mais que o do Windows: é ele que limita a energia de verdade;
+// no PC de mesa, o plano "Alto desempenho" do Painel de Controle vale mais que o modo do Windows
+const modoAtual = d => d.modo_marca || (d.plano && d.plano !== 'Equilibrado' ? nomeModo(d.plano) : nomeModo(d.modo_windows));
+function subModo(m, lenovo) {
+  if (FORCA.has(m)) return ehPC() && /^(Alto desempenho|Desempenho máximo)$/.test(m) ? 'plano de energia do Windows' : 'desempenho máximo liberado';
+  if (['Economia', 'Silencioso'].includes(m)) return ehPC() ? 'economiza energia; não use para testes' : 'economiza bateria; não use para testes';
+  return lenovo ? 'use Desempenho para testar (Fn+Q)' : ehPC() ? 'use Melhor desempenho para testar' : 'use Desempenho para testar';
+}
+// placa-mãe (PC de mesa), lida da tabela SMBIOS
+const placaMae = () => ({v: PC.bios ? `BIOS ${PC.bios}` : 'Placa-mãe', s: PC.placa || ''});
+function atualizarDesenho(d) {
+  if (TEMA !== 'raiox') atualizarTema(leituras(d));
+  const cpuW = d.cpu_watts, gpuW = d.gpu_watts, total = (cpuW || 0) + (gpuW || 0);
+  setC('c-cons', cpuW == null && gpuW == null ? '—' : `${fmt(total)} W`,
+       cpuW != null && gpuW != null ? 'placa + processador' : gpuW != null ? (d.monitor_sensores ? 'somente a placa (processador: ligue o Bench Monitor)' : 'somente a placa (processador: abra o HWiNFO)') : 'processador', 'var(--txt)');
+  const tCpu = d.cpu_temp;
+  setC('c-cpu', tCpu != null ? `${fmt(tCpu)} °C` : d.cpu_uso != null ? `${fmt(d.cpu_uso)}% de uso` : '—',
+       [d.cpu_mhz ? `${fmt(d.cpu_mhz / 1000, 1)} GHz` : null, cpuW != null ? `${fmt(cpuW)} W` : null, tCpu == null ? (d.monitor_sensores ? 'temperatura: ligue o Bench Monitor' : 'temperatura: abra o HWiNFO') : null].filter(Boolean).join(' · '), tCpu != null ? corTemp(tCpu) : 'var(--roxo)');
+  mini('c-cpu', d.serie_cpu, tCpu != null ? corTemp(tCpu) : 'var(--roxo)');
+  const g = BASICO.gpu || {};
+  if (d.gpu_temp != null) {
+    setC('c-gpu', `${fmt(d.gpu_temp)} °C`, [(g.nome || '').replace(/NVIDIA GeForce |Laptop GPU/g, '').trim(), gpuW != null ? `${fmt(gpuW)} W` : null, d.gpu_uso != null ? `uso ${fmt(d.gpu_uso)}%` : null].filter(Boolean).join(' · '), corTemp(d.gpu_temp));
+    mini('c-gpu', d.serie_gpu, corTemp(d.gpu_temp));
+  } else setC('c-gpu', g.nome ? (g.nome.replace(/\(R\)|\(TM\)/g, '').split(' ').slice(0, 3).join(' ')) : '—', 'sem sensores de temperatura', 'var(--txt2)');
+  setC('c-ram', d.ram_usada != null ? `${fmt(d.ram_usada, 1)} GB` : '—', d.ram_total ? `de ${fmt(d.ram_instalada || d.ram_total)} GB em uso` : '', 'var(--c-ram)');
+  const tot = d.disco_total ? (d.disco_total >= 1000 ? fmt(d.disco_total / 1000, 1) + ' TB' : d.disco_total + ' GB') : '';
+  if (ehPC()) setC('c-ssd', d.disco_livre != null ? `${fmt(d.disco_livre)} GB` : '—', tot ? `livres de ${tot}` : '', 'var(--atencao)');   // à esquerda: valor curto, para não encostar na linha
+  else setC('c-ssd', d.disco_livre != null ? `${fmt(d.disco_livre)} GB livres` : '—', tot ? `de ${tot}` : '', 'var(--atencao)');
+  const pm = placaMae(); setC('c-placa', pm.v, pm.s, 'var(--txt)');
+  const b = d.bateria, saude = FICHA && FICHA.bateria && FICHA.bateria.saude_pct;
+  setC('c-bat', b ? `${b.pct}%` : 'sem bateria', b ? [b.tomada ? 'na tomada' : 'na bateria', saude ? `saúde ${Math.min(100, saude)}%` : null].filter(Boolean).join(' · ') : '', b && b.pct < 20 && !b.tomada ? 'var(--problema)' : 'var(--c-ram)');
+  const nb = document.getElementById('bat-nivel'); if (nb && b) nb.setAttribute('width', Math.round(408 * b.pct / 100));
+  const m = modoAtual(d), desemp = FORCA.has(m), lenovo = d.modo_marca_de === 'Lenovo';
+  setC('c-modo', m, subModo(m, lenovo), desemp ? 'var(--laranja)' : 'var(--atencao)');
+  calorDe('h-cpu', tCpu); calorDe('h-gpu', d.gpu_temp); calorDe('h-ssd', null); calorDe('h-bat', b ? 32 : null);
+  // ventoinhas (desenho, não é rotação medida): paradas no Silencioso, giro pelo consumo no Equilibrado,
+  // e no Desempenho/Extremo já começam rápidas e aceleram até o máximo com o consumo
+  const esforco = cpuW != null || gpuW != null ? Math.min(1, total / 150) : Math.min(1, (d.cpu_uso || 0) / 100);
+  const parada = m === 'Silencioso';
+  const giro = desemp ? 0.55 + esforco * 0.45 : esforco;
+  const dur = (1.6 - giro * 1.35).toFixed(2) + 's';
+  document.querySelectorAll('.fan').forEach(f => {
+    f.style.animationDuration = dur;
+    f.style.animationPlayState = parada ? 'paused' : 'running';
+  });
+  // water cooler: a bomba nunca para; a água corre mais rápido com mais consumo
+  const durAgua = (1.1 - giro * .6).toFixed(2) + 's';
+  document.querySelectorAll('.fluxo,.volta').forEach(f => { f.style.animationDuration = durAgua; });
+  // modo Desempenho: selo, LED laranja e a onda de luz uma vez na troca
+  $('#selo-modo').style.display = desemp ? '' : 'none';
+  [['rgb1', desemp ? 'var(--laranja)' : 'var(--roxo)'], ['rgb2', desemp ? 'var(--atencao)' : 'var(--amarelo)'], ['rgb3', desemp ? 'var(--laranja)' : 'var(--roxo)']].forEach(([id, c]) => { const e = document.getElementById(id); if (e) e.setAttribute('stop-color', c); });
+  if (MODO_WIN !== null && MODO_WIN !== m && desemp && !reduzir) {
+    const o = document.getElementById('onda'); if (o) { o.classList.remove('onda'); void o.getBoundingClientRect(); o.setAttribute('opacity', '1'); o.classList.add('onda'); }
+    toast('Modo Desempenho ativado · desempenho máximo liberado');
+  }
+  MODO_WIN = m;
+  antesDeTestar(d);
+}
+function antesDeTestar(d) {
+  const b = d.bateria, m = modoAtual(d), lenovo = d.modo_marca_de === 'Lenovo';
+  const itens = [
+    [b ? b.tomada : true, b ? (b.tomada ? 'Na tomada' : 'Na bateria') : 'Na tomada', b ? (b.tomada ? 'Carregador conectado' : 'Conecte o carregador para os testes de desempenho') : 'Computador sem bateria'],
+    [FORCA.has(m), `Modo ${m}`, FORCA.has(m) ? 'Desempenho máximo liberado' : lenovo ? 'Pressione Fn+Q até a luz do botão ficar vermelha' : 'Altere para Desempenho no aplicativo do fabricante ou no Windows'],
+    [!!(d.hwinfo || d.cpu_temp != null), d.hwinfo || d.cpu_temp != null ? 'Temperaturas disponíveis' : 'Sem temperatura do processador', d.fonte_cpu === 'Bench Monitor' ? 'Lidas pelo Bench Monitor' : d.hwinfo ? 'HWiNFO aberto' : d.monitor_sensores ? 'Ligue o Bench Monitor na aba Monitor' : 'Abra o HWiNFO com "Shared Memory Support" ativado'],
+    [!b || b.pct >= 95, b ? `Bateria em ${b.pct}%` : 'Sem bateria', 'O teste de bateria exige carga de 95% ou mais'],
+  ];
+  if (ehPC()) itens.splice(3, 1), itens.splice(0, 1);       // PC de mesa: sem os itens de tomada e de carga da bateria
+  if (ehPC() && !FORCA.has(m)) itens[0][2] = 'Altere para Melhor desempenho em Configurações › Sistema › Energia';
+  const ok = itens.filter(i => i[0]).length;
+  $('#antes-cont').textContent = `${ok} de ${itens.length} prontos`; $('#antes-cont').style.color = ok === itens.length ? 'var(--ok)' : 'var(--atencao)';
+  $('#antes').innerHTML = itens.map(([o, t, s]) => `<div class="chk"><span class="ic" style="background:${o ? 'color-mix(in srgb, var(--ok) 14%, transparent)' : 'color-mix(in srgb, var(--atencao) 14%, transparent)'}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="${o ? 'var(--ok)' : 'var(--atencao)'}" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${o ? '<path d="M5 12l4 4 10-10"/>' : '<path d="M12 7v6M12 16.5v.5"/>'}</svg></span><div><b>${esc(t)}</b><small>${esc(s)}</small></div></div>`).join('');
+}
+async function tick() {
+  if (document.hidden || ABA !== 'inicio') return;
+  try { ULT = await RX.agora(); atualizarDesenho(ULT); } catch (e) { console.error(e); }
+}
+function comecarAoVivo() { clearInterval(POLL); tick(); POLL = setInterval(tick, 2000); }
+function pararAoVivo() { clearInterval(POLL); POLL = null; RX.pausar(); }
+document.addEventListener('visibilitychange', () => { if (document.hidden) { if (ABA === 'inicio') RX.pausar(); } else if (ABA === 'inicio') tick(); });
+
+/* ======================= Laudo ======================= */
+const COR_NIVEL = {ok: 'var(--ok)', atencao: 'var(--atencao)', problema: 'var(--problema)', sem: 'var(--txt3)'};
+const IC_LAUDO = {bateria: '<rect x="3" y="7" width="16" height="10" rx="2"/><path d="M21 10v4"/>', disco: '<rect x="3" y="6" width="18" height="12" rx="2"/><path d="M7 10h6M7 14h3"/>',
+  refri: '<path d="M14 14.8V4a2 2 0 10-4 0v10.8a4 4 0 104 0z"/>', driver: '<rect x="3" y="6" width="18" height="12" rx="2"/><path d="M7 18v2M17 18v2M8 10h8"/>',
+  memoria: '<rect x="3" y="7" width="18" height="10" rx="1.5"/><path d="M7 17v3M11 17v3M15 17v3M7 10v4M11 10v4M15 10v4"/>'};
+async function carregarLaudo() {
+  const l = await RX.laudo(); const it = l.itens || [];
+  if (!it.length) return;
+  const n = k => it.filter(i => i.nivel === k).length;
+  $('#laudo-resumo').innerHTML = [n('ok') ? `<span style="color:var(--ok)">${n('ok')} ${n('ok') > 1 ? 'normais' : 'normal'}</span>` : '', n('atencao') ? `<span style="color:var(--atencao)">${n('atencao')} em atenção</span>` : '', n('problema') ? `<span style="color:var(--problema)">${n('problema')} problema${n('problema') > 1 ? 's' : ''}</span>` : ''].filter(Boolean).join(' · ');
+  $('#laudo').innerHTML = it.map(i => `<div class="laudo"><div class="topo"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC_LAUDO[i.id] || ''}</svg>${esc(i.nome)}<span class="ponto" style="background:${COR_NIVEL[i.nivel]};box-shadow:0 0 0 4px color-mix(in srgb, ${COR_NIVEL[i.nivel]} 14%, transparent)"></span></div><div class="st" style="color:${COR_NIVEL[i.nivel]}">${esc(i.status)}</div><div class="det">${esc(i.detalhe)}</div></div>`).join('');
+}
+
+/* ======================= Cabeçalho ======================= */
+function titulo(nome) {
+  const n = (nome || 'Este notebook').trim(), p = n.split(' ');
+  if (p.length < 3) return esc(n);
+  return esc(p.slice(0, -1).join(' ')) + ' <span>' + esc(p[p.length - 1]) + '</span>';
+}
+// nome no título: no PC montado, a placa-mãe ("ASUS ROG STRIX B650E-F"); nos de marca e nos notebooks, o modelo
+function nomeAparelho() {
+  if (ehPC() && PC.nome) return PC.nome;
+  const n = (BASICO.notebook || '').replace(/^PC · /, '').replace(/^ASUSTeK COMPUTER INC\.?/i, 'ASUS').replace(/^Micro-Star International Co\.,? Ltd\.?/i, 'MSI').replace(/^Gigabyte Technology Co\.,? Ltd\.?/i, 'Gigabyte');
+  return n || (FICHA && (FICHA.nome_comercial || `${FICHA.fabricante || ''} ${FICHA.modelo || ''}`.trim())) || (ehPC() ? 'Este PC' : 'Este notebook');
+}
+function cabecalho() {
+  const b = BASICO, g = b.gpu || {};
+  $('#titulo').innerHTML = titulo(nomeAparelho());
+  const ram = b.ram || {}, ssd = b.ssd || {};
+  $('#specs').textContent = [(b.cpu || {}).nome, (g.nome || '').replace('NVIDIA GeForce ', ''), g.vram ? g.vram + ' GB' : null,
+    ram.gb ? `${ram.gb} GB ${ram.tipo || ''}${ram.mhz ? '-' + ram.mhz : ''}` : null, ssd.gb ? `SSD ${ssd.gb >= 1000 ? Math.round(ssd.gb / 1000) + ' TB' : ssd.gb + ' GB'}` : null,
+    g.driver ? 'driver ' + g.driver : null].filter(Boolean).join(' · ') || 'Lendo o computador…';
+}
+
+/* ======================= Ficha ======================= */
+const IC_F = {cpu: '<rect x="6" y="6" width="12" height="12" rx="2"/><path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4"/>', gpu: '<rect x="2" y="7" width="20" height="10" rx="2"/><circle cx="9" cy="12" r="2.5"/><path d="M15 10h4M15 14h4"/>',
+  ram: IC_LAUDO.memoria, ssd: IC_LAUDO.disco, tela: '<rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/>', bat: IC_LAUDO.bateria,
+  rede: '<path d="M2 9a15 15 0 0120 0M5 12.5a10 10 0 0114 0M8.5 16a5 5 0 017 0"/><circle cx="12" cy="19.5" r="1"/>', cam: '<rect x="3" y="7" width="13" height="10" rx="2"/><path d="M16 10l5-3v10l-5-3"/>',
+  sis: '<rect x="3" y="3" width="8" height="8"/><rect x="13" y="3" width="8" height="8"/><rect x="3" y="13" width="8" height="8"/><rect x="13" y="13" width="8" height="8"/>'};
+// ---- cobertura de cores: diagrama CIE 1931 com o triângulo do painel e os padrões
+const LOCUS = [[.1741,.005],[.1733,.0048],[.1714,.0051],[.1644,.0109],[.1566,.0177],[.144,.0297],[.1241,.0578],[.1096,.0868],[.0913,.1327],[.0687,.2007],[.0454,.295],[.0235,.4127],[.0082,.5384],[.0039,.6548],[.0139,.7502],[.0389,.812],[.0743,.8338],[.1142,.8262],[.1547,.8059],[.1929,.7816],[.2296,.7543],[.2658,.7243],[.3016,.6923],[.3373,.6589],[.3731,.6245],[.4087,.5896],[.4441,.5547],[.4788,.5202],[.5125,.4866],[.5448,.4544],[.5752,.4242],[.6029,.3965],[.627,.3725],[.6658,.334],[.6915,.3083],[.7079,.292],[.719,.2809],[.73,.27],[.7347,.2653]];
+const PADROES_COR = {srgb: [[.64, .33], [.3, .6], [.15, .06]], p3: [[.68, .32], [.265, .69], [.15, .06]]};
+function graficoCores(c) {
+  const W = 260, H = 250, X = x => 18 + x / 0.8 * (W - 26), Y = y => H - 18 - y / 0.9 * (H - 26);
+  const pts = a => a.map(([x, y]) => `${X(x).toFixed(1)},${Y(y).toFixed(1)}`).join(' ');
+  const p = c.primarias, painel = [p.r, p.g, p.b], cob = c.cobertura;
+  const barra = (nome, v) => `<div class="cor-l"><span>${nome}</span><div class="barra"><div style="width:${Math.min(100, v)}%;background:var(--destaque)"></div></div><b>${Math.round(v)}%</b></div>`;
+  return `<div class="cores-tela">
+    <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Diagrama de cores: ${Math.round(cob.srgb.xy)}% sRGB e ${Math.round(cob.p3.xy)}% DCI-P3">
+      <defs><linearGradient id="g-locus" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#3b5bff" stop-opacity=".35"/><stop offset=".45" stop-color="#2fd18b" stop-opacity=".3"/><stop offset="1" stop-color="#ff4a3d" stop-opacity=".35"/></linearGradient></defs>
+      <polygon points="${pts(LOCUS)}" fill="url(#g-locus)" stroke="var(--txt4)" stroke-width="1"/>
+      <polygon points="${pts(PADROES_COR.p3)}" fill="none" stroke="var(--txt3)" stroke-width="1.2" stroke-dasharray="2 3"/>
+      <polygon points="${pts(PADROES_COR.srgb)}" fill="none" stroke="var(--txt)" stroke-width="1.2" stroke-dasharray="5 3"/>
+      <polygon points="${pts(painel)}" fill="color-mix(in srgb, var(--destaque) 22%, transparent)" stroke="var(--destaque)" stroke-width="2" stroke-linejoin="round"/>
+      <circle cx="${X(p.w[0])}" cy="${Y(p.w[1])}" r="2.5" fill="var(--txt)"/>
+      <text x="${W - 8}" y="16" text-anchor="end" font-size="10" fill="var(--txt3)">CIE 1931 xy</text>
+    </svg>
+    <div class="cor-leg">
+      ${barra('sRGB', cob.srgb.xy)}${barra('DCI-P3', cob.p3.xy)}${barra('Adobe RGB', cob.adobe.xy)}
+      <div class="cor-chaves"><span><i style="background:var(--destaque)"></i>este painel</span><span><i class="tr"></i>sRGB</span><span><i class="tr p3"></i>DCI-P3</span></div>
+      <div class="barra-txt">${c.generico ? 'O painel informa exatamente as cores do padrão sRGB, o que costuma indicar valores copiados do padrão, não medidos. A cobertura real pode ser menor.' : `Área de cores ${cob.area_srgb}% do sRGB. Valores declarados pelo fabricante no próprio painel; a medição exata exige um colorímetro.`}</div>
+    </div></div>`;
+}
+// portas: o Windows informa tipo (A ou C) e versão (2.0 ou 3.x) de cada porta; a velocidade exata não
+function portasDuvidosas(c) { return !!(c.usb_portas && c.usb_portas.duvidoso); }
+function linhasPortas(c) {
+  const u = c.usb_portas && !c.usb_portas.duvidoso ? c.usb_portas : null, L = [];
+  if (u) {
+    const a = [u.a3 ? `${u.a3} × USB 3.x` : null, u.a2 ? `${u.a2} × USB 2.0` : null].filter(Boolean).join(' · ')
+      + (u.a2_incertas && !u.a3 && !u.a2 ? `${u.a2_incertas} × USB 2.0 (não confirmadas)` : '');
+    L.push(['USB-A', a || 'Nenhuma']);
+    L.push(['USB-C', u.c ? `${u.c} ${u.c === 1 ? 'porta' : 'portas'}${c.thunderbolt ? ' · com Thunderbolt' : c.usb4 ? ' · com USB4' + (c.usb4_fabricante ? ` (${c.usb4_fabricante})` : '') : u.c3 ? ' · USB 3.x' : ' · USB 2.0'}` : 'Nenhuma']);
+  } else {
+    L.push(['USB4 / Thunderbolt', c.thunderbolt ? 'Thunderbolt' : c.usb4 ? 'USB4' : 'Não']);
+  }
+  if (c.hdmi != null) L.push(['HDMI', simNao(c.hdmi)]);
+  if (c.cartao) L.push(['Leitor de cartão', c.cartao.length ? 'Sim · SD ou microSD' : 'Não']);
+  return L;
+}
+// linha da ficha com um terceiro item = texto que o botão ao lado copia (ex.: o modelo do painel, para pesquisar)
+const IC_COPIA = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"></rect><path d="M5 15V6a2 2 0 0 1 2-2h9"></path></svg>';
+const IC_OK = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>';
+function secaoFicha(ic, tit, dest, linhas, extra = '') {
+  const L2_ = linhas.filter(([, v]) => v != null && v !== '');
+  return `<section class="fsec"><div class="cab"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC_F[ic]}</svg></span><div><div class="rotulo" style="letter-spacing:.16em">${tit}</div><div class="dest">${esc(dest || '—')}</div></div></div>${extra}
+    <dl>${L2_.map(([k, v, copia]) => `<dt>${esc(k)}</dt><dd>${esc(v)}${copia ? `<button type="button" class="f-copia" data-copia="${esc(copia)}" data-nome="${esc(k)}" title="Copiar" aria-label="Copiar ${esc(k.toLowerCase())}: ${esc(copia)}">${IC_COPIA}</button>` : ''}</dd>`).join('')}</dl></section>`;
+}
+const simNao = v => v ? 'Sim' : 'Não';
+function montarFicha(f) {
+  const p = f.processador || {}, gpus = f.placas_video || [], ded = gpus.find(g => g.dedicada), integ = gpus.find(g => !g.dedicada);
+  const nv = f.gpu_nvidia || {}, m = f.memoria || {}, discos = f.armazenamento || [], t = f.tela || {}, b = f.bateria || {}, c = f.conectividade || {};
+  const hz = t.hz_max ? `${t.hz_max} Hz` : null;
+  const s = [];
+  const ca = p.cache || {};
+  s.push(secaoFicha('cpu', 'PROCESSADOR', p.nome, [['Núcleos', p.nucleos], ['Threads', p.threads], ['Cache L1', ca.l1], ['Cache L2', ca.l2], ['Cache L3', ca.l3], ['Vídeo integrado', integ ? integ.nome : null]]));
+  s.push(secaoFicha('gpu', 'PLACA DE VÍDEO', ded ? ded.nome.replace('NVIDIA GeForce ', '') : integ ? integ.nome : '—',
+    [['Memória de vídeo', ded && ded.vram_gb ? `${fmt(ded.vram_gb)} GB` : null], ['Energia máxima', nv.tgp ? `${nv.tgp} W` : null], ['Driver', nv.driver || null], ['Tipo', ded ? 'Dedicada' : 'Integrada']]));
+  s.push(secaoFicha('ram', 'MEMÓRIA', m.total_gb ? `${m.total_gb} GB ${m.tipo || ''}${m.mts ? '-' + m.mts : ''}` : '—',
+    [['Módulos', m.modulos ? modulosRAM(m.detalhe) || m.modulos : null], ['Canais', m.canais],
+     ['Encaixes', m.soldada ? 'Nenhum (memória soldada na placa)' : m.slots != null ? `${m.slots} · ${m.slots_livres ? (m.slots_livres === 1 ? '1 livre' : m.slots_livres + ' livres') : (m.slots === 1 ? 'ocupado' : 'todos ocupados')}` : null],
+     ['Upgrade', upgradeRAM(m)]]));
+  const d0 = discos[0] || {}, vols = f.volumes || [];
+  // vários SSDs: título com a soma ("2 SSDs NVMe · 2 TB") e uma linha por SSD e por unidade (C:, D:...)
+  const tbDe = x => { const m = /([\d.]+)\s*(TB|GB)/.exec(x.anunciado || ''); return m ? +m[1] * (m[2] === 'TB' ? 1000 : 1) : 0; };
+  const somaGB = discos.reduce((a, x) => a + tbDe(x), 0);
+  const tituloSSD = discos.length > 1
+    ? `${discos.length} SSDs${new Set(discos.map(x => x.interface)).size === 1 && d0.interface ? ' ' + d0.interface : ''} · ${somaGB >= 1000 ? fmt(somaGB / 1000, somaGB % 1000 ? 1 : 0) + ' TB' : somaGB + ' GB'}`
+    : d0.anunciado ? `SSD ${d0.interface || ''} ${d0.anunciado}` : '—';
+  const linhasSSD = discos.length > 1
+    ? discos.map((x, i) => [`SSD ${i + 1}`, `${x.nome} · ${x.anunciado}`])
+    : [['Modelo', d0.nome], ['Barramento', d0.interface]];
+  const linhasVol = vols.length ? vols.map(v => [`Unidade ${v.letra}${v.nome ? ' · ' + v.nome : ''}`, `${fmt(v.livre_gb)} GB livres de ${fmt(v.total_gb)} GB`])
+    : [['Livre no C:', f.armazenamento_livre_gb != null ? `${f.armazenamento_livre_gb} GB de ${f.armazenamento_total_gb} GB` : null]];
+  const totV = vols.reduce((a, v) => a + v.total_gb, 0), livV = vols.reduce((a, v) => a + v.livre_gb, 0);
+  const total = vols.length ? totV : f.armazenamento_total_gb, usado = vols.length ? totV - livV : f.armazenamento_total_gb ? f.armazenamento_total_gb - f.armazenamento_livre_gb : null;
+  s.push(secaoFicha('ssd', 'ARMAZENAMENTO', tituloSSD, [...linhasSSD, ...linhasVol],
+    usado != null && total ? `<div class="barra"><div style="width:${Math.round(100 * usado / total)}%;background:var(--atencao)"></div></div><div class="barra-txt">${fmt(usado)} GB ocupados${vols.length > 1 ? ' no total das unidades' : ''}</div>` : ''));
+  s.push(secaoFicha('tela', 'TELA', [t.polegadas ? String(t.polegadas).replace('.', ',') + '"' : null, t.largura_px ? `${t.largura_px}×${t.altura_px}` : null, hz].filter(Boolean).join(' · ') || '—',
+    [['Painel', [t.fabricante, t.modelo].filter(Boolean).join(' ') || null, t.modelo || t.codigo || null], ['Código do painel', t.codigo], ['Tipo', t.tipo], ['Brilho declarado', t.brilho_max ? `${fmt(t.brilho_max)} nits` : null], ['Brilho HDR declarado', t.brilho_hdr ? `${fmt(t.brilho_hdr)} nits` : null], ['Taxa máxima', hz], ['Taxa agora', t.hz ? `${t.hz} Hz` : null],
+     ...(t.cores ? [['Gama de cores', t.cores.classe]] : [])],
+    t.cores ? graficoCores(t.cores) : ''));
+  s.push('<!--monitores-->');
+  s.push(secaoFicha('bat', 'BATERIA', b.saude_pct ? `Saúde ${Math.min(100, b.saude_pct)}%` : b.wh ? `${fmt(b.wh)} Wh` : b.existe ? 'Capacidade não informada' : 'Sem bateria',
+    [['Capacidade de fábrica', b.wh ? `${fmt(b.wh, 1)} Wh` : null], ['Capacidade hoje', b.wh_atual ? `${fmt(b.wh_atual, 1)} Wh${b.saude_pct > 100 ? ` · ${b.saude_pct - 100}% acima da de fábrica` : ''}` : null], ['Ciclos', b.ciclos], ['Fabricante', b.fabricante]],
+    b.saude_pct ? `<div class="barra"><div style="width:${Math.min(100, b.saude_pct)}%;background:${b.saude_pct >= 80 ? 'var(--ok)' : 'var(--atencao)'}"></div></div><div class="barra-txt">${b.saude_pct > 100 ? 'bateria nova: capacidade ligeiramente acima da de fábrica, o que é normal' : 'percentual restante da capacidade de fábrica'}</div>` : ''));
+  s.push(secaoFicha('rede', 'CONECTIVIDADE', c.wifi_padrao || (c.wifi ? 'Wi-Fi' : '—'),
+    [['Wi-Fi', c.wifi], ['Bluetooth', c.bluetooth ? (c.bluetooth_versao ? 'Bluetooth ' + c.bluetooth_versao : 'Sim') : 'Não'],
+     ...linhasPortas(c), ['Rede cabeada', c.ethernet ? (c.ethernet_nome ? 'Sim · ' + c.ethernet_nome.replace(/\(R\)|\(TM\)/g, '').replace(/\s+/g, ' ').trim() : 'Sim') : 'Não']],
+    portasDuvidosas(c) ? '<div class="barra-txt" style="margin:2px 0 8px">As portas USB deste notebook não puderam ser identificadas com segurança: a tabela do fabricante marca todas como externas.</div>' : ''));
+  const bio = f.biometria || {}, cam = f.camera || {};
+  s.push(secaoFicha('cam', 'CÂMERA E SEGURANÇA', cam.tem ? (cam.ir ? 'Câmera com infravermelho' : 'Câmera') : 'Sem câmera',
+    [['Reconhecimento facial', simNao(bio.rosto)], ['Leitor de digital', simNao(bio.digital)]]));
+  s.push(secaoFicha('sis', 'SISTEMA', f.windows || '—', [['BIOS', f.bios], ['Modo de energia na leitura', f.modo_windows], ['Lida em', f.gerada_em ? new Date(f.gerada_em).toLocaleString('pt-BR').slice(0, 17) : null]]));
+  return s.join('');
+}
+let FICHA_POLL = null, FICHA_TEXTO = '';
+// "16 GB Micron Technology X + 16 GB Micron Technology X" -> "2 × 16 GB Micron X"
+function modulosRAM(det) {
+  const cont = new Map();
+  (det || []).forEach(d => { const k = d.replace(/\s+Technology\b/i, '').replace(/\s+/g, ' ').trim(); cont.set(k, (cont.get(k) || 0) + 1); });
+  return [...cont].map(([k, n]) => n > 1 ? `${n} × ${k}` : k).join(' + ');
+}
+// o que dá para fazer com a memória, em vez de "soldada: não / permite troca"
+function upgradeRAM(m) {
+  if (m.soldada) return 'Não é possível ampliar';
+  if (m.parte_soldada) return m.slots_livres ? 'Possível no encaixe livre (parte é soldada)' : 'Possível trocando o módulo do encaixe (parte é soldada)';
+  if (m.slots_livres) return 'Possível: há encaixe livre';
+  if (m.slots != null) return 'Possível trocando os módulos por maiores';
+  return null;
+}
+async function abrirFicha(refazer = false) {
+  clearInterval(FICHA_POLL);
+  const r = await RX.ficha(refazer);
+  mostrarFicha(r);
+  vigiarMonitores();
+  if (r.fase === 'lendo') FICHA_POLL = setInterval(async () => { const x = await RX.ficha(false); mostrarFicha(x); if (x.fase !== 'lendo') clearInterval(FICHA_POLL); }, 1500);
+}
+/* Monitores externos: cartões ao lado do da tela, lidos na hora (não ficam na ficha gravada nem no texto copiado). */
+let MONITORES = [], MON_POLL = null, MON_ASS = '';
+function cartaoMonitor(m, i, total) {
+  const pol = m.polegadas ? String(m.polegadas).replace('.', ',') + '"' : null;
+  const res = m.largura ? `${m.largura}×${m.altura}` : null;
+  const dest = [pol, res, m.hz ? `${m.hz} Hz` : null].filter(Boolean).join(' · ') || '—';
+  const nat = m.nativa && m.largura && m.nativa[0] * m.nativa[1] > m.largura * m.altura ? m.nativa : null;
+  const hzBaixo = m.hz && m.hz_max && m.hz_max >= m.hz * 1.2 && m.hz_max - m.hz >= 15;
+  const placa = m.indireta ? null : m.dedicada === true ? 'placa dedicada' : m.dedicada === false ? 'vídeo integrado' : null;
+  const linhas = [
+    ['Modelo', [m.nome && !/generic|gen[eé]rico/i.test(m.nome) ? m.nome : null, m.ano ? `fabricado em ${m.ano}` : null].filter(Boolean).join(' · ') || null],
+    ['Ligado em', [m.porta, placa].filter(Boolean).join(' · ')],
+    ['Placa de vídeo', m.placa ? m.placa.replace('NVIDIA GeForce ', '') : null],
+    ['Resolução', res ? res + (nat ? ` · a nativa é ${nat[0]}×${nat[1]}` : ' · é a nativa') : null, null, !!nat],
+    ['Taxa de atualização', m.hz ? `${m.hz} Hz` + (m.hz_max > m.hz ? ` · disponível até ${m.hz_max} Hz` : ' · é o máximo') : null, null, hzBaixo],
+    ['HDR', m.hdr_aceita == null ? null : m.hdr_ligado ? 'Ligado' : m.hdr_aceita ? 'Compatível · desligado' : 'Não compatível'],
+    ['Cor', m.bits ? `${m.bits} bits` + (m.bits_max > m.bits ? ` · aceita ${m.bits_max}` : '') : null],
+    ['Uso', m.duplicada ? 'Duplicando a tela do notebook' : m.principal ? 'Tela principal' : 'Tela estendida'],
+  ].filter(([, v]) => v != null && v !== '');
+  const avisos = [];
+  if (m.indireta) avisos.push('Este adaptador gera a imagem por software, sem usar direto a placa de vídeo. Serve para trabalho, mas não é indicado para jogos.');
+  if (hzBaixo) avisos.push(m.duplicada ? 'Com a tela duplicada, a taxa fica limitada à da tela mais lenta. Use o modo "Estender" para liberar a taxa do monitor.'
+    : 'A taxa está abaixo do que o Windows oferece para este monitor.');
+  if (nat) avisos.push('A resolução está abaixo da nativa do monitor, e a imagem fica menos nítida.');
+  const aviso = avisos.length ? `<div class="f-aviso"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l10 18H2z"/><path d="M12 10v5M12 18v.5"/></svg><span>${avisos.map(esc).join(' ')}${hzBaixo || nat ? ' <button type="button" class="f-link" data-acao="video">Abrir configuração de vídeo</button>' : ''}</span></div>` : '';
+  return `<section class="fsec ext${avisos.length ? ' at' : ''}" aria-label="Monitor externo${total > 1 ? ' ' + (i + 1) : ''}"><div class="cab"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC_F.tela}</svg></span><div><div class="rotulo" style="letter-spacing:.16em">MONITOR EXTERNO${total > 1 ? ' ' + (i + 1) : ''}</div><div class="dest">${esc(dest)}</div></div></div>
+    <dl>${linhas.map(([k, v, , at]) => `<dt>${esc(k)}</dt><dd${at ? ' class="at"' : ''}>${esc(v)}</dd>`).join('')}</dl>${aviso}</section>`;
+}
+const htmlMonitores = () => MONITORES.map((m, i) => cartaoMonitor(m, i, MONITORES.length)).join('');
+function desenharFicha() { if (FICHA) $('#f-grade').innerHTML = montarFicha(FICHA).replace('<!--monitores-->', htmlMonitores()); }
+async function lerMonitores() {
+  let r = null;
+  try { r = await RX.monitores(); } catch (e) { return; }
+  const lista = (r && r.monitores) || [], ass = JSON.stringify(lista);
+  if (ass === MON_ASS) return;                       // nada mudou: não redesenha (preserva o foco e os botões de copiar)
+  MON_ASS = ass; MONITORES = lista;
+  if (ABA === 'ficha') desenharFicha();
+}
+function vigiarMonitores() {
+  clearInterval(MON_POLL);
+  lerMonitores();
+  MON_POLL = setInterval(() => { if (ABA !== 'ficha') { clearInterval(MON_POLL); MON_POLL = null; return; } lerMonitores(); }, 4000);
+}
+function mostrarFicha(r) {
+  const f = r.ficha;
+  if (f) FICHA = f;
+  const nome = nomeAparelho();
+  $('#f-titulo').innerHTML = titulo(nome);
+  if (r.fase === 'lendo' && !f) { $('#f-sub').textContent = 'Lendo o hardware… (cerca de 15 segundos)'; $('#f-grade').innerHTML = ''; return; }
+  if (r.fase === 'erro' && !f) { $('#f-sub').textContent = 'Não foi possível ler a ficha: ' + r.erro; return; }
+  if (!f) return;
+  FICHA = f; FICHA_TEXTO = r.texto || '';
+  $('#f-sub').textContent = `${f.fabricante || ''} · lida em ${f.gerada_em ? new Date(f.gerada_em).toLocaleString('pt-BR').slice(0, 17) : '—'}${r.fase === 'lendo' ? ' · atualizando…' : ''} · sem instalar programas`;
+  desenharFicha();
+  $('#f-copiar').disabled = false; $('#f-salvar').disabled = false;
+}
+$('#f-reler').onclick = () => abrirFicha(true);
+$('#f-grade').addEventListener('click', async e => {
+  if (e.target.closest('[data-acao=video]')) { const x = await RX.abrir_video(); if (!x || !x.ok) toast('Não foi possível abrir a configuração de vídeo'); return; }
+  const b = e.target.closest('.f-copia'); if (!b) return;
+  try {
+    await navigator.clipboard.writeText(b.dataset.copia);
+    b.innerHTML = IC_OK; b.classList.add('ok'); toast(`Copiado: ${b.dataset.copia}`);
+    setTimeout(() => { b.innerHTML = IC_COPIA; b.classList.remove('ok'); }, 1800);
+  } catch (er) { toast('Não foi possível copiar'); }
+});
+$('#f-copiar').onclick = async () => { try { await navigator.clipboard.writeText(FICHA_TEXTO); toast('Ficha copiada'); } catch (e) { toast('Não foi possível copiar'); } };
+$('#f-salvar').onclick = async () => {
+  const css = [...document.querySelectorAll('style')].map(s => s.textContent).join('\n');
+  const nome = $('#f-titulo').textContent;
+  const html = `<!doctype html><html lang="pt-BR"${COR !== 'bench' ? ` data-cor="${COR}"` : ''}><head><meta charset="utf-8"><title>${esc(nome)} · ficha técnica</title><meta name="viewport" content="width=device-width,initial-scale=1"><style>${css}
+    html,body{overflow:auto;height:auto}main.pag{margin:0 auto}</style></head><body><main class="pag"><div class="rotulo">Ficha técnica · Bench Labs</div><h1 class="disp">${$('#f-titulo').innerHTML}</h1><div class="sub mono">${esc($('#f-sub').textContent)}</div>
+    <div class="grade-ficha">${$('#f-grade').innerHTML.replace(/<button type="button" class="f-copia"[\s\S]*?<\/button>/g, '').replace(/<section class="fsec ext[\s\S]*?<\/section>/g, '')}</div><div style="font-size:12px;color:var(--txt3)">Gerada pelo Bench Labs a partir do próprio Windows.</div></main></body></html>`;
+  const r = await RX.salvar_pagina(html, nome);
+  toast(r.ok ? 'Ficha salva e aberta no navegador' : 'Não foi possível salvar');
+};
+
+/* ======================= começo ======================= */
+
+/* ======================= Cores do app ======================= */
+const CORES_APP = [
+  {id: 'bench', nome: 'Bench', sub: 'roxo e amarelo (padrão)', am: ['#120B1C', '#1D1429', '#FFE500']},
+  {id: 'claro', nome: 'Claro', sub: 'fundo branco', am: ['#F5F3F8', '#FFFFFF', '#6A2FD6']},
+  {id: 'grafite', nome: 'Grafite', sub: 'cinza neutro e amarelo', am: ['#111214', '#191A1E', '#FFE500']},
+  {id: 'meianoite', nome: 'Meia-noite', sub: 'azul-marinho e ciano', am: ['#0A1120', '#111B2E', '#3EE6FF']},
+  {id: 'pista', nome: 'Pista', sub: 'preto e vermelho', am: ['#0B0B0C', '#151516', '#FF2E2E']},
+  {id: 'abobora', nome: 'Abóbora', sub: 'preto e laranja, com enfeites', am: ['#0F0A07', '#1C130C', '#FF7A1A'], temporada: true},
+];
+let COR = 'bench', ENFEITES = true;
+// a cor Abóbora (Halloween) só existe em outubro: fora dele some da lista, e quem estava com ela volta ao Bench
+const emTemporada = (d = new Date()) => d.getMonth() === 9;
+function aplicarCorApp(c) {
+  COR = CORES_APP.some(x => x.id === c && (!x.temporada || emTemporada())) ? c : 'bench';
+  if (COR === 'bench') delete document.documentElement.dataset.cor; else document.documentElement.dataset.cor = COR;
+  const antes = HW.on();
+  document.documentElement.classList.toggle('hw', COR === 'abobora' && ENFEITES);
+  const botao = x => `<button role="radio" aria-checked="${x.id === COR}" data-cor="${x.id}"><span class="amostra">${x.am.map(c => `<i style="background:${c}"></i>`).join('')}</span><span>${x.nome}<small>${x.sub}</small></span></button>`;
+  const temp = CORES_APP.filter(x => x.temporada && emTemporada());
+  $('#lista-cores').innerHTML = CORES_APP.filter(x => !x.temporada).map(botao).join('')
+    + (temp.length ? `<div class="sec-temp" aria-hidden="true"><b>HALLOWEEN</b><small>temporada</small></div>${temp.map(botao).join('')}` : '');
+  $('#op-hw').innerHTML = COR === 'abobora' ? `<label class="op-hw"><input type="checkbox" id="op-enfeites"${ENFEITES ? ' checked' : ''}>Mostrar enfeites animados (morcegos, teias e abóboras)</label>` : '';
+  if ($('#op-enfeites')) $('#op-enfeites').onchange = e => { ENFEITES = e.target.checked; aplicarCorApp(COR); try { RX.salvar_enfeites(ENFEITES); } catch (er) { /* sem api */ } };
+  document.querySelectorAll('#lista-cores button').forEach(b => b.onclick = () => { aplicarCorApp(b.dataset.cor); try { RX.salvar_cor(COR); } catch (e) { /* sem api */ } });
+  if (antes !== HW.on() && $('#palco').innerHTML) desenhar(MODELO);   // põe ou tira os enfeites dos desenhos
+}
+function abrirCores(abrir) {
+  const pop = $('#pop-cores'); pop.hidden = !abrir; $('#b-cores').setAttribute('aria-expanded', String(abrir));
+  if (abrir) { const b = pop.querySelector('[aria-checked=true]'); b && b.focus(); }
+}
+$('#b-cores').onclick = e => { e.stopPropagation(); abrirCores($('#pop-cores').hidden); };
+document.addEventListener('click', e => { if (!$('#pop-cores').hidden && !e.target.closest('#pop-cores')) abrirCores(false); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('#pop-cores').hidden) { abrirCores(false); $('#b-cores').focus(); } });
+aplicarCorApp('bench');
+
+
+/* ======================= Atualização do próprio Bench Labs ======================= */
+let ATUAL = null, ATUAL_POLL = null;
+function corpoAtualizacao() {
+  const a = ATUAL || {};
+  const versao = `<div class="linha-a"><span>Versão instalada</span><b>${esc(a.atual || $('#versao').dataset.v || '—')}</b></div>`;
+  if (!ATUAL) return versao + '<div class="c" style="font-size:12.5px;color:var(--txt3);margin-top:6px">Verificando atualizações…</div>';
+  if (a.erro && !a.tem) return versao + `<div style="font-size:12.5px;color:var(--txt3);margin-top:6px">${esc(a.erro)}</div><button class="btn btn-sec" id="a-verif">Verificar novamente</button>`;
+  if (!a.tem) return versao + '<div style="font-size:12.5px;color:var(--ok);margin-top:6px">Você está na versão mais recente.</div><button class="btn btn-sec" id="a-verif">Verificar novamente</button>';
+  return versao + `<div class="linha-a"><span>Nova versão</span><b style="color:var(--destaque)">${esc(a.nova)}</b></div>${a.notas ? `<div class="notas">${esc(a.notas)}</div>` : ''}
+    <div id="a-prog"></div><button class="btn btn-pri" id="a-inst">Atualizar agora</button>
+    <div style="font-size:11.5px;color:var(--txt3);margin-top:8px">O Bench Labs será fechado durante a instalação e aberto novamente em seguida.</div>`;
+}
+function desenharAtualizacao() {
+  $('#atual-corpo').innerHTML = corpoAtualizacao();
+  const v = $('#versao'); v.classList.toggle('nova', !!(ATUAL && ATUAL.tem)); v.textContent = v.dataset.v || ''; v.title = ATUAL && ATUAL.tem ? `Nova versão disponível: ${ATUAL.nova}` : 'Versão e atualizações';
+  if ($('#a-verif')) $('#a-verif').onclick = () => verificarAtualizacao();
+  if ($('#a-inst')) $('#a-inst').onclick = async () => {
+    const r = await API.app_instalar_atualizacao(); if (!r.ok) { toast(r.erro); return; }
+    $('#a-inst').disabled = true; clearInterval(ATUAL_POLL);
+    ATUAL_POLL = setInterval(async () => {
+      const e = await API.app_status_atualizacao(), p = $('#a-prog'); if (!p) return;
+      const txt = {baixando: `Baixando… ${Math.round(100 * (e.progresso || 0))}%`, instalando: 'Abrindo o instalador…',
+        aplicando: 'Instalando a atualização…', reiniciando: 'Pronto! Reabrindo o Bench Labs…', erro: e.erro, bloqueado: e.erro}[e.fase] || '';
+      const ruim = e.fase === 'erro' || e.fase === 'bloqueado';
+      p.innerHTML = `<div class="barra-a"><i style="width:${100 * (e.progresso || 0)}%"></i></div><div style="font-size:12px;color:${ruim ? 'var(--problema)' : 'var(--txt3)'}">${esc(txt)}</div>`;
+      if (ruim || e.fase === 'reiniciando') { clearInterval(ATUAL_POLL); if (ruim) $('#a-inst').disabled = false; }
+    }, 600);
+  };
+}
+async function verificarAtualizacao() {
+  ATUAL = null; desenharAtualizacao();
+  try { ATUAL = await API.app_verificar_atualizacao(); } catch (e) { ATUAL = {erro: 'Não foi possível verificar atualizações.'}; }
+  desenharAtualizacao();
+}
+function abrirAtualizacao(abrir) { $('#pop-atual').hidden = !abrir; $('#versao').setAttribute('aria-expanded', String(abrir)); if (abrir && !ATUAL) verificarAtualizacao(); }
+$('#versao').onclick = e => { e.stopPropagation(); abrirAtualizacao($('#pop-atual').hidden); };
+document.addEventListener('click', e => { if (!$('#pop-atual').hidden && !e.target.closest('#pop-atual')) abrirAtualizacao(false); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('#pop-atual').hidden) { abrirAtualizacao(false); $('#versao').focus(); } });
+
+async function iniciar() {
+  API = BENCH_API(); RX = new Proxy({}, {get: (_, k) => typeof k === 'string' && k !== 'then' ? (...a) => API['rx_' + k](...a) : undefined});
+  INI = await RX.inicio();
+  MODO = INI.modo; BASICO = INI.basico || {}; FICHA = INI.ficha || null; PC = INI.pc || {desktop: !!BASICO.desktop};
+  MODELO = modeloValido(INI.modelo || BASICO.modelo_sugerido || 2);
+  TEMA = ['raiox', 'painel', 'bento'].includes(INI.tema) ? INI.tema : 'raiox';
+  ENFEITES = INI.enfeites !== false;
+  aplicarCorApp(INI.cor);
+  const ver = await RX.versao().catch(() => ''); $('#versao').dataset.v = ver ? 'v' + ver : ''; $('#versao').textContent = $('#versao').dataset.v;
+  setTimeout(() => { if (MODO === 'normal') verificarAtualizacao(); }, 6000);   // verifica sozinho uma vez, sem atrapalhar os testes
+  aplicarAparelho(); cabecalho(); desenhar(MODELO);
+  ir(INI.aba || 'inicio');
+  // completa o que falta sem travar a tela
+  RX.inicio_completo().then(d => {
+    const vram = temVram(); BASICO = d; cabecalho();
+    if (!INI.modelo) { MODELO = modeloValido(d.modelo_sugerido || MODELO); desenhar(MODELO); }
+    else if (ehPC() && vram !== temVram()) desenhar(MODELO);      // memória de vídeo ou placa-mãe nos temas Painel e Blocos
+    carregarLaudo();
+  }).catch(() => {});
+  if (MODO === 'normal') {
+    const r = await RX.ficha(false);
+    if (r.fase === 'lendo') { const t = setInterval(async () => { const x = await RX.ficha(false); if (x.fase !== 'lendo') { clearInterval(t); FICHA = x.ficha; carregarLaudo(); } }, 2000); }
+    else { FICHA = r.ficha || FICHA; }
+    carregarLaudo();
+  }
+}
+BENCH_ESPERAR(iniciar);
+</script>
+</body>
+</html>

@@ -11,40 +11,34 @@ import {
   FlaskConical,
   Flame,
   Gamepad2,
-  Gauge,
   HardDrive,
   History,
   MemoryStick,
   MonitorPlay,
   Palette,
-  Plug,
   ScanLine,
-  Share2,
   Sparkles,
   Timer,
-  Trophy,
-  Users,
   type LucideIcon,
 } from 'lucide-react'
 import { type Metadata } from 'next'
-import Image, { type StaticImageData } from 'next/image'
+// Community FPS (unreleased): restore these imports with the section below.
+// import { Gauge, Plug, Share2, Trophy, Users } from 'lucide-react'
+// import Image, { type StaticImageData } from 'next/image'
 import Link from 'next/link'
 
-import bateria from '@/assets/bench-labs/bateria.jpg'
-import fichaTecnica from '@/assets/bench-labs/ficha-tecnica.jpg'
-import fichaTela from '@/assets/bench-labs/ficha-tela.jpg'
-import fpsComunidade from '@/assets/bench-labs/fps-comunidade.jpg'
+// import fpsComunidade from '@/assets/bench-labs/fps-comunidade.jpg'
 import monitorRaioX from '@/assets/bench-labs/monitor-raio-x.jpg'
-import temaVermelho from '@/assets/bench-labs/tema-vermelho.jpg'
-import testes from '@/assets/bench-labs/testes.jpg'
 import { BENCH_LABS_DOWNLOAD_URL } from '@/constants/bench-labs'
 import { cn } from '@/lib/utils'
 import { MonitorShowcase } from './monitor-showcase'
+import { DemoFrame } from './demo-frame'
+import { ColorShowcase } from './color-showcase'
 
 export const metadata: Metadata = {
   title: 'Bench Labs',
   description:
-    'Bench Labs é o app do Bench Promos para testar o seu notebook: benchmarks de jogos, processador, SSD e IA, FPS da comunidade, teste de bateria em uso real, laudo de saúde e ficha técnica completa.',
+    'Bench Labs é o app do Bench Promos para testar o seu notebook: benchmarks de jogos, processador, SSD e IA, teste de bateria em uso real, laudo de saúde e ficha técnica completa.',
   openGraph: {
     title: 'Bench Labs — o laboratório do Bench Promos no seu notebook',
     description:
@@ -146,6 +140,7 @@ const tests: {
   },
 ]
 
+/* Community FPS — unreleased.
 const communityPoints: {
   icon: LucideIcon
   title: string
@@ -177,6 +172,8 @@ const communityPoints: {
   },
 ]
 
+*/
+
 const batteryModes = [
   {
     name: 'Teste rápido',
@@ -202,35 +199,6 @@ const batteryModes = [
     duration: 'você escolhe',
     description:
       'O mesmo uso do teste completo, pelo tempo que você definir, com a projeção da autonomia total.',
-  },
-]
-
-const reportItems: {
-  label: string
-  status: string
-  detail: string
-  attention?: boolean
-}[] = [
-  {
-    label: 'Bateria',
-    status: 'Normal',
-    detail: 'Saúde 100% · 83,6 de 84,0 Wh · 33 ciclos',
-  },
-  {
-    label: 'Armazenamento',
-    status: 'Normal',
-    detail: '386 GB livres de 1.022 GB',
-  },
-  {
-    label: 'Refrigeração',
-    status: 'Atenção',
-    detail: 'Atingiu 105 °C no Stress total, no limite do processador',
-    attention: true,
-  },
-  {
-    label: 'Memória',
-    status: 'Normal',
-    detail: '32 GB · dual-channel',
   },
 ]
 
@@ -309,6 +277,7 @@ function Eyebrow({ children }: { children: React.ReactNode }) {
   )
 }
 
+/* Community FPS screenshot — restore with the section.
 function Screenshot({
   src,
   alt,
@@ -337,6 +306,8 @@ function Screenshot({
     </div>
   )
 }
+
+*/
 
 export default function BenchLabsPage() {
   return (
@@ -391,11 +362,11 @@ export default function BenchLabsPage() {
               aria-hidden="true"
               className="absolute inset-x-10 -bottom-6 top-10 rounded-[2rem] bg-[#ffe01b]/20 blur-3xl"
             />
-            <Screenshot
-              src={monitorRaioX}
-              alt="Tela inicial do Bench Labs mostrando um Lenovo Legion 7 por dentro, com consumo, temperaturas, memória, armazenamento e bateria"
-              sizes="(max-width: 1500px) 100vw, 1500px"
+            <DemoFrame
+              view="inicio"
+              title="Bench Labs: notebook de exemplo com sensores simulados"
               className="relative"
+              height={900}
             />
           </div>
         </div>
@@ -500,16 +471,16 @@ export default function BenchLabsPage() {
             ))}
           </ul>
 
-          <Screenshot
-            src={testes}
-            alt="Tela de testes do Bench Labs com GPU, CPU, memória, SSD, stress, edição de vídeo, IA e arquitetura, cada um com sua nota"
-            sizes="(max-width: 1500px) 100vw, 1500px"
+          <DemoFrame
+            view="testes"
+            title="Explore os testes e perfis do Bench Labs"
             className="mt-12"
+            height={900}
           />
         </div>
       </section>
 
-      {/* FPS da comunidade */}
+      {/* FPS da comunidade — oculto até o lançamento.
       <section
         id="comunidade"
         className="scroll-mt-20 border-t border-white/[0.08] py-20 sm:py-28"
@@ -560,6 +531,32 @@ export default function BenchLabsPage() {
           />
         </div>
       </section>
+      */}
+
+      <section
+        id="bench-monitor"
+        className="scroll-mt-20 border-t border-white/[0.08] py-20 sm:py-28"
+      >
+        <div className="container max-sm:px-4">
+          <div className="mx-auto max-w-2xl text-center">
+            <Eyebrow>Bench Monitor</Eyebrow>
+            <h2 className="mt-3 text-balance text-3xl font-bold tracking-tight sm:text-4xl">
+              Seus jogos, com os números à vista
+            </h2>
+            <p className="mt-4 text-pretty text-white/70">
+              Veja o painel de FPS, os atalhos e a lista de benchmarks gravados.
+              Os registros abaixo são exemplos locais do notebook da
+              demonstração.
+            </p>
+          </div>
+          <DemoFrame
+            view="monitor"
+            title="Bench Monitor com exemplos de benchmarks gravados"
+            className="mt-10"
+            height={900}
+          />
+        </div>
+      </section>
 
       {/* Bateria */}
       <section
@@ -604,10 +601,10 @@ export default function BenchLabsPage() {
             </ul>
           </div>
 
-          <Screenshot
-            src={bateria}
-            alt="Tela de teste de bateria do Bench Labs com os modos rápido, completo, jogo na bateria e personalizado"
-            sizes="(max-width: 1024px) 100vw, 600px"
+          <DemoFrame
+            view="bateria"
+            title="Escolha os modos do teste de bateria"
+            height={920}
           />
         </div>
       </section>
@@ -630,39 +627,13 @@ export default function BenchLabsPage() {
             </p>
           </div>
 
-          <ul className="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            {reportItems.map((item) => (
-              <li
-                key={item.label}
-                className="rounded-2xl border border-white/[0.08] bg-[#1a1424] p-5"
-              >
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-white/80">{item.label}</span>
-                  <span
-                    aria-hidden="true"
-                    className={cn(
-                      'size-2.5 rounded-full',
-                      item.attention ? 'bg-[#f5a524]' : 'bg-[#3ddc84]',
-                    )}
-                  />
-                </div>
-                <p
-                  className={cn(
-                    'mt-2 text-xl font-bold',
-                    item.attention ? 'text-[#f5a524]' : 'text-[#3ddc84]',
-                  )}
-                >
-                  {item.status}
-                </p>
-                <p className="mt-1 text-pretty text-xs text-white/55">
-                  {item.detail}
-                </p>
-              </li>
-            ))}
-          </ul>
-          <p className="mt-4 text-center font-mono text-xs text-white/40">
-            Exemplo de laudo de um Lenovo Legion 7 16IAX10
-          </p>
+          <DemoFrame
+            view="inicio"
+            detail="laudo"
+            title="Laudo de saúde do notebook de exemplo"
+            className="mt-10"
+            height={260}
+          />
         </div>
       </section>
 
@@ -696,19 +667,21 @@ export default function BenchLabsPage() {
             </ul>
           </div>
 
-          <Screenshot
-            src={fichaTela}
-            alt="Detalhe da tela na ficha técnica, com diagrama de gama de cores CIE e dados do painel OLED"
-            sizes="(max-width: 1024px) 80vw, 320px"
-            className="mx-auto w-full max-w-xs lg:mx-0 lg:justify-self-end"
+          <DemoFrame
+            view="ficha"
+            detail="tela"
+            title="Detalhes da tela e cobertura de cores"
+            width={420}
+            height={740}
+            className="mx-auto w-full max-w-sm lg:mx-0 lg:justify-self-end"
           />
         </div>
 
         <div className="container mt-12 max-sm:px-4">
-          <Screenshot
-            src={fichaTecnica}
-            alt="Ficha técnica do Bench Labs com processador, placa de vídeo, memória, armazenamento, tela, bateria e conectividade"
-            sizes="(max-width: 1500px) 100vw, 1500px"
+          <DemoFrame
+            view="ficha"
+            title="Ficha técnica completa do notebook de exemplo"
+            height={1050}
           />
         </div>
       </section>
@@ -716,12 +689,9 @@ export default function BenchLabsPage() {
       {/* Do seu jeito */}
       <section className="border-t border-white/[0.08] py-20 sm:py-28">
         <div className="container grid items-center gap-12 max-sm:px-4 lg:grid-cols-[1.2fr_1fr]">
-          <Screenshot
-            src={temaVermelho}
-            alt="Bench Labs com a cor de destaque vermelha"
-            sizes="(max-width: 1024px) 100vw, 640px"
-            className="max-lg:order-2"
-          />
+          <div className="min-w-0 max-lg:order-2">
+            <ColorShowcase />
+          </div>
 
           <div>
             <Eyebrow>E mais</Eyebrow>
@@ -764,6 +734,35 @@ export default function BenchLabsPage() {
               ))}
             </ul>
           </div>
+        </div>
+      </section>
+
+      {/* Atualizações */}
+      <section
+        id="atualizacoes"
+        className="scroll-mt-20 border-t border-white/[0.08] py-20 sm:py-28"
+      >
+        <div className="container max-sm:px-4">
+          <div className="grid items-end gap-6 lg:grid-cols-2">
+            <div>
+              <Eyebrow>Windows, drivers e programas</Eyebrow>
+              <h2 className="mt-3 text-balance text-3xl font-bold tracking-tight sm:text-4xl">
+                Este notebook está em dia?
+              </h2>
+            </div>
+            <p className="text-pretty text-white/70">
+              Confira atualizações do Windows, o driver de vídeo, programas
+              desatualizados e o histórico em um só lugar. Explore também o guia
+              de primeiros passos, com a taxa de atualização da tela e os
+              cuidados com a bateria.
+            </p>
+          </div>
+          <DemoFrame
+            view="preparo"
+            title="Atualizações e guia de primeiros passos do Bench Labs"
+            className="mt-10"
+            height={900}
+          />
         </div>
       </section>
 

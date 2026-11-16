@@ -1,0 +1,25 @@
+/* Variações de cor do Bench Labs para as páginas de Testes (marks), Bateria e a janela mini.
+   O Início (inicio.html) tem a própria tabela, com os nomes de variáveis dele.
+   A cor escolhida chega como <html data-cor="..."> (o ponte.js copia da janela principal). */
+:root{--destaque:var(--amarelo,#FFE500);--fundo-visual:#0E0817;--roxo:#B57CFF;--azul:#62D2FF;--laranja:#FF8A5C}
+
+html[data-cor=claro]{color-scheme:light;
+  --bg:#F5F3F8;--card:#FFFFFF;--card2:#F1EDF6;--linha:#E2DBEB;--linha2:#CFC5DC;
+  --txt:#1B1424;--txt2:#463D55;--txt3:#6F6582;--muted:#6F6582;
+  --amarelo:#FFE500;--amarelo-txt:#1B1424;--am:#9C8300;--destaque:#6A2FD6;
+  --ok:#16884A;--erro:#C8323A;--alerta:#B36B00;--roxo:#6A2FD6;--azul:#0B7FB5;--laranja:#D2531F;--fundo-visual:#ECE7F2}
+html[data-cor=grafite]{
+  --bg:#111214;--card:#191A1E;--card2:#222429;--linha:#2A2C31;--linha2:#3A3D44;
+  --txt:#F2F2F3;--txt2:#C3C5CB;--txt3:#8B8E97;--fundo-visual:#0B0C0E}
+html[data-cor=meianoite]{
+  --bg:#0A1120;--card:#111B2E;--card2:#18243A;--linha:#1F2D47;--linha2:#2B3D5E;
+  --txt:#EEF3FB;--txt2:#B9C7DD;--txt3:#7F91AE;
+  --amarelo:#3EE6FF;--amarelo-txt:#06121F;--am:#3EE6FF;--destaque:#3EE6FF;--roxo:#8DA2FF;--fundo-visual:#070D18}
+html[data-cor=pista]{
+  --bg:#0B0B0C;--card:#151516;--card2:#202022;--linha:#2A2A2D;--linha2:#3A3A3E;
+  --txt:#F5F5F5;--txt2:#C8C8CC;--txt3:#8D8D94;
+  --amarelo:#FF2E2E;--amarelo-txt:#FFFFFF;--am:#FF4A3D;--destaque:#FF4A3D;--roxo:#C9C9CF;--fundo-visual:#070707}
+html[data-cor=abobora]{
+  --bg:#0F0A07;--card:#1C130C;--card2:#241910;--linha:#36261A;--linha2:#4D3826;
+  --txt:#FBF4EC;--txt2:#DCC9B6;--txt3:#A68F7A;--muted:#A68F7A;
+  --amarelo:#FF7A1A;--amarelo-txt:#1A0B00;--am:#FF8A2B;--destaque:#FF8A2B;--roxo:#B57CFF;--fundo-visual:#0A0705}

@@ -1,0 +1,1445 @@
+<!doctype html>
+<html lang="pt-BR"><head>
+<script src="../site-guard.js"></script><meta charset="utf-8"><title>Bench Marks</title><link rel="icon" href="benchmarks_logo.png">
+<style>
+:root{--bg:#170F23;--card:#21172F;--card2:#2A1F38;--linha:#30243D;--linha2:#43355A;--txt:#F5F2F9;--txt2:#C9BFD6;--txt3:#8E809F;--amarelo:#FFE500;--amarelo-txt:#170F23;--ok:#5FD38D;--erro:#FF7A7A;--alerta:#FFC861;--raio:14px}
+*{box-sizing:border-box}html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--txt);font:15px/1.5 "Segoe UI Variable Text","Segoe UI",system-ui,sans-serif;-webkit-font-smoothing:antialiased;user-select:none;overflow:hidden}
+button{font:inherit;color:inherit;cursor:pointer}
+.app{display:grid;grid-template-rows:auto 1fr;height:100vh}
+header{display:flex;align-items:center;gap:28px;padding:16px 32px;border-bottom:1px solid var(--linha)}
+.logo{display:flex;align-items:center;gap:12px}.logo img{width:34px;height:34px}
+.logo-txt{font-weight:700;letter-spacing:.14em;font-size:14px;text-transform:uppercase}.logo-txt span{color:var(--txt3);font-weight:500;letter-spacing:.08em;text-transform:none;font-size:13px;margin-left:6px}
+.beta{font-size:11px;font-weight:700;letter-spacing:.08em;color:var(--amarelo-txt)!important;background:var(--amarelo);border-radius:6px;padding:2px 7px;margin-left:8px!important}
+nav{display:flex;gap:4px}nav button{background:none;border:0;padding:8px 14px;border-radius:8px;color:var(--txt2);font-size:14px}nav button:hover{background:var(--card);color:var(--txt)}nav button.ativo{background:var(--card2);color:var(--txt)}
+.pilula{margin-left:auto;display:flex;align-items:center;gap:8px;padding:6px 12px;border:1px solid var(--linha);border-radius:999px;font-size:13px;color:var(--txt2)}
+.ponto{width:8px;height:8px;border-radius:50%;background:var(--ok)}
+main{overflow-y:auto;padding:22px 32px 40px}
+.tela{display:none}.tela.ativa{display:block}
+.rotulo{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--txt3);font-weight:600}
+h1{font-size:30px;line-height:1.15;margin:6px 0 8px;font-weight:700}h2{font-size:18px;margin:0;font-weight:700}
+.sub{color:var(--txt2);margin:0 0 16px;max-width:720px}
+.card{background:var(--card);border:1px solid var(--linha);border-radius:var(--raio);padding:20px}
+.btn{border:0;border-radius:11px;padding:11px 20px;font-weight:700;font-size:14px}.btn-pri{background:var(--amarelo);color:var(--amarelo-txt)}.btn-sec{background:var(--card2);border:1px solid var(--linha2);font-weight:600}
+.btn-gde{padding:15px 26px;font-size:16px;border-radius:13px}.btn:disabled{opacity:.45;cursor:not-allowed}
+.c{font-size:12.5px;color:var(--txt3)}.n2{font-weight:600}.dir{margin-left:auto}.num{font-variant-numeric:tabular-nums}
+.chips{display:flex;gap:8px;flex-wrap:wrap}.chip{font-size:12px;border:1px solid var(--linha2);border-radius:999px;padding:3px 10px;color:var(--txt2);background:none}
+button.chip{background:var(--card2);font-size:13px;padding:5px 12px}button.chip.sel{background:var(--amarelo);color:var(--amarelo-txt);border-color:var(--amarelo);font-weight:700}
+.novo{font-size:10.5px;font-weight:800;letter-spacing:.06em;background:var(--amarelo);color:var(--amarelo-txt);border-radius:999px;padding:1px 7px;margin-left:6px;vertical-align:2px}
+/* ---- testes ---- */
+.grade-ini{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:20px;align-items:start}
+.perfis{display:flex;align-items:center;gap:10px;margin:0 0 16px;flex-wrap:wrap}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.tcard.perfil{grid-column:span 2}.tcard{background:var(--card);border:1.5px solid var(--linha);border-radius:16px;padding:16px 16px 14px;cursor:pointer;display:flex;flex-direction:column;gap:6px;position:relative;min-height:190px}
+.tcard:hover{border-color:var(--linha2)}.tcard.sel{border-color:var(--amarelo);background:linear-gradient(180deg,rgba(255,229,0,.05),transparent 60%),var(--card)}
+.tcard .cab{display:flex;align-items:center;gap:10px}
+.tico{width:36px;height:36px;border-radius:10px;background:var(--card2);border:1px solid var(--linha2);display:grid;place-items:center;flex-shrink:0}
+.tcard.sel .tico{background:rgba(255,229,0,.12);border-color:rgba(255,229,0,.4)}
+.tnome{font-weight:700;font-size:15.5px;line-height:1.2}
+.cx{width:20px;height:20px;border-radius:6px;border:1.5px solid var(--linha2);margin-left:auto;flex-shrink:0;display:grid;place-items:center}
+.tcard.sel .cx{background:var(--amarelo);border-color:var(--amarelo)}
+.tcard.sel .cx::after{content:"";width:9px;height:5px;border:solid var(--amarelo-txt);border-width:0 0 2px 2px;transform:rotate(-45deg) translate(1px,-1px)}
+.tdesc{font-size:13px;color:var(--txt2);line-height:1.4}
+.tops{display:flex;gap:6px;flex-wrap:wrap;margin-top:2px}.tops button{font-size:12px;padding:3px 9px;border-radius:999px;border:1px solid var(--linha2);background:var(--card2);color:var(--txt2)}
+.tops button.sel{border-color:var(--amarelo);color:var(--destaque);font-weight:700}
+.tultimo{margin-top:auto;display:flex;align-items:baseline;gap:8px;padding-top:8px;border-top:1px solid var(--linha)}
+.tultimo b{font-size:20px;font-variant-numeric:tabular-nums}.tultimo .c{margin-left:auto}
+.tdur{font-size:12px;color:var(--txt3);white-space:nowrap}
+.tetapas{list-style:none;margin:2px 0 0;padding:0;font-size:12.5px;color:var(--txt2);display:flex;flex-direction:column;gap:2px}
+.tetapas li{display:flex;gap:8px;align-items:flex-start}.tetapas .tet{flex:1;min-width:0}
+.pexige{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:4px 0 2px}
+.pexige .rot{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--txt3);font-weight:600;margin-right:2px}
+.pchip{font-size:12px;font-weight:700;border-radius:999px;padding:2px 9px;color:var(--c);background:color-mix(in srgb,var(--c) 13%,transparent);border:1px solid color-mix(in srgb,var(--c) 35%,transparent)}
+.ponde{font-size:11px;font-weight:700;color:var(--c);white-space:nowrap;margin-top:1px}.ponde i{font-style:normal;font-weight:500;color:var(--txt3)}.tetapas li::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--linha2);margin-top:7px;flex-shrink:0}
+#cards-p{grid-template-columns:repeat(auto-fill,minmax(290px,1fr))}.tcard.breve{cursor:default;opacity:.62}.tcard.breve:hover{border-color:var(--linha)}
+.tag-breve{font-size:10.5px;font-weight:800;letter-spacing:.06em;border:1px solid var(--linha2);color:var(--txt2);border-radius:999px;padding:1px 7px;margin-left:6px;vertical-align:2px}
+.como{display:flex;gap:10px;padding:8px 0;border-top:1px solid var(--linha);font-size:13.5px;color:var(--txt2)}.como:first-of-type{border-top:0}.como b{color:var(--txt)}
+.req{display:grid;grid-template-columns:120px minmax(0,1fr) minmax(0,1fr) minmax(0,1fr);font-size:13px;margin-top:8px}
+.req>div{padding:8px 10px 8px 0;border-top:1px solid var(--linha)}.req .rotulo{border-top:0;padding-top:0}
+.req .s-ok{color:var(--ok);font-weight:700}.req .s-nao{color:var(--erro);font-weight:700}.req .s-quase{color:var(--alerta);font-weight:700}
+.req-prod{padding:14px 0;border-top:1px solid var(--linha)}.req-prod:first-of-type{border-top:0;padding-top:4px}
+.lado{}.lado .card+.card{margin-top:14px}
+.peca{display:flex;gap:10px;padding:8px 0;border-top:1px solid var(--linha);font-size:13.5px}.peca:first-of-type{border-top:0}.peca span{color:var(--txt3);width:84px;flex-shrink:0}
+.aviso{display:block;font-size:13px;color:var(--txt2);margin-top:10px;padding:10px 12px;border-radius:10px;background:rgba(255,200,97,.08);border:1px solid rgba(255,200,97,.25)}
+.aviso b{color:var(--alerta)}.aviso a{color:var(--destaque);cursor:pointer;text-decoration:underline}
+.lim-linha{display:flex;align-items:center;gap:10px;padding:7px 0;font-size:13.5px}.lim-linha select{margin-left:auto;background:var(--card2);color:var(--txt);border:1px solid var(--linha2);border-radius:8px;padding:4px 8px;font:inherit;font-size:13px}
+/* ---- rodando ---- */
+#rodando{position:fixed;inset:0;background:var(--bg);z-index:20;display:none;grid-template-rows:auto 1fr}
+#rodando.ativa{display:grid}
+.rd-topo{display:flex;align-items:center;gap:18px;padding:14px 26px;border-bottom:1px solid var(--linha)}
+.rd-prog{flex:1;max-width:620px}.barra{height:6px;border-radius:99px;background:rgba(255,255,255,.1);overflow:hidden;margin-top:7px}.barra div{height:100%;background:var(--amarelo);transition:width .3s linear}
+.rd-corpo{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:20px;padding:20px 26px;min-height:0}
+.visual{position:relative;border-radius:16px;overflow:hidden;background:var(--fundo-visual);border:1px solid var(--linha);display:grid;place-items:center;min-height:0}
+.visual canvas{max-width:100%;max-height:100%;aspect-ratio:16/9;width:100%;object-fit:contain;display:none}
+.visual canvas.vis{display:block}
+#cvmini{position:absolute;left:14px;bottom:14px;width:240px!important;height:auto;border-radius:10px;border:1px solid var(--linha2);display:none}#cvmini.vis{display:block}
+.visual .etiqueta{position:absolute;left:14px;top:12px;font-size:12px;background:rgba(23,15,35,.78);border:1px solid var(--linha2);padding:4px 10px;border-radius:999px;color:var(--txt2)}
+.vazio{color:var(--txt3);font-size:14px;text-align:center;padding:40px}
+.rd-lado>*{order:2}.rd-lado .c-met{order:0}#rodando.pesado .rd-lado .c-pas{order:1}
+.rd-esq{display:flex;flex-direction:column;gap:14px;min-height:0}.rd-esq .visual{flex:1}
+#rd-curva{display:none;padding:12px 16px 10px}#rd-curva.vis{display:block}
+#rd-curva .cab-curva{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:6px}#rd-curva b{margin-left:auto;font-size:13.5px}
+.disco-vis{width:80%;max-width:560px;display:none}.disco-vis.vis{display:block}
+.disco-vis .grande{font-size:22px;font-weight:700;margin-bottom:6px}
+.rd-lado{display:flex;flex-direction:column;gap:14px;min-height:0;overflow:auto}
+.metrica{font-size:52px;font-weight:800;line-height:1;color:var(--destaque);font-variant-numeric:tabular-nums}
+.sens{display:grid;grid-template-columns:1fr 1fr;gap:0}.sens div{padding:10px 12px;border-top:1px solid var(--linha);border-left:1px solid var(--linha)}
+.sens div:nth-child(odd){border-left:0}.sens div:nth-child(-n+2){border-top:0}.sens b{display:block;font-size:19px;font-variant-numeric:tabular-nums}.sens span{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--txt3)}
+.passos div{display:flex;gap:10px;align-items:center;padding:6px 0;font-size:13.5px;color:var(--txt3)}.passos div.agora{color:var(--txt);font-weight:600}.passos div.feito{color:var(--txt2)}
+.passos i{width:18px;height:18px;border-radius:50%;border:1.5px solid var(--linha2);display:grid;place-items:center;font-style:normal;font-size:11px;flex-shrink:0}
+.passos .feito i{background:rgba(95,211,141,.15);border-color:transparent;color:var(--ok)}.passos .agora i{border-color:var(--amarelo)}.passos .falhou i{color:var(--erro);border-color:transparent;background:rgba(255,122,122,.14)}
+/* ---- GPU em tela cheia (igual ao GPU Fight) ---- */
+#gpu-tela{position:fixed;inset:0;background:#000;z-index:30;display:none}#gpu-tela.ativa{display:block}
+#cv-gpu{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.hud{position:absolute;inset:0;pointer-events:none;padding:26px 30px;display:flex;flex-direction:column;justify-content:space-between}
+.hud-topo{display:flex;align-items:center;gap:14px}
+.vidro{background:rgba(16,10,26,.62);backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.08);border-radius:14px}
+.hud-marca{display:flex;align-items:center;gap:10px;padding:9px 14px}.hud-marca img{width:26px;height:26px}
+.hud-prog{flex:1;max-width:520px;padding:12px 16px}
+.hud-esc{margin-left:auto;padding:9px 14px;font-size:13px;color:var(--txt2)}
+.kbd{display:inline-block;border:1px solid rgba(255,255,255,.25);border-radius:5px;padding:0 6px;font-size:11px;margin-right:6px;color:var(--txt)}
+.hud-base{display:flex;align-items:flex-end;gap:14px}
+.hud-fps{padding:14px 20px}.hud-fps .grande{font-size:54px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
+.hud-sens{display:grid;grid-template-columns:repeat(4,auto);padding:12px 6px}.hud-sens div{padding:0 16px;border-left:1px solid rgba(255,255,255,.1)}.hud-sens div:first-child{border:0}
+.hud-sens b{display:block;font-size:20px;font-variant-numeric:tabular-nums}.hud-sens span{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--txt3)}
+/* ---- resultado ---- */
+.res-cab{display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap;margin-bottom:18px}
+.res-sec{margin-bottom:18px}
+.res-sec>.cab{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.res-grade{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);gap:16px}
+.destaque{background:var(--card);border:1px solid var(--linha2);border-radius:18px;padding:22px 24px;display:flex;flex-direction:column;gap:6px;position:relative;overflow:hidden}
+.destaque .grande{font-size:64px;font-weight:800;line-height:1;color:var(--destaque);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.destaque .grande small{font-size:18px;color:var(--txt2);font-weight:600;margin-left:8px;letter-spacing:0}
+.selo{display:inline-flex;align-items:center;gap:6px;background:var(--amarelo);color:var(--amarelo-txt);font-weight:700;font-size:12px;border-radius:999px;padding:3px 10px;width:max-content}
+.met{display:grid;grid-template-columns:repeat(3,1fr);background:var(--card);border:1px solid var(--linha);border-radius:16px;overflow:hidden}
+.met div{padding:14px 16px;border-top:1px solid var(--linha);border-left:1px solid var(--linha)}
+.met div:nth-child(3n+1){border-left:0}.met div:nth-child(-n+3){border-top:0}
+.met b{display:block;font-size:21px;font-variant-numeric:tabular-nums}.met span{font-size:12px;color:var(--txt3)}
+.comp{display:flex;align-items:baseline;gap:8px;font-size:13px;color:var(--txt2)}.comp b{font-size:15px}
+.mais{color:var(--ok)}.menos{color:var(--erro)}
+.gx{margin-top:16px}.gx+.gx{margin-top:22px}
+.gx-cab{display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap}.gx-tit{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--txt)}
+.gx-sub{font-size:13px;color:var(--txt2);margin-top:3px;max-width:78ch}.gx-leitura{font-size:13.5px;color:var(--txt);margin-top:8px;padding:8px 12px;border-radius:10px;background:rgba(255,229,0,.07);border-left:3px solid var(--destaque)}
+.gx-area{display:grid;grid-template-columns:52px 1fr;margin-top:12px}.gx-y{position:relative}.gx-y span{position:absolute;right:8px;transform:translateY(-50%);font-size:11.5px;color:var(--txt3);font-variant-numeric:tabular-nums;white-space:nowrap}
+.gx-plot{position:relative}.gx-plot svg{display:block}.gx-x{position:relative;height:20px;grid-column:2}.gx-x span{position:absolute;top:5px;transform:translateX(-50%);font-size:11.5px;color:var(--txt3);white-space:nowrap}
+.gx-x span:first-child{transform:none}.gx-x span:last-child{transform:translateX(-100%)}
+.gx-media{position:absolute;right:4px;font-size:11.5px;color:var(--txt2);background:var(--card);padding:0 4px;transform:translateY(-120%)}
+.gx-un{font-size:11px;color:var(--txt3);grid-column:1;text-align:right;padding-right:8px;margin-bottom:2px}
+.graf{background:var(--card);border:1px solid var(--linha);border-radius:16px;padding:16px 18px;margin-top:14px}
+.leg{display:flex;gap:14px;font-size:12px;color:var(--txt2);margin-left:auto}.leg i{width:10px;height:3px;border-radius:2px;display:inline-block;margin-right:6px;vertical-align:3px}
+.barras{display:grid;grid-template-columns:110px 1fr 70px;gap:10px;align-items:center;font-size:13px;margin-top:10px}
+.barras .barra{margin:0;height:10px}
+.cartoes{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:14px}
+.cartao{background:var(--card2);border:1px solid var(--linha);border-radius:12px;padding:12px 14px}.cartao b{display:block;font-size:15px;margin-top:2px}.cartao .c{margin-top:2px}
+.veredito{font-size:40px;font-weight:800;line-height:1.05}
+.check{display:flex;gap:12px;align-items:center;padding:9px 0;border-top:1px solid var(--linha);font-size:14px}.check:first-child{border-top:0}
+.st{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:12px;flex-shrink:0;background:rgba(95,211,141,.14);color:var(--ok)}.st.aviso{background:rgba(255,200,97,.14);color:var(--alerta)}.st.ruim{background:rgba(255,122,122,.14);color:var(--erro)}
+.estrelas{position:relative;display:inline-block;font-size:15px;letter-spacing:1px;line-height:1;white-space:nowrap;vertical-align:-1px}.estrelas .e-base{color:var(--linha2,#43355A)}.estrelas .e-cheia{position:absolute;left:0;top:0;overflow:hidden;color:var(--destaque,var(--amarelo,#FFE500))}.e-num{margin-left:6px;font-size:12px;font-weight:700;color:var(--txt2)}
+.prog-linha{display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px solid var(--linha)}.prog-linha:first-of-type{border-top:0}
+.prog-linha b{width:170px;font-size:14px;flex-shrink:0}.prog-linha span{flex:1;font-size:13px;color:var(--txt2)}.prog-linha em{font-style:normal;font-size:12.5px;font-weight:700}
+.nv4,.nv3,.nv2{color:var(--ok)}.nv1{color:var(--alerta)}.nv0{color:var(--erro)}
+.pill{font-size:12px;font-weight:700;border-radius:999px;padding:4px 10px}.pill.ok{background:rgba(95,211,141,.12);color:var(--ok)}.pill.quase{background:rgba(255,200,97,.12);color:var(--alerta)}.pill.nao{background:var(--card2);color:var(--txt3)}
+.arq-testes{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin-top:14px}
+.arq-testes .cartao{display:flex;flex-direction:column;gap:6px;min-height:150px}.arq-testes .valor{font-size:24px;font-weight:800;color:var(--destaque);margin-top:auto}
+.vazio-res{padding:60px 20px;text-align:center;color:var(--txt3)}
+.acoes{display:flex;gap:10px;align-items:center;margin-top:6px}
+.provisorio{font-size:12px;color:var(--txt3);margin-top:10px}
+/* ---- histórico ---- */
+table{width:100%;border-collapse:collapse}th{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--txt3);font-weight:600;text-align:left;padding:0 12px 10px}
+td{padding:12px;border-top:1px solid var(--linha);font-variant-numeric:tabular-nums;font-size:14px}td.nt{font-weight:700;color:var(--destaque)}
+/* ---- janela de aviso ---- */
+#modal{position:fixed;inset:0;background:rgba(10,6,16,.7);z-index:50;display:none;place-items:center}#modal.vis{display:grid}
+#modal .card{max-width:480px;padding:24px}
+</style><link rel="stylesheet" href="../cores.css">
+</head><body>
+<div class="app">
+<header>
+  <div class="logo"><img src="benchmarks_logo.png"><div class="logo-txt">Bench Marks<span>by Bench</span><span class="beta">BETA</span></div></div>
+  <nav><button data-t="inicio" class="ativo">Testes</button><button data-t="pesados">Testes pesados<span class="novo">NOVO</span></button><button data-t="resultado">Resultados</button><button data-t="historico">Histórico</button></nav>
+  <div class="pilula"><span class="ponto"></span><span id="pil-txt">Lendo o computador…</span></div>
+</header>
+<main>
+  <!-- ======== TESTES ======== -->
+  <section class="tela ativa" id="t-inicio">
+    <div class="rotulo">Bench Marks</div>
+    <h1>Escolha o que testar</h1>
+    <p class="sub">Cada teste tem a própria nota. Você pode executar um teste, vários ou a sequência completa. Mantenha o notebook conectado à tomada e não o utilize durante os testes.</p>
+    <div class="grade-ini">
+      <div>
+        <div class="perfis"><span class="c">Perfis prontos:</span><div class="chips" id="perfis"></div></div>
+        <div class="cards" id="cards"></div>
+      </div>
+      <div class="lado">
+        <div class="card">
+          <div class="rotulo" style="margin-bottom:8px">Este computador</div>
+          <div class="n2" style="font-size:17px;margin-bottom:6px" id="pc-nome">—</div>
+          <div id="pecas"></div>
+          <div id="avisos"></div>
+        </div>
+        <div class="card" id="modo-nb">
+          <div class="n2">Modo de energia</div><div class="c" id="modo-nb-txt"></div>
+        </div>
+        <div class="card" id="parada" style="display:none">
+          <div class="n2">Parada automática do stress</div>
+          <div class="c">Se algum limite for ultrapassado, o teste é interrompido e o motivo aparece na tela.</div>
+          <div class="lim-linha">Processador acima de<select id="lim-cpu"></select></div>
+          <div class="lim-linha">Placa de vídeo acima de<select id="lim-gpu"></select></div>
+          <div class="c">O teste também é interrompido se houver erro de cálculo, se o driver de vídeo reiniciar ou se a bateria ficar abaixo de 30%.</div>
+        </div>
+        <button class="btn btn-pri btn-gde" id="b-rodar" style="width:100%;margin-top:14px">Executar selecionados</button>
+        <div class="c" style="text-align:center;margin-top:8px" id="rodar-txt"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======== TESTES PESADOS ======== -->
+  <section class="tela" id="t-pesados">
+    <div class="rotulo">Bench Marks · Testes pesados</div>
+    <h1>Testes pesados por profissão</h1>
+    <p class="sub">Cada teste simula o trabalho pesado de uma profissão por 10 minutos, em 4 etapas, e mostra se o notebook mantém o desempenho do começo ao fim. Os testes da aba Testes continuam iguais. Mantenha o notebook conectado à tomada e não o utilize durante os testes.</p>
+    <div class="grade-ini">
+      <div class="cards" id="cards-p"></div>
+      <div class="lado">
+        <div class="card">
+          <div class="rotulo" style="margin-bottom:6px">Como funciona</div>
+          <div class="como"><b>Cerca de 12 min cada</b></div>
+          <div class="como">10 minutos de teste e o preparo de cada etapa (abrir o projeto, montar a tomografia).</div>
+          <div class="como">O resultado mostra cada programa da profissão e o desempenho ao longo dos 10 minutos.</div>
+          <div class="como">Não é necessário ter os programas instalados.</div>
+        </div>
+        <button class="btn btn-pri btn-gde" id="b-rodar-p" style="width:100%;margin-top:14px">Selecione um teste</button>
+        <div class="c" style="text-align:center;margin-top:8px">Os resultados ficam salvos no Histórico.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======== RESULTADOS ======== -->
+  <section class="tela" id="t-resultado"><div id="res"></div></section>
+
+  <!-- ======== HISTÓRICO ======== -->
+  <section class="tela" id="t-historico">
+    <div class="rotulo">Histórico</div><h1>Seus testes</h1>
+    <p class="sub">Todos os testes realizados neste computador. Após qualquer alteração (driver, modo de energia, limpeza do cooler), execute os testes novamente para comparar os resultados.</p>
+    <div class="acoes" style="margin:0 0 14px;justify-content:flex-start"><button class="btn btn-sec" id="h-rel">Pasta dos relatórios</button><button class="btn btn-sec" id="h-logs">Pasta dos registros</button></div>
+    <div class="card"><table><thead><tr><th>Data</th><th>Teste</th><th>Resultado</th><th>Detalhes</th><th>Modo</th></tr></thead><tbody id="hist"></tbody></table></div>
+  </section>
+</main>
+</div>
+
+<!-- ======== RODANDO ======== -->
+<div id="rodando">
+  <div class="rd-topo">
+    <div class="logo"><img src="benchmarks_logo.png" style="width:28px;height:28px"></div>
+    <div class="rd-prog"><div style="display:flex;font-size:14px"><span class="n2" id="rd-titulo">—</span><span class="dir num c" id="rd-tempo"></span></div><div class="barra"><div id="rd-barra" style="width:0%"></div></div></div>
+    <button class="btn btn-sec dir" id="b-cancelar"><span class="kbd">Esc</span>Cancelar</button>
+  </div>
+  <div class="rd-corpo">
+    <div class="rd-esq">
+    <div class="visual" id="visual">
+      <canvas id="cv2d"></canvas><canvas id="cvgpu"></canvas><canvas id="cvmini"></canvas>
+      <div class="disco-vis" id="disco-vis"><div class="grande" id="disco-etapa">Preparando</div><div class="barra" style="height:10px"><div id="disco-barra" style="width:0%"></div></div><div class="c" style="margin-top:10px" id="disco-txt"></div></div>
+      <div class="etiqueta" id="etiqueta" style="display:none"></div>
+    </div>
+    <div class="card" id="rd-curva"><div class="cab-curva"><span class="n2">Desempenho ao longo dos 10 minutos</span><span class="c">100% = o começo de cada etapa</span><b id="rd-curva-txt"></b></div><div id="rd-curva-svg"></div></div>
+    </div>
+    <div class="rd-lado">
+      <div class="card c-met"><div class="rotulo" id="rd-rotulo">—</div><div class="metrica" id="rd-valor">—</div><div class="c" id="rd-etapa" style="margin-top:8px"></div></div>
+      <div class="card" style="padding:14px 18px"><div class="rotulo" style="margin-bottom:4px">Hardware em uso</div><div id="rd-hw" style="font-size:13.5px;line-height:1.5"></div></div>
+      <div class="card" style="padding:0"><div class="sens">
+        <div><span>Uso da placa</span><b id="s-guso">—</b></div><div><span>Temp. placa</span><b id="s-gtemp">—</b></div>
+        <div><span>Consumo placa</span><b id="s-gw">—</b></div><div><span>Clock placa</span><b id="s-gmhz">—</b></div>
+        <div><span>Memória de vídeo</span><b id="s-gvram">—</b></div><div><span>Codificador / decod.</span><b id="s-genc">—</b></div>
+        <div><span>Uso do processador</span><b id="s-cuso">—</b></div><div><span>Clock processador</span><b id="s-cmhz">—</b></div>
+        <div><span>Temp. processador</span><b id="s-ctemp">—</b></div><div><span>Consumo processador</span><b id="s-cw">—</b></div>
+        <div><span>Bateria</span><b id="s-bat">—</b></div><div><span>Amostras</span><b id="s-n">0</b></div>
+      </div></div>
+      <div class="card c-pas"><div class="rotulo" style="margin-bottom:6px" id="passos-tit">Sequência</div><div class="passos" id="passos"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ======== GPU (tela cheia) ======== -->
+<div id="gpu-tela">
+  <canvas id="cv-gpu"></canvas>
+  <div class="hud">
+    <div class="hud-topo">
+      <div class="vidro hud-marca"><img src="benchmarks_logo.png"><div class="logo-txt" style="font-size:12px">Bench Marks · GPU</div></div>
+      <div class="vidro hud-prog"><div style="display:flex;font-size:13px"><span class="n2" id="h-modo">—</span><span class="dir num" id="h-tempo">0:00</span></div><div class="barra"><div id="h-barra" style="width:0%"></div></div></div>
+      <div class="vidro hud-esc"><span class="kbd">Esc</span>cancelar</div>
+    </div>
+    <div class="hud-base">
+      <div class="vidro hud-fps"><div class="rotulo">Quadros/s</div><div class="grande" id="h-fps">—</div></div>
+      <div class="vidro hud-sens"><div><span>Temp.</span><b id="h-temp">—</b></div><div><span>Consumo</span><b id="h-w">—</b></div><div><span>Clock</span><b id="h-mhz">—</b></div><div><span>Uso</span><b id="h-uso">—</b></div></div>
+    </div>
+  </div>
+</div>
+
+<div id="modal"><div class="card"><h2 id="modal-tit"></h2><p class="sub" id="modal-txt" style="margin:10px 0 18px"></p><button class="btn btn-pri" id="modal-ok">Entendi</button></div></div>
+
+<script src="ponte.js" data-prefixo="marks_"></script>
+<script type="module">
+import {MotorGPU, VERSAO_CENA} from './render.js';
+import {Navegacao} from './viewport.js';
+import {Render} from './pathtracer.js';
+import {THREADS, cpuRender, jogos, memoria, modelagem, pranchas, veredito} from './testes.js';
+import {perfilVideo, perfilIA, perfil3D} from './perfis.js';
+import {PASSOS, Curva, curvaSVG, arquiteturaPesado, odontoPesado} from './pesados.js';
+import {PASSOS2, engenhariaPesado, programacaoPesado, designPesado, videoPesado} from './pesados2.js';
+Object.assign(PASSOS, PASSOS2);
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
+// estrelas de 1 a 5 (com meia estrela); resultados antigos sem 'estrelas' usam o nível de 0 a 4
+const estrelasHTML = p => {
+  const n = Math.max(1, Math.min(5, p.estrelas ?? ((p.nivel ?? 1) + 1))), txt = String(n).replace('.', ',');
+  return `<span class="estrelas" role="img" aria-label="${txt} de 5 estrelas" title="${esc(p.rotulo || '')}"><span class="e-base">★★★★★</span><span class="e-cheia" style="width:${n / 5 * 100}%">★★★★★</span></span><small class="e-num">${txt}</small>`;
+};
+
+const fmt = (n, d = 0) => n == null || isNaN(n) ? '—' : Number(n).toLocaleString('pt-BR', {maximumFractionDigits: d, minimumFractionDigits: d});
+const milhoes = (n, d = 1) => `${fmt(n, d)} ${Math.abs(+Number(n).toFixed(d)) < 2 ? 'milhão' : 'milhões'}`;  // 1,6 milhão · 2,4 milhões
+const mmss = s => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+const espera = ms => new Promise(r => setTimeout(r, ms));
+let api, INFO;
+let ESCALA = window.ESCALA_TEMPO || 1; const PEQ = window.DEV_PEQUENO ? .25 : 1;
+let CONFERENCIA = false;
+const CV = c => window.DEV_PEQUENO ? null : c;      // no navegador sem tela (testes) a imagem não vai para a janela               // só para testes de desenvolvimento (encurta tudo)
+
+// ------------------------------------------------------------------ catálogo
+const IC = {
+  gpu: '<rect x="2.5" y="6" width="19" height="12" rx="2"/><circle cx="9" cy="12" r="3"/><circle cx="16" cy="12" r="1.6"/><path d="M5 18v2.5M9 18v2.5M13 18v2.5"/>',
+  cpu: '<rect x="6" y="6" width="12" height="12" rx="2"/><rect x="9.5" y="9.5" width="5" height="5" rx="1"/><path d="M9 3v3M15 3v3M9 18v3M15 18v3M3 9h3M3 15h3M18 9h3M18 15h3"/>',
+  jogos: '<path d="M6 9h12a4 4 0 014 4v1a3 3 0 01-5.4 1.8L15 14H9l-1.6 1.8A3 3 0 012 14v-1a4 4 0 014-4z"/><path d="M8 11v3M6.5 12.5h3"/><circle cx="16" cy="12" r=".8"/>',
+  memoria: '<rect x="2.5" y="7" width="19" height="9" rx="1.5"/><path d="M6 10v3M10 10v3M14 10v3M18 10v3M5 16v2.5M19 16v2.5"/>',
+  ssd: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 15h6"/><circle cx="17" cy="15" r="1"/><path d="M3 10h18"/>',
+  stress: '<path d="M12 3c1 3 4 4.5 4 8.5A4 4 0 018 12c0-1.6.7-2.7 1.6-3.6C9.8 10 11 10.5 11.5 10 11 7 12 5 12 3z"/><path d="M6 15a6 6 0 0012 0"/>',
+  arquitetura: '<path d="M3 21h18M5 21V9l7-5 7 5v12"/><path d="M9 21v-6h6v6M9 11h1.5M13.5 11H15"/>',
+  video: '<rect x="2.5" y="6" width="13.5" height="12" rx="2"/><path d="M16 10.5l5.5-3v9l-5.5-3z"/>',
+  ia: '<path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/><path d="M18.5 15l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z"/>',
+  render3d: '<path d="M12 2.8l8 4.6v9.2l-8 4.6-8-4.6V7.4z"/><path d="M12 12l8-4.6M12 12v9.2M12 12L4 7.4"/>',
+  engenharia: '<circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1"/>',
+  programacao: '<path d="M8 8l-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/>',
+  design: '<path d="M12 3a9 9 0 100 18c1.1 0 1.6-.8 1.6-1.6 0-1.3-1-1.4-1-2.6 0-.9.7-1.6 1.6-1.6H16a5 5 0 005-5C21 6.4 17 3 12 3z"/><circle cx="7.5" cy="11" r="1"/><circle cx="10" cy="7" r="1"/><circle cx="14.5" cy="7" r="1"/>',
+  odonto: '<path d="M7.5 3C5 3 3.5 5 3.5 7.8c0 2.4 1 3.8 1.6 6 .5 2 .8 4.4 1.8 6 .7 1.1 1.9.9 2.3-.4.6-1.9.8-4.8 2.8-4.8s2.2 2.9 2.8 4.8c.4 1.3 1.6 1.5 2.3.4 1-1.6 1.3-4 1.8-6 .6-2.2 1.6-3.6 1.6-6C20.5 5 19 3 16.5 3c-1.9 0-2.8 1.2-4.5 1.2S9.4 3 7.5 3z"/>',
+};
+IC.p_arquitetura = IC.arquitetura; IC.p_odonto = IC.odonto; IC.p_engenharia = IC.engenharia; IC.p_programacao = IC.programacao; IC.p_design = IC.design; IC.p_video = IC.video;
+const TESTES = {
+  gpu: {nome: 'GPU', desc: 'A cena da cidade do GPU Fight em QHD (2560×1440), em tela cheia. A resolução é fixa, para que o resultado não dependa da tela do notebook.', min: () => OP.gpu_dur / 60 + .3},
+  cpu: {nome: 'CPU', desc: 'Renderização com todos os núcleos e com um núcleo, no estilo do Cinebench.', min: () => OP.cpu_dur === 'completo' ? 11 : 2},
+  jogos: {nome: 'CPU para jogos', novo: true, desc: 'Uma batalha com 30 mil unidades: IA, física e colisão, como nos jogos.', min: () => 1},
+  memoria: {nome: 'Memória', desc: 'Velocidade e latência. Avisa quando há apenas um pente de memória.', min: () => 1},
+  ssd: {nome: 'SSD + carregamento', novo: true, desc: 'Leitura, gravação e o tempo para carregar um mapa de jogo.', min: () => 1.5},
+  arquitetura: {nome: 'Arquitetura e Engenharia', novo: true, perfil: true, desc: '5 testes que imitam o Revit, o SketchUp, o AutoCAD, o Enscape e o Lumion.', min: () => 9},
+  video: {nome: 'Edição de vídeo', novo: true, perfil: true, desc: 'Verifica se vídeos de câmera e de celular são reproduzidos sem travamentos na timeline 4K e mede cor e efeitos, tempo de exportação e motion graphics. Os vídeos de teste já acompanham o aplicativo.', min: () => 6},
+  ia: {nome: 'IA no notebook', novo: true, perfil: true, desc: 'Velocidade de um assistente de IA executado no próprio notebook (como LM Studio e Ollama), tempo para gerar uma imagem e quais modelos cabem na placa de vídeo.', min: () => 1},
+  render3d: {nome: '3D e animação', novo: true, perfil: true, desc: 'Viewport, tempo de render na placa de vídeo e simulação de tecido e partículas, como no Blender.', min: () => 4},
+  stress: {nome: 'Stress total', novo: true, desc: 'Processador e placa de vídeo no limite ao mesmo tempo. Ao final, o veredito: estável ou instável.', min: () => OP.stress_min},
+  p_arquitetura: {nome: 'Teste pesado · Arquitetura', pesado: true, min: () => 12},
+  p_odonto: {nome: 'Teste pesado · Odontologia', pesado: true, min: () => 12},
+  p_engenharia: {nome: 'Teste pesado · Engenharia', pesado: true, min: () => 12},
+  p_programacao: {nome: 'Teste pesado · Programação', pesado: true, min: () => 12},
+  p_design: {nome: 'Teste pesado · Design gráfico', pesado: true, min: () => 12},
+  p_video: {nome: 'Teste pesado · Edição de vídeo', pesado: true, min: () => 12},
+};
+// aba Testes pesados: as profissões que ainda não têm teste aparecem como "em breve"
+const PESADOS = [
+  {t: 'p_arquitetura', nome: 'Arquitetura', ic: 'arquitetura', desc: 'Revit, SketchUp, Enscape, Lumion e V-Ray.', etapas: PASSOS.p_arquitetura,
+   exige: ['gpu', 'cpu'], onde: [['gpu'], ['gpu'], ['cpu', '1 núcleo'], ['cpu']]},
+  {t: 'p_odonto', nome: 'Odontologia', ic: 'odonto', desc: 'Scanners intraorais, tomografia 3D e exocad. Confere os requisitos oficiais dos fabricantes.', etapas: PASSOS.p_odonto,
+   exige: ['gpu', 'cpu'], onde: [['gpu'], ['cpu'], ['gpu'], ['cpu']]},
+  {t: 'p_engenharia', nome: 'Engenharia', ic: 'engenharia', desc: 'SolidWorks, Inventor, ANSYS e MATLAB.', etapas: PASSOS.p_engenharia,
+   exige: ['cpu', 'gpu'], onde: [['gpu'], ['cpu'], ['gpu'], ['cpu']]},
+  {t: 'p_programacao', nome: 'Programação', ic: 'programacao', desc: 'Visual Studio, Docker e IA para programar.', etapas: PASSOS.p_programacao,
+   exige: ['cpu', 'ssd', 'ram', 'gpu'], onde: [['cpu'], ['ssd'], ['ram'], ['gpu', 'memória de vídeo']]},
+  {t: 'p_design', nome: 'Design gráfico', ic: 'design', desc: 'Photoshop, Lightroom e Illustrator. Confere as cores da tela.', etapas: PASSOS.p_design,
+   exige: ['gpu', 'cpu'], onde: [['gpu'], ['cpu', 'e GPU'], ['cpu', '1 núcleo'], ['tela']]},
+  {t: 'p_video', nome: 'Edição de vídeo', ic: 'video', desc: 'Premiere e DaVinci Resolve, com vídeos 4:2:2 10-bit de câmera.', etapas: PASSOS.p_video,
+   exige: ['gpu', 'cpu'], onde: [['gpu', 'codificador'], ['gpu'], ['gpu', 'ou CPU'], ['gpu', 'ou CPU']]},
+];
+let SELP = new Set(), ULTIMA_LISTA = null;
+// peças: nome curto, nome completo e cor (as mesmas cores dos gráficos do resultado)
+const PECAS = {cpu: ['CPU', 'Processador', 'var(--roxo)'], gpu: ['GPU', 'Placa de vídeo', 'var(--am, var(--destaque))'], ram: ['RAM', 'Memória RAM', 'var(--laranja)'],
+  ssd: ['SSD', 'SSD', 'var(--azul)'], tela: ['Tela', 'Tela', 'var(--txt3)']};
+const pecaTag = ([k, extra]) => `<span class="ponde" style="--c:${PECAS[k][2]}">${PECAS[k][0]}${extra ? ` <i>${esc(extra)}</i>` : ''}</span>`;
+const ORDEM = ['ssd', 'memoria', 'jogos', 'cpu', 'ia', 'video', 'arquitetura', 'render3d', 'gpu', 'stress'];
+const VITRINE = ['gpu', 'cpu', 'jogos', 'memoria', 'ssd', 'stress', 'video', 'ia', 'arquitetura', 'render3d'];
+const PERFIS = {gamer: ['gpu', 'jogos', 'memoria', 'ssd'], video: ['video'], ia: ['ia'], arquitetura: ['arquitetura'], render3d: ['render3d'], tudo: ORDEM.slice()};
+const NOMES_PERFIS = {gamer: 'Gamer', video: 'Edição de vídeo', ia: 'IA no notebook', arquitetura: 'Arquitetura e Engenharia', render3d: '3D e animação', tudo: 'Tudo', mao: 'Escolher manualmente'};
+const OP = {gpu_res: 'qhd', gpu_dur: 60, cpu_dur: 'rapido', stress_min: 20, lim_cpu: 100, lim_gpu: 90};
+const RES = {fhd: {nome: 'Full HD', largura: 1920, altura: 1080}, qhd: {nome: 'QHD', largura: 2560, altura: 1440}, uhd: {nome: '4K', largura: 3840, altura: 2160}};
+let SEL = new Set(), PERFIL = 'mao';
+
+function opcoesCard(t) {
+  const b = (chave, valor, txt) => `<button data-op="${chave}" data-v="${valor}" class="${OP[chave] == valor ? 'sel' : ''}">${txt}</button>`;
+  if (t === 'gpu') return b('gpu_dur', 60, '1 min') + b('gpu_dur', 300, '5 min');
+  if (t === 'cpu') return b('cpu_dur', 'rapido', 'Rápido · 2 min') + b('cpu_dur', 'completo', 'Completo · 11 min');
+  if (t === 'stress') return b('stress_min', 10, '10 min') + b('stress_min', 20, '20 min') + b('stress_min', 30, '30 min');
+  return '';
+}
+
+function ultimoTexto(t) {
+  const u = (INFO.ultimos || {})[t];
+  if (!u || !u.resumo) return ['—', 'ainda não testado'];
+  return [u.resumo.valor, `${u.resumo.rotulo} · ${u.data.slice(0, 10)}`];
+}
+
+function desenharCards() {
+  $('#perfis').innerHTML = Object.entries(NOMES_PERFIS).map(([k, v]) => `<button class="chip ${PERFIL === k ? 'sel' : ''}" data-perfil="${k}">${v}</button>`).join('');
+  document.querySelectorAll('[data-perfil]').forEach(b => b.onclick = () => { PERFIL = b.dataset.perfil; if (PERFIS[PERFIL]) SEL = new Set(PERFIS[PERFIL]); desenharCards(); });
+  $('#cards').innerHTML = VITRINE.map(t => {
+    const T = TESTES[t], [v, rot] = ultimoTexto(t), m = T.min();
+    return `<div class="tcard ${SEL.has(t) ? 'sel' : ''} ${T.perfil ? 'perfil' : ''}" data-t="${t}">
+      <div class="cab"><div class="tico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="${SEL.has(t) ? 'var(--destaque)' : 'var(--txt2)'}" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${IC[t]}</svg></div>
+        <div><div class="tnome">${T.nome}${T.novo ? '<span class="novo">NOVO</span>' : ''}</div><div class="tdur">${m < 1.5 ? '~1 min' : `~${Math.round(m)} min`}</div></div><div class="cx"></div></div>
+      <div class="tdesc">${T.desc}</div>
+      ${opcoesCard(t) ? `<div class="tops">${opcoesCard(t)}</div>` : ''}
+      <div class="tultimo"><b>${esc(v)}</b><span class="c">${esc(rot)}</span></div>
+    </div>`;
+  }).join('');
+  document.querySelectorAll('.tcard').forEach(c => c.onclick = e => {
+    if (e.target.closest('[data-op]')) return;
+    const t = c.dataset.t; SEL.has(t) ? SEL.delete(t) : SEL.add(t); PERFIL = 'mao'; desenharCards();
+  });
+  document.querySelectorAll('[data-op]').forEach(b => b.onclick = () => { const k = b.dataset.op; OP[k] = typeof OP[k] === 'number' ? +b.dataset.v : b.dataset.v; SEL.add(b.closest('.tcard').dataset.t); desenharCards(); });
+  $('#parada').style.display = SEL.has('stress') ? '' : 'none';
+  const total = [...SEL].reduce((s, t) => s + TESTES[t].min(), 0);
+  $('#b-rodar').textContent = SEL.size ? `Executar ${SEL.size === 1 ? 'teste' : `${SEL.size} testes`} · ~${Math.max(1, Math.round(total))} min` : 'Selecione um teste';
+  $('#b-rodar').disabled = !SEL.size;
+  $('#rodar-txt').textContent = 'Os resultados ficam salvos no Histórico.';
+}
+
+function desenharPesados() {
+  $('#cards-p').innerHTML = PESADOS.map(P => {
+    const sel = SELP.has(P.t), [v, rot] = P.breve ? ['', ''] : ultimoTexto(P.t);
+    return `<div class="tcard ${sel ? 'sel' : ''} ${P.breve ? 'breve' : ''}" data-p="${P.t}">
+      <div class="cab"><div class="tico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="${sel ? 'var(--destaque)' : 'var(--txt2)'}" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${IC[P.ic]}</svg></div>
+        <div><div class="tnome">${P.nome}${P.breve ? '<span class="tag-breve">EM BREVE</span>' : ''}</div><div class="tdur">cerca de 12 min</div></div>${P.breve ? '' : '<div class="cx"></div>'}</div>
+      <div class="tdesc">${P.desc}</div>
+      ${P.exige ? `<div class="pexige"><span class="rot">Exige mais</span>${P.exige.map(k => `<span class="pchip" style="--c:${PECAS[k][2]}" title="${PECAS[k][1]}">+ ${PECAS[k][0]}</span>`).join('')}</div>` : ''}
+      <ul class="tetapas">${P.etapas.map((e, i) => `<li><span class="tet">${esc(e)}</span>${P.onde ? pecaTag(P.onde[i]) : ''}</li>`).join('')}</ul>
+      ${P.breve ? '' : `<div class="tultimo"><b>${esc(v)}</b><span class="c">${esc(rot)}</span></div>`}
+    </div>`;
+  }).join('');
+  document.querySelectorAll('[data-p]').forEach(c => c.onclick = () => {
+    const t = c.dataset.p; if (PESADOS.find(P => P.t === t).breve) return;
+    SELP.has(t) ? SELP.delete(t) : SELP.add(t); desenharPesados();
+  });
+  const n = SELP.size;
+  $('#b-rodar-p').textContent = n ? `Executar ${n === 1 ? 'teste' : `${n} testes`} · cerca de ${n * 12} min` : 'Selecione um teste';
+  $('#b-rodar-p').disabled = !n;
+}
+$('#b-rodar-p').onclick = () => rodarSequencia(PESADOS.filter(P => SELP.has(P.t)).map(P => P.t));
+
+function desenharModo() {
+  // só informa: o modo da fabricante (Turbo, Desempenho…) é escolhido no app dela, antes do teste
+  $('#modo-nb-txt').textContent = `Windows: ${INFO.modo_notebook.windows}. Antes de começar, coloque o aplicativo do fabricante no modo que deseja testar (Turbo, Desempenho…).`;
+}
+
+function desenharPecas() {
+  const c = INFO.cpu || {}, r = INFO.ram || {}, s = INFO.ssd || {}, g = INFO.gpu || {};
+  $('#pc-nome').textContent = INFO.notebook; $('#pil-txt').textContent = INFO.notebook;
+  const ram = r.gb ? `${r.gb} GB ${r.tipo || ''}${r.mhz ? `-${r.mhz}` : ''}` : '—';
+  $('#pecas').innerHTML = [['Processador', `${c.nome || '—'}${c.nucleos ? ` · ${c.nucleos} núcleos / ${c.threads} threads` : ''}`],
+    ['Placa de vídeo', `${g.nome || '—'}${g.vram ? ` · ${g.vram} GB` : ''}${g.tgp ? ` · até ${g.tgp} W` : ''}`],
+    ['Memória', `${ram}${r.canais ? ` · ${r.canais.texto}` : ''}`], ['SSD', [s.nome, s.barramento, s.gb && `${s.gb} GB`].filter(Boolean).join(' · ') || '—']]
+    .map(([k, v]) => `<div class="peca"><span>${k}</span><div>${esc(v)}</div></div>`).join('');
+  const av = [];
+  if (r.canais && r.canais.modo === 'single') av.push('<b>Apenas um pente de memória.</b> A memória trabalha com metade da velocidade (single channel), o que reduz o desempenho em jogos e no vídeo integrado.');
+  if (INFO.carregador === false) av.push('<b>Notebook na bateria.</b> Conecte o carregador: na bateria, o desempenho é significativamente menor.');
+  if (!INFO.sensores.hwinfo) av.push(INFO.sensores.monitor ? 'A temperatura do processador aparece com o Bench Monitor ligado (aba Monitor) ou com o <a data-hw>HWiNFO</a> aberto com "Shared Memory Support" ativado. As demais medições funcionam sem eles.' : 'A temperatura do processador aparece se o <a data-hw>HWiNFO</a> estiver aberto com "Shared Memory Support" ativado. As demais medições funcionam sem ele.');
+  $('#avisos').innerHTML = av.map(a => `<div class="aviso">${a}</div>`).join('');
+  document.querySelectorAll('[data-hw]').forEach(a => a.onclick = () => api.abrir_link('https://www.hwinfo.com/download/'));
+  const opts = (sel, de, ate, atual) => { $(sel).innerHTML = Array.from({length: Math.floor((ate - de) / 5) + 1}, (_, i) => de + i * 5).filter(v => v <= ate).map(v => `<option value="${v}" ${v === atual ? 'selected' : ''}>${v} °C</option>`).join(''); };
+  OP.lim_cpu = INFO.parada.cpu; OP.lim_gpu = INFO.parada.gpu;
+  opts('#lim-cpu', 80, INFO.parada.cpu, OP.lim_cpu); opts('#lim-gpu', 75, INFO.parada.gpu, OP.lim_gpu);
+  $('#lim-cpu').onchange = e => OP.lim_cpu = +e.target.value; $('#lim-gpu').onchange = e => OP.lim_gpu = +e.target.value;
+}
+
+function ir(t) {
+  document.querySelectorAll('.tela').forEach(e => e.classList.toggle('ativa', e.id === 't-' + t));
+  document.querySelectorAll('nav button').forEach(b => b.classList.toggle('ativo', b.dataset.t === t));
+  if (t === 'historico') historico();
+  if (t === 'pesados' && INFO) desenharPesados();
+}
+document.querySelectorAll('nav button').forEach(b => b.onclick = () => ir(b.dataset.t));
+
+function aviso(titulo, texto) {
+  $('#modal-tit').textContent = titulo; $('#modal-txt').textContent = texto; $('#modal').classList.add('vis');
+  return new Promise(ok => $('#modal-ok').onclick = () => { $('#modal').classList.remove('vis'); ok(); });
+}
+
+// ------------------------------------------------------------------ tela "rodando"
+let CTRL = null, SENS_INT = null;
+function mostrarVisual(qual, etiqueta) {
+  ['#cv2d', '#cvgpu', '#cvmini', '#disco-vis'].forEach(s => $(s).classList.remove('vis'));
+  (qual || []).forEach(s => $(s).classList.add('vis'));
+  $('#etiqueta').style.display = etiqueta ? '' : 'none'; $('#etiqueta').textContent = etiqueta || '';
+}
+const metrica = (rot, val, etapa) => { if (rot != null) $('#rd-rotulo').textContent = rot; if (val != null) $('#rd-valor').textContent = val; if (etapa != null) $('#rd-etapa').textContent = etapa; };
+let N_AMOSTRAS = 0;
+function sensoresNaTela(s) {
+  const v = (x, suf = '', d = 0) => x == null ? '—' : fmt(x, d) + suf;
+  $('#s-cmhz').textContent = s.cpu_mhz ? fmt(s.cpu_mhz) + ' MHz' : '—'; $('#s-cuso').textContent = v(s.cpu_uso, '%');
+  $('#s-ctemp').textContent = s.cpu_temp != null ? fmt(s.cpu_temp) + ' °C' : 'abra o HWiNFO'; $('#s-cw').textContent = s.cpu_watts != null ? fmt(s.cpu_watts) + ' W' : 'abra o HWiNFO';
+  $('#s-guso').textContent = v(s.gpu_uso, '%'); $('#s-gmhz').textContent = s.gpu_mhz ? fmt(s.gpu_mhz) + ' MHz' : '—';
+  $('#s-gtemp').textContent = v(s.gpu_temp, ' °C'); $('#s-gw').textContent = v(s.gpu_watts, ' W');
+  $('#s-gvram').textContent = s.gpu_vram != null ? `${fmt(s.gpu_vram, 1)}${s.gpu_vram_total ? ` de ${fmt(s.gpu_vram_total)}` : ''} GB` : '—';
+  $('#s-genc').textContent = s.gpu_enc != null ? `${s.gpu_enc}% / ${s.gpu_dec ?? 0}%` : '—';
+  $('#s-n').textContent = ++N_AMOSTRAS;
+  $('#s-bat').textContent = s.bateria ? `${s.bateria.pct}%${s.bateria.tomada ? ' ⚡' : ''}` : '—';
+}
+
+function passosPesado(t, atual) {
+  $('#passos-tit').textContent = `Etapas · ${TESTES[t].nome.replace('Teste pesado · ', '')}`;
+  $('#passos').innerHTML = PASSOS[t].map((n, i) => `<div class="${i < atual ? 'feito' : i === atual ? 'agora' : ''}"><i>${i < atual ? '✓' : i + 1}</i>${esc(n)}</div>`).join('');
+}
+let CURVA = null;
+function curvaAoVivo() {
+  if (!CURVA) return;
+  const s = CURVA.serie(), total = Math.max(600 * ESCALA + 60 * Math.min(1, ESCALA), CURVA.tempo);
+  $('#rd-curva-svg').innerHTML = curvaSVG(s, CURVA.etapas, total, {altura: 110});
+  const u = s.at(-1);
+  $('#rd-curva-txt').textContent = u ? `Agora: ${fmt(Math.min(100, u[1]))}% do começo da etapa` : '';
+  $('#rd-curva-txt').style.color = u && u[1] < 90 ? 'var(--alerta)' : 'var(--ok)';
+}
+function uiPesado(t) {
+  CURVA = new Curva();
+  const cv = $('#cvgpu'); cv.width = 1600; cv.height = 900;
+  return {curva: CURVA, info: INFO, api, escala: ESCALA, peq: PEQ, CV, cv2d: $('#cv2d'), cvgpu: cv,
+    passo: i => passosPesado(t, i), visual: (l, e) => mostrarVisual(l, e), metrica, etapa: marcarEtapa,
+    texto: (tit, pct, sub) => { if (tit != null) $('#disco-etapa').textContent = tit; if (pct != null) $('#disco-barra').style.width = pct + '%'; if (sub != null) $('#disco-txt').textContent = sub; },
+    miniatura: img => miniatura(img)};
+}
+
+function passos(lista, atual, falhas = {}) {
+  $('#passos-tit').textContent = 'Sequência';
+  $('#passos').innerHTML = lista.map((t, i) => `<div class="${i < atual ? (falhas[t] ? 'falhou' : 'feito') : i === atual ? 'agora' : ''}"><i>${i < atual ? (falhas[t] ? '!' : '✓') : i + 1}</i>${TESTES[t].nome}</div>`).join('');
+}
+
+// ------------------------------------------------------------------ sequência
+let SESSAO = [], SESSAO_QUANDO = null, ETAPAS = [], ADAPTADOR = null;
+const guardarSessao = () => { try { api.salvar_sessao({quando: SESSAO_QUANDO, itens: SESSAO}); } catch (e) { /* segue sem guardar */ } };
+const USA_PLACA = {gpu: 1, stress: 1, arquitetura: 1, video: 1, ia: 1, render3d: 1, p_arquitetura: 1, p_odonto: 1, p_engenharia: 1, p_programacao: 1, p_design: 1, p_video: 1};
+// Quanto tempo a janela ficou minimizada ou escondida durante um teste (o Windows reduz a velocidade de programas
+// em segundo plano; o Bench Labs pede ao motor do Edge para não fazer isso, mas o resultado é marcado mesmo assim).
+function foraDaTela() {
+  let total = 0, desde = document.hidden ? Date.now() : null;
+  const mudou = () => { if (document.hidden) desde = desde || Date.now(); else if (desde) { total += Date.now() - desde; desde = null; } };
+  document.addEventListener('visibilitychange', mudou);
+  return {parar() { document.removeEventListener('visibilitychange', mudou); if (desde) total += Date.now() - desde; return total / 1000; }};
+}
+function marcarEtapa(nome) {
+  if (!nome) return;
+  const t = Date.now(), u = ETAPAS.at(-1);
+  if (u && u.nome === nome) return;
+  if (u && !u.fim) u.fim = t;
+  ETAPAS.push({nome, ini: t});
+}
+function placaUsada() {
+  const g = INFO.gpu || {}, v = (ADAPTADOR || '').toLowerCase(), ded = placaDedicada();
+  if (ded && v && v !== ded.vendor) return {nome: 'Vídeo integrado', tipo: 'integrada', aviso: true};
+  return {nome: (ded && ded.nome) || g.nome || 'Placa de vídeo', tipo: ded ? 'dedicada' : ''};
+}
+function hardwareEmUso(t) {
+  const p = placaUsada();
+  return USA_PLACA[t] ? `<div><span class="c">Placa de vídeo</span><br><b>${esc(p.nome)}</b>${p.tipo ? ` <span class="c">(${p.tipo})</span>` : ''}${p.aviso ? '<div style="color:var(--alerta)">Não é a placa dedicada. Ajuste em Configurações > Sistema > Tela > Gráficos.</div>' : ''}</div><div style="margin-top:6px"><span class="c">Processador</span><br><b>${esc(INFO.cpu.nome)}</b></div>`
+    : `<div><span class="c">Processador</span><br><b>${esc(INFO.cpu.nome)}</b> <span class="c">· ${INFO.cpu.threads} threads</span></div>${t === 'memoria' ? `<div style="margin-top:6px"><span class="c">Memória</span><br><b>${INFO.ram.gb} GB ${INFO.ram.tipo || ''}</b></div>` : t === 'ssd' ? `<div style="margin-top:6px"><span class="c">SSD</span><br><b>${esc(INFO.ssd.nome || '—')}</b></div>` : ''}`;
+}
+async function rodarSequencia(listaForcada) {
+  alert('Demonstração com dados fictícios. Baixe o Bench Labs para executar testes.');
+  return;
+
+  const lista = Array.isArray(listaForcada) ? listaForcada : ORDEM.filter(t => SEL.has(t));
+  if (!lista.length) return;
+  ULTIMA_LISTA = lista;
+  SESSAO = []; SESSAO_QUANDO = new Date().toISOString();
+  CTRL = new AbortController();
+  const sair = e => { if (e.key === 'Escape') CTRL.abort(); };
+  document.addEventListener('keydown', sair);
+  $('#b-cancelar').onclick = () => CTRL.abort();
+  $('#rodando').classList.add('ativa');
+  api.manter_acordado(true);
+  const total = lista.reduce((s, t) => s + TESTES[t].min(), 0) * 60, t0 = Date.now();
+  let feito = 0;
+  const falhas = {};
+  const relogio = setInterval(() => {
+    const s = (Date.now() - t0) / 1000;
+    $('#rd-tempo').textContent = `${mmss(s)} de ~${mmss(total)}`;
+    $('#rd-barra').style.width = Math.min(99, 100 * s / total) + '%';
+  }, 500);
+  try {
+    for (let i = 0; i < lista.length; i++) {
+      if (CTRL.signal.aborted) break;
+      const t = lista[i];
+      passos(lista, i, falhas);
+      $('#rd-titulo').textContent = `Teste ${i + 1} de ${lista.length} · ${TESTES[t].nome}`;
+      metrica('', '—', ''); mostrarVisual([]);
+      $('#rd-hw').innerHTML = hardwareEmUso(t); N_AMOSTRAS = 0;
+      const pesado = !!TESTES[t].pesado;
+      $('#rd-curva').classList.toggle('vis', pesado); $('#rodando').classList.toggle('pesado', pesado); $('#rd-curva-svg').innerHTML = ''; $('#rd-curva-txt').textContent = '';
+      CURVA = null;
+      if (pesado) passosPesado(t, 0);
+      const intCurva = pesado ? setInterval(curvaAoVivo, 1000) : null;
+      await api.monitor_iniciar();
+      const ini = Date.now();
+      ETAPAS = [];
+      SENS_INT = setInterval(async () => sensoresNaTela(await api.monitor_agora()), 1000);
+      let res = null, erro = null;
+      const fora = foraDaTela();
+      try {
+        if (USA_PLACA[t]) { const pl = await placaDaCena(); if (!pl.ok) throw new Error(pl.erro); }
+        res = await EXECUTAR[t](CTRL.signal);
+      }
+      catch (e) { if (String(e).indexOf('interrompido') < 0) erro = e; }
+      const segFora = fora.parar();
+      if (res && segFora >= 5) res.fora_da_tela_s = Math.round(segFora);
+      clearInterval(SENS_INT); if (intCurva) clearInterval(intCurva);
+      const fimT = Date.now();
+      const sens = await api.monitor_parar(ini, fimT);
+      if (res) {
+        res.sensores = sens;
+        if (ETAPAS.length && !ETAPAS.at(-1).fim) ETAPAS.at(-1).fim = fimT;
+        res.etapas = ETAPAS.map(e => ({nome: e.nome, ini: Math.round((e.ini - ini) / 100) / 10, fim: Math.round(((e.fim || fimT) - ini) / 100) / 10}));
+        res.placa = USA_PLACA[t] ? placaUsada().nome : null;
+        try { res.log = await api.salvar_log(t, TESTES[t].nome, sens, res.etapas, enxuto(res), CONFERENCIA); } catch (e) { console.error(e); }
+        const resumo = RESUMO[t](res);
+        const meta = {modo_windows: INFO.modo_notebook.windows, variante: res.variante || null};
+        const comp = CONFERENCIA ? {anterior: null, recorde: null} : await api.salvar(t, enxuto(res), resumo, meta);
+        SESSAO.push({teste: t, res, comp, resumo});
+      } else if (erro) { falhas[t] = true; SESSAO.push({teste: t, erro: String(erro.message || erro)}); console.error(erro); }
+      if (!CONFERENCIA && (res || erro)) guardarSessao();
+      feito += TESTES[t].min() * 60;
+      await espera(800);                                                    // respiro entre os testes
+    }
+  } finally {
+    clearInterval(relogio); clearInterval(SENS_INT);
+    document.removeEventListener('keydown', sair);
+    $('#rodando').classList.remove('ativa'); $('#gpu-tela').classList.remove('ativa'); $('#rd-curva').classList.remove('vis');
+    await api.tela_cheia(false); api.manter_acordado(false);
+    if (CTRL.signal.aborted) api.disco_cancelar();
+  }
+  INFO = await api.inicio(); desenharCards(); desenharPesados();
+  if (SESSAO.length) { mostrarResultados(); ir('resultado'); }
+}
+$('#b-rodar').onclick = rodarSequencia;
+
+function enxuto(r) {                                                     // o histórico não guarda imagens
+  const o = {...r}; delete o.miniatura; delete o.sensores; delete o.mini_nav; delete o.mini_protese; delete o.mini_fluido;
+  if (r.sensores) o.sensores = {...r.sensores, linha_tempo: undefined};
+  return o;
+}
+
+// ------------------------------------------------------------------ cada teste
+const EXECUTAR = {
+  async cpu(sinal) {
+    const segMulti = (OP.cpu_dur === 'completo' ? 600 : 60) * ESCALA, segSingle = 60 * ESCALA;
+    mostrarVisual(['#cv2d'], `Todos os núcleos · ${THREADS} threads`); marcarEtapa('Todos os núcleos');
+    metrica('Pontos · todos os núcleos', '—', 'Renderizando a cena com todos os núcleos');
+    const m = await cpuRender({segundos: segMulti, threads: THREADS, canvas: $('#cv2d'), sinal,
+      aoAndar: p => metrica(null, fmt(p.pontosAgora), `Todos os núcleos · ${mmss(p.segundos)} de ${mmss(segMulti)}`)});
+    await espera(1500);
+    mostrarVisual(['#cv2d'], 'Um núcleo'); marcarEtapa('Um núcleo');
+    metrica('Pontos · um núcleo', '—', 'Agora com um núcleo');
+    const s = await cpuRender({segundos: segSingle, threads: 1, canvas: $('#cv2d'), sinal,
+      aoAndar: p => metrica(null, fmt(p.pontos), `Um núcleo · ${mmss(p.segundos)} de ${mmss(segSingle)}`)});
+    const ps = m.porSegundo.slice(3), queda = ps.length > 20 ? Math.round(100 * avg(ps.slice(-Math.floor(ps.length / 3))) / avg(ps.slice(0, 10))) : null;
+    return {multi: m.pontos, single: s.pontos, threads: THREADS, duracao: OP.cpu_dur === 'completo' ? 600 : 60, estabilidade: queda ? Math.min(100, queda) : null,
+            por_segundo: m.porSegundo, variante: OP.cpu_dur};
+  },
+  async jogos(sinal) {
+    mostrarVisual(['#cv2d'], '30.000 unidades · 2 exércitos');
+    metrica('Quadros de simulação/s', '—', 'IA no núcleo principal; física nos demais núcleos');
+    const r = await jogos({segundos: 60 * ESCALA, canvas: $('#cv2d'), sinal, aoAndar: p => metrica(null, fmt(p.spsAgora), `${mmss(p.segundos)} de 1:00`)});
+    return {sps: Math.round(r.sps * 10) / 10, principal: r.principal, outros: r.outros, ajudantes: r.ajudantes, por_segundo: r.porSegundo};
+  },
+  async memoria(sinal) {
+    mostrarVisual(['#disco-vis']);
+    $('#disco-etapa').textContent = 'Memória'; $('#disco-txt').textContent = '';
+    metrica('Leitura', '—', '');
+    const r = await memoria({sinal, aoAndar: p => { marcarEtapa(p.etapa.replace(/ \(.*\)$/, ''));
+      $('#disco-etapa').textContent = p.etapa; $('#disco-barra').style.width = p.pct + '%';
+      const k = Object.keys(p.parcial); if (k.length) metrica({leitura: 'Leitura', gravacao: 'Gravação', copia: 'Cópia'}[k.at(-1)], fmt(p.parcial[k.at(-1)], 1) + ' GB/s');
+      $('#disco-txt').textContent = [['leitura', 'Leitura'], ['gravacao', 'Gravação'], ['copia', 'Cópia']].filter(([c]) => p.parcial[c]).map(([c, n]) => `${n}: ${fmt(p.parcial[c], 1)} GB/s`).join(' · ');
+    }});
+    const ram = INFO.ram || {};
+    return {...r, gb: ram.gb, tipo: ram.tipo, mhz: ram.mhz, canais: ram.canais, pentes: (ram.pentes || []).length};
+  },
+  async ssd(sinal) { return disco(['ssd', 'carregamento'], sinal, 'SSD'); },
+  async gpu(sinal) { return testeGPU(sinal); },
+  async stress(sinal) { return stress(sinal); },
+  async arquitetura(sinal) { return arquitetura(sinal); },
+  async p_arquitetura(sinal) { return arquiteturaPesado(uiPesado('p_arquitetura'), sinal); },
+  async p_odonto(sinal) { return odontoPesado(uiPesado('p_odonto'), sinal); },
+  async p_engenharia(sinal) { return engenhariaPesado(uiPesado('p_engenharia'), sinal); },
+  async p_programacao(sinal) { return programacaoPesado(uiPesado('p_programacao'), sinal); },
+  async p_design(sinal) { return designPesado(uiPesado('p_design'), sinal); },
+  async p_video(sinal) { return videoPesado(uiPesado('p_video'), sinal); },
+  async video(sinal) {
+    mostrarVisual(['#disco-vis']); $('#disco-etapa').textContent = 'Edição de vídeo'; $('#disco-txt').textContent = 'Os vídeos de teste já acompanham o aplicativo.'; $('#disco-barra').style.width = '0%';
+    metrica('Etapa', '1 de 4', '');
+    // sem codificador no motor do Edge: o app mede direto pela placa (FFmpeg; baixa uma vez, cerca de 100 MB)
+    const exportarDireto = async (aoTxt, s) => {
+      await api.exportar_iniciar();
+      for (;;) {
+        await new Promise(ok => setTimeout(ok, 500));
+        if (s && s.aborted) { await api.exportar_cancelar(); throw new Error('interrompido'); }
+        const e = await api.exportar_estado();
+        if (e.txt) aoTxt(e.txt);
+        if (e.fim) { if (e.erro) throw new Error(e.erro); return e.resultado; }
+      }
+    };
+    const r = await perfilVideo({info: INFO, sinal, canvas: $('#cv2d'), escala: ESCALA, exportarDireto, aoAndar: p => {
+      const nomes = ['', 'Formatos de vídeo e timeline', 'Cor e efeitos', 'Exportação', 'Motion graphics'];
+      marcarEtapa(nomes[p.etapa]);
+      if (false) {} else { mostrarVisual(['#disco-vis']); $('#disco-etapa').textContent = `${p.etapa} de 4 · ${nomes[p.etapa]}`; $('#disco-barra').style.width = (p.etapa - 1) * 25 + 12 + '%'; $('#disco-txt').textContent = p.txt; }
+      metrica(p.valor != null ? 'Quadros/s' : 'Etapa', p.valor != null ? fmt(p.valor) : `${p.etapa} de 4`, p.txt);
+    }});
+    r.export_4k_s = r.exportar.uhd_h264;
+    return r;
+  },
+  async ia(sinal) {
+    mostrarVisual(['#disco-vis']); $('#disco-etapa').textContent = 'IA no notebook'; $('#disco-barra').style.width = '0%';
+    $('#disco-txt').textContent = 'Mede a velocidade da memória de vídeo e a força de cálculo da placa. Nenhum modelo é baixado.';
+    metrica('Etapa', '1 de 2', '');
+    const r = await perfilIA({info: INFO, sinal, escala: ESCALA, aoAndar: p => { if (p.etapa <= 2) marcarEtapa(p.etapa === 1 ? 'Memória de vídeo' : 'Força de cálculo'); $('#disco-etapa').textContent = p.txt; $('#disco-barra').style.width = Math.min(100, p.etapa * 40) + '%'; metrica(null, `${Math.min(2, p.etapa)} de 2`, p.txt); }});
+    r.palavras_8b = r.modelos.find(m => m.tam === '8B').palavras_s;
+    return r;
+  },
+  async render3d(sinal) {
+    const cv = $('#cvgpu'); cv.width = 1600; cv.height = 900;
+    const r = await perfil3D({info: INFO, sinal, canvas: cv, escala: ESCALA, Navegacao, Render, CV, aoAndar: p => {
+      marcarEtapa(['', 'Viewport', 'Render na placa', 'Simulação'][p.etapa]);
+      if (p.visual === 'gpu') mostrarVisual(['#cvgpu'], `${p.etapa} de 3 · ${p.txt}`);
+      else { mostrarVisual(['#disco-vis']); $('#disco-etapa').textContent = `${p.etapa} de 3 · ${p.txt}`; $('#disco-barra').style.width = (p.etapa - 1) * 33 + 15 + '%'; $('#disco-txt').textContent = 'Tecido caindo sobre uma esfera e 30 mil partículas.'; }
+      metrica(p.unidade === 'fps' ? 'Quadros/s' : p.unidade === '%' ? 'Render' : 'Etapa', p.valor != null ? fmt(p.valor) + (p.unidade === '%' ? '%' : '') : `${p.etapa} de 3`, p.txt);
+    }});
+    return r;
+  },
+};
+const avg = xs => xs.length ? xs.reduce((s, x) => s + x, 0) / xs.length : 0;
+const tempo = s => s == null ? '—' : s < 60 ? `${fmt(s, s < 10 ? 1 : 0)} s` : s < 3600 ? `${Math.floor(s / 60)} min${Math.round(s % 60) ? ` ${Math.round(s % 60)} s` : ''}` : `${Math.floor(s / 3600)} h ${Math.round(s % 3600 / 60)} min`;
+
+async function disco(partes, sinal, rotulo, projeto_mb = 600) {
+  mostrarVisual(['#disco-vis']);
+  await api.disco_iniciar(partes, projeto_mb);
+  let est;
+  while (true) {
+    if (sinal.aborted) { await api.disco_cancelar(); throw new Error('interrompido'); }
+    est = await api.disco_estado();
+    if (est.etapa && est.etapa !== 'Pronto') marcarEtapa(est.etapa.replace(/ \(.*\)$/, ''));
+    $('#disco-etapa').textContent = est.etapa; $('#disco-barra').style.width = (est.pct || 0) + '%';
+    const r = est.res || {};
+    $('#disco-txt').textContent = [r.seq_leitura && `Leitura ${fmt(r.seq_leitura)} MB/s`, r.seq_gravacao && `Gravação ${fmt(r.seq_gravacao)} MB/s`,
+      r.rnd_leitura && `4 KB: ${fmt(r.rnd_leitura, 1)} MB/s`].filter(Boolean).join(' · ') || 'Os arquivos de teste são excluídos ao final.';
+    metrica(rotulo, r.carregamento_s ? fmt(r.carregamento_s, 1) + ' s' : r.seq_leitura ? fmt(r.seq_leitura) + ' MB/s' : '—', est.etapa);
+    if (est.fim) break;
+    await espera(400);
+  }
+  if (est.erro === 'cancelado') throw new Error('interrompido');
+  if (est.erro) throw new Error(est.erro);
+  return {...est.res, ssd: INFO.ssd};
+}
+
+// ---- GPU (a cena do GPU Fight, em tela cheia)
+// placa dedicada do notebook (pelas placas que o Windows lista) e a placa que o WebGPU vai usar
+function placaDedicada() {
+  const nomes = [...(INFO.placas || []).map(p => p.nome || ''), (INFO.gpu && INFO.gpu.nome) || ''];
+  const nome = nomes.find(n => /NVIDIA|GeForce|RTX|GTX|Radeon\s*(\(TM\)\s*)?RX|Radeon Pro|Arc\(TM\) A\d|Arc A\d/i.test(n));
+  if (!nome) return null;
+  return {nome, vendor: /NVIDIA|GeForce|RTX|GTX/i.test(nome) ? 'nvidia' : /Radeon/i.test(nome) ? 'amd' : 'intel'};
+}
+const limpaNome = n => (n || '').toLowerCase().replace(/\(r\)|\(tm\)|nvidia|geforce|amd|radeon|intel|laptop gpu|graphics|gpu|[^a-z0-9]/g, '');
+async function placaDaCena() {
+  if (window.DEV_PEQUENO) return {ok: true};                              // testes de desenvolvimento (navegador sem placa)
+  if (!navigator.gpu) return {ok: false, erro: 'O WebGPU não está disponível. Atualize o Windows e o Microsoft Edge.'};
+  const a = await navigator.gpu.requestAdapter({powerPreference: 'high-performance'});
+  if (!a) return {ok: false, erro: 'O WebGPU não encontrou a placa de vídeo. Atualize o driver.'};
+  const info = a.info || {}, v = (info.vendor || '').toLowerCase(), desc = info.description || '';
+  if (a.isFallbackAdapter) return {ok: false, erro: 'O motor do Windows não conseguiu usar a placa de vídeo (está desenhando pelo processador). Atualize o driver de vídeo e abra o aplicativo novamente.'};
+  const ded = placaDedicada();
+  const integrado = ded && ((v && v !== ded.vendor) || (desc && limpaNome(desc) && !limpaNome(ded.nome).includes(limpaNome(desc)) && !limpaNome(desc).includes(limpaNome(ded.nome))));
+  if (integrado) return {ok: false, erro: `Os testes de placa de vídeo seriam executados no vídeo integrado${desc ? ` (${desc})` : ''}, e não na ${ded.nome.replace(/\(R\)|\(TM\)/g, '')}. Em Configurações > Sistema > Tela > Gráficos, coloque o Bench Labs em "Alto desempenho" e abra o aplicativo novamente.`};
+  return {ok: true, vendor: v, nome: desc || null};
+}
+
+async function testeGPU(sinal) {
+  const pl = await placaDaCena();
+  if (!pl.ok) throw new Error(pl.erro);
+  const segundos = OP.gpu_dur * ESCALA, R = RES[OP.gpu_res], nomeModo = OP.gpu_dur === 60 ? 'Rápido' : 'Completo';
+  $('#h-modo').textContent = `Testando · ${R.nome} · ${nomeModo}`; $('#h-fps').textContent = '—'; $('#h-barra').style.width = '0%';
+  await api.tela_cheia(true);
+  $('#gpu-tela').classList.add('ativa');
+  await espera(400);
+  const cv = $('#cv-gpu'), dpr = devicePixelRatio || 1, tw = innerWidth * dpr, th = innerHeight * dpr;
+  if (tw / th > 16 / 9) { cv.width = Math.round(tw); cv.height = Math.round(tw * 9 / 16); } else { cv.height = Math.round(th); cv.width = Math.round(th * 16 / 9); }
+  const sens = setInterval(async () => {
+    const s = await api.monitor_agora();
+    $('#h-temp').textContent = s.gpu_temp != null ? s.gpu_temp + '°' : '—'; $('#h-w').textContent = s.gpu_watts != null ? Math.round(s.gpu_watts) + ' W' : '—';
+    $('#h-mhz').textContent = s.gpu_mhz != null ? fmt(s.gpu_mhz) : '—'; $('#h-uso').textContent = s.gpu_uso != null ? s.gpu_uso + '%' : '—';
+  }, 1000);
+  try {
+    const m = new MotorGPU();
+    await m.iniciar(CV(cv), {largura: R.largura * PEQ, altura: R.altura * PEQ});
+    await m.quadro(0);
+    const r = await m.rodar(segundos, p => {
+      $('#h-fps').textContent = Math.round(p.fpsAgora); $('#h-tempo').textContent = `${mmss(p.segundos)} de ${mmss(segundos)}`;
+      $('#h-barra').style.width = Math.min(100, 100 * p.segundos / segundos) + '%';
+    }, sinal);
+    const ps = r.porSegundo, corpo = ps.length > 6 ? ps.slice(2) : ps;
+    const ini = avg(corpo.slice(0, 10)) || r.fps, fim = avg(corpo.slice(-Math.max(3, Math.floor(corpo.length / 3)))) || r.fps;
+    let mini = null;
+    try { const img = await m.capturar(); mini = miniatura(img); } catch (e) { /* sem miniatura */ }
+    try { m.dev.destroy(); } catch (e) { /* já foi */ }
+    return {nota: r.nota, fps: Math.round(r.fps * 10) / 10, pior_segundo: corpo.length ? Math.round(Math.min(...corpo)) : null,
+            estabilidade: Math.min(100, Math.round(100 * fim / ini)), resolucao: R.nome, duracao: OP.gpu_dur, cena: VERSAO_CENA,
+            por_segundo: ps.map(x => Math.round(x * 10) / 10), miniatura: mini, variante: `${OP.gpu_res}-${segundos}`};
+  } finally {
+    clearInterval(sens); $('#gpu-tela').classList.remove('ativa'); await api.tela_cheia(false);
+  }
+}
+
+function miniatura(img, w = 800) {
+  const c = document.createElement('canvas'); c.width = img.width; c.height = img.height; c.getContext('2d').putImageData(img, 0, 0);
+  const p = document.createElement('canvas'); p.width = w; p.height = Math.round(w * img.height / img.width); p.getContext('2d').drawImage(c, 0, 0, p.width, p.height);
+  return p.toDataURL('image/jpeg', .82);
+}
+const miniCanvas = (cv, w = 800) => { const p = document.createElement('canvas'); p.width = w; p.height = Math.round(w * cv.height / cv.width); p.getContext('2d').drawImage(cv, 0, 0, p.width, p.height); return p.toDataURL('image/jpeg', .82); };
+
+// ---- stress total
+async function stress(sinal) {
+  const pl = await placaDaCena();
+  if (!pl.ok) throw new Error(pl.erro);
+  const segundos = OP.stress_min * 60 * ESCALA, limCpu = OP.lim_cpu, limGpu = OP.lim_gpu;
+  const ctrl = new AbortController(), parar = () => ctrl.abort();
+  sinal.addEventListener('abort', parar);
+  mostrarVisual(['#cvgpu', '#cvmini'], 'Processador e placa de vídeo no limite');
+  metrica('Tempo no limite', '0:00', 'Aquecendo…');
+  const cv = $('#cvgpu'); cv.width = 1600; cv.height = 900;
+  const m = new MotorGPU();
+  await m.iniciar(CV(cv), {largura: 2560 * PEQ, altura: 1440 * PEQ});
+  let motivo = null, driver = false, perdeuPlaca = false;
+  // Perder a placa no WebGPU nem sempre é o driver: o próprio motor do Edge pode reiniciar a parte gráfica. Só conta
+  // como instabilidade se o Windows registrar o reinício do driver (conferido nos eventos do sistema no fim).
+  m.dev.lost.then(i => { if (!ctrl.signal.aborted && i.reason !== 'destroyed') { perdeuPlaca = true; motivo = 'O motor do Windows perdeu a conexão com a placa de vídeo'; ctrl.abort(); } });
+  const t0 = Date.now(), linha = [];
+  let acimaCpu = 0, acimaGpu = 0, eventos = {whea: 0, driver: 0}, ultimoEv = Date.now(), cpuPts = [];
+  const vigia = setInterval(async () => {
+    const s = await api.monitor_agora(), seg = (Date.now() - t0) / 1000;
+    linha.push({s: seg, cpu_temp: s.cpu_temp, gpu_temp: s.gpu_temp});
+    acimaCpu = s.cpu_temp != null && s.cpu_temp > limCpu ? acimaCpu + 1 : 0;
+    acimaGpu = s.gpu_temp != null && s.gpu_temp > limGpu ? acimaGpu + 1 : 0;
+    if (acimaCpu >= 10) { motivo = `O processador ultrapassou ${limCpu} °C`; ctrl.abort(); }
+    if (acimaGpu >= 10) { motivo = `A placa de vídeo ultrapassou ${limGpu} °C`; ctrl.abort(); }
+    if (s.bateria && !s.bateria.tomada && s.bateria.pct < 30) { motivo = 'A bateria ficou abaixo de 30%'; ctrl.abort(); }
+    if (Date.now() - ultimoEv > 60000) {
+      ultimoEv = Date.now();
+      eventos = await api.eventos(t0);
+      if (eventos.driver > 0) { driver = true; motivo = 'O driver de vídeo reiniciou'; ctrl.abort(); }
+    }
+    metrica(null, mmss(seg), `${mmss(seg)} de ${mmss(segundos)} · CPU ${s.cpu_temp ?? '—'} °C · GPU ${s.gpu_temp ?? '—'} °C`);
+  }, 1000);
+  let fpsSeg = [], cpu = null, erroCalc = 0;
+  try {
+    const gpuP = m.rodar(segundos, p => { fpsSeg = p; }, ctrl.signal).catch(e => { if (String(e).indexOf('interrompido') < 0) throw e; return null; });
+    const cpuP = cpuRender({segundos, threads: Math.max(1, THREADS - 1), canvas: $('#cvmini'), sinal: ctrl.signal, verificar: true,
+      pararSe: ({erros}) => { if (erros) { erroCalc = erros; motivo = 'O processador cometeu um erro de cálculo'; ctrl.abort(); return true; } return false; },
+      aoAndar: p => cpuPts.push(p.pontosAgora)}).catch(e => { if (String(e).indexOf('interrompido') < 0) throw e; return null; });
+    const [g, c] = await Promise.all([gpuP, cpuP]);
+    cpu = c;
+    var gpuRes = g;
+  } finally {
+    clearInterval(vigia); sinal.removeEventListener('abort', parar);
+  }
+  if (sinal.aborted) { try { m.dev.destroy(); } catch (e) { /**/ } throw new Error('interrompido'); }
+  let mini = null;
+  try { mini = miniatura(await m.capturar()); } catch (e) { /**/ }
+  try { m.dev.destroy(); } catch (e) { /**/ }
+  if (perdeuPlaca) await espera(3000);                                     // o Windows grava o evento do driver alguns segundos depois
+  eventos = await api.eventos(t0);
+  if (perdeuPlaca && eventos.driver > 0) { driver = true; motivo = 'O driver de vídeo reiniciou'; }
+  const minutos = Math.round((Date.now() - t0) / 600) / 100;
+  const gps = (gpuRes && gpuRes.porSegundo) || [], cps = (cpu && cpu.porSegundo) || [];
+  const fimPct = xs => xs.length > 60 ? Math.min(100, Math.round(100 * avg(xs.slice(-Math.floor(xs.length / 5))) / avg(xs.slice(10, 60)))) : null;
+  const estavel = !motivo && !eventos.whea && !eventos.driver && !erroCalc;
+  return {minutos, planejado: OP.stress_min, estavel, motivo, erros_calculo: erroCalc || (cpu ? cpu.erros : 0), conferidos: cpu ? cpu.conferidos : 0,
+          whea: eventos.whea, driver: eventos.driver || (driver ? 1 : 0), eventos_ok: eventos.ok, perdeu_placa: perdeuPlaca && !driver,
+          gpu_fim_pct: fimPct(gps), cpu_fim_pct: fimPct(cps), lim_cpu: limCpu, lim_gpu: limGpu, linha, miniatura: mini, variante: String(OP.stress_min)};
+}
+
+// ---- Arquitetura e Engenharia
+async function arquitetura(sinal) {
+  const r = {};
+  const sub = (txt) => metrica(null, null, txt);
+  // 1. modelagem
+  mostrarVisual(['#disco-vis']);
+  marcarEtapa('Modelagem BIM'); $('#disco-etapa').textContent = '1 de 5 · Modelagem BIM'; $('#disco-txt').textContent = 'Move uma parede em um prédio de 20 andares e mede quanto tempo o modelo leva para se atualizar (paredes, aberturas, ambientes, cotas e tabelas). Usa um núcleo, como o Revit.';
+  metrica('Por alteração', '—', '');
+  const b = await modelagem({sinal, alteracoes: Math.max(3, Math.round(30 * Math.min(1, ESCALA * 4))), aoAndar: p => { $('#disco-barra').style.width = 100 * p.feitas / p.total + '%'; metrica(null, fmt(p.ultimo, 2) + ' s', `${p.feitas} de ${p.total} alterações`); }});
+  r.bim_s = b.bim_s; r.bim_tri = b.triangulos; r.bim_ambientes = b.ambientes;
+  // 2. navegação
+  const nav = new Navegacao(), cv = $('#cvgpu'); cv.width = 1600; cv.height = 900;
+  mostrarVisual(['#cvgpu'], 'Condomínio de casas');
+  await nav.iniciar(CV(cv), {largura: 1920 * PEQ, altura: 1080 * PEQ});
+  r.nav_triangulos = nav.modelo.triangulos;
+  const estilos = [['arestas', 'Só arestas'], ['sombreado', 'Sombreado'], ['realista', 'Realista com sombras']];
+  let miniNav = null;
+  try {
+    for (const [e, nome] of estilos) {
+      marcarEtapa(`Navegação · ${nome}`); $('#etiqueta').textContent = `2 de 5 · Navegação · ${nome} · ${milhoes(nav.modelo.triangulos / 1e6)} de triângulos`;
+      metrica('Quadros/s', '—', nome);
+      const x = await nav.rodar(e, 12 * ESCALA, p => metrica(null, fmt(p.fpsAgora), `${nome} · ${Math.round(p.segundos)} de 12 s`), sinal);
+      r['nav_' + e] = Math.round(x.fps * 10) / 10;
+      if (e === 'realista') { try { miniNav = miniatura(await nav.capturar()); } catch (er) { /**/ } }
+    }
+  } finally { nav.destruir(); }
+  // 3. pranchas
+  mostrarVisual(['#disco-vis']);
+  marcarEtapa('Exportar pranchas'); $('#disco-etapa').textContent = '3 de 5 · Exportar pranchas'; $('#disco-txt').textContent = 'Desenha 40 pranchas (plantas com hachuras, portas, cotas e quadro de áreas) e gera os PDFs.'; $('#disco-barra').style.width = '0%';
+  metrica('Pranchas', '0 de 40', '');
+  const p = await pranchas({sinal, aoAndar: q => { $('#disco-barra').style.width = 100 * q.feitas / q.total + '%'; metrica(null, `${q.feitas} de ${q.total}`); }});
+  r.pranchas_s = p.pranchas_s;
+  // 4. render de apresentação
+  const ren = new Render(); cv.width = 1600; cv.height = 900;
+  mostrarVisual(['#cvgpu'], '4 de 5 · Render de apresentação · 4K, 512 amostras'); marcarEtapa('Render de apresentação');
+  metrica('Render', '0%', 'Sala de estar com sol entrando pela janela');
+  let miniRen = null;
+  try {
+    await ren.iniciar(CV(cv), {largura: 3840 * PEQ / 2, altura: 2160 * PEQ / 2});
+    const x = await ren.rodar(Math.max(4, Math.round(512 * ESCALA)), q => metrica(null, `${Math.round(100 * q.feitas / q.amostras)}%`, `${q.feitas} de ${q.amostras} amostras · ${mmss(q.segundos)}`), sinal);
+    r.render_s = Math.round(x.segundos * 512 / Math.max(1, Math.round(512 * ESCALA) < 4 ? 4 : Math.round(512 * ESCALA))); r.render_estimado = x.estimado;
+    try { miniRen = miniatura(await ren.capturar(960)); } catch (er) { /**/ }
+  } finally { ren.destruir(); }
+  // 5. projeto grande
+  $('#disco-etapa').textContent = '5 de 5 · Projeto grande'; marcarEtapa('Projeto grande');
+  const d = await disco(['projeto'], sinal, 'Abrir projeto de 600 MB', 600);
+  r.projeto_s = d.projeto_s; r.projeto_mb = d.projeto_mb; r.ram_gb = (INFO.ram || {}).gb; r.vram_gb = INFO.gpu.vram;
+  r.veredito = veredito(r, INFO);
+  r.miniatura = miniRen; r.mini_nav = miniNav;
+  return r;
+}
+
+// ------------------------------------------------------------------ resumo de cada teste (cartão e histórico)
+const RESUMO = {
+  gpu: r => ({valor: fmt(r.nota), rotulo: `pontos · ${r.resolucao}`}),
+  cpu: r => ({valor: fmt(r.multi), rotulo: `multi · single ${fmt(r.single)}`}),
+  jogos: r => ({valor: fmt(r.sps, 1), rotulo: 'simulações/s'}),
+  memoria: r => ({valor: fmt(r.leitura, 1) + ' GB/s', rotulo: `leitura · ${fmt(r.latencia)} ns`}),
+  ssd: r => ({valor: fmt(r.carregamento_s, 1) + ' s', rotulo: 'carregamento'}),
+  stress: r => ({valor: r.estavel ? 'Estável' : r.motivo && !r.erros_calculo && !r.whea && !r.driver ? 'Interrompido' : 'Instável', rotulo: `${fmt(r.minutos, 0)} min`}),
+  arquitetura: r => ({valor: r.veredito.titulo.replace(/^Pronto para /, '').replace(/^projetos /, 'Projetos '), rotulo: 'arquitetura'}),
+  video: r => ({valor: r.export_4k_s != null ? tempo(r.export_4k_s) : '—', rotulo: '10 min de 4K para exportar'}),
+  ia: r => ({valor: `${fmt(r.palavras_8b)} palavras/s`, rotulo: 'modelo de 8B (estimado)'}),
+  render3d: r => ({valor: tempo(r.render_placa_s), rotulo: 'por quadro na placa'}),
+  p_arquitetura: r => ({valor: `${fmt(r.nav_condominio, r.nav_condominio < 10 ? 1 : 0)} fps`, rotulo: 'condomínio · teste pesado'}),
+  p_odonto: r => ({valor: `${fmt(r.cbct_fps, r.cbct_fps < 10 ? 1 : 0)} fps`, rotulo: 'tomografia 3D · teste pesado'}),
+  p_engenharia: r => ({valor: `${fmt(r.fea_it_s)}/s`, rotulo: 'simulação de estrutura · teste pesado'}),
+  p_programacao: r => ({valor: tempo(r.build_s), rotulo: 'compilar 5.000 arquivos · teste pesado'}),
+  p_design: r => ({valor: `${fmt(r.filtro_medio_s, r.filtro_medio_s < 10 ? 1 : 0)} s`, rotulo: 'filtro na foto de 100 MP · teste pesado'}),
+  p_video: r => ({valor: tempo(r.export_30min_s), rotulo: '30 min de 4K para exportar · teste pesado'}),
+};
+
+// ------------------------------------------------------------------ resultados
+function compTexto(atual, c, menorMelhor = false, unidade = '', d = 0) {
+  if (!c || !c.anterior || atual == null) return '<div class="comp c">Primeiro teste neste computador · os próximos serão comparados a este</div>';
+  const dif = (atual / c.anterior.valor - 1) * 100 * (menorMelhor ? -1 : 1);
+  return `<div class="comp">Seu recorde anterior: <b>${fmt(c.anterior.valor, d)}${unidade}</b> (${esc(c.anterior.data.slice(0, 10))}) <b class="${dif >= 0 ? 'mais' : 'menos'}">${dif >= 0 ? '+' : ''}${fmt(dif, 1)}%</b></div>`;
+}
+const met = itens => `<div class="met">${itens.map(([k, v]) => `<div><span>${k}</span><b>${v}</b></div>`).join('')}</div>`;
+const seloRec = c => c && c.recorde && c.anterior ? '<span class="selo">★ Novo recorde</span>' : '';
+const cab = (t, extra = '') => `<div class="cab"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--destaque)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${IC[t]}</svg><h2>${TESTES[t].nome}</h2>${extra}</div>`;
+
+// ------------------------------------------------------------------ gráfico fácil de ler (uma grandeza por gráfico)
+// series: [{nome, cor, pts (1 por segundo) | xy: [[s, v]...]}]; unidade: 'fps', '°C'...; media: mostra a linha tracejada
+function graficoClaro({titulo, sub = '', leitura = '', series, unidade = '', maxY, media = false, refs = [], faixas = [], altura = 170, casas = 0}) {
+  const ss = series.map(x => ({...x, xy: x.xy || (x.pts || []).map((v, i) => [i, v])})).map(x => ({...x, xy: x.xy.filter(p => p[1] != null && !isNaN(p[1]))}))
+    .filter(x => x.xy.length > 1);
+  if (!ss.length) return '';
+  const dur = Math.max(...ss.map(x => x.xy.at(-1)[0]), 1);
+  const topo = Math.max(...ss.flatMap(x => x.xy.map(p => p[1])), ...refs.map(r => r.v), 1);
+  const passo = (m => { const e = 10 ** Math.floor(Math.log10(m / 4)), f = m / 4 / e; return (f <= 1 ? 1 : f <= 2 ? 2 : f <= 2.5 ? 2.5 : f <= 5 ? 5 : 10) * e; })(maxY || topo * 1.08);
+  const mx = maxY || Math.ceil(topo * 1.08 / passo) * passo;
+  const W = 1000, H = altura, X = t => t / dur * W, Y = v => H - Math.min(v, mx) / mx * H;
+  let svg = '';
+  faixas.forEach(f => svg += `<rect x="${X(f.ini)}" y="0" width="${Math.max(1, X(f.fim) - X(f.ini))}" height="${H}" fill="var(--txt)" opacity=".035"/>`);
+  for (let v = 0; v <= mx + 1e-9; v += passo) svg += `<line x1="0" x2="${W}" y1="${Y(v)}" y2="${Y(v)}" stroke="rgba(255,255,255,${v ? .07 : .16})" vector-effect="non-scaling-stroke"/>`;
+  refs.forEach(r => svg += `<line x1="0" x2="${W}" y1="${Y(r.v)}" y2="${Y(r.v)}" stroke="${r.cor || 'var(--erro)'}" stroke-dasharray="3 5" opacity=".7" vector-effect="non-scaling-stroke"/>`);
+  ss.forEach((x, i) => {
+    const d = x.xy.map(p => `${X(p[0]).toFixed(1)} ${Y(p[1]).toFixed(1)}`).join(' L');
+    if (ss.length === 1) svg += `<path d="M${X(x.xy[0][0])} ${H} L${d} L${X(x.xy.at(-1)[0])} ${H}Z" fill="${x.cor}" opacity=".10"/>`;
+    svg += `<path d="M${d}" fill="none" stroke="${x.cor}" stroke-width="2.2" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>`;
+  });
+  let rotMedia = '';
+  if (media) {
+    const v = ss[0].xy.map(p => p[1]), m = v.reduce((a, b) => a + b, 0) / v.length;
+    svg += `<line x1="0" x2="${W}" y1="${Y(m)}" y2="${Y(m)}" stroke="var(--txt)" stroke-dasharray="7 6" opacity=".55" vector-effect="non-scaling-stroke"/>`;
+    rotMedia = `<span class="gx-media" style="top:${Y(m) / H * 100}%">média ${fmt(m, casas)} ${unidade}</span>`;
+  }
+  const ys = []; for (let v = 0; v <= mx + 1e-9; v += passo) ys.push(`<span style="top:${Y(v) / H * 100}%">${fmt(v, passo < 1 ? 1 : 0)}</span>`);
+  const nX = 5, xs = Array.from({length: nX + 1}, (_, i) => { const t = dur * i / nX; return `<span style="left:${i / nX * 100}%">${i === 0 ? '0' : dur >= 600 ? `${Math.round(t / 60)} min` : dur >= 60 ? mmss(t) : `${Math.round(t)} s`}</span>`; });
+  const leg = ss.length > 1 || refs.length ? `<div class="leg" style="margin-left:auto">${ss.map(x => `<span><i style="background:${x.cor}"></i>${esc(x.nome || '')}</span>`).join('')}${refs.filter(r => r.rotulo).map(r => `<span><i style="background:${r.cor || 'var(--erro)'};height:2px"></i>${esc(r.rotulo)}</span>`).join('')}</div>` : '';
+  return `<div class="gx"><div class="gx-cab"><div><div class="gx-tit">${titulo}${unidade ? ` <span style="color:var(--txt3);font-weight:600">· ${esc(unidade)}</span>` : ''}</div>${sub ? `<div class="gx-sub">${sub}</div>` : ''}</div>${leg}</div>
+    ${leitura ? `<div class="gx-leitura">${leitura}</div>` : ''}
+    <div class="gx-area"><div class="gx-y" style="height:${H}px">${ys.join('')}</div>
+    <div class="gx-plot" style="height:${H}px"><svg width="100%" height="${H}" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">${svg}</svg>${rotMedia}</div>
+    <div class="gx-x">${xs.join('')}</div></div></div>`;
+}
+// frase simples: o desempenho se manteve ou caiu do começo para o fim?
+function leituraDesempenho(pts, {unidade = '', oQue = 'O desempenho', casas = 0} = {}) {
+  const v = (pts || []).filter(x => x != null);
+  if (v.length < 10) return '';
+  const fatia = Math.max(3, Math.round(v.length * .15)), md = a => a.reduce((x, y) => x + y, 0) / a.length;
+  const ini = md(v.slice(1, 1 + fatia)), fim = md(v.slice(-fatia)), q = Math.round(100 * (1 - fim / ini));
+  if (q <= 5) return `<b>Estável.</b> ${oQue} manteve-se praticamente igual do início ao fim (${fmt(ini, casas)} → ${fmt(fim, casas)} ${unidade}). Uma linha reta é o ideal.`;
+  return `<b>Queda de ${q}% ao longo do teste.</b> ${oQue} começou em ${fmt(ini, casas)} e terminou em ${fmt(fim, casas)} ${unidade}: o notebook reduziu a velocidade devido ao calor ou ao limite de energia. Quanto mais a linha desce para a direita, maior a perda.`;
+}
+
+function linhaSVG(series, {altura = 140, maxY, faixas = [], linhasH = []} = {}) {
+  const W = 1000, H = altura;
+  const n = Math.max(...series.map(s => s.pts.length), 2);
+  const X = i => i / (n - 1) * W;
+  let svg = '';
+  faixas.forEach(([a, b, cor]) => svg += `<rect x="${X(a)}" y="0" width="${Math.max(1, X(b) - X(a))}" height="${H}" fill="${cor}" opacity=".12"/>`);
+  series.forEach(s => {
+    const mx = s.max || maxY || Math.max(...s.pts.filter(v => v != null), 1) * 1.15;
+    const pts = s.pts.map((v, i) => v == null ? null : `${X(i).toFixed(1)} ${(H - 6 - v / mx * (H - 14)).toFixed(1)}`).filter(Boolean);
+    if (pts.length > 1) svg += `<path d="M${pts.join(' L')}" fill="none" stroke="${s.cor}" stroke-width="2.2" vector-effect="non-scaling-stroke"/>`;
+    (s.linhas || []).forEach(v => svg += `<line x1="0" x2="${W}" y1="${H - 6 - v / mx * (H - 14)}" y2="${H - 6 - v / mx * (H - 14)}" stroke="${s.cor}" stroke-dasharray="6 6" opacity=".55" vector-effect="non-scaling-stroke"/>`);
+  });
+  return `<svg width="100%" height="${H}" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">${svg}</svg>`;
+}
+
+function secao(item) {
+  const html = secaoTeste(item), r = item.res;
+  if (!r || !r.fora_da_tela_s) return html;
+  return `<div class="aviso" style="margin-top:18px"><b>A janela do Bench Labs ficou minimizada ou escondida por ${tempo(r.fora_da_tela_s)} durante o teste de ${esc(TESTES[item.teste].nome)}.</b> O Windows pode reduzir a velocidade de programas em segundo plano, então este resultado pode ter ficado abaixo do real. Para um resultado confiável, execute o teste de novo sem minimizar a janela.</div>` + html;
+}
+function secaoTeste(item) {
+  const {teste: t, res: r, comp: c} = item;
+  if (item.erro) return `<div class="res-sec card">${cab(t)}<div class="aviso"><b>Teste não concluído.</b> ${esc(item.erro)}</div></div>`;
+  const s = r.sensores || {};
+  const w = (a, b) => a ? `${a} → ${b} W` : '—';
+  if (t === 'gpu') {
+    const L = s.gpu_limites;
+    return `<div class="res-sec">${cab(t, `<span class="c">${esc(r.resolucao)} · ${r.duracao === 60 ? '1 min' : '5 min'} · cena v${r.cena}</span>`)}
+      <div class="res-grade"><div class="destaque" style="${r.miniatura ? `background:linear-gradient(180deg,rgba(23,15,35,.2),rgba(23,15,35,.95) 75%),url(${r.miniatura}) center/cover` : ''}">${seloRec(c)}<div style="margin-top:auto" class="grande">${fmt(r.nota)}<small>pontos</small></div><div class="n2">${esc(INFO.gpu.nome)}</div>${compTexto(r.nota, c)}</div>
+      ${met([['FPS médio', fmt(r.fps, 1)], ['Pior segundo', `${r.pior_segundo ?? '—'} fps`], ['Desempenho no fim', `${r.estabilidade}%`], ['Temp. máx.', s.gpu_temp_max != null ? s.gpu_temp_max + ' °C' : '—'], ['Consumo (início → fim)', w(s.gpu_watts_inicio, s.gpu_watts_fim)], ['Clock médio', s.gpu_mhz ? fmt(s.gpu_mhz) + ' MHz' : '—']])}</div>
+      <div class="graf">${graficoClaro({titulo: 'FPS ao longo do teste', sub: 'Quadros por segundo a cada segundo. Quanto mais alto, mais fluido; a linha tracejada é a média.',
+        leitura: leituraDesempenho(r.por_segundo, {unidade: 'FPS', oQue: 'O FPS'}), series: [{pts: r.por_segundo, cor: 'var(--destaque)'}], unidade: 'FPS', media: true})}
+      ${graficoClaro({titulo: 'Temperatura da placa de vídeo', sub: 'Medida uma vez por segundo. Até ~87 °C é normal em notebooks sob carga.', series: [{xy: (s.linha_tempo || []).map(x => [x.s, x.gpu_temp]), cor: 'var(--laranja)'}], unidade: '°C', maxY: 100})}
+      ${L ? `<div class="cartoes"><div class="cartao"><span class="c">Limite de energia</span><b>${L.energia_pct}% do teste</b><div class="c">${L.energia_pct >= 50 ? 'A placa usou toda a energia que o notebook libera.' : 'Havia energia disponível: o limite foi outro fator.'}</div></div><div class="cartao"><span class="c">Temperatura</span><b>${L.temperatura_desde_s != null ? `Limitou a partir de ${mmss(L.temperatura_desde_s)}` : 'Sem limitação'}</b><div class="c">${L.temperatura_desde_s != null ? `Reduziu o clock devido ao calor em ${L.temperatura_pct}% do teste.` : 'A refrigeração foi suficiente.'}</div></div></div>` : ''}</div></div>`;
+  }
+  if (t === 'cpu') {
+    return `<div class="res-sec">${cab(t, `<span class="c">${r.duracao === 600 ? 'Completo · 10 min em todos os núcleos' : 'Rápido'} · ${r.threads} threads</span>`)}
+      <div class="res-grade"><div class="destaque">${seloRec(c)}<div class="rotulo">Todos os núcleos</div><div class="grande">${fmt(r.multi)}<small>pontos</small></div><div class="rotulo" style="margin-top:10px">Um núcleo</div><div class="grande" style="font-size:40px">${fmt(r.single)}<small>pontos</small></div><div class="n2" style="margin-top:6px">${esc(INFO.cpu.nome)}</div>${compTexto(r.multi, c)}</div>
+      ${met([['Clock médio', s.cpu_mhz ? fmt(s.cpu_mhz) + ' MHz' : '—'], ['Clock início → fim', s.cpu_mhz_inicio ? `${fmt(s.cpu_mhz_inicio)} → ${fmt(s.cpu_mhz_fim)}` : '—'], ['Desempenho no fim', r.estabilidade ? r.estabilidade + '%' : '—'], ['Temp. máx.', s.cpu_temp_max != null ? s.cpu_temp_max + ' °C' : 'abra o HWiNFO'], ['Consumo (início → fim)', w(s.cpu_watts_inicio, s.cpu_watts_fim)], ['Threads', r.threads]])}</div>
+      <div class="graf">${graficoClaro({titulo: 'Desempenho com todos os núcleos', sub: 'Pontos a cada segundo enquanto todos os núcleos trabalham. Quanto mais alto, mais rápido; a linha tracejada é a média.',
+        leitura: leituraDesempenho(r.por_segundo, {unidade: 'pontos', oQue: 'O processador'}), series: [{pts: r.por_segundo, cor: 'var(--destaque)'}], unidade: 'pontos', media: true})}
+      ${graficoClaro({titulo: 'Clock do processador', sub: 'Velocidade dos núcleos em MHz durante todo o teste (primeiro todos os núcleos, depois apenas um). Quedas mostram o processador se protegendo do calor ou economizando energia.',
+        series: [{xy: (s.linha_tempo || []).map(x => [x.s, x.cpu_mhz]), cor: 'var(--azul)'}], unidade: 'MHz'})}</div></div>`;
+  }
+  if (t === 'jogos') {
+    return `<div class="res-sec">${cab(t, '<span class="c">simulação de batalha · 1 min · 30.000 unidades</span>')}
+      <div class="res-grade"><div class="destaque">${seloRec(c)}<div class="grande">${fmt(r.sps, 1)}<small>quadros de simulação/s</small></div><div class="n2">${esc(INFO.cpu.nome)}</div>${compTexto(r.sps, c, false, '', 1)}</div>
+      <div class="card"><div class="barras"><span class="c">Núcleo principal</span><div class="barra"><div style="width:${r.principal}%"></div></div><b class="num">${r.principal}%</b>
+        <span class="c">Outros núcleos</span><div class="barra"><div style="width:${r.outros}%;background:var(--roxo)"></div></div><b class="num">${r.outros}%</b></div>
+        <p class="c" style="margin:14px 0 0;font-size:13px;color:var(--txt2)">Como na maioria dos jogos, quem limita o desempenho é o <b style="color:var(--txt)">núcleo principal</b> (a IA e a lógica do jogo). Os demais núcleos processam a física. Por isso, este teste representa o desempenho em jogos melhor do que um render.</p></div></div></div>`;
+  }
+  if (t === 'memoria') {
+    const um = r.canais && r.canais.modo === 'single';
+    return `<div class="res-sec">${cab(t, `<span class="c">${r.gb ? `${r.gb} GB ${r.tipo || ''}${r.mhz ? `-${r.mhz}` : ''}` : ''}${r.canais ? ` · ${esc(r.canais.texto)}` : ''}</span>`)}
+      ${met([['Leitura', fmt(r.leitura, 1) + ' GB/s'], ['Gravação', fmt(r.gravacao, 1) + ' GB/s'], ['Cópia', fmt(r.copia, 1) + ' GB/s'], ['Latência', fmt(r.latencia) + ' ns'], ['Pentes', r.pentes || '—'], ['Canais', r.canais ? ({single: 'Single channel', dual: /LPDDR/.test(r.canais.texto) ? 'Vários canais' : 'Dual channel', flex: 'Dual channel parcial'}[r.canais.modo] || '—') : '—']])}
+      ${um ? '<div class="aviso"><b>Apenas um pente de memória.</b> A memória está trabalhando com metade da velocidade. Instalar um segundo pente igual costuma melhorar bastante o desempenho em jogos e no vídeo integrado.</div>' : ''}
+      ${compTexto(r.leitura, c, false, ' GB/s', 1)}<div class="provisorio">Medido pelo próprio Bench Marks; os valores não são comparáveis aos do AIDA64.</div></div>`;
+  }
+  if (t === 'ssd') {
+    const mx = Math.max(r.ref_hd_s, r.carregamento_s);
+    return `<div class="res-sec">${cab(t, `<span class="c">${esc([r.ssd && r.ssd.nome, r.ssd && r.ssd.barramento].filter(Boolean).join(' · '))}</span>`)}
+      <div class="res-grade"><div class="destaque">${seloRec(c)}<div class="rotulo">Carregar um mapa de jogo</div><div class="grande">${fmt(r.carregamento_s, 1)}<small>s</small></div><div class="c">Um pacote de 512 MB + 1.000 arquivos pequenos, lidos sem o cache do Windows</div>
+        <div class="barras"><span class="c">Seu SSD</span><div class="barra"><div style="width:${100 * r.carregamento_s / mx}%"></div></div><b class="num">${fmt(r.carregamento_s, 1)} s</b>
+          <span class="c">SSD SATA</span><div class="barra"><div style="width:${100 * r.ref_sata_s / mx}%;background:var(--txt3)"></div></div><span class="num">~${fmt(r.ref_sata_s, 1)} s</span>
+          <span class="c">HD comum</span><div class="barra"><div style="width:${100 * r.ref_hd_s / mx}%;background:var(--txt3)"></div></div><span class="num">~${fmt(r.ref_hd_s)} s</span></div>
+        ${compTexto(r.carregamento_s, c, true, ' s', 1)}</div>
+      ${met([['Leitura sequencial', fmt(r.seq_leitura) + ' MB/s'], ['Gravação sequencial', fmt(r.seq_gravacao) + ' MB/s'], ['Arquivos pequenos (leitura)', fmt(r.rnd_leitura, 1) + ' MB/s'], ['Arquivos pequenos (gravação)', fmt(r.rnd_gravacao, 1) + ' MB/s'], ['Lido no carregamento', fmt(r.carregamento_mb) + ' MB'], ['Tipo', esc((r.ssd && r.ssd.barramento) || '—')]])}</div>
+      <div class="provisorio">Os valores de SSD SATA e HD são estimativas com base na velocidade típica de cada tipo. Os arquivos de teste foram excluídos.</div></div>`;
+  }
+  if (t === 'stress') {
+    const ruim = r.erros_calculo || r.whea || r.driver;
+    const ver = r.estavel ? ['Estável', 'var(--ok)', `${fmt(r.minutos)} minuto${Math.round(r.minutos) === 1 ? '' : 's'} com processador e placa de vídeo no limite, sem nenhum erro. O notebook suporta horas de jogo ou de renderização.`]
+      : ruim ? ['Instável', 'var(--erro)', `${r.motivo || 'Apareceram erros durante o teste'}. As causas mais comuns são overclock, undervolt agressivo, defeito na memória ou problema no driver.`]
+      : r.perdeu_placa ? ['Interrompido antes do fim', 'var(--alerta)', `${r.motivo}. O Windows não registrou reinício do driver de vídeo, então não indica defeito no notebook. Execute o teste de novo.`]
+      : ['Interrompido antes do fim', 'var(--alerta)', `${r.motivo}. Não se trata de defeito: o teste foi interrompido por segurança no limite escolhido.`];
+    const ck = (ok, txt, val, avisoAmarelo) => `<div class="check"><div class="st ${ok ? '' : avisoAmarelo ? 'aviso' : 'ruim'}">${ok ? '✓' : '!'}</div><span>${txt}</span><b class="dir">${val}</b></div>`;
+    const lt = r.linha || [];
+    return `<div class="res-sec">${cab(t, `<span class="c">${fmt(r.minutos)} de ${r.planejado} min · Windows: ${esc(INFO.modo_notebook.windows)}</span>`)}
+      <div class="res-grade"><div class="destaque"><div class="rotulo">Veredito</div><div class="veredito" style="color:${ver[1]}">${ver[0]}</div><p style="margin:6px 0 0;color:var(--txt2)">${esc(ver[2])}</p></div>
+      <div class="card"><div class="rotulo" style="margin-bottom:6px">O que foi conferido</div>
+        ${ck(!r.erros_calculo, 'Erros de cálculo do processador', `${r.erros_calculo} em ${fmt(r.conferidos)} conferências`)}
+        ${ck(!r.whea, 'Erros de hardware no Windows', r.eventos_ok ? r.whea : '—')}
+        ${ck(!r.driver, 'Reinícios do driver de vídeo', `${r.driver} vez${r.driver === 1 ? '' : 'es'}`)}
+        ${ck(!r.motivo || ruim, 'Parada automática', r.motivo && !ruim ? 'acionada' : 'não foi necessária', true)}
+        ${ck((r.cpu_fim_pct ?? 100) >= 90 && (r.gpu_fim_pct ?? 100) >= 90, 'Desempenho no fim', `CPU ${r.cpu_fim_pct ?? '—'}% · GPU ${r.gpu_fim_pct ?? '—'}% do início`, true)}</div></div>
+      <div class="graf">${graficoClaro({titulo: 'Temperaturas durante o stress', sub: `Medidas uma vez por segundo. As linhas vermelhas indicam os limites em que o teste é interrompido automaticamente para proteger o notebook (${r.lim_cpu} °C no processador e ${r.lim_gpu} °C na placa).`,
+        series: [{nome: 'Processador', xy: lt.map(x => [x.s, x.cpu_temp]), cor: 'var(--roxo)'}, {nome: 'Placa de vídeo', xy: lt.map(x => [x.s, x.gpu_temp]), cor: 'var(--destaque)'}],
+        refs: [{v: r.lim_cpu, rotulo: 'Limites de parada'}, {v: r.lim_gpu}], unidade: '°C', maxY: 110})}
+        <div class="cartoes"><div class="cartao"><span class="c">Processador máx.</span><b>${s.cpu_temp_max != null ? s.cpu_temp_max + ' °C' : 'abra o HWiNFO'}</b><div class="c">limite ${r.lim_cpu} °C</div></div>
+          <div class="cartao"><span class="c">Placa de vídeo máx.</span><b>${s.gpu_temp_max != null ? s.gpu_temp_max + ' °C' : '—'}</b><div class="c">limite ${r.lim_gpu} °C</div></div>
+          <div class="cartao"><span class="c">Consumo CPU (início → fim)</span><b>${w(s.cpu_watts_inicio, s.cpu_watts_fim)}</b></div>
+          <div class="cartao"><span class="c">Consumo GPU (início → fim)</span><b>${w(s.gpu_watts_inicio, s.gpu_watts_fim)}</b></div>
+          ${s.cpu_watts != null && s.gpu_watts != null ? `<div class="cartao"><span class="c">Placa + processador · média</span><b>${fmt(s.cpu_watts + s.gpu_watts)} W</b><div class="c">potência total com todos os componentes em uso</div></div>` : ''}</div></div></div>`;
+  }
+  if (t === 'arquitetura') {
+    const v = r.veredito, nv = n => `nv${n}`;
+    const cart = (num, nome, desc, valor, sub) => `<div class="cartao"><span class="c">${num} · ${nome}</span><div class="c" style="color:var(--txt2)">${desc}</div><div class="valor">${valor}</div><div class="c">${sub}</div></div>`;
+    return `<div class="res-sec">${cab(t, `<span class="c">${esc(INFO.notebook)} · ${r.ram_gb} GB · ${esc(INFO.gpu.nome.replace(/^NVIDIA GeForce /, ''))} ${r.vram_gb ? r.vram_gb + ' GB' : ''}</span>`)}
+      <div class="res-grade"><div class="destaque" style="${r.miniatura ? `background:linear-gradient(180deg,rgba(23,15,35,.35),rgba(23,15,35,.96) 70%),url(${r.miniatura}) center/cover` : ''}"><div class="rotulo" style="margin-top:auto">Resultado</div><div style="font-size:30px;font-weight:800;line-height:1.12">${esc(v.titulo)}</div><p style="margin:2px 0 6px;color:var(--txt2)">${esc(v.frase)}</p>
+        <div class="chips">${v.selos.map(x => `<span class="pill ${x.ok ? 'ok' : x.quase ? 'quase' : 'nao'}">${esc(x.txt)}${x.ok ? ' · ✓' : ''}</span>`).join('')}</div></div>
+      <div class="card"><h2 style="font-size:16px;margin-bottom:6px">Programa por programa</h2>${v.programas.map(p => `<div class="prog-linha"><b>${esc(p.nome)}</b><span>${esc(p.texto)}</span><em class="${nv(p.nivel)}">${estrelasHTML(p)}</em></div>`).join('')}</div></div>
+      <div class="arq-testes">
+        ${cart(1, 'Modelagem BIM', 'Mover uma parede em um prédio de 20 andares', fmt(r.bim_s, 2) + ' s', 'por alteração · 1 núcleo')}
+        ${cart(2, 'Navegação 3D', `${milhoes(r.nav_triangulos / 1e6)} de triângulos`, fmt(r.nav_sombreado) + ' fps', `arestas ${fmt(r.nav_arestas)} · realista ${fmt(r.nav_realista)} fps`)}
+        ${cart(3, 'Exportar pranchas', '40 pranchas em PDF', fmt(r.pranchas_s, 1) + ' s', 'vários núcleos')}
+        ${cart(4, 'Render de apresentação', 'Sala de estar · 4K · 512 amostras', r.render_s >= 60 ? `${Math.floor(r.render_s / 60)} min ${r.render_s % 60} s` : `${r.render_s} s`, r.render_estimado ? 'estimado (placa lenta)' : `${r.vram_gb || '—'} GB de vídeo`)}
+        ${cart(5, 'Projeto grande', 'Abrir um modelo de 600 MB', fmt(r.projeto_s, 1) + ' s', `com ${r.ram_gb} GB, abre até ~${fmt(v.maxProjMB)} MB`)}
+      </div>
+      ${compTexto(r.bim_s, c, true, ' s', 2)}
+      <div class="provisorio">Testes próprios da Bench que simulam as exigências de cada programa. Não é necessário ter os programas instalados. Os critérios dos vereditos ainda estão em calibração com os notebooks da bancada. O ray tracing é calculado sem os núcleos de RT das placas RTX, porque o motor do Windows usado no teste não dá acesso a eles: no Enscape e no Twinmotion, essas placas ficam mais rápidas do que estes números.</div></div>`;
+  }
+  if (t === 'video' || t === 'ia' || t === 'render3d') return secaoPerfil(item);
+  if (t.startsWith('p_')) return secaoPesado(item);
+  return '';
+}
+
+function blocoVeredito(r, extra = '') {
+  const v = r.veredito, nv = n => `nv${n}`;
+  return `<div class="res-grade"><div class="destaque" style="${r.miniatura ? `background:linear-gradient(180deg,rgba(23,15,35,.35),rgba(23,15,35,.96) 70%),url(${r.miniatura}) center/cover` : 'background:linear-gradient(160deg,var(--card2) 0%,var(--card) 55%)'}"><div class="rotulo" style="margin-top:auto">Resultado</div><div style="font-size:30px;font-weight:800;line-height:1.12">${esc(v.titulo)}</div><p style="margin:2px 0 6px;color:var(--txt2)">${esc(v.frase)}</p>
+    <div class="chips">${v.selos.map(x => `<span class="pill ${x.ok ? 'ok' : x.quase ? 'quase' : 'nao'}">${esc(x.txt)}${x.ok ? ' · ✓' : ''}</span>`).join('')}</div></div>
+    <div class="card"><h2 style="font-size:16px;margin-bottom:6px">Programa por programa</h2>${v.programas.map(p => `<div class="prog-linha"><b>${esc(p.nome)}</b><span>${esc(p.texto)}</span><em class="${nv(p.nivel)}">${estrelasHTML(p)}</em></div>`).join('')}</div></div>${extra}`;
+}
+const tabelaTempo = (titulo, cab, linhas, nota) => `<div><div style="display:grid;grid-template-columns:minmax(0,1fr) 110px 120px;font-size:13.5px">
+  <div class="rotulo" style="padding:6px 0">${titulo}</div><div class="rotulo" style="padding:6px 0;text-align:right">${cab[0]}</div><div class="rotulo" style="padding:6px 0;text-align:right">${cab[1]}</div>
+  ${linhas.map(([n, a, b, dest]) => `<div style="padding:10px 0;border-top:1px solid var(--linha)">${n}</div><div style="padding:10px 0;border-top:1px solid var(--linha);text-align:right;font-weight:700;${dest ? 'color:var(--destaque)' : ''}">${a}</div><div style="padding:10px 0;border-top:1px solid var(--linha);text-align:right;color:var(--txt3)">${b}</div>`).join('')}</div>
+  <div class="c" style="margin-top:8px">${nota}</div></div>`;
+const blocoGrande = (rot, frase, valor, sub, nota, direita) => `<div class="card" style="display:flex;flex-wrap:wrap;gap:24px;margin-top:14px;border-color:var(--linha2)">
+  <div style="flex:1 1 320px;display:flex;flex-direction:column;gap:8px"><div class="rotulo">${rot}</div><div style="font-size:15px;color:var(--txt2)">${frase}</div>
+  <div style="font-size:60px;font-weight:800;line-height:1;color:var(--destaque)">${valor}</div><div style="font-size:13.5px;color:var(--txt2)">${sub}</div><div class="c">${nota}</div></div>
+  <div style="flex:1 1 420px">${direita}</div></div>`;
+const cartoesTeste = cs => `<div class="cartoes" style="grid-template-columns:repeat(4,minmax(0,1fr))">${cs.map(([n, t, d, v, sub]) => `<div class="cartao" style="display:flex;flex-direction:column;gap:6px;min-height:140px"><span class="c">${n} · ${t}</span><div class="c" style="color:var(--txt2)">${d}</div><div style="font-size:24px;font-weight:800;color:var(--destaque);margin-top:auto">${v}</div><div class="c">${sub}</div></div>`).join('')}</div>`;
+
+function secaoPerfil({teste: t, res: r, comp: c}) {
+  if (t === 'video') {
+    const e = r.exportar, x = k => e[k] != null ? tempo(e[k]) : '—';
+    const principal = e.uhd_h264;
+    const linhaT = (n, v, dest) => `<div style="padding:10px 0;border-top:1px solid var(--linha)">${n}</div><div style="padding:10px 0;border-top:1px solid var(--linha);text-align:right;font-weight:700;${dest ? 'color:var(--destaque)' : ''}">${v}</div>`;
+    const tab = r.formatos.map(f => `<div style="padding:11px 0;border-top:1px solid var(--linha);font-weight:600">${esc(f.nome)}</div><div style="padding:11px 0;border-top:1px solid var(--linha);color:var(--txt2)">${esc(f.origem)}</div><div style="padding:11px 0;border-top:1px solid var(--linha);color:var(--txt2)">${esc(f.quem)}${f.fps ? ` · ${fmt(f.fps)} fps` : ''}</div><div style="padding:11px 0;border-top:1px solid var(--linha);font-weight:700;color:${f.status === 'liso' ? 'var(--ok)' : f.status === 'ok' || f.status === 'pesado' ? 'var(--alerta)' : 'var(--erro)'}">${{liso: '✓ Sem travamentos', ok: 'Funciona · um pouco pesado', pesado: 'Pesado', trava: 'Trava · use proxy'}[f.status]}</div>`).join('');
+    return `<div class="res-sec">${cab(t, `<span class="c">${esc(INFO.cpu.nome)} · ${esc(INFO.gpu.nome.replace(/^NVIDIA GeForce /, ''))} · ${INFO.ram.gb} GB</span>`)}
+      ${blocoVeredito(r)}
+      ${blocoGrande('Tempo de exportação', 'Um vídeo de <b style="color:var(--txt)">10 minutos em 4K</b> (H.264):', tempo(principal),
+        principal ? `${principal < 600 ? `${fmt(600 / principal, 1)}× mais rápido do que o tempo real` : 'Mais lento do que o tempo real'}: 1 minuto de vídeo é exportado em ${tempo(principal / 10)}.` : '',
+        e.via === 'direto' ? `Exportação direto pelo codificador da placa (${esc(e.codificador || 'placa de vídeo')}), como o Premiere e o DaVinci fazem. O motor do Windows usado no resto do teste não ofereceu o codificador neste computador.`
+          : principal ? 'Exportação pelo codificador da placa de vídeo, como no Premiere com codificação por hardware.'
+          : e.erro_direto ? `O codificador da placa de vídeo não funcionou neste computador, nem pelo motor do Windows nem direto pela placa (${esc(e.erro_direto)}).`
+          : 'O motor do Windows usado pelo teste não ofereceu o codificador da placa de vídeo neste computador.',
+        `<div><div style="display:grid;grid-template-columns:minmax(0,1fr) 130px;font-size:13.5px"><div class="rotulo" style="padding:6px 0">10 min de vídeo</div><div class="rotulo" style="padding:6px 0;text-align:right">Tempo</div>
+          ${linhaT('Full HD · H.264 <span class="c">(Reels, YouTube)</span>', x('fhd_h264'))}${linhaT('4K · H.264', x('uhd_h264'), true)}${linhaT('4K · HEVC <span class="c">(arquivo menor)</span>', e.uhd_hevc != null ? tempo(e.uhd_hevc) : `<span class="c" style="font-weight:500">${e.via === 'direto' ? 'a placa não codifica HEVC' : 'indisponível neste aplicativo'}</span>`)}${linhaT('Motion graphics · animação de 10 s em 4K', tempo(r.motion_10s))}</div>
+          <div class="c" style="margin-top:8px">Medido exportando alguns segundos de cada formato e calculado para 10 minutos.</div></div>`)}
+      <div class="card" style="margin-top:14px"><div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:8px"><h2>Formatos de vídeo na timeline</h2><span class="c">Quando o hardware decodifica o formato, a timeline não trava</span></div>
+        <div style="display:grid;grid-template-columns:1fr 1.4fr 1.4fr 1fr;font-size:13.5px"><div class="rotulo" style="padding:6px 0">Formato</div><div class="rotulo" style="padding:6px 0">Origem comum</div><div class="rotulo" style="padding:6px 0">Decodificado por</div><div class="rotulo" style="padding:6px 0">Timeline</div>${tab}</div>
+        <div class="c" style="margin-top:10px">${r.formatos.some(f => f.previsto && f.id !== 'prores') ? 'Alguns formatos não abriram no motor do Windows usado pelo teste, mas o hardware deste notebook os decodifica: o suporte foi confirmado pelo modelo do chip, e o Premiere e o DaVinci usam esse hardware. ' : ''}${r.sem_extensao_hevc ? 'O vídeo HEVC normalmente não abre no motor do Windows quando falta a Extensão de Vídeo HEVC (Microsoft Store); os editores de vídeo não dependem dela. ' : ''}No Windows, o ProRes é sempre decodificado pelo processador.</div></div>
+      ${cartoesTeste([[1, 'Timeline 4K', `Vários vídeos 4K ${esc(r.timeline_formato || '')} ao mesmo tempo, como em uma edição multicâmera`, r.timeline ? `${r.timeline} vídeo${r.timeline > 1 ? 's' : ''}` : 'Menos de 1', '4K 30 fps simultâneos, sem travamentos'],
+        [2, 'Cor e efeitos', 'Correção de cor, desfoque, nitidez e granulado em 4K, na placa de vídeo', `${fmt(r.efeitos_fps)} fps`, 'acima de 30 fps, a prévia é exibida em tempo real'],
+        [3, 'Exportação', e.via === 'direto' ? `4K H.264 direto pelo codificador da placa (${esc(e.codificador || '')})` : '4K H.264 pelo codificador da placa de vídeo', tempo(principal), '10 min de vídeo'],
+        [4, 'Motion graphics', 'Animação de 10 s em 4K com formas, textos e partículas, na placa de vídeo', tempo(r.motion_10s), 'com desfoque de movimento']])}
+      ${compTexto(r.export_4k_s, c, true, ' s')}
+      <div class="provisorio">Os vídeos de teste já acompanham o aplicativo. Não é necessário ter o Premiere instalado. Os critérios dos vereditos ainda estão em calibração com os notebooks da bancada.</div></div>`;
+  }
+  if (t === 'ia') {
+    const m8 = r.modelos.find(m => m.tam === '8B'), mx = Math.max(...r.modelos.map(m => m.palavras_s), 1);
+    const barras = r.modelos.map(m => `<span class="c" style="color:var(--txt2)">${m.tam} ${{'3B': '(rápido, mais simples)', '8B': '(o mais usado)', '14B': '(respostas melhores)', '32B': '(respostas ainda melhores)'}[m.tam]}</span><b class="num" style="text-align:right;${m.cabe ? '' : m.quase ? 'color:var(--alerta)' : 'color:var(--erro)'}">${fmt(m.palavras_s)}/s</b><div class="barra" style="margin:0;height:10px"><div style="width:${Math.max(2, 100 * m.palavras_s / mx)}%;background:${m.cabe ? 'var(--amarelo)' : m.quase ? 'var(--alerta)' : 'var(--erro)'}"></div></div>`).join('');
+    const vram = r.vram_total;
+    const tab = r.modelos.map(m => `<div style="padding:11px 0;border-top:1px solid var(--linha);font-weight:600">${m.tam}</div><div style="padding:11px 0;border-top:1px solid var(--linha);color:var(--txt2)">${m.ex}</div><div style="padding:11px 0;border-top:1px solid var(--linha);color:var(--txt2)">${m.precisa}</div><div style="padding:11px 0;border-top:1px solid var(--linha);font-weight:700;color:${m.cabe ? 'var(--ok)' : m.quase ? 'var(--alerta)' : 'var(--erro)'}">${m.cabe ? (m.palavras_s >= 30 ? '✓ Cabe, muito rápido' : '✓ Cabe') : m.quase ? 'Lento · quase cabe' : 'Não cabe · muito lento'}</div>`).join('');
+    return `<div class="res-sec">${cab(t, `<span class="c">${esc(INFO.gpu.nome.replace(/^NVIDIA GeForce /, ''))}${vram ? ` · ${vram} GB de vídeo` : ''} · ${fmt(r.banda_gbs)} GB/s${r.tflops ? ` · ${fmt(r.tflops, 1)} TFLOPS${r.f16 ? ' (FP16)' : ''}` : ''}</span>`)}
+      ${blocoVeredito(r)}
+      ${blocoGrande('Velocidade de resposta da IA', 'Um assistente de <b style="color:var(--txt)">8 bilhões de parâmetros</b> (como o Llama 3 8B):', `${fmt(m8.palavras_s)} <span style="font-size:22px;color:var(--txt2);font-weight:600">palavras/s</span>`,
+        m8.palavras_s >= 5 ? 'Uma pessoa lê cerca de 5 palavras por segundo: a resposta aparece <b style="color:var(--txt)">mais rápido do que se consegue ler</b>.' : 'Mais lento do que a velocidade de leitura de uma pessoa (cerca de 5 palavras por segundo).',
+        'Estimado a partir da velocidade medida da memória de vídeo.',
+        `<div style="display:grid;grid-template-columns:1fr 70px 1fr;gap:10px;align-items:center;font-size:13px">${barras}</div><div class="c" style="margin-top:10px">${vram ? `Quando o modelo não cabe nos ${vram} GB de vídeo, parte dele é transferida para a memória do sistema e o processamento fica significativamente mais lento.` : ''}</div>`)}
+      <div class="card" style="margin-top:14px"><div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:8px"><h2>O que cabe na sua placa</h2><span class="c">${vram ? `${vram} GB de memória de vídeo${r.vram_livre != null ? ` · ${fmt(r.vram_livre, 1)} GB livres agora` : ''}` : ''}</span></div>
+        <div style="display:grid;grid-template-columns:.6fr 1.6fr 1fr 1fr;font-size:13.5px"><div class="rotulo" style="padding:6px 0">Tamanho</div><div class="rotulo" style="padding:6px 0">Exemplos</div><div class="rotulo" style="padding:6px 0">Memória de vídeo necessária</div><div class="rotulo" style="padding:6px 0">Neste notebook</div>${tab}</div>
+        <div class="c" style="margin-top:10px">Modelos na versão compactada (4 bits), a forma mais usada em notebooks. Com 12 GB de vídeo o 14B cabe inteiro; com 24 GB, o 32B.</div></div>
+      ${cartoesTeste([[1, 'Memória de vídeo', 'Velocidade de leitura e gravação da memória da placa (é o que limita a geração de texto)', `${fmt(r.banda_gbs)} GB/s`, r.banda_ia && r.banda_ia !== r.banda_gbs ? `medido · a estimativa usa ${fmt(r.banda_ia)} GB/s (75% da banda de fábrica, ${fmt(r.banda_teorica)} GB/s)` : 'medido'],
+        [2, 'Força de cálculo', `Multiplicação de matrizes ${r.f16 ? 'em meia precisão (FP16)' : 'em precisão simples'}, o cálculo básico da IA`, r.tflops ? `${fmt(r.tflops, 1)} TFLOPS` : '—', 'medido'],
+        [3, 'Gerar imagens', 'Uma imagem 1024×1024 com o Stable Diffusion XL, 25 passos', r.imagem_s ? `${fmt(r.imagem_s, 1)} s` : '—', r.imagem_s ? `estimado · ${fmt(60 / r.imagem_s, 1)} imagens por minuto` : ''],
+        [4, 'Legendas (Whisper)', 'Transcrever 1 hora de áudio em português', r.whisper_min_por_hora ? `${fmt(r.whisper_min_por_hora, 1)} min` : '—', 'estimado']])}
+      ${compTexto(r.palavras_8b, c)}
+      <div class="provisorio">As velocidades de texto, imagem e legenda são calculadas a partir do que foi medido na placa (memória e cálculo), sem baixar os modelos. Os critérios ainda estão em calibração com o LM Studio e o ComfyUI nos notebooks da bancada.</div></div>`;
+  }
+  if (t === 'render3d') {
+    const v = r.veredito;
+    return `<div class="res-sec">${cab(t, `<span class="c">${esc(INFO.cpu.nome)} · ${esc(INFO.gpu.nome.replace(/^NVIDIA GeForce /, ''))}${r.vram_gb ? ` ${r.vram_gb} GB` : ''}</span>`)}
+      ${blocoVeredito(r)}
+      ${blocoGrande('Tempo de renderização', 'Uma animação de <b style="color:var(--txt)">10 segundos em Full HD</b> (240 quadros):', tempo(r.animacao_placa_s),
+        `Cada quadro leva ~${tempo(r.render_placa_s)} pela placa de vídeo.`, 'Sala de estar, Full HD, 256 amostras por pixel.',
+        `<div style="display:grid;grid-template-columns:minmax(0,1fr) 130px;font-size:13.5px"><div class="rotulo" style="padding:6px 0">Cena</div><div class="rotulo" style="padding:6px 0;text-align:right">Placa de vídeo</div>
+          <div style="padding:10px 0;border-top:1px solid var(--linha)">Sala de estar · 1 quadro</div><div style="padding:10px 0;border-top:1px solid var(--linha);text-align:right;font-weight:700;color:var(--destaque)">${tempo(r.render_placa_s)}</div>
+          <div style="padding:10px 0;border-top:1px solid var(--linha)">Animação de 10 s (240 quadros)</div><div style="padding:10px 0;border-top:1px solid var(--linha);text-align:right;font-weight:700">${tempo(r.animacao_placa_s)}</div></div>`)}
+      ${cartoesTeste([[1, 'Viewport', `Gira uma cena de ${milhoes(r.poligonos / 1e6)} de polígonos`, `${fmt(r.viewport_solido)} fps`, `sólido · material: ${fmt(r.viewport_material)} fps`],
+        [2, 'Render na placa', 'Sala de estar, Full HD, 256 amostras', tempo(r.render_placa_s), 'por quadro'],
+        [3, 'Simulação', 'Tecido e 30 mil partículas, 250 quadros (apenas processador)', tempo(r.simulacao_s), 'para simular a cena inteira']])}
+      ${compTexto(r.render_placa_s, c, true, ' s', 1)}
+      <div class="provisorio">Cenas próprias da Bench que simulam o render do Blender. Não é necessário ter o Blender instalado. O render é calculado sem os núcleos de RT das placas RTX, porque o motor do Windows usado no teste não dá acesso a eles: no Blender com OptiX, essas placas renderizam mais rápido do que este tempo. Os critérios dos vereditos ainda estão em calibração.</div></div>`;
+  }
+  return '';
+}
+
+// ------------------------------------------------------------------ testes pesados
+const fpsTxt = v => v == null ? '—' : fmt(v, v < 10 ? 1 : 0);
+const triTxt = n => n == null ? '—' : n < 1e6 ? `${fmt(n / 1e3)} mil triângulos` : `${milhoes(n / 1e6)} de triângulos`;
+function leituraCurva(r) {
+  const et = (r.curva_etapas || []).filter(e => e.fim_pct != null);
+  if (!et.length) return '';
+  const pior = et.reduce((a, b) => (b.fim_pct < a.fim_pct ? b : a));
+  if (pior.fim_pct >= 95) return '<b>Estável.</b> Em todas as etapas, o notebook terminou com praticamente a mesma velocidade do começo. Linhas retas são o ideal.';
+  return `<b>Perdeu velocidade em ${esc(pior.nome)}:</b> terminou a etapa com ${pior.fim_pct}% do desempenho do começo, por causa do calor ou do limite de energia. Quanto mais a linha desce para a direita, maior a perda.`;
+}
+function blocoCurva(r) {
+  if (!r.curva || !r.curva.length) return '';
+  return `<div class="graf"><div class="gx"><div class="gx-cab"><div><div class="gx-tit">Desempenho ao longo dos 10 minutos</div>
+    <div class="gx-sub">100% = o começo de cada etapa (os primeiros segundos ficam fora, enquanto o hardware acelera). As linhas tracejadas separam as etapas.</div></div></div>
+    <div class="gx-leitura">${leituraCurva(r)}</div>
+    <div class="gx-area"><div class="gx-y" style="height:160px">${[100, 90, 80, 70].map(v => `<span style="top:${(110 - v) / 50 * 100}%">${v}%</span>`).join('')}</div>
+    <div class="gx-plot" style="height:160px">${curvaSVG(r.curva, r.curva_etapas, r.curva_total, {altura: 160})}</div>
+    <div class="gx-x"><span style="left:0%">0</span><span style="left:50%">${mmss((r.curva_total || 600) / 2)}</span><span style="left:100%">${mmss(r.curva_total || 600)}</span></div></div>
+    <div class="cartoes" style="grid-template-columns:repeat(auto-fit,minmax(140px,1fr))">${(r.curva_etapas || []).filter(e => e.fim_pct != null).map(e => `<div class="cartao"><span class="c">${esc(e.nome)}</span><b class="${e.fim_pct == null ? '' : e.fim_pct >= 95 ? 'mais' : e.fim_pct < 85 ? 'menos' : ''}">${e.fim_pct != null ? e.fim_pct + '%' : '—'}</b><div class="c">no fim da etapa</div></div>`).join('')}</div></div></div>`;
+}
+function tabelaRequisitos(lista) {
+  const pills = {recomendado: ['ok', 'Atende ao recomendado'], minimo: ['quase', 'Atende ao mínimo'], conferir: ['quase', 'Atende · confira o catálogo'], quase: ['quase', 'Quase no mínimo'], abaixo: ['nao', 'Abaixo do mínimo']};
+  const marca = x => !x ? '<span class="c">—</span>' : `<span class="${x.ok ? 's-ok' : x.quase ? 's-quase' : 's-nao'}">${x.ok ? '✓' : x.quase ? '≈' : '✗'}</span> ${esc(x.exigido)}`;
+  return lista.map(p => {
+    const ordem = ['Processador', 'Placa de vídeo', 'Memória'], nomes = [...new Set([...p.minimo, ...(p.recomendado || [])].map(x => x.nome))].sort((a, b) => ordem.indexOf(a) - ordem.indexOf(b));
+    const [cls, txt] = pills[p.status] || pills.abaixo;
+    return `<div class="req-prod"><div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><h2 style="font-size:15.5px">${esc(p.produto)}</h2><span class="c">${esc(p.programa)}</span><span class="pill ${cls} dir">${txt}</span></div>
+      <div class="req"><div class="rotulo">Item</div><div class="rotulo">Mínimo</div><div class="rotulo">Recomendado</div><div class="rotulo">Este notebook</div>
+      ${nomes.map(n => { const mn = p.minimo.find(x => x.nome === n), rc = (p.recomendado || []).find(x => x.nome === n), aqui = (rc || mn).aqui;
+        return `<div class="n2">${esc(n)}</div><div>${marca(mn)}</div><div>${marca(rc)}</div><div style="color:var(--txt2)">${esc(aqui)}</div>`; }).join('')}</div>
+      ${p.nota ? `<div class="c" style="margin-top:6px">${esc(p.nota)}</div>` : ''}</div>`;
+  }).join('');
+}
+function secaoPesado({teste: t, res: r, comp: c}) {
+  const hw = `<span class="c">${esc(INFO.cpu.nome)} · ${esc(INFO.gpu.nome.replace(/^NVIDIA GeForce /, ''))}${r.vram_gb ? ` ${r.vram_gb} GB` : ''} · ${r.ram_gb} GB · 10 minutos</span>`;
+  if (t === 'p_arquitetura') {
+    return `<div class="res-sec">${cab(t, hw)}${blocoVeredito(r)}
+      ${cartoesTeste([[1, 'Navegação', `Faces com arestas, como no Revit: casa, condomínio (${triTxt(r.tri_condominio)}) e bairro (${triTxt(r.tri_bairro)})`, `${fpsTxt(r.nav_condominio)} fps`, `condomínio · casa ${fpsTxt(r.nav_casa)} · bairro ${fpsTxt(r.nav_bairro)} fps`],
+        [2, 'Ray tracing em tempo real', 'Full HD, com luz do sol e reflexos calculados a cada quadro, como no Enscape e no Twinmotion', `${fpsTxt(r.rt_fps)} fps`, 'acima de 30 fps, a navegação é fluida'],
+        [3, 'Regenerar', 'Mover uma parede num prédio de 20 andares e recalcular tudo (um núcleo)', `${fmt(r.regen_s, 2)} s`, `por alteração · ${fmt(r.regen_alteracoes)} alterações em 2 min`],
+        [4, 'Render final', `Todos os núcleos (${r.threads} threads), como no V-Ray e no Corona`, tempo(r.render4k_s), `imagem 4K estimada · ${fmt(r.cpu_pontos)} pontos`]])}
+      ${blocoCurva(r)}
+      ${compTexto(r.nav_condominio, c, false, ' fps', 1)}
+      <div class="provisorio">Testes próprios da Bench que simulam as exigências de cada programa. Não é necessário ter os programas instalados. Os critérios dos vereditos ainda estão em calibração com os notebooks da bancada. O ray tracing é calculado sem os núcleos de RT das placas RTX, porque o motor do Windows usado no teste não dá acesso a eles: no Enscape e no Twinmotion, essas placas ficam mais rápidas do que este número.</div></div>`;
+  }
+  if (t !== 'p_odonto') return secaoPesado2(t, r, c, hw);
+  return `<div class="res-sec">${cab(t, hw)}${blocoVeredito(r)}
+    ${cartoesTeste([[1, 'Tomografia 3D (CBCT)', `Volume de ${fmt(r.cbct_mb)} MB girando em Full HD com pele, osso e dentes`, `${fpsTxt(r.cbct_fps)} fps`, `montada na placa em ${fmt(r.cbct_montagem_s, 1)} s`],
+      [2, 'Escaneamento ao vivo', `Imagens 3D de ${fmt(r.scan_pontos)} pontos alinhadas e somadas à arcada, em todos os núcleos`, `${fmt(r.scan_ips)}/s`, `imagens 3D por segundo · desvio médio de ${fmt(r.scan_erro_um)} µm`],
+      [3, 'Prótese', `Arcada com a coroa: ${triTxt(r.protese_tri)}, como no exocad`, `${fpsTxt(r.protese_fps)} fps`, 'com suavização de bordas'],
+      [4, 'Fatias da tomografia', 'Axial, coronal, sagital, transversal e panorâmica, com espessura', `${fmt(r.fatias_s)}/s`, 'fatias por segundo']])}
+    ${blocoCurva(r)}
+    <div class="card" style="margin-top:14px"><div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap"><h2>Requisitos oficiais dos fabricantes</h2><span class="c">Comparação pelo modelo do processador, da placa de vídeo e pela memória instalada</span></div>
+      ${tabelaRequisitos(r.requisitos || [])}
+      <div class="c" style="margin-top:10px">Fontes: requisitos publicados pela Medit, Shining 3D, 3Shape, exocad e Planmeca, conferidos em novembro de 2026. Os fabricantes podem atualizar as listas; antes de comprar, confira no site de cada um.</div></div>
+    ${compTexto(r.cbct_fps, c, false, ' fps', 1)}
+    <div class="provisorio">Testes próprios da Bench que simulam as exigências de cada programa. Não é necessário ter os programas nem os scanners. Os critérios dos vereditos ainda estão em calibração com os notebooks da bancada.</div></div>`;
+}
+
+// Engenharia, Programação, Design gráfico e Edição de vídeo
+const PROVISORIO = '<div class="provisorio">Testes próprios da Bench que simulam as exigências de cada programa. Não é necessário ter os programas instalados. Os critérios dos vereditos ainda estão em calibração com os notebooks da bancada.</div>';
+const figura = (tit, src, sub) => src ? `<div class="card" style="margin-top:14px;display:flex;flex-wrap:wrap;gap:20px;align-items:center"><img src="${src}" alt="" style="flex:1 1 420px;max-width:720px;min-width:0;border-radius:8px;display:block"><div style="flex:1 1 220px"><h2 style="font-size:16px;margin-bottom:6px">${tit}</h2><div class="c">${sub}</div></div></div>` : '';
+function secaoPesado2(t, r, c, hw) {
+  if (t === 'p_engenharia') {
+    return `<div class="res-sec">${cab(t, hw)}${blocoVeredito(r)}
+      ${cartoesTeste([[1, 'Montagem CAD', `${fmt(r.cad_pecas)} peças (${triTxt(r.cad_tri)}), sombreadas com arestas, como no SolidWorks`, `${fpsTxt(r.cad_fps)} fps`, 'acima de 30 fps, girar a montagem é fluido'],
+        [2, 'Simulação de estrutura', `Suporte com ${fmt(r.fea_elementos)} elementos e 4 casos de carga, em ${r.threads} threads`, `${fmt(r.fea_it_s)}/s`, `rodadas de cálculo por segundo · ${fmt(r.fea_casos)} casos resolvidos`],
+        [3, 'Fluido na placa', `Ar passando por uma asa, ${milhoes((r.lbm_celulas || 0) / 1e6)} de células`, fmt(r.lbm_mlups), 'milhões de células por segundo'],
+        [4, 'Matrizes', `Precisão dupla em ${r.threads} threads, como o MATLAB e o NumPy`, fmt(r.dgemm_gflops, 1), 'GFLOPS (bilhões de operações por segundo)']])}
+      ${blocoCurva(r)}
+      ${figura('Simulação de fluido', r.mini_fluido, 'As cores mostram os redemoinhos que se formam atrás da asa e do cilindro.')}
+      ${compTexto(r.fea_it_s, c, false, '/s')}
+      ${PROVISORIO}</div>`;
+  }
+  if (t === 'p_programacao') {
+    const ms = r.ia_modelos || [], m7 = ms[0] || {};
+    const ia = tabelaTempo('Modelo para programar', ['Velocidade', 'Na placa de vídeo'], ms.map(m => [`${esc(m.nome)} <span class="c">(${fmt(m.gb, 1)} GB)</span>`, `${fmt(m.tokens_s)} tokens/s`, m.cabe ? 'cabe inteiro' : 'não cabe · usa a memória', m.cabe]),
+      `Estimado pela memória de vídeo medida (${fmt(r.ia_banda)} GB/s) e pela força de cálculo (${fmt(r.ia_tflops, 1)} TFLOPS), sem baixar os modelos. Acima de ~20 tokens/s, as sugestões aparecem mais rápido do que se lê.`);
+    const amb = tabelaTempo('Ambientes ao mesmo tempo', ['Velocidade de cada um', ''], (r.ambientes_curva || []).map(([n, p]) => [`${n} ${n > 1 ? 'ambientes' : 'ambiente'}`, `${p}%`, p >= 70 ? 'ok' : 'lento', n === r.ambientes_ok]),
+      `100% = um ambiente sozinho. Com ${r.ram_gb} GB de memória, cabem cerca de ${r.ambientes_ram} contêineres de 2 GB com o editor e o navegador abertos.`);
+    return `<div class="res-sec">${cab(t, hw)}${blocoVeredito(r)}
+      ${cartoesTeste([[1, 'Compilar', `Projeto de 5.000 arquivos do zero, em ${r.build_threads || r.threads} threads${r.build_threads && r.build_threads < r.threads ? ` de ${r.threads} (${r.build_max && r.build_threads === r.build_max ? `o teste de compilação usa no máximo ${r.build_max}` : 'limitado pela memória do notebook'})` : ''}`, tempo(r.build_s), `${r.build_estimado ? 'estimado · ' : ''}${fmt(r.arquivos_s)} arquivos por segundo`],
+        [2, 'Arquivos pequenos', '50 mil arquivos criados, lidos, listados e apagados no SSD', tempo(r.arq_ciclo_s), `criar ${fmt(r.arq_criar_s, 1)} s · ler ${fmt(r.arq_ler_s, 1)} s · listar ${fmt(r.arq_listar_s, 1)} s · apagar ${fmt(r.arq_apagar_s, 1)} s`],
+        [3, 'Ambientes juntos', 'Contêineres com memória própria rodando ao mesmo tempo', String(r.ambientes_ok ?? '—'), 'sem perder mais de 30% da velocidade'],
+        [4, 'IA para programar', `${esc(m7.nome || 'Modelo de 7B')} no próprio notebook`, `${fmt(m7.tokens_s)} tokens/s`, m7.leitura_s ? `lê ~2.000 linhas de código em ${tempo(m7.leitura_s)}` : '']])}
+      ${blocoCurva(r)}
+      <div class="card" style="margin-top:14px;display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:26px">${amb}${ia}</div>
+      ${compTexto(r.build_s, c, true, ' s', 1)}
+      ${PROVISORIO}</div>`;
+  }
+  if (t === 'p_design') {
+    const tl = r.tela || {};
+    const fil = tabelaTempo(`Filtros na foto de ${fmt(r.foto_mp, 1)} megapixels`, ['Tempo', ''], (r.filtros || []).map(f => [esc(f.nome), f.s != null ? `${fmt(f.s, f.s < 10 ? 2 : 1)} s` : '—', '', false]),
+      'Cada filtro aplicado na foto inteira, pela placa de vídeo, como no Photoshop com a aceleração ligada. Média das rodadas, sem a primeira.');
+    const tela = tabelaTempo('Tela', ['Informado pela tela', ''], [['Cores sRGB (internet, redes sociais)', tl.generico ? 'não informado' : tl.srgb != null ? `${tl.srgb}%` : '—', tl.generico ? 'valores padrão' : '', !tl.generico && (tl.srgb || 0) >= 98],
+      ['Cores DCI-P3 (vídeo, celulares)', tl.generico ? 'não informado' : tl.p3 != null ? `${tl.p3}%` : '—', '', !tl.generico && (tl.p3 || 0) >= 95], ['Painel', esc(tl.tipo || '—'), '', false], ['Resolução', esc(tl.resolucao || '—'), tl.hz ? `${tl.hz} Hz` : '', false],
+      ['Brilho', tl.brilho ? `${tl.brilho} nits` : tl.hdr ? `HDR ${tl.hdr} nits` : '—', '', false]],
+      r.tela ? 'Dados que a própria tela informa ao Windows (EDID). Alguns fabricantes copiam os valores do padrão em vez de medir; para ter certeza, só com colorímetro.' : 'A ficha da tela ainda não tinha sido lida. Abra a Ficha no Raio-X e rode o teste de novo para ver as cores da tela.');
+    return `<div class="res-sec">${cab(t, hw)}${blocoVeredito(r)}
+      ${cartoesTeste([[1, 'Filtros', `Foto de ${fmt(r.foto_mp, 1)} megapixels na placa, como no Photoshop`, `${fmt(r.filtro_medio_s, r.filtro_medio_s < 10 ? 2 : 1)} s`, 'por filtro, em média'],
+        [2, 'Exportar 200 fotos', `Revelar e gravar em JPEG fotos de 24 megapixels, em ${r.jpeg_threads} threads, como no Lightroom`, tempo(r.jpeg_200_s), `${fmt(r.jpeg_fotos_min)} fotos por minuto`],
+        [3, 'Remover ruído com IA', 'Rede neural numa foto de 24 megapixels, na placa', `${fmt(r.ia_foto_s, 1)} s`, 'por foto'],
+        [4, 'Ilustração', `${fmt(r.vetor_formas)} formas redesenhadas a cada zoom, como no Illustrator`, `${fmt(r.vetor_fps, 1)}/s`, `${fmt(r.vetor_ms)} ms por redesenho`]])}
+      ${blocoCurva(r)}
+      <div class="card" style="margin-top:14px;display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:26px">${fil}${tela}</div>
+      ${compTexto(r.filtro_medio_s, c, true, ' s', 2)}
+      ${PROVISORIO}</div>`;
+  }
+  if (t === 'p_video') {
+    const mc = !(r.multicam_fases || []).length ? '<div class="c">O motor do Windows não decodificou vídeo H.264 neste computador, então a timeline multicâmera não foi medida.</div>' : tabelaTempo('Câmeras 4K ao mesmo tempo', ['A mais lenta', ''], (r.multicam_fases || []).map(([n, f]) => [`${n} ${n > 1 ? 'câmeras' : 'câmera'}`, `${fpsTxt(f)} fps`, f >= 29 ? 'sem travar' : 'trava', n === r.multicam]),
+      `Vídeos 4K H.264 decodificados ${r.multicam_via === 'placa' ? 'pela placa de vídeo' : 'pelo processador'}. O tempo real é de 30 quadros por segundo.`);
+    return `<div class="res-sec">${cab(t, hw)}${blocoVeredito(r)}
+      ${blocoGrande('Tempo de exportação', 'Um vídeo de <b style="color:var(--txt)">30 minutos em 4K</b> (H.264, 45 Mb/s):', tempo(r.export_30min_s),
+        r.export_x ? `${r.export_x >= 1 ? `${fmt(r.export_x, 1)}× mais rápido do que o tempo real` : 'Mais lento do que o tempo real'}: 1 minuto de vídeo é exportado em ${tempo(r.export_30min_s / 30)}.` : '',
+        r.export_via === 'ffmpeg' ? `Direto pelo codificador da placa (${esc(r.export_codificador || 'placa de vídeo')}), como o Premiere e o DaVinci fazem. O motor do Windows usado no resto do teste não ofereceu o codificador.` : `Pelo codificador da placa de vídeo, ${fmt(r.export_quadros)} quadros seguidos, para ver se a velocidade se mantém.`, mc)}
+      ${cartoesTeste([[1, 'Exportar', '30 minutos de 4K pelo codificador da placa', tempo(r.export_30min_s), `${fmt(r.export_fps)} quadros por segundo`],
+        [2, 'Redução de ruído', 'Temporal e espacial, com correção de cor e brilho nas luzes, em 4K', `${fpsTxt(r.nr_fps)} fps`, 'acima de 30 fps, reproduz sem travar'],
+        [3, '4:2:2 10-bit', `Dois vídeos ${esc(r.c422_resolucao || '4K')} de câmera ao mesmo tempo`, r.c422_fps != null ? `${fpsTxt(r.c422_fps)} fps` : r.c422_via === 'previsto' ? 'Na placa' : 'No processador', r.c422_via === 'placa' ? 'pela placa de vídeo' : r.c422_via === 'previsto' ? `${esc(r.c422_quem || 'placa de vídeo')} · pelo modelo (o motor do Windows usado no teste não abre o formato)` : r.c422_via === 'processador' ? 'só pelo processador: use proxy' : 'a placa não decodifica 4:2:2: use proxy'],
+        [4, 'Multicâmera', 'Vídeos 4K H.264 tocando juntos', String(r.multicam || 0), 'câmeras sem travar']])}
+      ${blocoCurva(r)}
+      ${compTexto(r.export_30min_s, c, true, ' s')}
+      ${PROVISORIO}</div>`;
+  }
+  return '';
+}
+
+// ------------------------------------------------------------------ registro dos sensores (todo teste)
+function blocoSensores({teste: t, res: r}) {
+  const s = r.sensores || {}, lt = s.linha_tempo || [];
+  if (!lt.length) return '';
+  const v = (x, suf = '', d = 0) => x == null ? '—' : fmt(x, d) + suf;
+  const comPlaca = USA_PLACA[t] || (s.gpu_uso_max || 0) > 20;
+  const cards = [];
+  if (comPlaca) cards.push(['Uso da placa', v(s.gpu_uso, '%'), `máx. ${v(s.gpu_uso_max, '%')}`], ['Temperatura da placa', v(s.gpu_temp_max, ' °C'), `média ${v(s.gpu_temp, ' °C')}`],
+    ['Consumo da placa', v(s.gpu_watts, ' W'), `pico ${v(s.gpu_watts_pico, ' W')}`], ['Clock da placa', v(s.gpu_mhz, ' MHz'), `máx. ${v(s.gpu_mhz_max, ' MHz')}`],
+    ['Memória de vídeo usada', s.gpu_vram_max != null ? `${fmt(s.gpu_vram_max, 1)} GB` : '—', s.gpu_vram_total ? `de ${fmt(s.gpu_vram_total)} GB` : '']);
+  if ((s.gpu_enc_max || 0) + (s.gpu_dec_max || 0) > 0) cards.push(['Codificador · decodificador', `${v(s.gpu_enc, '%')} · ${v(s.gpu_dec, '%')}`, `máx. ${v(s.gpu_enc_max, '%')} · ${v(s.gpu_dec_max, '%')}`]);
+  cards.push(['Uso do processador', v(s.cpu_uso, '%'), `máx. ${v(s.cpu_uso_max, '%')}`],
+    ['Clock do processador', v(s.cpu_mhz, ' MHz'), s.cpu_mhz_inicio ? `início ${fmt(s.cpu_mhz_inicio)} → fim ${fmt(s.cpu_mhz_fim)}` : ''],
+    ['Temperatura do processador', s.hwinfo ? v(s.cpu_temp_max, ' °C') : '—', s.hwinfo ? `média ${v(s.cpu_temp, ' °C')}` : (INFO.sensores && INFO.sensores.monitor ? 'ligue o Bench Monitor para medir' : 'abra o HWiNFO para medir')],
+    ['Consumo do processador', s.cpu_watts != null ? v(s.cpu_watts, ' W') : '—', s.cpu_watts != null ? `pico ${v(s.cpu_watts_pico, ' W')}${s.hwinfo ? '' : ' · pelo Windows'}` : (INFO.sensores && INFO.sensores.monitor ? 'ligue o Bench Monitor para medir' : 'abra o HWiNFO para medir')]);
+  // gráficos: uma grandeza por gráfico (uso, consumo, temperatura), placa e processador juntos quando a unidade é a mesma
+  const dur = Math.max(lt.at(-1).s, 1), et = r.etapas || [];
+  const faixas = et.filter((e, i) => i % 2).map(e => ({ini: e.ini, fim: e.fim}));
+  const xy = k => lt.map(a => [a.s, a[k]]);
+  const etapasTxt = et.length > 1 ? ` Faixas mais claras separam as etapas (${et.map(e => esc(e.nome)).join(' → ')}).` : '';
+  const graficos = [
+    graficoClaro({titulo: 'Uso', sub: `Percentual de uso do processador e da placa de vídeo durante o teste.${etapasTxt}`, faixas, maxY: 100, unidade: '%', altura: 120,
+      series: [...(comPlaca ? [{nome: 'Placa de vídeo', xy: xy('gpu_uso'), cor: 'var(--destaque)'}] : []), {nome: 'Processador', xy: xy('cpu_uso'), cor: 'var(--roxo)'}]}),
+    graficoClaro({titulo: 'Consumo de energia', sub: 'Watts consumidos a cada segundo. É o fator que mais influencia a duração da bateria e o aquecimento.', faixas, unidade: 'W', altura: 120,
+      series: [...(comPlaca ? [{nome: 'Placa de vídeo', xy: xy('gpu_watts'), cor: 'var(--destaque)'}] : []), {nome: 'Processador', xy: xy('cpu_watts'), cor: 'var(--roxo)'}]}),
+    graficoClaro({titulo: 'Temperatura', sub: 'Até ~90 °C é normal em notebooks sob carga; próximo de 100 °C, o processador começa a reduzir a velocidade.', faixas, unidade: '°C', maxY: 110, altura: 120,
+      series: [...(comPlaca ? [{nome: 'Placa de vídeo', xy: xy('gpu_temp'), cor: 'var(--destaque)'}] : []), {nome: 'Processador', xy: xy('cpu_temp'), cor: 'var(--roxo)'}]}),
+  ].join('');
+  // tabela por etapa
+  const media = (xs, k) => { const v2 = xs.map(a => a[k]).filter(x => x != null); return v2.length ? v2.reduce((a, b) => a + b, 0) / v2.length : null; };
+  const maxi = (xs, k) => { const v2 = xs.map(a => a[k]).filter(x => x != null); return v2.length ? Math.max(...v2) : null; };
+  const temEnc = (s.gpu_enc_max || 0) + (s.gpu_dec_max || 0) > 0;
+  const tabela = et.length > 1 ? `<div style="display:grid;grid-template-columns:minmax(0,1.6fr) repeat(${comPlaca ? (temEnc ? 6 : 5) : 3},minmax(0,.8fr));font-size:13px;margin-top:14px">
+    <div class="rotulo" style="padding:6px 0">Etapa</div><div class="rotulo" style="padding:6px 0">Duração</div>${comPlaca ? '<div class="rotulo" style="padding:6px 0">Uso placa</div><div class="rotulo" style="padding:6px 0">Consumo placa</div><div class="rotulo" style="padding:6px 0">Temp. placa</div>' : ''}${temEnc ? '<div class="rotulo" style="padding:6px 0">Codif. · decod.</div>' : ''}<div class="rotulo" style="padding:6px 0">Uso processador</div>${comPlaca ? '' : '<div class="rotulo" style="padding:6px 0">Clock processador</div>'}
+    ${et.map(e => { const xs = lt.filter(a => a.s >= e.ini && a.s < e.fim), c = x => `<div style="padding:8px 0;border-top:1px solid var(--linha)">${x}</div>`;
+      return c(`<b>${esc(e.nome)}</b>`) + c(mmss(e.fim - e.ini)) + (comPlaca ? c(v(media(xs, 'gpu_uso'), '%')) + c(v(media(xs, 'gpu_watts'), ' W')) + c(v(maxi(xs, 'gpu_temp'), ' °C')) : '') +
+        (temEnc ? c(`${v(media(xs, 'gpu_enc'), '%')} · ${v(media(xs, 'gpu_dec'), '%')}`) : '') + c(v(media(xs, 'cpu_uso'), '%')) + (comPlaca ? '' : c(v(media(xs, 'cpu_mhz'), ' MHz'))); }).join('')}</div>` : '';
+  return `<div class="graf" style="margin:-4px 0 22px">
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap"><div class="rotulo">Hardware durante o teste</div>
+      <span class="c">${r.placa ? `Placa usada: <b style="color:var(--txt)">${esc(r.placa)}</b> · ` : ''}Processador: <b style="color:var(--txt)">${esc(INFO.cpu.nome)}</b> · ${s.amostras} leituras, 1 por segundo${s.fonte_gpu ? ` · placa lida pelo ${esc(s.fonte_gpu)}` : ''}</span>
+      ${r.log ? `<button class="btn btn-sec dir" style="padding:6px 12px;font-size:12.5px" data-log>Abrir registro (CSV)</button>` : ''}</div>
+    <div class="cartoes" style="grid-template-columns:repeat(auto-fill,minmax(170px,1fr))">${cards.map(([k, val, sub]) => `<div class="cartao"><span class="c">${k}</span><b>${val}</b><div class="c">${sub}</div></div>`).join('')}</div>
+    ${graficos}
+    ${tabela}</div>`;
+}
+
+function mostrarResultados() {
+  if (!SESSAO.length) { $('#res').innerHTML = '<div class="vazio-res">Nenhum teste realizado nesta sessão. Escolha os testes na aba Testes.</div>'; return; }
+  $('#res').innerHTML = `<div class="res-cab"><div><div class="rotulo">Resultados</div><h1 style="margin-bottom:0">${esc(INFO.notebook)}</h1><div class="c">Windows: ${esc(INFO.modo_notebook.windows)} · ${(SESSAO_QUANDO ? new Date(SESSAO_QUANDO) : new Date()).toLocaleString('pt-BR').slice(0, 17)}</div></div>
+    <div class="acoes dir"><button class="btn btn-pri" id="b-rel">Gerar relatório da sessão</button><button class="btn btn-sec" id="b-denovo">Executar novamente</button><button class="btn btn-sec" id="b-img">Salvar imagem (post)</button><button class="btn btn-sec" id="b-pasta">Abrir pasta das imagens</button><button class="btn btn-sec" id="b-relpasta">Pasta dos relatórios</button><button class="btn btn-sec" id="b-logs">Pasta dos registros</button></div></div>
+    ${SESSAO.map(it => secao(it) + (it.res ? blocoSensores(it) : '')).join('')}`;
+  $('#b-denovo').onclick = () => rodarSequencia(ULTIMA_LISTA || undefined);
+  $('#b-rel').onclick = async () => {
+    const b = $('#b-rel'); b.disabled = true; b.textContent = 'Gerando…';
+    try { const r = await api.relatorio(true); b.textContent = r.ok ? 'Relatório aberto no navegador' : r.erro; }
+    catch (e) { b.textContent = 'Não foi possível gerar o relatório'; }
+    setTimeout(() => { b.disabled = false; b.textContent = 'Gerar relatório da sessão'; }, 4000);
+  };
+  $('#b-pasta').onclick = () => api.abrir_pasta('Imagens');
+  $('#b-logs').onclick = () => api.abrir_pasta('Logs');
+  $('#b-relpasta').onclick = () => api.abrir_pasta('Relatórios');
+  document.querySelectorAll('[data-log]').forEach(b => b.onclick = () => api.abrir_pasta('Logs'));
+  $('#b-img').onclick = async () => { await api.salvar_imagem(await imagemResumo(), `Bench Marks ${new Date().toLocaleString('pt-BR').replace(/[/:,]/g, '-')}`, true); };
+}
+
+async function imagemResumo() {
+  const c = document.createElement('canvas'); c.width = 1080; c.height = 1350; const x = c.getContext('2d');
+  const carregar = src => new Promise(ok => { if (!src) return ok(null); const i = new Image(); i.onload = () => ok(i); i.onerror = () => ok(null); i.src = src; });
+  const capa = SESSAO.find(s => s.res && s.res.miniatura);
+  const [cena, logo] = await Promise.all([carregar(capa && capa.res.miniatura), carregar('benchmarks_logo.png')]);
+  x.fillStyle = '#170F23'; x.fillRect(0, 0, 1080, 1350);
+  if (cena) { const h = 1080 * cena.height / cena.width; x.globalAlpha = .55; x.drawImage(cena, 0, 0, 1080, h); x.globalAlpha = 1;
+    const g = x.createLinearGradient(0, h * .3, 0, h); g.addColorStop(0, 'rgba(23,15,35,0)'); g.addColorStop(1, 'rgba(23,15,35,1)'); x.fillStyle = g; x.fillRect(0, 0, 1080, h + 2); }
+  const F = (p, t) => `${p} ${t}px "Segoe UI Variable Display","Segoe UI",sans-serif`;
+  if (logo) x.drawImage(logo, 64, 60, 72, 72);
+  x.fillStyle = '#F5F2F9'; x.font = F(700, 30); x.fillText('BENCH MARKS', 156, 108); x.fillStyle = '#C9BFD6'; x.font = F(500, 26); x.fillText('by Bench', 390, 108);
+  x.fillStyle = '#F5F2F9'; x.font = F(800, 58); x.fillText(INFO.notebook, 64, 330);
+  x.fillStyle = '#C9BFD6'; x.font = F(500, 28); x.fillText(`${INFO.cpu.nome} · ${INFO.gpu.nome.replace(/^NVIDIA GeForce /, '')} · ${INFO.ram.gb} GB`, 64, 378);
+  const itens = SESSAO.filter(s => s.res).slice(0, 8);
+  itens.forEach((s, i) => {
+    const cx = 64 + (i % 2) * 486, cy = 470 + Math.floor(i / 2) * 190;
+    x.fillStyle = '#21172F'; x.beginPath(); x.roundRect(cx, cy, 466, 170, 22); x.fill();
+    x.fillStyle = '#8E809F'; x.font = F(600, 24); x.fillText(TESTES[s.teste].nome.toUpperCase(), cx + 28, cy + 48);
+    x.fillStyle = s.teste === 'stress' ? (s.res.estavel ? '#5FD38D' : '#FFC861') : '#FFE500'; x.font = F(800, 54);
+    const v = s.resumo.valor; x.fillText(v.length > 14 ? v.slice(0, 14) + '…' : v, cx + 28, cy + 112);
+    x.fillStyle = '#C9BFD6'; x.font = F(500, 24); x.fillText(s.resumo.rotulo, cx + 28, cy + 148);
+  });
+  x.fillStyle = '#8E809F'; x.font = F(500, 26); x.fillText(new Date().toLocaleDateString('pt-BR'), 64, 1300);
+  x.fillStyle = '#FFE500'; x.font = F(700, 28); x.textAlign = 'right'; x.fillText('@benchpromos', 1016, 1300);
+  return c.toDataURL('image/png');
+}
+
+$('#h-rel').onclick = () => api.abrir_pasta('Relatórios');
+$('#h-logs').onclick = () => api.abrir_pasta('Logs');
+async function historico() {
+  const h = await api.historico();
+  $('#hist').innerHTML = h.length ? h.map(x => `<tr><td>${esc(x.data)}</td><td>${esc((TESTES[x.teste] || {}).nome || x.teste)}</td><td class="nt">${esc(x.resumo && x.resumo.valor)}</td><td>${esc(x.resumo && x.resumo.rotulo)}</td><td>${esc((x.meta && x.meta.modo_notebook) || x.modo_energia)}</td></tr>`).join('')
+    : '<tr><td colspan="5" class="c">Nenhum teste realizado.</td></tr>';
+}
+
+// ------------------------------------------------------------------ começo
+async function iniciarApp() {
+  api = BENCH_API();
+  INFO = await api.inicio();
+  ADAPTADOR = null; // Website preview: no hardware probing.
+  SEL = new Set(PERFIS.gamer); PERFIL = 'gamer';
+  desenharPecas(); desenharModo(); desenharCards(); desenharPesados();
+  try { const u = await api.carregar_sessao(); if (u && Array.isArray(u.itens) && u.itens.length) { SESSAO = u.itens; SESSAO_QUANDO = u.quando; } } catch (e) { /* sem sessão guardada */ }
+  mostrarResultados();
+  setInterval(async () => {
+    if (!$('#t-inicio').classList.contains('ativa') || $('#rodando').classList.contains('ativa')) return;
+    const m = await api.modo_agora();
+    INFO.modo_notebook.windows = m.windows;
+    desenharModo();
+  }, 5000);
+  if (window.TELA_INICIAL) window.TELA_INICIAL();
+}
+document.addEventListener('keydown', e => {
+  // modo conferência (só para a equipe): roda tudo em versão curta para conferir se cada teste usa o hardware certo; não entra no histórico
+  if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'q' && !$('#rodando').classList.contains('ativa')) {
+    CONFERENCIA = !CONFERENCIA; ESCALA = CONFERENCIA ? .25 : (window.ESCALA_TEMPO || 1);
+    document.querySelectorAll('.beta').forEach(b => b.textContent = CONFERENCIA ? 'CONFERÊNCIA' : 'BETA');
+  }
+});
+BENCH_ESPERAR(iniciarApp);
+window.__bm = {ir, mostrarResultados, set sessao(v) { SESSAO = v; }, secao, EXECUTAR, OP, get INFO() { return INFO; }, rodarSequencia, SEL: () => SEL, setSel: a => { SEL = new Set(a); desenharCards(); }};
+</script></body></html>

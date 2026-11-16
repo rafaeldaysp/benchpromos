@@ -1,0 +1,1380 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<script src="site-guard.js"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bench Labs</title>
+<style>
+:root {
+  --bg: #170F23; --card: #21172F; --card2: #2A1F38; --linha: #30243D; --linha2: #43355A;
+  --txt: #F5F2F9; --txt2: #C9BFD6; --txt3: #8E809F;
+  --amarelo: #FFE500; --amarelo-txt: #170F23;
+  --ok: #5FD38D; --erro: #FF7A7A; --alerta: #FFC861;
+  --raio: 14px;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body { margin: 0; background: var(--bg); color: var(--txt);
+  font: 15px/1.5 "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased; user-select: none; overflow: hidden; }
+button, input, select { font: inherit; color: inherit; }
+.app { display: grid; grid-template-rows: auto 1fr; height: 100vh; }
+
+/* topo */
+header { display: flex; align-items: center; gap: 28px; padding: 18px 32px; border-bottom: 1px solid var(--linha); }
+.logo { display: flex; align-items: center; gap: 12px; }
+.logo-img { width: 36px; height: 36px; display: block; }
+.logo-txt { font-weight: 700; letter-spacing: .14em; font-size: 14px; text-transform: uppercase; }
+.logo-txt span { color: var(--txt3); font-weight: 500; letter-spacing: .08em; text-transform: none; font-size: 13px; margin-left: 6px; }
+nav { display: flex; gap: 4px; }
+nav button { background: none; border: 0; padding: 8px 14px; border-radius: 8px; color: var(--txt2); cursor: pointer; font-size: 14px; }
+nav button:hover { background: var(--card); color: var(--txt); }
+nav button.ativo { background: var(--card2); color: var(--txt); }
+nav.oculto { visibility: hidden; }
+.pilula { margin-left: auto; display: flex; align-items: center; gap: 8px; padding: 6px 12px; border: 1px solid var(--linha);
+  border-radius: 999px; font-size: 13px; color: var(--txt2); font-variant-numeric: tabular-nums; }
+
+main { overflow-y: auto; padding: 32px; }
+.tela { display: none; max-width: 920px; margin: 0 auto; }
+.tela.ativa { display: block; }
+
+/* tipografia */
+.rotulo { font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--txt3); font-weight: 600; }
+h1 { font-size: 30px; line-height: 1.15; margin: 6px 0 8px; font-weight: 700; letter-spacing: -.01em; }
+h2 { font-size: 20px; margin: 0 0 4px; font-weight: 650; }
+.sub { color: var(--txt2); margin: 0; max-width: 640px; }
+.muted { color: var(--txt3); font-size: 13px; }
+
+/* blocos */
+.card { background: var(--card); border: 1px solid var(--linha); border-radius: var(--raio); padding: 22px; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.grid3 .opcao { padding: 20px; } .grid3 .opcao h2 { font-size: 17px; } .grid3 .opcao .tempo { top: 20px; right: 20px; }
+.opcoes { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; }
+@media (max-width: 1000px) { .opcoes { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.opcoes .opcao { display: flex; flex-direction: column; justify-content: flex-start; align-items: stretch; }
+.opcoes .opcao { padding: 18px; } .opcoes .opcao h2 { font-size: 16px; } .opcoes .opcao .tempo { top: 18px; right: 18px; font-size: 12px; }
+.opcoes .opcao ul { font-size: 13px; } .opcoes .opcao .icone { margin-bottom: 12px; }
+.duracao { display: none; margin-top: 12px; align-items: center; gap: 10px; flex-wrap: wrap; padding: 14px 18px;
+  background: var(--card); border: 1px solid var(--linha); border-radius: var(--raio); }
+.duracao.vis { display: flex; }
+.duracao .rotulo { margin-right: 4px; }
+.chip { background: var(--bg); border: 1px solid var(--linha2); color: var(--txt2); border-radius: 999px; padding: 7px 14px;
+  font-size: 13px; cursor: pointer; font-variant-numeric: tabular-nums; }
+.chip:hover { color: var(--txt); border-color: var(--txt3); }
+.chip.sel { background: var(--amarelo); border-color: var(--amarelo); color: var(--amarelo-txt); font-weight: 650; }
+.ativ-linha { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.ativ-linha .rotulo { margin: 0; }
+.ativ-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip.ativ { display: inline-flex; align-items: center; gap: 7px; cursor: pointer; }
+.chip.ativ .cx { width: 14px; height: 14px; border-radius: 4px; border: 1.5px solid currentColor; display: grid; place-items: center; }
+.chip.ativ.sel .cx::after { content: ""; width: 7px; height: 4px; border: solid currentColor; border-width: 0 0 2px 2px; transform: rotate(-45deg) translate(1px, -1px); }
+.chip.ativ:not(.sel) span.n { text-decoration: line-through; opacity: .75; }
+#ativ-txt { font-size: 13px; }
+.duracao .outro { display: flex; align-items: center; gap: 8px; margin-left: auto; color: var(--txt3); font-size: 13px; }
+.duracao .outro input { width: 84px; padding: 7px 10px; text-align: right; }
+.duracao .nota { flex-basis: 100%; color: var(--txt3); font-size: 12px; margin-top: 2px; }
+.grid4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.espaco { height: 22px; }
+
+label.campo { display: block; }
+label.campo .rotulo { display: block; margin-bottom: 8px; }
+textarea { width: 100%; background: var(--bg); border: 1px solid var(--linha2); border-radius: 10px; padding: 10px 12px;
+  outline: none; user-select: text; font: 12px/1.6 Consolas, "Cascadia Mono", monospace; color: var(--txt); resize: vertical; }
+textarea:focus { border-color: var(--amarelo); }
+input[type=text], input[type=number], select {
+  width: 100%; background: var(--bg); border: 1px solid var(--linha2); border-radius: 10px;
+  padding: 12px 14px; outline: none; user-select: text; }
+input:focus, select:focus { border-color: var(--amarelo); }
+
+.opcao { position: relative; cursor: pointer; text-align: left; background: var(--card); border: 1px solid var(--linha);
+  border-radius: var(--raio); padding: 22px; transition: border-color .15s, background .15s; }
+.opcao:hover { border-color: var(--linha2); }
+.opcao.sel { border-color: var(--amarelo); background: var(--card2); }
+.opcao .icone { width: 40px; height: 40px; border-radius: 10px; background: var(--bg); display: grid; place-items: center; margin-bottom: 14px; }
+.opcao.sel .icone { color: var(--destaque); }
+.opcao h2 { font-size: 18px; }
+.opcao .tempo { position: absolute; top: 22px; right: 22px; font-size: 13px; color: var(--txt2); font-variant-numeric: tabular-nums; }
+.opcao ul { margin: 10px 0 0; padding: 0; list-style: none; color: var(--txt2); font-size: 14px; }
+.opcao li { padding: 2px 0 2px 18px; position: relative; }
+.opcao li::before { content: ""; position: absolute; left: 2px; top: 11px; width: 6px; height: 6px; border-radius: 50%; background: var(--linha2); }
+.opcao.sel li::before { background: var(--amarelo); }
+
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 0; border-radius: 10px;
+  padding: 13px 22px; font-weight: 600; cursor: pointer; transition: filter .15s, background .15s; }
+.btn:disabled { opacity: .45; cursor: default; }
+.btn-pri { background: var(--amarelo); color: var(--amarelo-txt); }
+.btn-pri:hover:not(:disabled) { filter: brightness(1.06); }
+.btn-sec { background: var(--card2); color: var(--txt); border: 1px solid var(--linha2); }
+.btn-sec:hover:not(:disabled) { background: var(--linha); }
+.btn-perigo { background: transparent; color: var(--erro); border: 1px solid color-mix(in srgb, var(--erro) 35%, var(--card)); }
+.btn-perigo:hover { background: color-mix(in srgb, var(--erro) 12%, var(--card)); }
+.btn-peq { padding: 8px 14px; font-size: 13px; }
+.acoes { display: flex; gap: 10px; align-items: center; margin-top: 26px; }
+.acoes .dir { margin-left: auto; }
+
+.aviso { display: flex; gap: 12px; align-items: flex-start; border-radius: 12px; padding: 14px 16px; font-size: 14px; }
+.aviso.alerta { background: color-mix(in srgb, var(--alerta) 14%, var(--card)); border: 1px solid color-mix(in srgb, var(--alerta) 38%, var(--card)); color: var(--txt); }
+.aviso.info { background: var(--card2); border: 1px solid var(--linha2); color: var(--txt); }
+.aviso .acao { margin-left: auto; flex-shrink: 0; }
+.nuvem { align-items: center; }
+.nuvem .ponto { width: 9px; height: 9px; border-radius: 50%; background: var(--muted, var(--txt3)); flex-shrink: 0; }
+.nuvem .ponto.ok { background: var(--ok); box-shadow: 0 0 0 4px rgba(61,220,132,.15); }
+.nuvem .ponto.alerta { background: var(--alerta); box-shadow: 0 0 0 4px rgba(255,200,97,.15); }
+.nuvem b { font-weight: 600; }
+#c-nuvem { width: 100%; }
+
+/* verificação */
+.checklist { display: grid; gap: 8px; }
+.check { display: flex; align-items: center; gap: 14px; padding: 14px 18px; background: var(--card); border: 1px solid var(--linha); border-radius: 12px; }
+.check .st { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; flex-shrink: 0; background: var(--bg); }
+.check.ok .st { background: rgba(95,211,141,.14); color: var(--ok); }
+.check.falha .st { background: rgba(255,122,122,.14); color: var(--erro); }
+.check .nome { font-weight: 600; }
+.check .det { color: var(--txt3); font-size: 13px; margin-left: auto; text-align: right; }
+.check.falha .det { color: var(--erro); }
+.fab { margin-top: 22px; }
+.fab-topo { display: flex; align-items: baseline; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+.fab-topo h3 { margin: 0; font-size: 16px; }
+.check.info .st { background: rgba(255,212,0,.12); color: var(--destaque); }
+.check.manual { cursor: pointer; align-items: flex-start; }
+.check.manual .st { border: 1.5px solid var(--linha2); background: transparent; }
+.check.manual.feito .st { background: rgba(95,211,141,.14); border-color: transparent; color: var(--ok); }
+.check.manual .como { color: var(--txt3); font-size: 13px; margin-top: 3px; font-weight: 400; }
+.check.manual .det { margin-top: 3px; }
+.giro { width: 14px; height: 14px; border: 2px solid var(--linha2); border-top-color: var(--amarelo); border-radius: 50%; animation: gira .8s linear infinite; }
+@keyframes gira { to { transform: rotate(360deg); } }
+
+/* carregador / contagem */
+.centro { text-align: center; padding: 30px 0 10px; }
+.bat-grande { margin: 10px auto 26px; width: 200px; height: 96px; position: relative; }
+.bat-corpo { position: absolute; inset: 0 14px 0 0; border: 3px solid var(--txt2); border-radius: 16px; padding: 7px; }
+.bat-nivel { height: 100%; border-radius: 8px; background: var(--amarelo); transition: width .4s; }
+.bat-ponta { position: absolute; right: 0; top: 30px; width: 10px; height: 36px; border-radius: 0 6px 6px 0; background: var(--txt2); }
+.num-gigante { font-size: 84px; font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
+.estado-carga { display: inline-flex; gap: 8px; align-items: center; padding: 6px 14px; border-radius: 999px; background: var(--card2); color: var(--txt2); font-size: 14px; margin-top: 6px; }
+
+/* rodando */
+.topo-teste { display: flex; align-items: flex-end; gap: 16px; }
+.selo { display: inline-block; font-size: 12px; padding: 3px 10px; border-radius: 999px; border: 1px solid var(--linha2); color: var(--txt2); }
+.selo.amarelo { border-color: color-mix(in srgb, var(--destaque) 35%, var(--card)); color: var(--destaque); }
+.selo.ok { border-color: color-mix(in srgb, var(--ok) 35%, var(--card)); color: var(--ok); }
+.selo.erro { border-color: color-mix(in srgb, var(--erro) 35%, var(--card)); color: var(--erro); }
+.cronometro { font-size: 64px; font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: -.02em; line-height: 1; margin: 14px 0 6px; }
+.metrica .rotulo { margin-bottom: 6px; }
+.metrica .valor { font-size: 26px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.metrica .valor small { font-size: 14px; color: var(--txt3); font-weight: 500; }
+.barra { height: 6px; border-radius: 3px; background: var(--bg); margin-top: 10px; overflow: hidden; }
+.barra > div { height: 100%; background: var(--amarelo); border-radius: 3px; }
+.atividade { display: flex; align-items: center; gap: 10px; }
+.atividade .ic { width: 34px; height: 34px; border-radius: 9px; background: var(--bg); display: grid; place-items: center; color: var(--destaque); }
+.atividade .valor { font-size: 20px; }
+.mini { height: 170px; }
+.mini svg { width: 100%; height: 100%; display: block; overflow: visible; }
+.preparando { display: flex; align-items: center; gap: 14px; }
+
+.prog-card { margin-top: 20px; border-color: color-mix(in srgb, var(--destaque) 30%, var(--card)); background: linear-gradient(180deg, var(--card2), var(--card)); }
+.prog-card .cronometro { font-size: 52px; margin: 0; }
+.pc-linha { display: flex; align-items: flex-end; gap: 18px; }
+.pc-prev { margin-left: auto; text-align: right; }
+.pc-prev .v { font-size: 24px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.pc-barra { height: 12px; border-radius: 6px; background: var(--bg); overflow: hidden; margin: 16px 0 8px; }
+.pc-barra div { height: 100%; width: 0; background: var(--amarelo); border-radius: 6px; transition: width .6s; }
+.pc-txt { display: flex; justify-content: space-between; gap: 12px; font-size: 13px; color: var(--txt2); font-variant-numeric: tabular-nums; }
+.pc-txt b { color: var(--txt); }
+.pc-det { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 14px; }
+.pc-det .d { background: var(--bg); border-radius: 10px; padding: 10px 14px; }
+.pc-det .rotulo { font-size: 11px; }
+.pc-det .v { font-weight: 650; font-variant-numeric: tabular-nums; }
+.pc-det .s { font-size: 12px; color: var(--txt3); }
+
+/* resultado */
+.resultado-hero { display: flex; align-items: center; gap: 28px; }
+.resultado-hero .num-gigante { font-size: 64px; }
+.grid3m { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.lin-ativ { display: grid; grid-template-columns: 150px 1fr 70px; align-items: center; gap: 14px; padding: 6px 0; font-variant-numeric: tabular-nums; }
+.lin-ativ strong { text-align: right; font-weight: 600; }
+.barra-ativ { height: 12px; } .barra-ativ div { height: 100%; background: var(--amarelo); border-radius: 0 4px 4px 0; }
+.tarefas-rapido { display: grid; gap: 8px; margin-top: 8px; }
+
+/* tabela */
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th { text-align: left; font-weight: 600; color: var(--txt3); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; padding: 0 12px 10px; }
+td { padding: 14px 12px; border-top: 1px solid var(--linha); vertical-align: middle; font-variant-numeric: tabular-nums; }
+td .nome { font-weight: 600; }
+td.botoes { text-align: right; white-space: nowrap; }
+.vazio { text-align: center; padding: 50px 20px; color: var(--txt3); }
+
+/* config */
+.linha-cfg { display: grid; grid-template-columns: 1fr 280px; gap: 24px; align-items: center; padding: 16px 0; border-top: 1px solid var(--linha); }
+.linha-cfg:first-of-type { border-top: 0; padding-top: 4px; }
+.linha-cfg .titulo { font-weight: 600; }
+.slider { display: flex; align-items: center; gap: 12px; }
+input[type=range] { flex: 1; accent-color: var(--amarelo); }
+.slider output { width: 44px; text-align: right; font-variant-numeric: tabular-nums; }
+.minutos { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.minutos label { font-size: 12px; color: var(--txt3); }
+.minutos input { margin-top: 4px; text-align: center; padding: 10px 6px; font-size: 15px; color: var(--txt); }
+.proporcao { display: flex; height: 8px; border-radius: 4px; overflow: hidden; gap: 2px; margin-top: 12px; }
+.proporcao div { background: var(--linha2); }
+.proporcao div:first-child { background: var(--amarelo); }
+
+.chave { justify-self: end; position: relative; width: 46px; height: 26px; cursor: pointer; }
+.chave input { opacity: 0; width: 0; height: 0; }
+.chave span { position: absolute; inset: 0; background: var(--linha2); border-radius: 13px; transition: background .15s; }
+.chave span::after { content: ""; position: absolute; left: 3px; top: 3px; width: 20px; height: 20px; border-radius: 50%; background: var(--txt); transition: transform .15s; }
+.chave input:checked + span { background: var(--amarelo); }
+.chave input:checked + span::after { transform: translateX(20px); background: var(--amarelo-txt); }
+
+/* modal e toast */
+.fundo-modal { position: fixed; inset: 0; background: rgba(10,6,16,.7); display: none; place-items: center; z-index: 10; }
+.fundo-modal.aberto { display: grid; }
+.modal { width: min(440px, 90vw); background: var(--card); border: 1px solid var(--linha2); border-radius: 16px; padding: 26px; }
+.modal p { color: var(--txt2); margin: 8px 0 0; }
+.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: var(--card2); border: 1px solid var(--linha2);
+  padding: 12px 18px; border-radius: 10px; font-size: 14px; display: none; z-index: 20; }
+.toast.vis { display: block; }
+
+
+/* teste 3D */
+.t3-banner { position: relative; height: 200px; border-radius: 14px; overflow: hidden; border: 1px solid var(--linha); background: #222 url(cena3d.jpg) center 40%/cover; }
+.t3-banner .tag { position: absolute; left: 16px; bottom: 14px; font-size: 12px; color: var(--txt); background: rgba(23,15,35,.78); border: 1px solid var(--linha2); border-radius: 999px; padding: 5px 12px; }
+.t3-ops { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.t3-ops .opcao { padding: 18px; display: flex; flex-direction: column; justify-content: flex-start; align-items: stretch; }
+.t3-ops .opcao h2 { font-size: 16px; } .t3-ops .opcao .tempo { top: 18px; right: 18px; font-size: 12px; } .t3-ops .opcao ul { font-size: 13px; }
+.t3-ops .opcao:not(.sel) { opacity: .6; }
+.t3-ops5 { grid-template-columns: repeat(3, 1fr); } .t3-ops5 .opcao ul { font-size: 12.5px; }
+.t3-ops .chips { display: flex; gap: 6px; margin-top: 12px; }
+.t3-linha { display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: var(--card); border: 1px solid var(--linha); border-radius: 12px; font-size: 14px; }
+.t3-linha .st { width: 24px; height: 24px; border-radius: 50%; background: rgba(95,211,141,.14); color: var(--ok); display: grid; place-items: center; flex-shrink: 0; }
+.t3-linha .st.aviso { background: rgba(255,200,97,.14); color: var(--alerta); }
+.t3-linha .muted { margin-left: auto; text-align: right; }
+.t3-hero { display: grid; grid-template-columns: 1fr 1.25fr; gap: 12px; }
+.t3-score { background: linear-gradient(160deg, var(--card2), var(--card)); border: 1px solid color-mix(in srgb, var(--destaque) 30%, var(--card)); border-radius: 14px; padding: 22px 24px; }
+.t3-score .n { font-size: 64px; font-weight: 800; letter-spacing: -.02em; line-height: 1; margin: 10px 0 8px; font-variant-numeric: tabular-nums; }
+.dir-tag { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 650; letter-spacing: .04em; color: var(--ok);
+  background: rgba(95,211,141,.1); border: 1px solid color-mix(in srgb, var(--ok) 35%, var(--card)); border-radius: 999px; padding: 2px 9px; text-transform: uppercase; }
+.dir-tag.menor { color: #7FC8FF; background: rgba(127,200,255,.08); border-color: color-mix(in srgb, #7FC8FF 35%, var(--card)); }
+.selo-n { display: inline-block; margin-left: 8px; font-size: 12px; color: var(--destaque); border: 1px solid color-mix(in srgb, var(--destaque) 35%, var(--card)); border-radius: 999px; padding: 2px 10px; }
+.t3-rank { background: var(--card); border: 1px solid var(--linha); border-radius: 14px; padding: 18px 20px; }
+.rk { display: grid; grid-template-columns: 22px 1fr 1.1fr 56px; gap: 10px; align-items: center; padding: 5px 0; font-size: 13px; color: var(--txt2); }
+.rk .b { height: 8px; background: var(--bg); border-radius: 4px; overflow: hidden; } .rk .b div { height: 100%; background: var(--linha2); border-radius: 4px; }
+.rk.eu { color: var(--txt); font-weight: 650; } .rk.eu .b div { background: var(--amarelo); } .rk .p { text-align: right; font-variant-numeric: tabular-nums; }
+.t3-res { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-top: 12px; }
+.t3-res .card { padding: 18px 20px; border-left: 3px solid var(--amarelo); } .t3-res .card.apagado { border-left-color: var(--linha2); }
+.t3-res .valor { font-size: 28px; font-weight: 700; font-variant-numeric: tabular-nums; margin: 8px 0 4px; }
+.t3-res .comp { font-size: 12px; color: var(--txt2); margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--linha); }
+.t3-res .comp b { color: var(--ok); } .t3-res .comp b.pior { color: var(--erro); }
+.d-passos { display: grid; gap: 8px; }
+.d-passo { display: flex; align-items: center; gap: 14px; padding: 12px 16px; background: var(--card); border: 1px solid var(--linha); border-radius: 12px; }
+.d-passo .st { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; flex-shrink: 0; background: var(--bg); color: var(--txt3); }
+.d-passo.ok .st { background: rgba(95,211,141,.14); color: var(--ok); }
+.d-passo.erro .st { background: rgba(255,122,122,.14); color: var(--erro); }
+.d-passo.rodando { border-color: color-mix(in srgb, var(--destaque) 30%, var(--card)); background: linear-gradient(180deg, var(--card2), var(--card)); }
+.d-passo .nm { font-weight: 600; } .d-passo .nm small { display: block; font-weight: 400; color: var(--txt3); font-size: 12px; }
+.d-passo .res { margin-left: auto; text-align: right; font-variant-numeric: tabular-nums; font-weight: 650; }
+.d-passo .res small { display: block; font-weight: 400; color: var(--txt3); font-size: 12px; }
+.un { font-size: .55em; color: var(--txt3); font-weight: 500; }
+@media (max-width: 980px) { .grid4 { grid-template-columns: 1fr 1fr; } }
+</style>
+<link rel="stylesheet" href="cores.css">
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="logo">
+      <img class="logo-img" src="logo.png" alt="Bench">
+      <div class="logo-txt">Bench Labs <span>Notebook Benchmark</span></div>
+    </div>
+    <nav id="nav">
+      <button data-aba="testar" class="ativo">Testar</button>
+      <button data-aba="t3d" style="display:none">Teste 3D</button>
+      <button data-aba="resultados">Resultados</button>
+      <button data-aba="config">Configurações</button>
+    </nav>
+    <div class="pilula" id="pilula-bat"><span id="pilula-ic"></span><span id="pilula-txt">—</span></div>
+  </header>
+
+  <main>
+    <!-- INÍCIO -->
+    <section class="tela ativa" id="t-testar">
+      <div id="aviso-pendente"></div>
+      <div class="rotulo">Teste de autonomia</div>
+      <h1>Bateria em uso real</h1>
+      <p class="sub">O notebook navega na internet, escreve no Word, monta planilhas no Excel e reproduz vídeos automaticamente, com os programas abertos como no dia a dia, até a bateria se esgotar.</p>
+      <div class="espaco"></div>
+
+      <label class="campo"><span class="rotulo">Nome do notebook</span>
+        <input type="text" id="nome" placeholder="Ex.: Acer Aspire 5 A515-58P" maxlength="80"></label>
+      <div class="espaco" style="height:14px"></div>
+      <div class="ativ-linha">
+        <span class="rotulo">Atividades incluídas no teste</span>
+        <div class="ativ-chips" id="ativ">
+          <button class="chip ativ" data-ativ="navegador"><span class="cx"></span><span class="n">Navegação</span></button>
+          <button class="chip ativ" data-ativ="video"><span class="cx"></span><span class="n">Vídeos</span></button>
+          <button class="chip ativ" data-ativ="word"><span class="cx"></span><span class="n">Word</span></button>
+          <button class="chip ativ" data-ativ="excel"><span class="cx"></span><span class="n">Excel</span></button>
+        </div>
+        <span class="muted" id="ativ-txt"></span>
+      </div>
+      <div class="espaco"></div>
+
+      <div class="opcoes">
+        <button class="opcao" data-modo="rapido">
+          <div class="icone"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3 8-8"/><path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9"/></svg></div>
+          <span class="tempo">5 min</span>
+          <h2>Teste rápido</h2>
+          <ul><li>Verifica se tudo funciona neste notebook</li><li>Pode ser feito na tomada</li><li>Faça antes do primeiro teste completo</li></ul>
+        </button>
+        <button class="opcao sel" data-modo="completo">
+          <div class="icone"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="17" height="10" rx="2"/><path d="M22 11v2"/><path d="M6 10v4M9.5 10v4M13 10v4"/></svg></div>
+          <span class="tempo">até acabar</span>
+          <h2>Teste completo</h2>
+          <ul><li>Mede a autonomia real em uso produtivo</li><li>Comece com a bateria em 100%</li><li>Gera relatório com gráficos e dados de consumo</li></ul>
+        </button>
+        <button class="opcao" data-modo="cinebench" style="display:none">
+          <div class="icone"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12" rx="2"/><path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4"/></svg></div>
+          <span class="tempo" id="cb-tempo">~12 min</span>
+          <h2>Cinebench na bateria</h2>
+          <ul><li>Multi-core com o carregador desconectado</li><li>Mede o consumo durante o teste</li><li>Gera relatório e card para o Instagram</li></ul>
+        </button>
+        <button class="opcao" data-modo="jogo">
+          <div class="icone"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10a5 5 0 0 1 4.6 7l-.9 2.2a2.6 2.6 0 0 1-4.3.8L14.5 15h-5l-1.9 2a2.6 2.6 0 0 1-4.3-.8L2.4 14A5 5 0 0 1 7 7z"/><path d="M7.5 10v3M6 11.5h3M15.5 11h.01M17.5 12.5h.01"/></svg></div>
+          <span class="tempo" id="tempo-jogo">até acabar</span>
+          <h2>Jogo na bateria</h2>
+          <ul><li>Cidade neon em 1080p, limitada a 60 FPS</li><li>Mede FPS, consumo e placa de vídeo</li><li>Até a bateria se esgotar ou por tempo definido</li></ul>
+        </button>
+        <button class="opcao" data-modo="tempo">
+          <div class="icone"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5"/><path d="M9.5 2.5h5"/></svg></div>
+          <span class="tempo" id="tempo-pers">1 h</span>
+          <h2>Teste personalizado</h2>
+          <ul><li>Mesmo uso do teste completo</li><li>Você escolhe a duração</li><li>Projeta a autonomia total</li></ul>
+        </button>
+      </div>
+      <div class="duracao" id="duracao">
+        <span class="rotulo">Duração</span>
+        <button class="chip" data-min="15">15 min</button><button class="chip" data-min="30">30 min</button>
+        <button class="chip" data-min="60">1 h</button><button class="chip" data-min="120">2 h</button><button class="chip" data-min="180">3 h</button>
+        <label class="outro">ou <input type="number" id="min-pers" min="5" max="1440" step="5"> min</label>
+        <div class="nota" id="nota-pers"></div>
+      </div>
+
+      <div class="duracao" id="duracao-jogo">
+        <span class="rotulo">Duração do jogo</span>
+        <button class="chip sel" data-minj="0">Até a bateria se esgotar</button><button class="chip" data-minj="30">30 min</button>
+        <button class="chip" data-minj="60">1 h</button><button class="chip" data-minj="90">1 h 30</button><button class="chip" data-minj="120">2 h</button>
+        <label class="outro">ou <input type="number" id="min-jogo" min="5" max="1440" step="5"> min</label>
+        <div class="nota" id="nota-jogo">Executa até o notebook desligar. Com duração definida, o aplicativo projeta quanto a bateria cheia duraria em jogo.</div>
+      </div>
+
+      <div class="acoes">
+        <span class="muted" id="resumo-cfg"></span>
+        <button class="btn btn-pri dir" id="b-verificar">Verificar e iniciar
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+      </div>
+    </section>
+
+    <!-- VERIFICAÇÃO -->
+    <section class="tela" id="t-verif">
+      <div class="rotulo">Passo 1 de 2</div>
+      <h1>Verificando o notebook</h1>
+      <p class="sub" id="verif-sub">Feche todos os programas. Será verificado se o Word, o Excel e o Edge abrem automaticamente e se a internet está funcionando.</p>
+      <div class="espaco"></div>
+      <div class="checklist" id="checklist"></div>
+      <div class="fab" id="fab" style="display:none">
+        <div class="fab-topo"><div class="rotulo" style="margin:0">Software da fabricante</div><h3 id="fab-titulo"></h3><span class="muted" id="fab-apps"></span></div>
+        <div class="checklist" id="fab-lista"></div>
+      </div>
+      <div class="espaco"></div>
+      <div id="verif-aviso"></div>
+      <div class="acoes">
+        <button class="btn btn-sec" id="b-voltar-verif">Voltar</button>
+        <button class="btn btn-sec" id="b-reverif" style="display:none">Verificar novamente</button>
+        <button class="btn btn-pri dir" id="b-continuar" disabled>Continuar</button>
+      </div>
+    </section>
+
+    <!-- CARREGADOR -->
+    <section class="tela" id="t-carga">
+      <div class="rotulo">Passo 2 de 2</div>
+      <div class="centro">
+        <div class="bat-grande"><div class="bat-corpo"><div class="bat-nivel" id="carga-nivel" style="width:0"></div></div><div class="bat-ponta"></div></div>
+        <div class="num-gigante" id="carga-pct">—</div>
+        <div class="estado-carga" id="carga-estado">—</div>
+        <h1 style="margin-top:28px" id="carga-titulo">Desconecte o carregador</h1>
+        <p class="sub" style="margin:0 auto" id="carga-sub">O teste começará automaticamente assim que o notebook passar a usar a bateria.</p>
+      </div>
+      <div id="carga-aviso" style="max-width:560px;margin:18px auto 0"></div>
+      <div class="acoes" style="justify-content:center">
+        <button class="btn btn-sec" id="b-cancelar-carga">Cancelar</button>
+        <button class="btn btn-pri" id="b-forcar" style="display:none">Iniciar mesmo assim</button>
+      </div>
+    </section>
+
+    <!-- CONTAGEM -->
+    <section class="tela" id="t-contagem">
+      <div class="centro" style="padding-top:60px">
+        <div class="rotulo">Iniciando em</div>
+        <div class="num-gigante" id="contagem" style="font-size:120px;margin:10px 0">5</div>
+        <h1>Não utilize o notebook</h1>
+        <p class="sub" style="margin:0 auto">Esta janela será minimizada e os programas abrirão automaticamente. Para acompanhar ou interromper o teste, abra o Bench Labs pela barra de tarefas.</p>
+      </div>
+      <div class="acoes" style="justify-content:center"><button class="btn btn-sec" id="b-cancelar-contagem">Cancelar</button></div>
+    </section>
+
+    <!-- RODANDO -->
+    <section class="tela" id="t-rodando">
+      <div class="topo-teste">
+        <div>
+          <div class="rotulo" id="r-modo">Teste completo</div>
+          <h1 id="r-nome" style="margin-bottom:0">—</h1>
+        </div>
+        <button class="btn btn-perigo dir" id="b-parar" style="margin-left:auto">Parar teste</button>
+      </div>
+      <div id="r-preparando" class="card preparando" style="margin-top:22px;display:none"><div class="giro"></div><span id="r-msg">Preparando…</span></div>
+      <div id="r-corpo">
+        <div class="card prog-card">
+          <div class="pc-linha">
+            <div><div class="cronometro" id="r-tempo">0:00:00</div><div class="muted" id="r-sub">decorrido</div></div>
+            <div class="pc-prev"><div class="v" id="r-resta">calculando…</div><div class="muted">restante previsto</div></div>
+          </div>
+          <div class="pc-barra"><div id="r-prog"></div></div>
+          <div class="pc-txt"><span id="r-prog-pct">A previsão aparece depois de 5 minutos de teste</span><span id="r-prog-fim"></span></div>
+          <div class="pc-det" id="r-det">
+            <div class="d"><div class="rotulo" id="r-calc-rot">Como foi calculado</div><div class="v" id="r-calc">—</div><div class="s" id="r-metodo"></div></div>
+            <div class="d"><div class="rotulo">Estimativa do Windows</div><div class="v" id="r-win">—</div><div class="s" id="r-win-dif"></div></div>
+            <div class="d"><div class="rotulo">De 100% a 0%</div><div class="v" id="r-cheia">—</div><div class="s">projeção com a bateria cheia</div></div>
+          </div>
+        </div>
+        <div class="espaco" style="height:14px"></div>
+        <div class="grid4">
+          <div class="card metrica"><div class="rotulo">Bateria</div><div class="valor" id="r-bat">—</div><div class="barra"><div id="r-bat-barra" style="width:0"></div></div></div>
+          <div class="card metrica"><div class="rotulo">Agora</div><div class="atividade"><div class="ic" id="r-ativ-ic"></div><div class="valor" id="r-ativ">—</div></div></div>
+          <div class="card metrica"><div class="rotulo">Consumo agora</div><div class="valor" id="r-w">—</div><div class="muted" id="r-w-med"></div></div>
+          <div class="card metrica"><div class="rotulo" id="r-ciclo-rot">Ciclo</div><div class="valor" id="r-ciclo">—</div><div class="muted" id="r-erros"></div></div>
+        </div>
+        <div class="espaco"></div>
+        <div class="card"><div class="rotulo">Nível da bateria</div><div class="mini" id="r-grafico"></div></div>
+      </div>
+    </section>
+
+    <!-- RESULTADO -->
+    <section class="tela" id="t-fim">
+      <div class="rotulo" id="f-rotulo">Resultado</div>
+      <h1 id="f-nome">—</h1>
+      <div class="espaco"></div>
+      <div id="f-corpo"></div>
+      <div class="acoes">
+        <button class="btn btn-sec" id="b-pasta">Abrir pasta</button>
+        <button class="btn btn-sec" id="b-novo">Novo teste</button>
+        <button class="btn btn-sec" id="b-card" style="display:none">Abrir card</button>
+        <button class="btn btn-pri dir" id="b-relatorio">Abrir relatório</button>
+      </div>
+    </section>
+
+    <!-- TESTE 3D -->
+    <section class="tela" id="t-3d">
+      <div class="rotulo">Teste 3D · arquitetura</div>
+      <h1>Viewport e render 3D</h1>
+      <p class="sub">Uma cidade com uma torre de 24 andares, sempre idêntica: desenhada pela placa de vídeo, renderizada pelo processador e exportada em vídeo 4K. Mantenha o notebook conectado à tomada.</p>
+      <div class="espaco" style="height:18px"></div>
+      <label class="campo"><span class="rotulo">Nome do notebook</span>
+        <input type="text" id="t3-nome" placeholder="Ex.: Lenovo LOQ 15IAX9" maxlength="80"></label>
+      <div class="espaco" style="height:16px"></div>
+      <div class="t3-banner"><span class="tag">Cena do teste · 2,9 milhões de triângulos · sombras em tempo real · 1920x1080</span></div>
+      <div class="espaco" style="height:14px"></div>
+      <div class="t3-ops t3-ops5">
+        <button class="opcao sel" data-parte="viewport"><div class="icone"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></svg></div><span class="tempo">~2 min</span><h2>Viewport 3D</h2>
+          <ul><li>Passeio de câmera pela cidade</li><li>Quadros por segundo e travamentos</li><li>Equivale a girar um modelo no CAD</li></ul></button>
+        <button class="opcao sel" data-parte="cpu"><div class="icone"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12" rx="2"/><path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4"/></svg></div><span class="tempo">~3 min</span><h2>Render CPU</h2>
+          <ul><li>A cidade renderizada com luz real</li><li>Todos os núcleos, como no Cinebench</li><li>Como o V-Ray e o Corona no processador</li></ul></button>
+        <button class="opcao sel" data-parte="cpu1"><div class="icone"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="7" width="10" height="10" rx="2"/><path d="M12 10v4"/></svg></div><span class="tempo">~2 min</span><h2>Render CPU · 1 núcleo</h2>
+          <ul><li>A mesma cena com apenas um núcleo</li><li>Fator mais relevante no AutoCAD 2D</li><li>Abrir, editar e regenerar plantas</li></ul></button>
+        <button class="opcao sel" data-parte="video"><div class="icone"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M10 9.5v5l4.5-2.5z"/></svg></div><span class="tempo">~5 min</span><h2>Exportação de vídeo</h2>
+          <ul><li>Clipe 4K exportado como no Premiere</li><li>H.264 e H.265 pelo processador</li><li>E pela placa de vídeo (NVIDIA, Intel ou AMD)</li></ul></button>
+        <button class="opcao sel" data-parte="estresse"><div class="icone"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4"/><circle cx="12" cy="12" r="4"/></svg></div><span class="tempo" id="t3-est-tempo">20 min</span><h2>Estresse 3D</h2>
+          <ul><li>Viewport em loop, sem pausa</li><li>Estabilidade e queda de desempenho</li><li>Temperatura e watts da placa</li></ul>
+          <div class="chips"><span class="chip" data-emin="10">10 min</span><span class="chip sel" data-emin="20">20 min</span><span class="chip" data-emin="30">30 min</span></div></button>
+      </div>
+      <div class="espaco" style="height:12px"></div>
+      <div class="t3-linha" id="t3-gpu"></div>
+      <div class="espaco" style="height:8px"></div>
+      <div class="t3-linha" id="t3-ref"></div>
+      <div class="acoes"><span class="muted" id="t3-resumo"></span><button class="btn btn-pri dir" id="b-t3-iniciar">Iniciar</button></div>
+    </section>
+
+    <section class="tela" id="t-3d-rodando">
+      <div class="topo-teste">
+        <div><div class="rotulo" id="t3r-modo">Teste 3D</div><h1 id="t3r-nome" style="margin-bottom:0">—</h1></div>
+        <button class="btn btn-perigo dir" id="b-t3-parar" style="margin-left:auto">Parar teste</button>
+      </div>
+      <div class="card prog-card">
+        <div class="pc-linha">
+          <div><div class="cronometro" id="t3r-tempo">0:00:00</div><div class="muted">decorrido</div></div>
+          <div class="pc-prev"><div class="v" id="t3r-resta">—</div><div class="muted">restante estimado</div></div>
+        </div>
+        <div class="pc-barra"><div id="t3r-prog"></div></div>
+        <div class="pc-txt"><span id="t3r-agora">Preparando…</span><span id="t3r-fim"></span></div>
+      </div>
+      <div class="espaco" style="height:14px"></div>
+      <div class="grid4">
+        <div class="card metrica"><div class="rotulo">Quadros por segundo</div><div class="valor" id="t3r-fps">—</div><div class="muted">agora</div></div>
+        <div class="card metrica"><div class="rotulo">Placa de vídeo</div><div class="valor" id="t3r-gpu">—</div><div class="muted" id="t3r-gpu-sub">temperatura e watts</div></div>
+        <div class="card metrica"><div class="rotulo">Processador</div><div class="valor" id="t3r-cpu">—</div><div class="muted" id="t3r-cpu-sub">frequência agora</div></div>
+        <div class="card metrica"><div class="rotulo">Energia</div><div class="valor" id="t3r-tomada" style="font-size:20px">—</div><div class="muted">mantenha na tomada durante todo o teste</div></div>
+      </div>
+      <div class="espaco" style="height:14px"></div>
+      <div class="d-passos" id="t3r-passos"></div>
+    </section>
+
+    <section class="tela" id="t-3d-fim">
+      <div class="rotulo">Teste 3D · arquitetura</div>
+      <h1 id="t3f-nome">—</h1>
+      <div class="espaco" style="height:16px"></div>
+      <div id="t3f-corpo"></div>
+      <div class="acoes">
+        <button class="btn btn-sec" id="b-t3f-pasta">Abrir pasta</button>
+        <button class="btn btn-sec" id="b-t3f-novo">Novo teste</button>
+        <button class="btn btn-sec" id="b-t3f-ref">Usar como referência</button>
+        <button class="btn btn-sec" id="b-t3f-card">Abrir card</button>
+        <button class="btn btn-pri dir" id="b-t3f-relatorio">Abrir relatório</button>
+      </div>
+    </section>
+
+    <!-- RESULTADOS -->
+    <section class="tela" id="t-resultados">
+      <div class="topo-teste">
+        <div><div class="rotulo">Histórico</div><h1 style="margin-bottom:0">Resultados</h1></div>
+        <div class="dir" style="margin-left:auto;display:flex;gap:8px">
+          <button class="btn btn-sec btn-peq" id="b-comparativo">Comparativo no Excel</button>
+          <button class="btn btn-sec btn-peq" id="b-comparativo-cb" style="display:none">Comparativo Cinebench</button>
+          <button class="btn btn-sec btn-peq" id="b-comparativo-3d" style="display:none">Comparativo 3D</button>
+          <button class="btn btn-sec btn-peq" id="b-pasta-res">Abrir pasta</button>
+        </div>
+      </div>
+      <div class="espaco"></div>
+      <div class="aviso info nuvem" id="nuvem-faixa" style="display:none">
+        <span class="ponto" id="nuvem-ponto"></span>
+        <div><b id="nuvem-titulo">Planilha central</b> <span class="muted" id="nuvem-txt"></span></div>
+        <button class="btn btn-sec btn-peq acao" id="b-sincronizar">Sincronizar</button>
+      </div>
+      <div class="espaco"></div>
+      <div class="card" style="padding:18px 10px 6px"><div id="tabela-res"></div></div>
+    </section>
+
+    <!-- CONFIGURAÇÕES -->
+    <section class="tela" id="t-config">
+      <div class="rotulo">Condições do teste</div>
+      <h1>Configurações</h1>
+      <p class="sub">Mantenha estas configurações iguais entre os testes, para que não influenciem o resultado.</p>
+      <div class="espaco"></div>
+      <div class="card">
+        <div class="linha-cfg"><div><div class="titulo">Brilho da tela</div><div class="muted">Aplicado no controle de brilho do Windows durante o teste</div></div>
+          <div class="slider"><input type="range" id="c-brilho" min="10" max="100" step="1"><output id="c-brilho-v"></output></div></div>
+        <div class="linha-cfg"><div><div class="titulo">Volume</div><div class="muted">Volume geral do Windows durante o teste (vídeo e som ambiente)</div></div>
+          <div class="slider"><input type="range" id="c-volume" min="0" max="100" step="5"><output id="c-volume-v"></output></div></div>
+        <div class="linha-cfg"><div><div class="titulo">Som ambiente ao navegar</div><div class="muted">Vídeo cinematográfico reproduzido em uma aba em segundo plano na 1ª sessão de navegação de cada ciclo</div></div>
+          <label class="chave"><input type="checkbox" id="c-som"><span></span></label></div>
+        <div class="linha-cfg"><div><div class="titulo">Pop-up durante o teste</div><div class="muted">Oculta-se automaticamente durante o vídeo em tela cheia, para não aumentar o consumo</div></div>
+          <label class="chave"><input type="checkbox" id="c-popup"><span></span></label></div>
+        <div class="linha-cfg"><div><div class="titulo">Vídeo em tela cheia</div><div class="muted">Na atividade de vídeo, o YouTube é colocado em tela cheia</div></div>
+          <label class="chave"><input type="checkbox" id="c-tela-cheia"><span></span></label></div>
+        <div class="linha-cfg"><div><div class="titulo">Modo de energia</div><div class="muted">Configurações › Sistema › Energia</div></div>
+          <select id="c-modo"><option value="eficiencia">Melhor eficiência de energia</option><option value="equilibrado">Equilibrado</option><option value="desempenho">Melhor desempenho</option><option value="nao_alterar">Não alterar</option></select></div>
+        <div class="linha-cfg"><div><div class="titulo">Minutos por ciclo</div><div class="muted" id="c-prop-txt"></div><div class="proporcao" id="c-prop"></div></div>
+          <div class="minutos">
+            <label>Navegador<input type="number" min="0" max="30" id="c-m-navegador"></label>
+            <label>Word<input type="number" min="0" max="30" id="c-m-word"></label>
+            <label>Excel<input type="number" min="0" max="30" id="c-m-excel"></label>
+            <label>Vídeo<input type="number" min="0" max="30" id="c-m-video"></label>
+          </div></div>
+        <div class="linha-cfg"><div><div class="titulo">Parar antes de acabar</div><div class="muted">0 = continua até o notebook desligar</div></div>
+          <div class="slider"><input type="range" id="c-parar" min="0" max="50" step="5"><output id="c-parar-v"></output></div></div>
+        <div class="linha-cfg"><div><div class="titulo">Semente</div><div class="muted">Mesma semente = mesma sequência de ações em todos os notebooks</div></div>
+          <input type="number" id="c-semente"></div>
+      </div>
+      <div class="espaco"></div>
+      <div class="rotulo" style="display:none">Planilha central</div>
+      <div class="card" style="margin-top:10px;display:none">
+        <div class="linha-cfg" style="align-items:start"><div><div class="titulo">Link da planilha</div>
+            <div class="muted">Cada teste concluído é enviado automaticamente para a sua planilha do Google, sem necessidade de login no notebook. Em Resultados, "Sincronizar" reúne aqui os testes de todos os notebooks.</div>
+            <div class="muted" id="c-nuvem-st" style="margin-top:6px"></div></div>
+          <div style="display:flex;flex-direction:column;gap:8px"><input type="text" id="c-nuvem" spellcheck="false" placeholder="https://script.google.com/…/exec">
+            <button class="btn btn-sec btn-peq" id="b-nuvem-salvar" style="align-self:end">Salvar link</button></div></div>
+      </div>
+      <div class="espaco"></div>
+      <div class="rotulo">Conteúdo do teste</div>
+      <div class="card" style="margin-top:10px">
+        <div class="linha-cfg"><div><div class="titulo">Usar conteúdo gravado</div><div class="muted">Todos os notebooks abrem exatamente as mesmas páginas, independentemente do conteúdo dos sites no dia</div></div>
+          <label class="chave"><input type="checkbox" id="c-conteudo"><span></span></label></div>
+        <div class="linha-cfg"><div><div class="titulo">Pacote de páginas</div><div class="muted" id="c-pacote">verificando…</div>
+            <div class="barra" id="c-grav-barra" style="display:none;margin-top:10px"><div style="width:0"></div></div>
+            <div class="muted" id="c-grav-txt" style="margin-top:6px"></div></div>
+          <div style="justify-self:end;display:flex;gap:8px">
+            <button class="btn btn-sec btn-peq" id="b-grav-cancelar" style="display:none">Cancelar</button>
+            <button class="btn btn-sec btn-peq" id="b-gravar">Gravar conteúdo</button></div></div>
+        <div class="linha-cfg"><div><div class="titulo">Vídeo na resolução da tela</div><div class="muted">Telas Full HD reproduzem em 1080p; 2.8K, em 1440p; 4K, em 2160p</div></div>
+          <label class="chave"><input type="checkbox" id="c-res-tela"><span></span></label></div>
+        <div class="linha-cfg" style="align-items:start"><div><div class="titulo">Vídeos fixos</div><div class="muted">Um endereço do YouTube por linha. Reproduz um por ciclo, em rodízio. Vazio = busca vídeos no YouTube.</div></div>
+          <textarea id="c-videos" rows="4" spellcheck="false"></textarea></div>
+        <div class="linha-cfg"><div><div class="titulo">Som ambiente</div><div class="muted">Vídeo longo reproduzido na aba em segundo plano</div></div>
+          <input type="text" id="c-ambiente" spellcheck="false"></div>
+      </div>
+      <div class="espaco"></div>
+      <div class="rotulo" style="display:none">Cinebench na bateria</div>
+      <div class="card" style="margin-top:10px;display:none">
+        <div class="linha-cfg"><div><div class="titulo">Programa</div><div class="muted" id="c-cb-exe">procurando…</div></div>
+          <button class="btn btn-sec btn-peq" id="b-cb-localizar" style="justify-self:end">Localizar Cinebench.exe</button></div>
+        <div class="linha-cfg"><div><div class="titulo">Duração mínima</div><div class="muted">O Cinebench repete a renderização até completar esse tempo (padrão do programa: 10 min)</div></div>
+          <div class="slider"><input type="range" id="c-cb-dur" min="0" max="30" step="1"><output id="c-cb-dur-v"></output></div></div>
+        <div class="linha-cfg"><div><div class="titulo">Modo de energia no Cinebench</div><div class="muted">Equilibrado é o padrão do Windows na bateria</div></div>
+          <select id="c-cb-modo"><option value="equilibrado">Equilibrado</option><option value="eficiencia">Melhor eficiência de energia</option><option value="desempenho">Melhor desempenho</option><option value="nao_alterar">Não alterar</option></select></div>
+        <div class="linha-cfg"><div><div class="titulo">Bateria mínima para começar</div><div class="muted">Evita que a bateria acabe no meio do teste</div></div>
+          <div class="slider"><input type="range" id="c-cb-min" min="20" max="100" step="5"><output id="c-cb-min-v"></output></div></div>
+      </div>
+      <div class="acoes"><button class="btn btn-pri" id="b-salvar">Salvar configurações</button></div>
+      <div class="espaco"></div>
+      <div class="card" style="display:flex;align-items:center;gap:20px">
+        <div><div class="titulo" style="font-weight:600">Restaurar energia do Windows</div>
+          <div class="muted">Após os testes: desligamento da tela em 5 min, suspensão em 15 min e modo Equilibrado.</div></div>
+        <button class="btn btn-sec btn-peq" id="b-restaurar" style="margin-left:auto;flex-shrink:0">Restaurar</button>
+      </div>
+      <p class="muted" style="margin-top:22px" id="versao"></p>
+    </section>
+  </main>
+</div>
+
+<div class="fundo-modal" id="modal"><div class="modal">
+  <h2 id="modal-tit">Parar o teste?</h2><p id="modal-txt">O resultado será marcado como interrompido.</p>
+  <div class="acoes" style="justify-content:flex-end;margin-top:22px">
+    <button class="btn btn-sec" id="modal-nao">Continuar testando</button>
+    <button class="btn btn-perigo" id="modal-sim" style="background:color-mix(in srgb, var(--erro) 20%, var(--card))">Parar</button>
+  </div></div></div>
+<div class="toast" id="toast"></div>
+
+<script src="ponte.js" data-prefixo="bat_"></script>
+<script>if (window.parent !== window) document.documentElement.classList.add("embutido");</script>
+<style>.embutido header .logo{display:none}</style>
+<script>
+const $ = s => document.querySelector(s);
+const IC = {
+  navegador: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z"/></svg>',
+  word: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 3h8l4 4v14H6z"/><path d="M9 11h6M9 14.5h6M9 18h4"/></svg>',
+  excel: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M4 9.5h16M4 15h16M10 4v16"/></svg>',
+  cinebench: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="6" y="6" width="12" height="12" rx="2"/><path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4"/></svg>',
+  repouso: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 7v10M15 7v10"/></svg>',
+  navegador_som: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V6l11-2v12"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></svg>',
+  video: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M10 9.5v5l4.5-2.5z" fill="currentColor"/></svg>',
+  troca: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h13l-3-3M20 16H7l3 3"/></svg>',
+  ocioso: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 7v10M15 7v10"/></svg>',
+  ok: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',
+  x: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M7 7l10 10M17 7L7 17"/></svg>',
+  tomada: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg>',
+  jogo: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10a5 5 0 0 1 4.6 7l-.9 2.2a2.6 2.6 0 0 1-4.3.8L14.5 15h-5l-1.9 2a2.6 2.6 0 0 1-4.3-.8L2.4 14A5 5 0 0 1 7 7z"/><path d="M7.5 10v3M6 11.5h3"/></svg>',
+  bat: '<svg width="16" height="14" viewBox="0 0 26 16" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="1" y="1.5" width="20" height="13" rx="3"/><path d="M24 6v4" stroke-linecap="round"/></svg>',
+};
+const NOMES = { jogo: 'Jogo · cidade neon', cinebench: 'Cinebench', repouso: 'Repouso', fim: 'Finalizando', navegador: 'Navegador', navegador_som: 'Navegador + som', word: 'Word', excel: 'Excel', video: 'Vídeo', troca: 'Alternando', ocioso: 'Parado', preparo: 'Iniciando' };
+
+let api, CFG = {}, modo = 'completo', tela = 't-testar', pollStatus = null, pollBat = null, contagemTimer = null, ultimoStatus = null;
+
+function mostrar(id) {
+  document.querySelectorAll('.tela').forEach(t => t.classList.toggle('ativa', t.id === id));
+  tela = id;
+  const abaDe = { 't-testar': 'testar', 't-resultados': 'resultados', 't-config': 'config', 't-3d': 't3d', 't-3d-fim': 't3d' };
+  document.querySelectorAll('nav button').forEach(b => b.classList.toggle('ativo', b.dataset.aba === abaDe[id]));
+  const emTeste = ['t-verif', 't-carga', 't-contagem', 't-rodando', 't-3d-rodando'].includes(id);
+  $('#nav').classList.toggle('oculto', emTeste);
+  document.querySelector('main').scrollTop = 0;
+}
+function toast(msg) { const t = $('#toast'); t.textContent = msg; t.classList.add('vis'); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('vis'), 3200); }
+function esc(s) { return String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
+function hms(s) { s = Math.max(0, Math.round(s)); return Math.floor(s / 3600) + ':' + String(Math.floor(s % 3600 / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0'); }
+function confirmar(tit, txt, sim, botao) {
+  $('#modal-tit').textContent = tit; $('#modal-txt').textContent = txt; $('#modal').classList.add('aberto');
+  $('#modal-sim').textContent = botao || (tit.startsWith('Parar') ? 'Parar' : 'Continuar');
+  $('#modal-nao').textContent = tit.startsWith('Parar') ? 'Continuar testando' : 'Cancelar';
+  const perigo = tit.startsWith('Parar');
+  $('#modal-sim').className = perigo ? 'btn btn-perigo' : 'btn btn-pri';
+  $('#modal-sim').style.background = perigo ? 'color-mix(in srgb, var(--erro) 20%, var(--card))' : '';
+  $('#modal-sim').onclick = () => { $('#modal').classList.remove('aberto'); sim(); };
+  $('#modal-nao').onclick = () => $('#modal').classList.remove('aberto');
+}
+
+/* ---------- pílula de bateria (topo) ---------- */
+async function atualizarPilula() {
+  const b = await api.bateria();
+  if (!b) { $('#pilula-txt').textContent = 'Sem bateria'; return null; }
+  $('#pilula-ic').innerHTML = b.carregador ? IC.tomada : IC.bat;
+  $('#pilula-txt').textContent = Math.round(b.pct) + '%' + (b.carregador ? ' · na tomada' : ' · na bateria');
+  return b;
+}
+
+/* ---------- início ---------- */
+function atualizarTempoCb() { const d = (CFG.cinebench || {}).duracao_minima_s ?? 600; $('#cb-tempo').textContent = '~' + Math.round((d + 135) / 60) + ' min'; }
+const ATIV = ['navegador', 'video', 'word', 'excel'], NOME_ATIV = { navegador: 'Navegação', video: 'Vídeos', word: 'Word', excel: 'Excel' };
+function ativas() { const a = CFG.atividades || {}; return Object.fromEntries(ATIV.map(k => [k, a[k] !== false])); }
+function textoFora(a) {
+  const fora = ATIV.filter(k => !a[k]).map(k => NOME_ATIV[k]);
+  if (!fora.length) return '';
+  if (fora.join() === 'Word,Excel') return 'sem Office';
+  return 'sem ' + (fora.length <= 2 ? fora.join(' e ') : fora.slice(0, -1).join(', ') + ' e ' + fora.at(-1));
+}
+function desenharAtividades() {
+  const a = ativas();
+  document.querySelectorAll('[data-ativ]').forEach(b => b.classList.toggle('sel', a[b.dataset.ativ]));
+  const f = textoFora(a);
+  $('#ativ-txt').textContent = f ? `Ciclo ${f}: a autonomia varia conforme as atividades escolhidas.` : '';
+}
+document.querySelectorAll('[data-ativ]').forEach(b => b.onclick = async () => {
+  const a = ativas(); a[b.dataset.ativ] = !a[b.dataset.ativ];
+  if (!ATIV.some(k => a[k])) return toast('Mantenha pelo menos uma atividade selecionada');
+  CFG = await api.salvar_config({ atividades: a });
+  desenharAtividades(); resumoCfg();
+});
+function resumoCfg() {
+  const m = CFG.ciclo.minutos, a = ativas(), modoTxt = { eficiencia: 'eficiência de energia', equilibrado: 'equilibrado', desempenho: 'desempenho', nao_alterar: 'modo atual' }[CFG.modo_energia];
+  const min = ATIV.reduce((t, k) => t + (a[k] ? (m[k] || 0) : 0), 0);
+  $('#resumo-cfg').textContent = `Brilho ${CFG.brilho_percent}% · volume ${CFG.volume_percent ?? 25}% · ${modoTxt} · Wi-Fi · ciclo de ${min} min` + (textoFora(a) ? ' ' + textoFora(a) : '');
+  desenharAtividades();
+}
+document.querySelectorAll('.opcao').forEach(o => o.onclick = () => {
+  modo = o.dataset.modo; document.querySelectorAll('.opcao').forEach(x => x.classList.toggle('sel', x === o));
+  $('#duracao').classList.toggle('vis', modo === 'tempo');
+  $('#duracao-jogo').classList.toggle('vis', modo === 'jogo');
+  document.querySelector('.ativ-linha').style.display = modo === 'jogo' || modo === 'cinebench' ? 'none' : '';
+  if (modo === 'tempo') $('#duracao').scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  if (modo === 'jogo') $('#duracao-jogo').scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+});
+/* teste personalizado: duração escolhida pelo usuário */
+let minPers = 60;
+function rotDur(m) { const h = Math.floor(m / 60), r = m % 60; return h ? h + ' h' + (r ? ' ' + String(r).padStart(2, '0') : '') : m + ' min'; }
+function definirPers(m, doCampo) {
+  m = Math.round(+m); if (!m || m < 5) return; minPers = Math.min(m, 1440);
+  $('#tempo-pers').textContent = rotDur(minPers);
+  document.querySelectorAll('.chip[data-min]').forEach(c => c.classList.toggle('sel', +c.dataset.min === minPers));
+  if (!doCampo) $('#min-pers').value = minPers;
+  const ciclo = Object.values(CFG.ciclo.minutos).reduce((a, b) => a + b, 0), n = minPers / ciclo;
+  $('#nota-pers').textContent = `${n >= 1 ? '≈ ' + (Number.isInteger(n) ? n : n.toFixed(1).replace('.', ',')) + ' ciclo' + (n >= 2 ? 's' : '') + ' de ' + ciclo + ' min' : 'Menos de 1 ciclo de ' + ciclo + ' min: nem todas as atividades serão executadas'} · ao final, o aplicativo projeta quanto a bateria cheia duraria nesse ritmo`;
+}
+document.querySelectorAll('.chip[data-min]').forEach(c => c.onclick = () => definirPers(c.dataset.min));
+/* jogo na bateria: até acabar (0) ou duração definida */
+let minJogo = 0;
+function definirJogo(m, doCampo) {
+  m = Math.max(0, Math.round(+m || 0)); if (m && m < 5) return; minJogo = Math.min(m, 1440);
+  $('#tempo-jogo').textContent = minJogo ? rotDur(minJogo) : 'até acabar';
+  document.querySelectorAll('.chip[data-minj]').forEach(c => c.classList.toggle('sel', +c.dataset.minj === minJogo));
+  if (!doCampo) $('#min-jogo').value = minJogo || '';
+  $('#nota-jogo').textContent = minJogo ? `Encerra em ${rotDur(minJogo)} e projeta quanto a bateria cheia duraria em jogo, nesse ritmo.` : 'Executa até o notebook desligar. Com duração definida, o aplicativo projeta quanto a bateria cheia duraria em jogo.';
+}
+document.querySelectorAll('.chip[data-minj]').forEach(c => c.onclick = () => definirJogo(c.dataset.minj));
+$('#min-jogo').oninput = e => definirJogo(e.target.value, true);
+$('#min-pers').oninput = e => definirPers(e.target.value, true);
+document.querySelectorAll('nav button').forEach(b => b.onclick = () => {
+  const alvo = { testar: 't-testar', resultados: 't-resultados', config: 't-config', t3d: 't-3d' }[b.dataset.aba];
+  if (alvo === 't-3d') carregar3d();
+  if (alvo === 't-resultados') carregarResultados();
+  if (alvo === 't-config') carregarConfig();
+  mostrar(alvo);
+});
+
+function avisoPendente(hist) {
+  const novo = hist.find(h => h.novo && h.modo === 'completo');
+  if (!novo) { $('#aviso-pendente').innerHTML = ''; return; }
+  $('#aviso-pendente').innerHTML = `<div class="aviso info" style="margin-bottom:26px;align-items:center">
+    <div><div class="rotulo" style="margin-bottom:2px">Último teste concluído</div>
+    <strong>${esc(novo.nome)}</strong> durou <strong>${esc(novo.autonomia)}</strong> até desligar${novo.consumo_w ? ` · ${novo.consumo_w.toFixed(1)} W de média` : ''}</div>
+    <button class="btn btn-pri btn-peq acao" data-pasta="${esc(novo.pasta)}">Ver relatório</button></div>`;
+  $('#aviso-pendente button').onclick = e => abrirRelatorio(e.target.dataset.pasta);
+}
+
+$('#b-verificar').onclick = () => {
+  if (!$('#nome').value.trim()) { $('#nome').focus(); toast('Informe o nome do notebook'); return; }
+  rodarVerificacao();
+};
+
+/* ---------- verificação ---------- */
+async function rodarVerificacao() {
+  mostrar('t-verif');
+  const nomes = modo === 'cinebench' ? ['Bateria', 'Cinebench', 'Microsoft Edge'] : modo === 'jogo' ? ['Bateria', 'Microsoft Edge', 'Placa de vídeo', 'Sensores da placa'] : ['Bateria', 'Word', 'Excel', 'Microsoft Edge', 'Wi-Fi', 'Internet', 'Conteúdo do teste'];
+  $('#verif-sub').textContent = modo === 'cinebench'
+    ? 'Feche todos os programas. Será verificado se o Cinebench está instalado neste notebook.'
+    : modo === 'jogo' ? 'Feche todos os programas, inclusive jogos. Serão verificados o Edge e a placa de vídeo.'
+    : 'Feche todos os programas. Será verificado se o Word, o Excel e o Edge abrem automaticamente e se a internet está funcionando.';
+  $('#checklist').innerHTML = nomes.map(n => `<div class="check"><div class="st"><div class="giro"></div></div><div class="nome">${n}</div><div class="det">verificando…</div></div>`).join('');
+  $('#b-continuar').disabled = true; $('#b-reverif').style.display = 'none'; $('#verif-aviso').innerHTML = '';
+  carregarFabricante();
+  let itens;
+  try { itens = await api.verificar(modo === 'cinebench' || modo === 'jogo' ? modo : 'bateria'); } catch (e) { itens = [{ nome: 'Verificação', ok: false, detalhe: String(e) }]; }
+  $('#checklist').innerHTML = itens.map(i => `<div class="check ${i.ok ? 'ok' : 'falha'}"><div class="st">${i.ok ? IC.ok : IC.x}</div>
+    <div class="nome">${esc(i.nome)}</div><div class="det">${esc(i.detalhe)}</div>${i.id === 'cinebench' ? '<button class="btn btn-sec btn-peq" id="b-localizar" style="margin-left:12px;flex-shrink:0">Localizar</button>' : ''}</div>`).join('');
+  if ($('#b-localizar')) $('#b-localizar').onclick = async () => { const r = await api.localizar_cinebench(); if (r.ok) rodarVerificacao(); };
+  const falhas = itens.filter(i => !i.ok).length;
+  $('#b-continuar').disabled = false;
+  $('#b-continuar').textContent = falhas ? 'Continuar mesmo assim' : 'Continuar';
+  $('#b-continuar').className = 'btn dir ' + (falhas ? 'btn-sec' : 'btn-pri');
+  if (falhas) {
+    $('#b-reverif').style.display = '';
+    $('#verif-aviso').innerHTML = `<div class="aviso alerta">${falhas === 1 ? 'Um item precisa de atenção.' : falhas + ' itens precisam de atenção.'} Corrija e verifique novamente. Caso contrário, o resultado pode não refletir a autonomia real.</div>`;
+  }
+}
+/* ---------- software da fabricante ---------- */
+let FAB = null;
+async function carregarFabricante() {
+  $('#fab').style.display = 'none'; FAB = null;
+  try { FAB = await api.fabricante(); } catch (e) { return; }
+  if (!FAB || (!FAB.automaticos.length && !FAB.manuais.length)) return;
+  FAB.conferidos = [];
+  $('#fab-titulo').textContent = FAB.marca_nome;
+  $('#fab-apps').textContent = FAB.apps.length ? '· ' + FAB.apps.join(', ') + (FAB.apps.length > 1 ? ' detectados' : ' detectado') : '';
+  const auto = FAB.automaticos.map(a => `<div class="check ${a.estado}"><div class="st">${a.estado === 'ok' ? IC.ok : a.estado === 'falha' ? IC.x : 'i'}</div>
+      <div class="nome">${esc(a.nome)}</div><div class="det">${esc(a.detalhe)}</div></div>`).join('');
+  const man = FAB.manuais.map(m => `<div class="check manual" data-fab="${esc(m.id)}"><div class="st"></div>
+      <div><div class="nome">${esc(m.nome)}</div><div class="como">${esc(m.como)}</div></div><div class="det">marque após conferir</div></div>`).join('');
+  $('#fab-lista').innerHTML = auto + man;
+  document.querySelectorAll('[data-fab]').forEach(el => el.onclick = () => {
+    const id = el.dataset.fab, i = FAB.conferidos.indexOf(id);
+    if (i >= 0) FAB.conferidos.splice(i, 1); else FAB.conferidos.push(id);
+    el.classList.toggle('feito', i < 0); el.querySelector('.st').innerHTML = i < 0 ? IC.ok : '';
+    el.querySelector('.det').textContent = i < 0 ? 'conferido' : 'marque após conferir';
+  });
+  $('#fab').style.display = '';
+}
+$('#b-voltar-verif').onclick = () => mostrar('t-testar');
+$('#b-reverif').onclick = rodarVerificacao;
+$('#b-continuar').onclick = async () => {
+  if (FAB) await api.guardar_condicoes(FAB);
+  modo === 'rapido' ? iniciarContagem() : telaCarregador();
+};
+
+/* ---------- carregador ---------- */
+let forcado = false;
+function telaCarregador() {
+  forcado = false; mostrar('t-carga');
+  const ciclo = async () => {
+    const b = await atualizarPilula(); if (!b || tela !== 't-carga') return;
+    $('#carga-pct').textContent = Math.round(b.pct) + '%';
+    $('#carga-nivel').style.width = b.pct + '%';
+    $('#carga-estado').innerHTML = (b.carregador ? IC.tomada + ' Na tomada' : IC.bat + ' Usando a bateria');
+    const minimo = modo === 'cinebench' ? ((CFG.cinebench || {}).bateria_minima || 40) : CFG.bateria_minima_para_iniciar;
+    if (b.carregador) {
+      $('#carga-titulo').textContent = 'Desconecte o carregador';
+      $('#carga-sub').textContent = 'O teste começará automaticamente assim que o notebook passar a usar a bateria.';
+      $('#carga-aviso').innerHTML = b.pct < minimo ? `<div class="aviso alerta">A bateria está em ${Math.round(b.pct)}%. Para medir a autonomia completa, carregue até ${minimo}% ou mais antes de desconectar.</div>` : '';
+      $('#b-forcar').style.display = 'none';
+    } else if (b.pct < minimo && !forcado) {
+      $('#carga-titulo').textContent = 'Bateria abaixo do recomendado';
+      $('#carga-sub').textContent = `O teste deve começar com ${minimo}% ou mais. Reconecte o carregador ou inicie mesmo assim.`;
+      $('#carga-aviso').innerHTML = ''; $('#b-forcar').style.display = '';
+    } else { clearInterval(pollBat); iniciarContagem(); }
+  };
+  clearInterval(pollBat); pollBat = setInterval(ciclo, 1500); ciclo();
+}
+$('#b-forcar').onclick = () => { forcado = true; };
+$('#b-cancelar-carga').onclick = () => { clearInterval(pollBat); mostrar('t-testar'); };
+
+/* ---------- contagem ---------- */
+function iniciarContagem() {
+  mostrar('t-contagem');
+  $('#t-contagem .sub').textContent = modo === 'jogo'
+    ? 'O jogo abrirá em tela cheia e será executado automaticamente. Para acompanhar ou interromper o teste, use Alt+Tab e abra o Bench Labs.'
+    : 'Esta janela será minimizada e os programas abrirão automaticamente. Para acompanhar ou interromper o teste, abra o Bench Labs pela barra de tarefas.';
+  let n = 5; $('#contagem').textContent = n;
+  clearInterval(contagemTimer);
+  contagemTimer = setInterval(async () => {
+    n--; $('#contagem').textContent = n;
+    if (n <= 0) {
+      clearInterval(contagemTimer);
+      $('#contagem').textContent = '…';
+      let r;
+      try {
+        r = modo === 'cinebench' ? await api.iniciar_cinebench($('#nome').value.trim())
+          : modo === 'jogo' ? await api.iniciar_jogo($('#nome').value.trim(), minJogo || null)
+          : await api.iniciar($('#nome').value.trim(), modo === 'rapido', modo === 'tempo' ? minPers : null);
+      } catch (e) { r = { ok: false, erro: 'Não foi possível iniciar o teste: ' + e }; }
+      if (!r || !r.ok) { toast((r && r.erro) || 'Não foi possível iniciar o teste'); mostrar('t-testar'); return; }
+      telaRodando();
+    }
+  }, 1000);
+}
+$('#b-cancelar-contagem').onclick = () => { clearInterval(contagemTimer); mostrar('t-testar'); };
+
+/* ---------- rodando ---------- */
+function telaRodando() {
+  mostrar('t-rodando');
+  // a cada 5 s com a janela aberta; minimizada, não atualiza nada (não gasta bateria)
+  clearInterval(pollStatus); pollStatus = setInterval(() => { if (!document.hidden) atualizarStatus(); }, 5000);
+  atualizarStatus();
+}
+window.atualizarStatus = async function () {
+  const s = await api.status(); if (!s) return;
+  ultimoStatus = s;
+  if (s.tipo === 't3d') { atualizar3d(s); return; }
+  if (s.fase === 'concluido' || s.fase === 'erro') { clearInterval(pollStatus); telaFim(s); return; }
+  if (tela !== 't-rodando') mostrar('t-rodando');
+  $('#r-nome').textContent = s.nome;
+  $('#r-modo').textContent = s.rotulo_modo || (s.tipo === 'cinebench' ? 'Cinebench multi-core · na bateria' : s.rapido ? 'Teste rápido' : 'Teste completo');
+  const prep = s.fase === 'preparando' || s.fase === 'finalizando';
+  $('#r-preparando').style.display = prep ? '' : 'none';
+  $('#r-msg').textContent = s.fase === 'finalizando' ? 'Finalizando e gerando o relatório…' : (s.mensagem || 'Preparando…');
+  $('#r-corpo').style.opacity = prep ? .4 : 1;
+  $('#r-tempo').textContent = hms(s.decorrido_s);
+  $('#r-sub').textContent = 'decorrido';
+  atualizarPrevisao(s);
+  if (s.bateria_pct != null) {
+    $('#pilula-ic').innerHTML = s.carregador ? IC.tomada : IC.bat;
+    $('#pilula-txt').textContent = Math.round(s.bateria_pct) + '%' + (s.carregador ? ' · na tomada' : ' · na bateria');
+    $('#r-bat').innerHTML = Math.round(s.bateria_pct) + '<small>%</small>'; $('#r-bat-barra').style.width = s.bateria_pct + '%'; }
+  $('#r-ativ').textContent = NOMES[s.tarefa] || '—';
+  $('#r-ativ-ic').innerHTML = IC[s.tarefa] || IC.troca;
+  $('#r-w').innerHTML = s.consumo_w != null ? s.consumo_w.toFixed(1) + ' <small>W</small>' : '—';
+  $('#r-w-med').textContent = s.consumo_medio_w != null ? 'média ' + s.consumo_medio_w.toFixed(1) + ' W' : '';
+  if (s.extra) {
+    $('#r-ciclo-rot').textContent = s.extra.rotulo; $('#r-ciclo').textContent = s.extra.valor; $('#r-erros').textContent = s.extra.sub;
+  } else {
+    $('#r-ciclo-rot').textContent = 'Ciclo'; $('#r-ciclo').textContent = s.ciclo || '—';
+    $('#r-erros').textContent = s.erros ? `${s.erros} erro${s.erros > 1 ? 's' : ''} registrado${s.erros > 1 ? 's' : ''}` : 'sem erros';
+  }
+  desenharMini(s.serie);
+};
+function curtoDur(seg) { const m = Math.max(0, Math.round(seg / 60)), h = Math.floor(m / 60); return h ? `${h} h ${String(m % 60).padStart(2, '0')} min` : `${m} min`; }
+function horaDe(ts) { const d = new Date(ts * 1000); return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); }
+function atualizarPrevisao(s) {
+  const p = s.previsao || {};
+  $('#r-det').style.display = s.rapido || s.tipo === 'cinebench' ? 'none' : '';
+  if (!p.pronto) {
+    $('#r-resta').textContent = s.fase === 'rodando' ? 'calculando…' : '—';
+    $('#r-prog-pct').textContent = s.fase === 'rodando' ? 'A previsão aparece depois de 5 minutos de teste' : '';
+    $('#r-prog-fim').textContent = '';
+  } else {
+    $('#r-prog').style.width = (p.progresso * 100).toFixed(1) + '%';
+    $('#r-resta').textContent = '~' + curtoDur(p.restante_s);
+    $('#r-prog-pct').innerHTML = `<b>${Math.round(p.progresso * 100)}%</b> do teste concluído`;
+    if (p.duracao_definida) {
+      $('#r-prog-fim').innerHTML = `Duração definida <b>${curtoDur(p.total_s)}</b> · termina às <b>${horaDe(p.termina_ts)}</b>`;
+      $('#r-calc-rot').textContent = 'Duração definida';
+      $('#r-calc').textContent = curtoDur(p.total_s);
+      $('#r-metodo').textContent = 'o teste é encerrado automaticamente';
+    } else {
+      $('#r-prog-fim').innerHTML = `Duração total prevista <b>~${curtoDur(p.total_s)}</b> · termina por volta das <b>${horaDe(p.termina_ts)}</b>`;
+      $('#r-calc-rot').textContent = 'Como foi calculado';
+      $('#r-calc').textContent = p.calculo || '—';
+      $('#r-metodo').textContent = p.metodo ? (p.calculo && p.calculo.includes('Wh') ? 'energia até desligar ÷ consumo, ' : '') + p.metodo : '';
+    }
+    $('#r-cheia').textContent = p.projecao_cheia_s ? '~' + curtoDur(p.projecao_cheia_s) : '—';
+  }
+  if (s.windows_s) {
+    $('#r-win').textContent = curtoDur(s.windows_s);
+    $('#r-win-dif').textContent = p.pronto ? `diferença de ${curtoDur(Math.abs(s.windows_s - p.restante_s))}` : '';
+  } else { $('#r-win').textContent = '—'; $('#r-win-dif').textContent = 'o Windows ainda não forneceu estimativa'; }
+}
+function desenharMini(pts) {
+  const el = $('#r-grafico'); const W = el.clientWidth || 800, H = el.clientHeight || 170, ml = 36, mb = 22, mt = 8;
+  const pw = W - ml - 8, ph = H - mt - mb;
+  const xMax = Math.max(pts.length ? pts[pts.length - 1][0] : 0, 600);
+  const X = t => ml + t / xMax * pw, Y = v => mt + (1 - v / 100) * ph;
+  let s = '';
+  for (const v of [0, 50, 100]) s += `<line x1="${ml}" x2="${W - 8}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--linha)"/><text x="${ml - 8}" y="${Y(v) + 4}" text-anchor="end" fill="var(--txt3)" font-size="11">${v}%</text>`;
+  const h = xMax / 3600, passo = h > 6 ? 2 : h > 1.5 ? 1 : h > .5 ? .25 : 1 / 12;
+  for (let x = 0; x <= h + 1e-9; x += passo) s += `<text x="${X(x * 3600)}" y="${H - 4}" text-anchor="middle" fill="var(--txt3)" font-size="11">${passo < 1 ? Math.round(x * 60) + ' min' : x + ' h'}</text>`;
+  if (pts.length > 1) {
+    const d = pts.map((p, i) => (i ? 'L' : 'M') + X(p[0]).toFixed(1) + ',' + Y(p[1]).toFixed(1)).join('');
+    s += `<path d="${d}L${X(pts[pts.length - 1][0])},${Y(0)}L${X(pts[0][0])},${Y(0)}Z" fill="var(--destaque)" opacity=".08"/>`;
+    s += `<path d="${d}" fill="none" stroke="var(--destaque)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`;
+  }
+  if (pts.length) { const u = pts[pts.length - 1]; s += `<circle cx="${X(u[0])}" cy="${Y(u[1])}" r="4.5" fill="var(--destaque)" stroke="var(--card)" stroke-width="2"/>`; }
+  el.innerHTML = `<svg viewBox="0 0 ${W} ${H}">${s}</svg>`;
+}
+$('#b-parar').onclick = () => confirmar('Parar o teste?', 'O resultado será marcado como interrompido e não valerá como medição de autonomia.', async () => {
+  await api.parar(); $('#r-msg').textContent = 'Parando…'; $('#r-preparando').style.display = '';
+});
+
+/* ---------- fim ---------- */
+const br = (n, c = 1) => n.toLocaleString('pt-BR', { minimumFractionDigits: c, maximumFractionDigits: c });
+function htmlCinebench(s, r) {
+  const W = k => r[k] ? br(r[k]) + ' <small>W</small>' : '—';
+  let h = `<div class="card resultado-hero"><div><div class="rotulo">Pontuação multi-core</div>`;
+  h += r.pontos ? `<div class="num-gigante">${r.pontos.toLocaleString('pt-BR')} <span style="font-size:24px;color:var(--txt3)">pts</span></div>`
+    : `<div class="sub" style="margin:8px 0 10px">Não foi possível ler a pontuação do Cinebench. Informe o valor exibido na tela:</div>
+       <div style="display:flex;gap:8px"><input type="text" id="cb-pontos" placeholder="Ex.: 7120" style="max-width:180px"><button class="btn btn-pri" id="b-cb-salvar">Salvar</button></div>`;
+  h += `<div class="muted" style="margin-top:6px">${esc(r.versao_cb || 'Cinebench')} · ${r.duracao_s ? curtoDur(r.duracao_s) + ' de teste' : ''}</div></div>
+    <div style="margin-left:auto;text-align:right"><span class="selo ${r.valido ? 'ok' : 'erro'}">${r.valido ? 'Resultado válido' : 'Resultado inválido'}</span></div></div>
+    <div class="espaco" style="height:14px"></div><div class="grid4">
+      <div class="card metrica"><div class="rotulo">Consumo médio</div><div class="valor">${W('consumo_medio_w')}</div><div class="muted">em repouso ${r.repouso_w ? br(r.repouso_w) + ' W' : '—'}</div></div>
+      <div class="card metrica"><div class="rotulo">Pico</div><div class="valor">${W('pico_w')}</div><div class="muted">maior média de 10 s</div></div>
+      <div class="card metrica"><div class="rotulo">Eficiência</div><div class="valor">${r.pontos_por_w ? br(r.pontos_por_w) + ' <small>pts/W</small>' : '—'}</div><div class="muted">pontos por watt</div></div>
+      <div class="card metrica"><div class="rotulo">Bateria usada</div><div class="valor">${r.pct_inicio != null ? Math.round(r.pct_inicio - r.pct_fim) + '<small>%</small>' : '—'}</div><div class="muted">${r.energia_wh ? br(r.energia_wh) + ' Wh' : ''}</div></div>
+    </div>
+    <div class="espaco" style="height:14px"></div><div class="grid3m">
+      <div class="card metrica"><div class="rotulo">Turbo → sustentado</div><div class="valor" style="font-size:20px">${r.turbo_w ? br(r.turbo_w) + ' → ' + br(r.sustentado_w) + ' W' : '—'}</div><div class="muted">1º minuto x últimos 2 minutos</div></div>
+      <div class="card metrica"><div class="rotulo">Frequência da CPU</div><div class="valor" style="font-size:20px">${r.mhz_inicio ? br(r.mhz_inicio / 1000, 2) + ' → ' + br(r.mhz_fim / 1000, 2) + ' GHz' : '—'}</div><div class="muted">início x fim do teste</div></div>
+      <div class="card metrica"><div class="rotulo">Nesse ritmo</div><div class="valor" style="font-size:20px">${r.autonomia_carga_max_s ? '~' + curtoDur(r.autonomia_carga_max_s) : '—'}</div><div class="muted">a bateria cheia duraria</div></div>
+    </div>`;
+  if (r.carregador) h += `<div class="espaco" style="height:14px"></div><div class="aviso alerta">O carregador foi conectado durante o teste. O resultado não é válido como teste na bateria.</div>`;
+  if (r.erro) h += `<div class="espaco" style="height:14px"></div><div class="aviso alerta">${esc(r.erro)}</div>`;
+  return h;
+}
+function htmlJogo(s, r) {
+  const v = (x, c = 0, suf = '') => x != null ? br(x, c) + suf : '—';
+  const acabou = r.acabou;
+  let h = `<div class="card resultado-hero"><div><div class="rotulo">${acabou ? 'Autonomia em jogo' : 'Tempo de jogo na bateria'}</div>
+      <div class="num-gigante">${esc(r.duracao || '—')}</div>
+      <div class="muted" style="margin-top:6px">${r.pct_inicio != null ? Math.round(r.pct_inicio) + '% → ' + Math.round(r.pct_fim) + '%' : ''}</div>${!acabou && r.restante ? `<div style="margin-top:8px">Com os ${Math.round(r.pct_fim)}% restantes: <b>mais ~${esc(r.restante)}</b> de jogo${r.projecao ? ` <span class="muted">· bateria cheia: ~${esc(r.projecao)}</span>` : ''}</div>` : ''}</div>
+    <div style="margin-left:auto;text-align:right"><span class="selo ${r.valido ? 'ok' : 'erro'}">${r.valido ? 'Resultado válido' : 'Resultado inválido'}</span></div></div>
+    <div class="espaco" style="height:14px"></div><div class="grid4">
+      <div class="card metrica"><div class="rotulo">Bateria perdida</div><div class="valor">${v(r.pct_usado, 0, '<small>%</small>')}</div><div class="muted">em ${esc(r.duracao || '—')}</div></div>
+      <div class="card metrica"><div class="rotulo">Perda a cada 10 min</div><div class="valor">${v(r.pct_por_10min, 1, '<small>%</small>')}</div><div class="muted">${r.pct_por_hora != null ? 'cerca de ' + r.pct_por_hora + '% por hora' : ''}${r.fps_medio != null ? ' · ' + Math.round(r.fps_medio) + ' FPS' : ''}</div></div>
+      <div class="card metrica"><div class="rotulo">Consumo médio</div><div class="valor">${v(r.consumo_medio_w, 1, ' <small>W</small>')}</div><div class="muted">${r.energia_wh ? br(r.energia_wh) + ' Wh usados' : 'notebook inteiro'}</div></div>
+      <div class="card metrica"><div class="rotulo">Placa de vídeo</div><div class="valor">${v(r.gpu_w_medio, 1, ' <small>W</small>')}</div><div class="muted">${r.gpu_c_max != null ? 'máx. ' + r.gpu_c_max + ' °C' : 'sem leitura da placa'}</div></div>
+    </div>`;
+  if (!r.valido) h += `<div class="espaco" style="height:14px"></div><div class="aviso alerta">${esc(s.motivo_texto || 'Resultado inválido')}. Este resultado não mostra a autonomia real do notebook.</div>`;
+  return h;
+}
+function telaFim(s) {
+  mostrar('t-fim');
+  $('#f-nome').textContent = s.nome;
+  const r = s.resultado || {};
+  let html = '';
+  if (s.fase === 'erro') {
+    $('#f-rotulo').textContent = 'Ocorreu um erro';
+    html = `<div class="aviso alerta">${esc(s.mensagem)}</div>`;
+  } else if (s.tipo === 'cinebench') {
+    $('#f-rotulo').textContent = s.motivo_texto || 'Cinebench multi-core · na bateria';
+    html = htmlCinebench(s, r);
+  } else if (s.tipo === 'jogo') {
+    $('#f-rotulo').textContent = (s.rotulo_modo || 'Jogo na bateria') + (s.motivo_texto ? ' · ' + s.motivo_texto.toLowerCase() : '');
+    html = htmlJogo(s, r);
+  } else if (s.rapido) {
+    const tarefas = s.resumo_tarefas || {}, ordem = ['navegador', 'word', 'excel', 'video'];
+    const tudoOk = ordem.every(k => tarefas[k] && !tarefas[k].falhas && !tarefas[k].erros);
+    $('#f-rotulo').textContent = 'Teste rápido';
+    html = `<h2>${tudoOk ? 'Tudo está funcionando. O teste completo já pode ser feito.' : 'Algumas atividades apresentaram problemas'}</h2>
+      <p class="sub">${tudoOk ? 'Todas as atividades foram executadas sem erros neste notebook.' : 'Abra o relatório para consultar os erros. Se necessário, envie o arquivo eventos.csv da pasta do teste para análise.'}</p>
+      <div class="espaco"></div><div class="tarefas-rapido">` + ordem.map(k => {
+        const t = tarefas[k]; const ok = t && !t.falhas && !t.erros;
+        const det = !t ? 'não executada' : t.falhas ? `falhou (${t.erros} erro${t.erros > 1 ? 's' : ''})` : t.erros ? `${t.erros} erro${t.erros > 1 ? 's' : ''}, mas continuou` : `${t.sessoes} ${t.sessoes > 1 ? 'sessões' : 'sessão'} sem erros`;
+        return `<div class="check ${ok ? 'ok' : 'falha'}"><div class="st">${ok ? IC.ok : IC.x}</div><div class="nome">${NOMES[k]}</div><div class="det">${det}</div></div>`;
+      }).join('') + '</div>';
+  } else {
+    $('#f-rotulo').textContent = s.modo === 'tempo' ? s.rotulo_modo + (s.motivo_texto ? ' · ' + s.motivo_texto.toLowerCase() : '') : s.motivo_texto || 'Resultado';
+    if (s.modo === 'tempo') html = `<div class="card resultado-hero">
+        <div><div class="rotulo">Autonomia projetada</div><div class="num-gigante">${r.autonomia_projetada ? '~' + esc(r.autonomia_projetada) : '—'}</div>
+        <div class="muted" style="margin-top:6px">de 100% a 0% nesse ritmo${r.projecao_metodo ? ' · ' + esc(r.projecao_metodo) : ''}</div></div>
+        <div style="margin-left:auto;text-align:right">
+          <div class="rotulo">Bateria usada</div><div class="metrica"><div class="valor">${r.pct_usado != null ? Math.round(r.pct_usado) + '<small>%</small>' : '—'}</div></div>
+          <div class="muted">${esc(r.autonomia || '')}${r.pct_inicio != null ? ' · ' + Math.round(r.pct_inicio) + '% → ' + Math.round(r.pct_fim) + '%' : ''}</div>
+          ${r.consumo_medio_w ? `<div class="muted">consumo médio ${r.consumo_medio_w.toFixed(1)} W</div>` : ''}
+          <div class="espaco" style="height:10px"></div><span class="selo ${r.valido ? 'ok' : 'erro'}">${r.valido ? 'Resultado válido' : 'Resultado inválido'}</span>
+        </div></div>`;
+    else html = `<div class="card resultado-hero">
+        <div><div class="rotulo">Autonomia medida</div><div class="num-gigante">${esc(r.autonomia || '—')}</div>
+        <div class="muted" style="margin-top:6px">${r.pct_inicio != null ? Math.round(r.pct_inicio) + '% → ' + Math.round(r.pct_fim) + '%' : ''}</div></div>
+        <div style="margin-left:auto;text-align:right">
+          ${r.consumo_medio_w ? `<div class="rotulo">Consumo médio</div><div class="metrica"><div class="valor">${r.consumo_medio_w.toFixed(1)} <small>W</small></div></div>` : ''}
+          <div class="espaco" style="height:10px"></div><span class="selo ${r.valido ? 'ok' : 'erro'}">${r.valido ? 'Resultado válido' : 'Resultado inválido'}</span>
+        </div></div>`;
+    const ativ = (r.por_atividade || []).filter(a => ['navegador', 'navegador_som', 'word', 'excel', 'video'].includes(a.id) && a.w);
+    if (ativ.length) {
+      const mx = Math.max(...ativ.map(a => a.w));
+      html += `<div class="espaco" style="height:14px"></div><div class="card"><div class="rotulo" style="margin-bottom:12px">Consumo por atividade</div>` +
+        ativ.map(a => `<div class="lin-ativ"><span>${NOMES[a.id]}</span><div class="barra-ativ"><div style="width:${(100 * a.w / mx).toFixed(1)}%"></div></div><strong>${a.w.toFixed(1)} W</strong></div>`).join('') +
+        (r.pico_w ? `<div class="muted" style="margin-top:10px">Pico ${r.pico_w.toFixed(1)} W · mínimo ${r.minimo_w.toFixed(1)} W (médias de 5 min)${r.energia_wh ? ' · ' + r.energia_wh.toFixed(1) + ' Wh usados' : ''}</div>` : '') + '</div>';
+    const ext = [];
+    if (r.min_por_wh) ext.push(['Rendimento', r.min_por_wh.toFixed(1) + ' min/Wh', 'tempo de uso que cada Wh rende']);
+    if (r.consumo_base_w) ext.push(['Consumo base', r.consumo_base_w.toFixed(1) + ' W', 'consumo mínimo da plataforma com a tela ligada']);
+    if (r.custo_som_w != null) ext.push(['Custo do som', (r.custo_som_w >= 0 ? '+' : '') + r.custo_som_w.toFixed(1) + ' W', `${r.custo_som_pct >= 0 ? '+' : ''}${r.custo_som_pct}% ao navegar com som`]);
+    if (ext.length) html += `<div class="espaco" style="height:14px"></div><div class="grid3m">` +
+      ext.map(e => `<div class="card metrica"><div class="rotulo">${e[0]}</div><div class="valor">${e[1]}</div><div class="muted">${e[2]}</div></div>`).join('') + '</div>';
+    }
+    if (s.motivo && !['fim', 'limite_atingido', 'desligou'].includes(s.motivo)) html += `<div class="espaco"></div><div class="aviso alerta">${esc(s.motivo_texto)}.</div>`;
+  }
+  if (s.mensagem && s.fase !== 'erro') html += `<div class="espaco"></div><div class="aviso alerta">${esc(s.mensagem)}</div>`;
+  $('#f-corpo').innerHTML = html;
+  if ($('#b-cb-salvar')) $('#b-cb-salvar').onclick = async () => {
+    const v = $('#cb-pontos').value.trim(); if (!v) return;
+    const res = await api.salvar_pontuacao(s.pasta, v);
+    if (res.ok) { s.resultado = res.resultado; s.relatorio = s.relatorio || 'ok'; telaFim(s); toast('Pontuação salva'); } else toast(res.erro);
+  };
+  const card = s.tipo === 'cinebench' && r.card;
+  $('#b-card').style.display = card ? '' : 'none';
+  if (card) $('#b-card').onclick = () => api.abrir_arquivo(r.card);
+  $('#b-relatorio').style.display = s.relatorio ? '' : 'none';
+  $('#b-relatorio').onclick = () => abrirRelatorio(s.pasta);
+  $('#b-pasta').onclick = () => api.abrir_pasta(s.pasta);
+}
+$('#b-novo').onclick = async () => { await api.limpar(); mostrar('t-testar'); avisoPendente(await api.historico()); };
+async function abrirRelatorio(pasta) { const r = await api.abrir_relatorio(pasta); if (!r.ok) toast(r.erro || 'Não foi possível abrir o relatório'); }
+
+/* ---------- resultados ---------- */
+async function carregarResultados() {
+  atualizarNuvem();
+  $('#tabela-res').innerHTML = '<div class="vazio">Carregando…</div>';
+  const hist = await api.historico();
+  if (!hist.length) { $('#tabela-res').innerHTML = '<div class="vazio">Nenhum teste realizado. Os resultados serão exibidos aqui.</div>'; return; }
+  $('#tabela-res').innerHTML = `<table><tr><th>Notebook</th><th>Data</th><th>Resultado</th><th>Consumo</th><th>Situação</th><th></th></tr>` +
+    hist.map(h => `<tr><td><div class="nome">${esc(h.nome)}</div></td><td>${esc(h.data)} <span class="muted">${esc(h.hora)}</span></td>
+      <td>${h.modo === 'jogo' ? (h.acabou ? esc(h.autonomia || '—') : h.projecao ? '~' + esc(h.projecao) + ' <span class="muted">projetada</span>' : esc(h.autonomia || '—')) + (h.fps ? ` <span class="muted">· ${Math.round(h.fps)} FPS</span>` : '') : h.modo === 'rapido' ? '<span class="muted">—</span>' : h.modo === 'cinebench' ? (h.pontos ? h.pontos.toLocaleString('pt-BR') + ' pts' : '—') : h.modo === 't3d' ? (h.pontos != null ? h.pontos.toLocaleString('pt-BR') + ' <span class="muted">pts 3D</span>' : h.fps ? Math.round(h.fps) + ' <span class="muted">quadros/s</span>' : '—') : h.modo === 'tempo' ? (h.projecao ? '~' + esc(h.projecao) + ' <span class="muted">projetada</span>' : '—') : esc(h.autonomia || '—')}</td>
+      <td>${h.consumo_w && h.modo !== 'rapido' ? h.consumo_w.toFixed(1) + ' W' : '<span class="muted">—</span>'}</td>
+      <td>${h.modo === 'jogo' ? `<span class="selo ${h.valido ? 'amarelo' : 'erro'}">${esc(h.rotulo_modo || 'Jogo na bateria')}</span>` : h.modo === 'rapido' ? '<span class="selo">Teste rápido</span>' : h.modo === 't3d' ? '<span class="selo amarelo">Teste 3D</span>' : h.modo === 'tempo' ? `<span class="selo ${h.valido ? 'ok' : 'erro'}">${esc(h.rotulo_modo || 'Personalizado')}</span>` : h.modo === 'cinebench' ? `<span class="selo ${h.valido ? 'amarelo' : 'erro'}">Cinebench</span>` : h.valido ? '<span class="selo ok">Válido</span>' : '<span class="selo erro">Inválido</span>'}</td>
+      <td class="botoes"><button class="btn btn-sec btn-peq" data-rel="${esc(h.pasta)}">Relatório</button></td></tr>`).join('') + '</table>';
+  document.querySelectorAll('[data-rel]').forEach(b => b.onclick = () => abrirRelatorio(b.dataset.rel));
+}
+$('#b-comparativo-cb').onclick = async () => { const r = await api.abrir_comparativo('cinebench'); if (!r.ok) toast(r.erro); };
+$('#b-comparativo').onclick = async () => { const r = await api.abrir_comparativo(); if (!r.ok) toast(r.erro); };
+$('#b-pasta-res').onclick = () => api.abrir_pasta(null);
+
+/* ---------- planilha central ---------- */
+let pollNuvem = null, syncAtivo = false;
+async function atualizarNuvem() {
+  const n = await api.nuvem_status(), e = n.envio || {}, sy = n.sync || {};
+  const ponto = $('#nuvem-ponto'), txt = $('#nuvem-txt'), bt = $('#b-sincronizar');
+  if (document.activeElement !== $('#c-nuvem')) $('#c-nuvem').value = n.url || '';
+  ponto.className = 'ponto';
+  if (!n.ativo) {
+    $('#nuvem-titulo').textContent = 'Planilha central desligada';
+    txt.textContent = '· os resultados ficam armazenados apenas neste notebook';
+    bt.textContent = 'Configurar'; bt.disabled = false; bt.onclick = () => { mostrar('t-config'); $('#c-nuvem').focus(); };
+    $('#c-nuvem-st').textContent = 'Desligada.';
+    return n;
+  }
+  bt.textContent = 'Sincronizar'; bt.onclick = sincronizar;
+  $('#nuvem-titulo').textContent = 'Planilha central';
+  let partes = [];
+  if (sy.rodando) partes.push(sy.mensagem || 'Sincronizando…');
+  else if (sy.erro) partes.push(sy.erro);
+  else if (sy.resultado) partes.push(sy.resultado.novos ? `${sy.resultado.novos} teste(s) novo(s) baixado(s) · ${sy.resultado.total} na planilha` : `tudo atualizado · ${sy.resultado.total} teste(s) na planilha`);
+  if (e.pendentes) partes.push(`${e.pendentes} aguardando envio${e.erro ? ' (sem conexão)' : ''}`);
+  else if (e.enviados) partes.push(`${e.enviados} enviado(s) deste notebook`);
+  else if (!partes.length) partes.push('conectada · cada teste concluído é enviado automaticamente para a planilha');
+  ponto.classList.add(sy.erro || (e.pendentes && e.erro) ? 'alerta' : 'ok');
+  txt.textContent = '· ' + partes.join(' · ');
+  bt.disabled = !!sy.rodando;
+  $('#c-nuvem-st').textContent = e.erro ? 'Último envio falhou: ' + e.erro : 'Conectada.';
+  if (syncAtivo && !sy.rodando) { syncAtivo = false; carregarResultados(); }
+  return n;
+}
+async function sincronizar() {
+  syncAtivo = true; await api.sincronizar(); atualizarNuvem();
+  clearInterval(pollNuvem); pollNuvem = setInterval(async () => { const n = await atualizarNuvem(); if (!n.sync.rodando) { clearInterval(pollNuvem); } }, 1000);
+}
+$('#b-nuvem-salvar').onclick = async () => {
+  const r = await api.nuvem_definir_url($('#c-nuvem').value);
+  if (!r.ok) return toast(r.erro);
+  toast($('#c-nuvem').value.trim() ? 'Planilha conectada' : 'Planilha desligada'); atualizarNuvem();
+};
+
+/* ---------- configurações ---------- */
+function carregarConfig() {
+  $('#c-brilho').value = CFG.brilho_percent; $('#c-brilho-v').textContent = CFG.brilho_percent + '%';
+  $('#c-modo').value = CFG.modo_energia;
+  $('#c-volume').value = CFG.volume_percent ?? 25; $('#c-volume-v').textContent = (CFG.volume_percent ?? 25) + '%';
+  $('#c-som').checked = CFG.som_ambiente_no_navegador !== false;
+  $('#c-tela-cheia').checked = CFG.video_tela_cheia !== false;
+  $('#c-popup').checked = CFG.popup_durante_teste !== false;
+  for (const k of ['navegador', 'word', 'excel', 'video']) $('#c-m-' + k).value = CFG.ciclo.minutos[k];
+  $('#c-parar').value = CFG.parar_em_percent; $('#c-parar-v').textContent = CFG.parar_em_percent ? CFG.parar_em_percent + '%' : 'não';
+  $('#c-semente').value = CFG.semente;
+  $('#c-conteudo').checked = CFG.conteudo_fixo !== false;
+  $('#c-res-tela').checked = CFG.video_resolucao_tela !== false;
+  $('#c-videos').value = (CFG.videos_fixos || []).join('\n');
+  $('#c-ambiente').value = CFG.video_ambiente || '';
+  atualizarConteudo(); atualizarNuvem();
+  const cb = CFG.cinebench || {};
+  $('#c-cb-exe').textContent = cb.exe || 'Não definido: o aplicativo procura automaticamente nas pastas de instalação, Downloads e Área de Trabalho';
+  $('#c-cb-dur').value = Math.round((cb.duracao_minima_s ?? 600) / 60); $('#c-cb-dur-v').textContent = $('#c-cb-dur').value + ' min';
+  $('#c-cb-modo').value = cb.modo_energia || 'equilibrado';
+  $('#c-cb-min').value = cb.bateria_minima || 40; $('#c-cb-min-v').textContent = $('#c-cb-min').value + '%';
+  atualizarProporcao();
+}
+function atualizarProporcao() {
+  const ks = ['navegador', 'word', 'excel', 'video'], v = ks.map(k => Math.max(0, +$('#c-m-' + k).value || 0)), tot = v.reduce((a, b) => a + b, 0) || 1;
+  $('#c-prop').innerHTML = v.map(x => `<div style="flex:${x}"></div>`).join('');
+  $('#c-prop-txt').textContent = `Ciclo de ${tot} min · ` + ks.map((k, i) => `${NOMES[k]} ${Math.round(100 * v[i] / tot)}%`).join(' · ');
+}
+['navegador', 'word', 'excel', 'video'].forEach(k => $('#c-m-' + k).oninput = atualizarProporcao);
+/* ---------- conteúdo gravado ---------- */
+let pollGrav = null;
+async function atualizarConteudo() {
+  const r = await api.conteudo_resumo(), p = r.pacote, g = r.gravacao;
+  $('#c-pacote').textContent = p.existe
+    ? `Pacote ${p.id} · gravado em ${p.data} · ${p.paginas} páginas de ${p.sites} sites · ${p.tamanho_mb} MB · vídeos no ar: ${p.videos_ok} de ${p.videos_total}${p.ambiente_ok === false ? ' · som ambiente fora do ar' : ''}`
+    : 'Nenhum pacote gravado. Grave-o uma vez em seu PC (com internet) e copie-o com o aplicativo para os notebooks.';
+  const gravando = g && g.fase === 'gravando';
+  $('#c-grav-barra').style.display = gravando ? '' : 'none';
+  $('#b-grav-cancelar').style.display = gravando ? '' : 'none';
+  $('#b-gravar').disabled = !!gravando;
+  $('#b-gravar').textContent = p.existe ? 'Gravar novamente' : 'Gravar conteúdo';
+  if (gravando) {
+    $('#c-grav-barra div').style.width = Math.min(100, 100 * g.feitas / Math.max(1, g.total)).toFixed(0) + '%';
+    $('#c-grav-txt').textContent = `Gravando ${g.feitas} de ${g.total}: ${g.atual}`;
+    if (!pollGrav) pollGrav = setInterval(atualizarConteudo, 1500);
+  } else {
+    clearInterval(pollGrav); pollGrav = null;
+    $('#c-grav-txt').textContent = g && g.fase === 'concluido' ? 'Pacote gravado.' + (g.falhas ? ` Páginas não carregadas e excluídas: ${g.falhas}.` : '')
+      : g && g.mensagem ? g.mensagem : '';
+  }
+}
+$('#b-gravar').onclick = () => confirmar('Gravar o conteúdo do teste?',
+  'O aplicativo abrirá o Edge e visitará os sites, a Wikipédia e as buscas para salvar as páginas (leva cerca de 10 minutos e requer internet). Use sempre o mesmo pacote, para que as páginas não mudem entre os testes.',
+  async () => { const r = await api.gravar_conteudo(); if (!r.ok) toast(r.erro); atualizarConteudo(); });
+$('#b-grav-cancelar').onclick = async () => { await api.cancelar_gravacao(); setTimeout(atualizarConteudo, 800); };
+$('#c-cb-dur').oninput = e => $('#c-cb-dur-v').textContent = e.target.value + ' min';
+$('#c-cb-min').oninput = e => $('#c-cb-min-v').textContent = e.target.value + '%';
+$('#b-cb-localizar').onclick = async () => { const r = await api.localizar_cinebench(); if (r.ok) { CFG.cinebench = Object.assign(CFG.cinebench || {}, { exe: r.exe }); $('#c-cb-exe').textContent = r.exe; } };
+$('#c-brilho').oninput = e => $('#c-brilho-v').textContent = e.target.value + '%';
+$('#c-volume').oninput = e => $('#c-volume-v').textContent = e.target.value + '%';
+$('#c-parar').oninput = e => $('#c-parar-v').textContent = +e.target.value ? e.target.value + '%' : 'não';
+$('#b-salvar').onclick = async () => {
+  const minutos = {}; for (const k of ['navegador', 'word', 'excel', 'video']) minutos[k] = Math.max(0, Math.min(30, parseInt($('#c-m-' + k).value) || 0));
+  CFG = await api.salvar_config({ brilho_percent: +$('#c-brilho').value, modo_energia: $('#c-modo').value,
+    volume_percent: +$('#c-volume').value, som_ambiente_no_navegador: $('#c-som').checked, video_tela_cheia: $('#c-tela-cheia').checked, popup_durante_teste: $('#c-popup').checked,
+    parar_em_percent: +$('#c-parar').value, semente: parseInt($('#c-semente').value) || 2026, ciclo: { minutos },
+    conteudo_fixo: $('#c-conteudo').checked, video_resolucao_tela: $('#c-res-tela').checked,
+    videos_fixos: $('#c-videos').value.split(/\s+/).map(v => v.trim()).filter(v => /^https?:\/\//.test(v)),
+    video_ambiente: $('#c-ambiente').value.trim(),
+    cinebench: { duracao_minima_s: (+$('#c-cb-dur').value) * 60, modo_energia: $('#c-cb-modo').value, bateria_minima: +$('#c-cb-min').value } });
+  atualizarTempoCb();
+  resumoCfg(); definirPers(minPers); toast('Configurações salvas');
+};
+$('#b-restaurar').onclick = async () => { await api.restaurar_energia(); toast('Energia do Windows restaurada'); };
+
+/* ---------- partida ---------- */
+/* ---------- teste 3D ---------- */
+const PARTES3 = { viewport: 'Viewport 3D', cpu: 'Render CPU · todos os núcleos', cpu1: 'Render CPU · 1 núcleo', video: 'Exportação de vídeo', estresse: 'Estresse 3D' };
+const PARA3 = { viewport: 'passeio de câmera, quadros por segundo', cpu: 'cidade renderizada com todos os núcleos', cpu1: 'a mesma cena com um núcleo', video: 'clipe 4K exportado em H.264 e H.265', estresse: 'viewport sem pausa, estabilidade' };
+let T3 = null, t3Partes = new Set(['viewport', 'cpu', 'cpu1', 'video', 'estresse']), t3Min = 20;
+const seta3 = maior => `<span class="dir-tag ${maior ? '' : 'menor'}">${maior ? '↑ maior' : '↓ menor'} é melhor</span>`;
+const minSeg = s => s < 60 ? Math.round(s) + ' s' : Math.floor(s / 60) + ' min ' + String(Math.round(s % 60)).padStart(2, '0') + ' s';
+async function carregar3d() {
+  if (!$('#t3-nome').value) $('#t3-nome').value = $('#nome').value;
+  try { T3 = await api.t3d_inicio(); } catch (e) { T3 = { config: {}, referencia: null, nvidia: false }; }
+  if (T3.config.partes) t3Partes = new Set(T3.config.partes.filter(p => p in PARTES3));
+  if (T3.config.estresse_min) t3Min = T3.config.estresse_min;
+  document.querySelectorAll('[data-parte]').forEach(o => o.classList.toggle('sel', t3Partes.has(o.dataset.parte)));
+  document.querySelectorAll('[data-emin]').forEach(c => c.classList.toggle('sel', +c.dataset.emin === t3Min));
+  $('#t3-est-tempo').textContent = t3Min + ' min';
+  $('#t3-gpu').innerHTML = `<span class="st">${IC.ok}</span><span>O teste usa a placa de vídeo dedicada, se houver. A placa usada aparece no resultado.</span>`
+    + `<span class="muted">${T3.nvidia ? 'temperatura e watts da placa: disponíveis (NVIDIA)' : 'temperatura e watts: somente em placas NVIDIA'}</span>`;
+  const r = T3.referencia;
+  $('#t3-ref').innerHTML = r ? `<span class="st">${IC.ok}</span><span>Referência (vale 1.000): <b>${esc(r.nome)}</b></span><span class="muted">${r.fps ? Math.round(r.fps) + ' quadros/s' : ''}${r.cpu_s ? ' · render CPU ' + minSeg(r.cpu_s) : ''}${r.video_s ? ' · vídeo ' + minSeg(r.video_s) : ''}</span>`
+    : `<span class="st aviso">!</span><span>Ainda não há notebook de referência.</span><span class="muted">Ao final do primeiro teste, use "Usar como referência" para que ele valha 1.000</span>`;
+  const b = await api.bateria();
+  if (b && !b.carregador) toast('Conecte o carregador: o Teste 3D mede o desempenho máximo na tomada');
+  resumo3d();
+}
+function minutos3() { const M = { viewport: 2, cpu: 3, cpu1: 2, video: 5 }; let m = 0; for (const p of t3Partes) m += p === 'estresse' ? t3Min : M[p] || 0; return m + Math.max(0, t3Partes.size - 1); }
+function resumo3d() {
+  $('#t3-resumo').textContent = t3Partes.size ? `${t3Partes.size} teste${t3Partes.size > 1 ? 's' : ''} · cerca de ${curtoDur(minutos3() * 60)} · na tomada, modo Melhor desempenho` : 'Escolha pelo menos um teste';
+  $('#b-t3-iniciar').disabled = !t3Partes.size;
+}
+document.querySelectorAll('[data-parte]').forEach(o => o.onclick = e => {
+  if (e.target.dataset.emin) return;
+  const p = o.dataset.parte; t3Partes.has(p) ? t3Partes.delete(p) : t3Partes.add(p); o.classList.toggle('sel', t3Partes.has(p)); resumo3d();
+});
+document.querySelectorAll('[data-emin]').forEach(c => c.onclick = e => {
+  e.stopPropagation(); t3Min = +c.dataset.emin; t3Partes.add('estresse');
+  document.querySelector('[data-parte=estresse]').classList.add('sel');
+  document.querySelectorAll('[data-emin]').forEach(x => x.classList.toggle('sel', x === c)); $('#t3-est-tempo').textContent = t3Min + ' min'; resumo3d();
+});
+$('#b-t3-iniciar').onclick = () => {
+  const nome = $('#t3-nome').value.trim(); if (!nome) { $('#t3-nome').focus(); toast('Informe o nome do notebook'); return; }
+  confirmar('Iniciar o Teste 3D?', `Duração aproximada: ${curtoDur(minutos3() * 60)}. O Edge abrirá em tela cheia com a cena 3D. Mantenha o notebook na tomada e não o utilize até o fim.`, async () => {
+    const ordem = ['viewport', 'cpu', 'cpu1', 'video', 'estresse'].filter(p => t3Partes.has(p));
+    const r = await api.iniciar_3d(nome, ordem, t3Min);
+    if (!r.ok) { toast(r.erro); return; }
+    mostrar('t-3d-rodando'); clearInterval(pollStatus);
+    pollStatus = setInterval(() => { if (!document.hidden) atualizarStatus(); }, 3000); atualizarStatus();
+  }, 'Iniciar');
+};
+function atualizar3d(s) {
+  if (s.fase === 'concluido' || s.fase === 'erro') { clearInterval(pollStatus); tela3dFim(s); return; }
+  if (tela !== 't-3d-rodando') mostrar('t-3d-rodando');
+  $('#t3r-nome').textContent = s.nome; $('#t3r-modo').textContent = s.rotulo_modo || 'Teste 3D';
+  $('#t3r-tempo').textContent = hms(s.decorrido_s);
+  const p = s.previsao || {};
+  $('#t3r-prog').style.width = p.pronto ? (p.progresso * 100).toFixed(1) + '%' : '0';
+  $('#t3r-resta').textContent = p.pronto ? '~' + curtoDur(p.restante_s) : '—';
+  $('#t3r-fim').innerHTML = p.pronto ? `termina por volta das <b>${horaDe(p.termina_ts)}</b>` : '';
+  $('#t3r-agora').innerHTML = s.parte_atual ? `Agora: <b>${esc(s.parte_nome)}</b> · ${Math.round((s.parte_progresso || 0) * 100)}%`
+    : esc(s.mensagem || (s.fase === 'finalizando' ? 'Gerando o relatório…' : 'Preparando…'));
+  const a = s.agora || {}, sn = s.sensores || {};
+  $('#t3r-fps').innerHTML = a.fps_agora ? a.fps_agora + ' <small>q/s</small>' : '—';
+  $('#t3r-gpu').innerHTML = sn.gpu_c != null ? Math.round(sn.gpu_c) + '<small>°C</small>' + (sn.gpu_w != null ? ' · ' + Math.round(sn.gpu_w) + '<small>W</small>' : '') : '—';
+  $('#t3r-gpu-sub').textContent = s.gpu ? s.gpu.replace(/^ANGLE \([^,]*,\s*/, '').split(' Direct3D')[0].split(' (0x')[0].slice(0, 40) : 'temperatura e watts';
+  $('#t3r-cpu').innerHTML = sn.cpu_mhz ? br(sn.cpu_mhz / 1000, 2) + ' <small>GHz</small>' : '—';
+  $('#t3r-cpu-sub').textContent = sn.cpu_pct != null ? `uso ${Math.round(sn.cpu_pct)}%` : 'frequência agora';
+  $('#t3r-tomada').innerHTML = s.carregador === false ? '<span style="color:var(--erro)">Na bateria</span>' : IC.tomada + ' Na tomada';
+  $('#t3r-passos').innerHTML = (s.partes || []).map(e => {
+    const ic = e.estado === 'ok' ? IC.ok : e.estado === 'erro' ? IC.x : e.estado === 'rodando' ? '<div class="giro"></div>' : '';
+    const sub = e.estado === 'ok' ? (e.duracao_s ? curtoDur(e.duracao_s) : 'concluído') : e.estado === 'erro' ? esc(e.erro || 'falhou') : e.estado === 'rodando' ? 'em execução' : 'aguardando';
+    return `<div class="d-passo ${e.estado}"><div class="st">${ic}</div><div class="nm">${esc(e.nome)}<small>${PARA3[e.id]}</small></div><div class="res"><small>${sub}</small></div></div>`;
+  }).join('');
+}
+$('#b-t3-parar').onclick = () => confirmar('Parar o teste?', 'As partes já concluídas ficam salvas no relatório.', async () => { await api.parar(); $('#t3r-agora').textContent = 'Parando…'; });
+function corpo3d(r, s) {
+  const P = r.partes || {}, v = P.viewport, es = P.estresse, C = r.comparacoes || {};
+  const cmp = k => C[k] ? `<div class="comp">${esc(C[k].base)}<b class="${C[k].bom ? '' : 'pior'}">${esc(C[k].dif)}</b></div>` : '';
+  let h = '';
+  if (s && s.fase === 'erro') h += `<div class="aviso alerta">${esc(s.mensagem)}</div><div class="espaco"></div>`;
+  else if (s && s.motivo === 'interrompido') h += '<div class="aviso alerta">Teste interrompido antes do fim. As partes concluídas estão listadas abaixo.</div><div class="espaco"></div>';
+  let frase = '';
+  if (r.pontos != null) frase = r.pontos > 1000 ? `${Math.round(r.pontos / 10 - 100)}% mais rápido que ele.` : r.pontos < 1000 ? `${Math.round(100 - r.pontos / 10)}% mais lento que ele.` : '';
+  const score = r.pontos != null
+    ? `<div class="t3-score"><div class="rotulo">Pontuação Bench 3D</div><div class="n">${r.pontos.toLocaleString('pt-BR')}</div>${seta3(true)}<span class="selo-n">${r.posicao}º de ${r.total_ranking} notebooks</span>
+       <div class="muted" style="margin-top:14px">1.000 = notebook de referência (${esc(r.referencia.nome)}). ${frase}</div></div>`
+    : `<div class="t3-score"><div class="rotulo">Pontuação Bench 3D</div><div class="n" style="font-size:36px">calibrando</div>
+       <div class="muted">Ainda não há notebook de referência. Clique em <b>Usar como referência</b> para que este notebook valha 1.000. A partir de então, todos os testes recebem pontuação e entram no ranking.</div></div>`;
+  const rk = r.ranking || [], mx = Math.max(1, ...rk.map(x => x.pontos));
+  const rank = rk.length ? `<div class="t3-rank"><div class="rotulo" style="margin-bottom:8px">Ranking · Teste 3D</div>` + rk.map((x, i) =>
+      `<div class="rk ${x.nome === r.nome ? 'eu' : ''}"><span>${i + 1}º</span><span>${esc(x.nome)}${x.referencia ? ' <span class="muted">(referência)</span>' : ''}</span><div class="b"><div style="width:${(100 * x.pontos / mx).toFixed(0)}%"></div></div><span class="p">${x.pontos.toLocaleString('pt-BR')}</span></div>`).join('') + '</div>'
+    : `<div class="t3-rank"><div class="rotulo" style="margin-bottom:8px">Ranking · Teste 3D</div><div class="muted">O ranking aparece quando houver uma referência.</div></div>`;
+  h += `<div class="t3-hero">${score}${rank}</div><div class="t3-res">`;
+  if (v) h += `<div class="card metrica"><div class="rotulo">Viewport 3D</div><div class="valor">${Math.round(v.fps_medio)} <span class="un">quadros/s</span></div>${seta3(true)}
+      <div class="muted" style="margin-top:6px">1% mais lentos: ${Math.round(v.fps_1pct)} quadros/s · ${v.travadas || 0} travamentos</div>${cmp('viewport')}</div>`;
+  for (const k of ['cpu', 'cpu1']) { const c = P[k]; if (c && c.tempo_s) h += `<div class="card metrica"><div class="rotulo">${PARTES3[k]}</div><div class="valor">${minSeg(c.tempo_s)}</div>${seta3(false)}
+      <div class="muted" style="margin-top:6px">${br(c.mamostras_s, 2)} milhões de amostras/s · ${c.nucleos} ${c.nucleos > 1 ? 'núcleos' : 'núcleo'}</div>${cmp(k)}</div>`; }
+  const vd = P.video;
+  if (vd && vd.cpu_h264) h += `<div class="card metrica"><div class="rotulo">Exportação de vídeo 4K</div><div class="valor">${minSeg(vd.cpu_h264.tempo_s)}</div>${seta3(false)}
+      <div class="muted" style="margin-top:6px">${['cpu_h264', 'cpu_h265', 'gpu_h264'].filter(k => vd[k] && vd[k].tempo_s).map(k => esc(vd[k].nome.replace('Processador · ', 'CPU ').replace('Placa de vídeo · ', 'Placa ')) + ': <b>' + minSeg(vd[k].tempo_s) + '</b>').join('<br>')}</div>${cmp('video')}</div>`;
+  if (es) h += `<div class="card metrica"><div class="rotulo">Estabilidade · ${r.estresse_min} min</div><div class="valor">${es.estabilidade != null ? br(es.estabilidade, 1) + '<span class="un">%</span>' : '—'}</div>${seta3(true)}
+      <div class="muted" style="margin-top:6px">${es.gpu_c_max ? 'placa a até ' + Math.round(es.gpu_c_max) + ' °C' + (es.gpu_w_medio ? ' · ' + Math.round(es.gpu_w_medio) + ' W' : '') : 'média de ' + Math.round(es.fps_medio || 0) + ' quadros/s'}</div>${cmp('estresse')}</div>`;
+  for (const [k, e] of Object.entries(r.estados || {})) if (e.estado === 'erro')
+    h += `<div class="card metrica apagado"><div class="rotulo">${PARTES3[k]}</div><div class="valor" style="color:var(--txt3)">—</div><div class="muted">falhou: ${esc(e.erro || '')}</div></div>`;
+  h += '</div>';
+  if (r.gpu) h += `<div class="muted" style="margin-top:12px">Placa usada: ${esc(r.gpu)} · imagem calculada em ${esc(r.resolucao || '1920x1080')}</div>`;
+  return h;
+}
+async function tela3dFim(s) {
+  mostrar('t-3d-fim');
+  $('#t3f-nome').textContent = s.nome;
+  let r = s.resultado;
+  if (!r && s.pasta) { const x = await api.resumo_3d(s.pasta); if (x.ok) r = x.resumo; }
+  $('#t3f-corpo').innerHTML = r ? corpo3d(r, s) : `<div class="aviso alerta">${esc(s.mensagem || 'Sem resultado.')}</div>`;
+  if (r && s.mensagem && s.fase !== 'erro') $('#t3f-corpo').innerHTML += `<div class="espaco"></div><div class="aviso alerta">${esc(s.mensagem)}</div>`;
+  $('#b-t3f-pasta').onclick = () => api.abrir_pasta(s.pasta);
+  $('#b-t3f-card').onclick = async () => { const x = await api.abrir_card(s.pasta); if (!x.ok) toast(x.erro); };
+  $('#b-t3f-relatorio').onclick = () => abrirRelatorio(s.pasta);
+  $('#b-t3f-ref').onclick = () => confirmar('Usar este notebook como referência?', 'Ele passa a valer 1.000 pontos e as pontuações de todos os testes 3D são recalculadas em relação a ele. Escolha um notebook comum, que represente o seu público.', async () => {
+    const x = await api.definir_referencia_3d(s.pasta);
+    if (!x.ok) { toast(x.erro); return; }
+    s.resultado = x.resumo; tela3dFim(s); toast('Referência definida: ' + s.nome + ' = 1.000');
+  }, 'Usar como referência');
+}
+$('#b-t3f-novo').onclick = async () => { await api.limpar(); carregar3d(); mostrar('t-3d'); };
+$('#b-comparativo-3d').onclick = async () => { const r = await api.abrir_comparativo('3d'); if (!r.ok) toast(r.erro); };
+
+async function iniciarApp() {
+  api = BENCH_API();
+  const ini = await api.inicio();
+  CFG = ini.config;
+  $('#versao').textContent = 'Bench Labs · Notebook Benchmark v' + ini.versao;
+  $('#nome').value = ini.sugestao_nome || '';
+  resumoCfg(); avisoPendente(ini.historico); atualizarPilula(); atualizarTempoCb(); definirPers(CFG.teste_personalizado_min || 60);
+  setInterval(() => { if (!document.hidden && !['t-rodando', 't-carga'].includes(tela)) atualizarPilula(); }, 20000);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden && tela === 't-rodando') atualizarStatus(); });
+  if (ini.rodando) telaRodando();
+}
+BENCH_ESPERAR(iniciarApp);
+</script>
+</body>
+</html>
